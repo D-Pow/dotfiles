@@ -57,7 +57,6 @@ function getVolumeThatCanSurpass1() {
 
 function videoArrowKeyListenerExec() {
     /* useful arrow functionality for video players that don't include it automatically */
-    getVolumeThatCanSurpass1();
     window.seekSpeed = 5;
     window.video = document.querySelector('video');
     document.onkeydown = event => {
