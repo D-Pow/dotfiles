@@ -1,0 +1,3 @@
+cntlm and etrade_proxy in editprofile
+~/.npmrc
+git credential-osxkeychain erase

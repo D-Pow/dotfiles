@@ -1,0 +1,29 @@
+#!/bin/bash
+
+usage() {
+    echo "Usage: run_command_on_file_change.sh <command> <file>"
+    echo "     Runs the command specified, then runs it each time the"
+    echo "     file changes. Polls every second."
+    exit
+}
+
+if [[ $# -ne 2 ]] ; then
+    usage
+fi
+
+
+file="$2"
+initTime=`stat -c %Z "$file"`
+command="$1"
+
+eval "$command $file"
+
+while true
+do
+    nowTime=`stat -c %Z "$file"`
+    if [[ "$initTime" != "$nowTime" ]] ; then
+        eval "$command $file"
+        initTime=$nowTime
+    fi
+    sleep 1
+done

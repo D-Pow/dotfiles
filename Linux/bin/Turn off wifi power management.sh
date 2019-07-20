@@ -1,0 +1,1 @@
+sudo iwconfig wlp5s0 power off

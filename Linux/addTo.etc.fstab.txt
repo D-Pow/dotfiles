@@ -1,0 +1,2 @@
+# user storage libraries
+UUID=3248DA5448DA1707 /media/storage/    ntfs-3g        auto,dmask=022,fmask=111,uid=1000,gid=1000,rw 0 0

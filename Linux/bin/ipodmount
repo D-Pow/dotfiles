@@ -1,0 +1,27 @@
+#!/bin/bash
+mountIpod() {
+    mkdir ~/pics && ifuse ~/pics
+}
+
+openDir() {
+    nemo ~/pics
+}
+
+unmountIpod() {
+    fusermount -u ~/pics && rmdir ~/pics
+}
+
+usage() {
+    usage="Usage: ipodmount [mount|unmount]"
+    echo $usage
+}
+
+if [[ "$1" == "mount" ]]; then
+    mountIpod
+    echo "iPod mounted to ~/pics. Don't forget to unmount it before removing the device."
+elif [[ "$1" == "unmount" ]]; then
+    unmountIpod
+    echo "iPod unmounted"
+else
+    usage
+fi

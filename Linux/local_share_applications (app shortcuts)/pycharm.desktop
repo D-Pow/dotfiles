@@ -1,0 +1,12 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Encoding=UTF-8
+Icon=/home/dpow/JetBrains/PyCharm/bin/pycharm.png
+Exec="/home/dpow/JetBrains/PyCharm/bin/pycharm.sh" %f
+Type=Application
+Terminal=false
+Comment=PyCharm IDE for Python
+Name=PyCharm
+GenericName=pycharm
+StartupNotify=false
+Categories=Development;IDE;Python;Programming

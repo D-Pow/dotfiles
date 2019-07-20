@@ -1,0 +1,24 @@
+Talk to App eng for changing webapp.src.s2-config.Xproperties files
+Anything changed in s2-config will only reflect locally. App eng is who needs to change them in SIT/UAT
+
+Front-end -> our code -> Norm's code -> S2/DB
+DatabaseAccessObject (DAO)
+Hibernate = ObjectRepresentationalModel
+
+Maven must be the E-Trade zip version
+Not supposed to have to download/build s2common first
+
+IntelliJ run configurations:
+    Build ->
+        working dir = project dir
+        command line = clean install
+    Run
+        working dir = projectDir/webapp
+        command line = jetty:run
+        Runner -> Environment vars -> ET_INSTANCE_ROOT=/Users/dpowell1/repositories/mutual_fund_etf
+
+
+
+supervisord.log holds info about failed/crashed builds
+s2java-service is our app specifically
+Specify https://BOX.etrade.com:18082/path for testing specific box

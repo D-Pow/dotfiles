@@ -1,0 +1,21 @@
+OPTIND is var holding the next argument during each iteration of getopts
+In the last iteration, OPTIND holds the value that is not an option
+Use `shift "$((OPTIND - 1))" to shift arg so that you don't have options anymore
+Put that operation in quotes to keep it safe
+
+$((...)) is mathematical procedure
+
+!= is for strings
+
+-ne is for numbers
+
+Functions must be declared before use
+
+Pass vars to functions like so: func $var1 $var2
+
+$@ is the sign for "rest of the arguments as one string"
+
+Similar string splicing as Python
+${$var:(start):(end)}
+e.g. To only get last n letters from string, do     `${$var:(-n)}`
+To get all letters except last n, do        `       `${$var::(-n)}`

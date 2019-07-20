@@ -1,0 +1,88 @@
+To do after installing Linux:
+
+Note: to change the environment PATH variable, go to /etc/environment and separate
+entries using a colon.
+
+0) Follow tutorial here <https://www.howtogeek.com/howto/35807/how-to-harmonize-your-dual-boot-setup-for-windows-and-ubuntu/> to setup
+    shared NTFS Windows-Linux storage partition.
+   Generally, the steps are:
+    i)  Backup fstab:
+         `sudo cp /etc/fstab /etc/fstab.backup`
+    ii) Get UUID of storage partition
+         `sudo blkid`
+    iii) Edit fstab to mount storage NTFS partition automatically. Paste at bottom
+         of fstab:
+            `
+            # storage mount
+            UUID=[UUID_of_storage] /media/storage/    ntfs-3g        auto,dmask=022,fmask=111,uid=1000,gid=1000,rw 0 0
+            `
+         where [UUID] is the UUID of the storage partition from step (ii), 
+         /media/storage is the new mount point, ntfs-3g is the driver
+         used to read NTFS, dmask is directory permissions (need to be
+         rwx for owner), fmask is file permissions (need to not be executable
+         so that I can read txt files easily), uid/gid set owner to user (note:
+         this may have to change depending on installation; run `id -u` to get
+         userid and `id -g` to get groupid).
+    iv) Edit ~/.config/user-dirs.dirs to point to storage partition's Documents,
+        Picturs, Music, and Video folders
+
+1) Install correct drivers (super important!!).
+
+2) Install updates.
+
+3) Fix Linux/Windows time configuration
+    "gksudo gedit /etc/default/rcS" --> add/change "UTC=yes"
+    "timedatectl set-local-rtc 1"  #Changes from UTC to local (Windows uses local)
+    #If you want to switch back to UTC on Linux, replace "1" with "0"
+
+4) Change desktop background automatically upon each login
+   Make script below ("change_desktop_background.sh") and add to startup
+   applications.
+   """
+#! /bin/bash
+#Changes desktop background randomly
+DIR="/usr/share/backgrounds/linuxmint-all"
+PIC=$(ls $DIR/* | shuf -n1)
+#Line below will change based on Cinnamon vs Ubuntu
+gsettings set org.cinnamon.desktop.background picture-uri  "file://$PIC"
+    """
+
+5) Turn off Windows quick-boot
+If Linux won't boot randomly and only goes into emergency mode, boot into Windows and run
+    "shutdown /s /t 5"
+        /s = shutdown
+        /r = restart
+        /t [number] = timeout
+    Note: this is only if you didn't change any settings to break Linux (e.g. changing
+    drivers). Once, Windows wouldn't let go of my shared Storage partition, even after
+    shutting down. Running shutdown in command prompt helped for some reason.
+
+6) Turn off automatic installation of all printers on network
+    in  /etc/cups/cupsd.conf  and/or  /etc/cups/cups-browsed.conf
+    change the following lines (if present or commented->uncommented) to:
+    `Browsing Off`
+    `BrowseLocalProtocols none`
+    `BrowseProtocols none`
+
+7) To install Java, you'll want to remove the underscore for the directory name.
+    -First, install Java to /usr/
+    -Rename the directory to just "java" and remove jdk_1.*.* name in folder
+    -Copy and paste the following to the bottom of ~/.profile (or /etc/profile if
+     the former didn't work):
+        JAVA_HOME="/usr/java"
+        PATH="$PATH:$JAVA_HOME/bin"
+        export JAVA_HOME
+        export PATH
+    -Run `source /etc/environment`
+
+7.5) If the above didn't work, then:
+    -Edit /etc/environment:
+        Add `JAVA_HOME=/usr/java/bin` under the PATH line
+        Add `:$JAVA_HOME/bin` to end of PATH line to add the bin folder to path
+    -In terminal, run `source /etc/environment` to update environment variables.
+
+8) Set numlock to always be on:
+    Keyboard (settings) -> Layouts -> Options -> Miscellaneous ->
+    Activate:
+        `Default Numeric Keys`
+        `Numeric keypad always enter digits`

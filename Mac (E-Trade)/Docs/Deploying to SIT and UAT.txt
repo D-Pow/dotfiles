@@ -1,0 +1,7 @@
+SIT
+Merge branch to (baseline, then to) integration
+Run patch with branch integration
+
+UAT
+Merge BRANCH to release/XXXX with summary 'iTrack:MAS-XXXX/ SCR-XXXXX Some message'
+Run patch with branch release/XXXX

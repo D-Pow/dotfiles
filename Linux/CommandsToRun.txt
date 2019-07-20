@@ -1,0 +1,2 @@
+# Stop apache from starting upon system boot
+sudo update-rc.d -f apache2 remove

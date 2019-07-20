@@ -1,0 +1,45 @@
+#!/bin/bash
+printUsage() {
+    usage="Usage: spellchecklatex [OPTIONS] <filename>.tex\n
+        Checks a LaTeX file for spelling errors\n
+        -f | Function inside which to ignore spelling\n"
+    echo -e ${usage}
+    exit 0
+}
+
+addfun() {
+    functions+=("--add-tex-command=\"${1} op\"")
+}
+
+functions=()
+
+for ((i=1; i<=$#; i++)); do
+    arg="${!i}"
+    if [[ "${arg:0:1}" == "-" ]]; then #only check flags
+        case "$arg" in
+            "-f")
+                nextIndex="$((i+1))"
+                fun="${!nextIndex}"
+                addfun "$fun"
+                ;;
+            *)
+                #everything else
+                printUsage
+                ;;
+        esac
+    fi
+done
+
+filename="${!#}"
+
+cmd="aspell "
+
+#add any specified functions to the ignore-spell-check list
+for f in "${functions[@]}"; do
+    cmd="$cmd $f"
+done
+
+#add file
+cmd="$cmd -c -t \"$filename\""
+
+eval $cmd

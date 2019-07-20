@@ -1,0 +1,93 @@
+#!/bin/bash
+printUsage () {
+    usage="Usage: nightscreen [OPTION]\n
+        -x | Turn off night screen\n
+        -o | Turn on night screen at max\n
+        -l | Turn on night screen at a level in {xhigh, high, med, low, xlow}"
+    echo -e ${usage}
+    exit 0
+}
+
+xhigh() {
+    echo "Night screen turned on maximum"
+    redshift -O 2000
+}
+
+high() {
+    echo "Night screen turned on high"
+    redshift -O 2500
+}
+
+medium() {
+    echo "Night screen turned on medium"
+    redshift -O 3000
+}
+
+low() {
+    echo "Night screen turned on low"
+    redshift -O 3500
+}
+
+xlow() {
+    echo "Night screen turned on extra-low"
+    redshift -O 4000
+}
+
+off() {
+    echo "Night screen turned off"
+    redshift -x
+}
+
+setScreenColor() {
+    case "$1" in
+        "xhigh"|"max")
+            xhigh
+            ;;
+        "high")
+            high
+            ;;
+        "med")
+            medium
+            ;;
+        "low")
+            low
+            ;;
+        "xlow"|"min")
+            xlow
+            ;;
+        "off")
+            off
+            ;;
+    esac
+}
+
+
+
+lazy=1                     #user lazily putting "high", "med", etc. without -l flag
+
+if [[ -z "$*" ]]; then     #-z is unary operator for length == 0
+    printUsage
+fi
+
+while getopts "xol:" arg; do
+    lazy=0
+    case "$arg" in
+        "x")
+            off
+            ;;
+        "o")
+            xhigh
+            ;;
+        "l")
+            setScreenColor "$2"
+            ;;
+        *)
+            #everything else
+            printUsage
+            ;;
+    esac
+done
+
+if [[ $lazy == 1 ]]; then
+    setScreenColor "$1"
+fi

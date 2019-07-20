@@ -1,0 +1,6 @@
+#!/bin/bash
+intotoPath="/media/storage/Documents/Repositories/in-toto"
+demoPath="/media/storage/Documents/Repositories/demo"
+pythonCommand="${intotoPath}/in_toto/in_toto_verify.py -k ${demoPath}/owner_alice/alice.pub -l ${demoPath}/owner_alice/root.layout"
+cd "${demoPath}/final_product"
+env PYTHONPATH=${intotoPath}:${demoPath}:$PYTHONPATH python ${pythonCommand} $*

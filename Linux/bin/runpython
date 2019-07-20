@@ -1,0 +1,11 @@
+#!/bin/bash
+# Runs a python file that requires the current directory
+# to be in the PYTHONPATH, i.e. those that import their own
+# files
+pythonCommand=python
+fileOpt=$1
+if [ ${fileOpt} = "-t" ]; then
+    pythonCommand=python3
+    fileOpt=$2
+fi
+env PYTHONPATH=.:$PYTHONPATH ${pythonCommand} ${fileOpt}

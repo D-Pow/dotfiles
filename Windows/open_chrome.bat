@@ -1,0 +1,2 @@
+start /B chrome
+exit

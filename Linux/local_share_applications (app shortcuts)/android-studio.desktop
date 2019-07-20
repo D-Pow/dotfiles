@@ -1,0 +1,12 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Encoding=UTF-8
+Exec=/opt/android-studio/bin/studio.sh
+Icon=/opt/android-studio/bin/studio.png
+Type=Application
+Terminal=false
+Comment=Android Studio IDE for Android development
+Name=Android Studio
+GenericName=android-studio
+StartupNotify=false
+Categories=Development;IDE;Java;Programming

@@ -1,0 +1,5 @@
+nvidia-304/xenial-updates,xenial-security,now 304.135-0ubuntu0.16.04.1 amd64 [installed]
+nvidia-opencl-icd-304/xenial-updates,xenial-security,now 304.135-0ubuntu0.16.04.1 amd64 [installed]
+nvidia-prime/serena,now 0.8.2linuxmint1 amd64 [installed]
+nvidia-prime-applet/serena,serena,now 1.0.6 all [installed]
+nvidia-settings/xenial,now 361.42-0ubuntu1 amd64 [installed]

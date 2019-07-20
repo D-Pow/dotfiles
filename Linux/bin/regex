@@ -1,0 +1,61 @@
+#!/usr/local/bin/python3
+import re
+import sys
+import os
+import fnmatch
+import glob
+
+def find_regex_in_file(pattern, file):
+    with open(file, 'r') as f:
+        contents = f.read()
+        regex = re.compile(_regex_escape(pattern))
+        results = regex.findall(contents)
+        return '\n'.join(results)
+
+def _regex_escape(string):
+    # It turns out passing string through bash
+    # works out fine and doesn't need escaping
+    #return string.replace('\\', '\\\\')
+    return string
+
+def main(pattern, files):
+    output = []
+    for file in files:
+        file_matches = find_regex_in_file(pattern, file)
+        if file_matches.strip() != '':
+            if len(files) != 1:
+                header = "{}\n{}\n".format(file, '-'*len(file))
+                output.append(header)
+            output.append(file_matches)
+            output.append("\n\n")
+    output_str = ''.join(output).strip()    #remove trailing \n's
+    print(output_str)
+
+def print_usage():
+    usage  = "Usage: regex <pattern> <file(s)>"
+    usage += "\n    files can only be files typed one after another, not a bash list"
+    usage += "\n    e.g. regex '\"scripts\"[^\\}]*\\}' package.json"
+    print(usage)
+
+def parse_passed_files(passed_files, os_walk=False):
+    if type(passed_files) == type(''):
+        passed_files = [passed_files]    #coerce to list
+    files = []
+    for file in passed_files:
+        files.extend(glob.glob(file, recursive=True))
+        if os_walk:
+            for root, dirnames, filenames in os.walk('.'):
+                for filename in fnmatch.filter(filenames, file):
+                    files.append(os.path.join(root, filename))
+    files = set(files)
+    return files
+
+
+if __name__ == "__main__":
+    if len(sys.argv) == 1:
+        print_usage()
+        exit()
+    pattern = sys.argv[1]
+    passed_files = sys.argv[2:]
+    files = parse_passed_files(passed_files)
+    main(pattern, files)

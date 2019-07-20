@@ -1,0 +1,31 @@
+#!/usr/local/bin/python3
+import re
+import sys
+import os
+
+def main(new_uaa_vt, file_path='./src/data/mocks/DefaultPageConfig.js'):
+    contents = []
+    with open(file_path, 'r+') as f:
+        contents = f.readlines()
+    os.remove(file_path)
+    with open(file_path, 'w+') as f:
+        regex = re.compile("(?<=pageConfig.uaa_vt = ')[^']*(?=')")
+        for line in contents:
+            f.write(regex.sub(new_uaa_vt, line))
+    print('Done')
+
+def print_usage():
+    usage  = "Usage: setaip <uaa_vt>"
+    usage += "\n    uaa_vt is value copied using JS: `copy(pageConfig['uaa_vt'])`"
+    print(usage)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) not in [2, 3]:
+        print_usage()
+        exit()
+    uaa_vt = sys.argv[1]
+    file_path = '/Users/dpowell1/repositories/aip/src/data/mocks/DefaultPageConfig.js'
+    if len(sys.argv) > 2:
+        file_path = sys.argv[2]
+    main(uaa_vt, file_path)

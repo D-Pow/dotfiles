@@ -1,0 +1,82 @@
+#!/bin/bash
+printUsage() {
+    usage="Usage: genlatexpdf [OPTIONS] <filename>.tex\n
+        Generates a PDF from .tex file\n
+        -o | Opens PDF file after generation\n
+        -c | Removes generated files other than PDF and TeX\n"
+    echo -e ${usage}
+    exit 0
+}
+
+generate() {
+    texname=$1
+    filename=$2
+    pdflatex "${texname}"           #Process file to get info about it
+    bibtex "${filename}.aux"        #Set up references
+    pdflatex "${texname}"           #Put bibliography citations in file
+    pdflatex "${texname}"           #Put bibliography references in file
+}
+
+clean() {
+    filename=$1
+    echo -e "Removing generated files {.log, .aux, .out, .bbl, .blg}..."
+    rm -f "${filename}.log" "${filename}.aux" "${filename}.out" "${filename}.bbl" "${filename}.blg"
+}
+
+openPdf() {
+    filename=$1
+    echo -e "Opening generated PDF..."
+    xdg-open "${filename}.pdf"
+}
+
+
+
+
+openPdf_flag=0
+clean_flag=0
+
+while getopts "och" arg; do
+    case "$arg" in
+        "o")
+            openPdf_flag=1
+            ;;
+        "c")
+            clean_flag=1
+            ;;
+        "h")
+            printUsage
+            ;;
+        *)
+            #everything else
+            printUsage
+            ;;
+    esac
+done
+
+
+shift "$((OPTIND - 1))"
+
+texname="$*"
+texext=${texname:(-4)}
+if [[ "$texext" != ".tex" ]]; then
+    printUsage
+fi
+
+
+filename=${texname::(-4)}
+generate "$texname" "$filename"
+
+
+if [[ $((openPdf_flag + clean_flag)) -gt 0 ]]; then
+    echo -e "\n"
+fi
+
+
+if [[ openPdf_flag -ne 0 ]]; then
+    openPdf "$filename"
+fi
+
+
+if [[ clean_flag -ne 0 ]]; then
+    clean "$filename"
+fi
