@@ -1,0 +1,104 @@
+[
+    { "keys": ["ctrl+tab"], "command": "next_view" },
+    { "keys": ["ctrl+shift+tab"], "command": "prev_view" },
+    { "keys": ["ctrl+shift+o"], "command": "prompt_add_folder"},
+    { "keys": ["ctrl+shift+b"], "command": "cancel_build" },
+    { "keys": ["ctrl+shift+c"], "command": "exec", "args": {"kill": true} },
+
+    /* Japanese on Linux */
+    { "keys": ["ctrl+\\"], "command": "toggle_mozc"},
+    
+    { "keys": ["alt+s"], "command": "toggle_side_bar" },
+
+    { "keys": ["ctrl+shift+1"], "command": "move_tab", "args": { "position": "-1" } },
+    { "keys": ["ctrl+shift+2"], "command": "move_tab", "args": { "position": "+1" } },
+
+    /* Change IntelliDocs command */
+    { "keys": ["alt+d"], "command": "intelli_docs" },
+
+    /* For closing JSX in .js files */
+    { "keys": ["/"], "command": "close_tag", "args": { "insert_slash": true }, "context":
+        [
+            { "key": "selector", "operator": "equal", "operand": "(text.html, text.xml, meta.jsx.js, meta.js) - string - comment", "match_all": true },
+            { "key": "preceding_text", "operator": "regex_match", "operand": ".*<$", "match_all": true },
+            { "key": "setting.auto_close_tags" }
+        ]
+    },
+
+    { "keys": ["ctrl+1"], "command": "select_by_index", "args": { "index": 0 } },
+    { "keys": ["ctrl+2"], "command": "select_by_index", "args": { "index": 1 } },
+    { "keys": ["ctrl+3"], "command": "select_by_index", "args": { "index": 2 } },
+    { "keys": ["ctrl+4"], "command": "select_by_index", "args": { "index": 3 } },
+    { "keys": ["ctrl+5"], "command": "select_by_index", "args": { "index": 4 } },
+    { "keys": ["ctrl+6"], "command": "select_by_index", "args": { "index": 5 } },
+    { "keys": ["ctrl+7"], "command": "select_by_index", "args": { "index": 6 } },
+    { "keys": ["ctrl+8"], "command": "select_by_index", "args": { "index": 7 } },
+    { "keys": ["ctrl+9"], "command": "select_by_index", "args": { "index": 8 } },
+    { "keys": ["ctrl+0"], "command": "select_by_index", "args": { "index": 9 } }
+]
+
+/*
+Emmet key commands from
+https://docs.emmet.io/cheat-sheet/
+
+JS to get JSON:
+x = {};
+for (let s of Array.from(document.getElementsByClassName('ch-subsection')).slice(0,11)) {
+    let title = s.getElementsByClassName('ch-subsection__title')[0];
+    let text = title.textContent;
+    x[text] = [];
+    let examples = s.getElementsByClassName('ch-snippet__name');
+    for (let ex of examples) {
+        x[text].push(ex.textContent);
+    }
+}
+
+Keys
+{
+    "Child: >":[
+        "nav>ul>li"
+    ],
+    "Sibling: +":[
+        "div+p+bq"
+    ],
+    "Climb-up: ^":[
+        "div+div>p>span+em^bq",
+        "div+div>p>span+em^^bq"
+    ],
+    "Grouping: ()":[
+        "div>(header>ul>li*2>a)+footer>p",
+        "(div>dl>(dt+dd)*3)+footer>p"
+    ],
+    "Multiplication: *":[
+        "ul>li*5"
+    ],
+    "Item numbering: $":[
+        "ul>li.item$*5",
+        "h$[title=item$]{Header $}*3",
+        "ul>li.item$$$*5",
+        "ul>li.item$@-*5",
+        "ul>li.item$@3*5"
+    ],
+    "ID and CLASS attributes":[
+        "#header",
+        ".title",
+        "form#search.wide",
+        "p.class1.class2.class3"
+    ],
+    "Custom attributes":[
+        "p[title=\"Hello world\"]",
+        "td[rowspan=2 colspan=3 title]",
+        "[a='value1' b=\"value2\"]"
+        ],
+    "Text: {}":[
+        "a{Click me}",
+        "p>{Click }+a{here}+{ to continue}"
+    ],
+    "Implicit tag names":[
+        ".class",
+        "em>.class",
+        "ul>.class",
+        "table>.row>.col"
+    ]
+}
+*/

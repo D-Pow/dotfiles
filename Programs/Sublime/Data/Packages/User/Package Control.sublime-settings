@@ -1,0 +1,26 @@
+{
+	"bootstrapped": true,
+	"in_process_packages":
+	[
+	],
+	"installed_packages":
+	[
+		"Babel",
+		"Babel Snippets",
+		"Emmet",
+		"HTML-CSS-JS Prettify",
+		"IntelliDocs",
+		"JavaIME",
+		"JavaScript & NodeJS Snippets",
+		"JavaScript Enhancements",
+		"jQuery",
+		"MoveTab",
+		"Package Control",
+		"PackageResourceViewer",
+		"SublimeLinter",
+		"SublimeLinter-eslint",
+		"SublimeREPL",
+		"tern_for_sublime",
+		"TernJS"
+	]
+}

@@ -1,0 +1,858 @@
+{
+	"folder_history":
+	[
+		"/D/Documents/Repositories/d-pow.github.io/src/styles",
+		"/D/Documents/Repositories/d-pow.github.io/src/components",
+		"/D/Documents/Repositories/d-pow.github.io",
+		"/D/Documents/Google Drive/Work/Programming",
+		"/C/Users/djp93/Desktop/test",
+		"/D/Documents/Repositories/AndroidStudioProjects/android-BluetoothChat/Application/src/main/java/com/example/android",
+		"/D/Documents/Repositories/AndroidStudioProjects/android-BluetoothChat/Application/src/main",
+		"/C/Users/djp93/Desktop",
+		"/D/Documents/Google Drive/Work/NYU/Atoms of Confusion",
+		"/D/Documents/Repositories/DragonGame/src/platformcontrol",
+		"/C/Users/djp93/Downloads"
+	],
+	"last_version": 3143,
+	"last_window_id": 44,
+	"log_indexing": false,
+	"settings":
+	{
+		"new_window_height": 877.0,
+		"new_window_settings":
+		{
+			"auto_complete":
+			{
+				"selected_items":
+				[
+					[
+						"exten",
+						"extends\t? "
+					],
+					[
+						"get",
+						"getAcceptableWordsWithRegex"
+					],
+					[
+						"download",
+						"downloadAllEpisodes_Kissanime(start, end)"
+					],
+					[
+						"downlaoall",
+						"downloadAllEpisodes_Kissanime(start, end)"
+					],
+					[
+						"slice",
+						"slice\t.slice()"
+					],
+					[
+						"getElementsBy",
+						"getElementsByTagName"
+					],
+					[
+						"con",
+						"containers\t[]"
+					],
+					[
+						"input",
+						"Input"
+					],
+					[
+						"dra",
+						"drawScreen\tfn "
+					],
+					[
+						"dr",
+						"drawScreen\tfn "
+					]
+				]
+			},
+			"build_system_choices":
+			[
+				[
+					[
+						[
+							"Packages/Java/Ant.sublime-build",
+							""
+						],
+						[
+							"Packages/Java/JavaC.sublime-build",
+							""
+						]
+					],
+					[
+						"Packages/Java/JavaC.sublime-build",
+						""
+					]
+				],
+				[
+					[
+						[
+							"Packages/Java/Ant.sublime-build",
+							""
+						],
+						[
+							"Packages/Java/JavaC.sublime-build",
+							""
+						],
+						[
+							"Packages/SublimeREPL/sublimerepl_build_system_hack.sublime-build",
+							""
+						]
+					],
+					[
+						"Packages/Java/JavaC.sublime-build",
+						""
+					]
+				],
+				[
+					[
+						[
+							"Packages/Python/Python.sublime-build",
+							""
+						],
+						[
+							"Packages/Python/Python.sublime-build",
+							"Syntax Check"
+						]
+					],
+					[
+						"Packages/Python/Python.sublime-build",
+						""
+					]
+				],
+				[
+					[
+						[
+							"Packages/Python/Python.sublime-build",
+							""
+						],
+						[
+							"Packages/Python/Python.sublime-build",
+							"Syntax Check"
+						],
+						[
+							"Packages/SublimeREPL/sublimerepl_build_system_hack.sublime-build",
+							""
+						]
+					],
+					[
+						"Packages/Python/Python.sublime-build",
+						""
+					]
+				],
+				[
+					[
+						[
+							"Packages/SublimeREPL/sublimerepl_build_system_hack.sublime-build",
+							""
+						],
+						[
+							"Packages/User/LaTeX.sublime-build",
+							""
+						]
+					],
+					[
+						"Packages/User/LaTeX.sublime-build",
+						""
+					]
+				]
+			],
+			"build_varint": "",
+			"command_palette":
+			{
+				"height": 173.0,
+				"last_filter": "package install",
+				"selected_items":
+				[
+					[
+						"package install",
+						"Package Control: Install Package"
+					],
+					[
+						"package control insta",
+						"Package Control: Install Package"
+					],
+					[
+						"package control in",
+						"Package Control: Install Package"
+					],
+					[
+						"package control li",
+						"Package Control: List Packages"
+					],
+					[
+						"package control remo",
+						"Package Control: Remove Package"
+					],
+					[
+						"package control install",
+						"Package Control: Install Package"
+					],
+					[
+						"package control ",
+						"Package Control: Remove Package"
+					],
+					[
+						"package control list",
+						"Package Control: List Packages"
+					],
+					[
+						"package",
+						"PackageResourceViewer: Open Resource"
+					],
+					[
+						"packageresour",
+						"PackageResourceViewer: Open Resource"
+					],
+					[
+						"repl: python run",
+						"SublimeREPL: Python - RUN current file"
+					],
+					[
+						"install",
+						"Package Control: Install Package"
+					],
+					[
+						"packagresou",
+						"PackageResourceViewer: Open Resource"
+					]
+				],
+				"width": 609.0
+			},
+			"console":
+			{
+				"height": 241.0,
+				"history":
+				[
+					"import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+				]
+			},
+			"distraction_free":
+			{
+				"menu_visible": true,
+				"show_minimap": false,
+				"show_open_files": false,
+				"show_tabs": false,
+				"side_bar_visible": false,
+				"status_bar_visible": false
+			},
+			"file_history":
+			[
+				"/D/Documents/Google Drive/Work/Japanese/Japanese notes.tex",
+				"/D/Documents/Google Drive/Work/ToDo.txt",
+				"/D/Documents/Google Drive/Work/ChangesSinceBackup.txt",
+				"/D/Documents/Google Drive/Work/Programming/Web/Download_All_Kissanime_Episodes.js",
+				"/D/Documents/Repositories/d-pow.github.io/src/registerServiceWorker.js",
+				"/D/Documents/Repositories/d-pow.github.io/src/App.js",
+				"/D/Documents/Repositories/d-pow.github.io/.env",
+				"/D/Documents/Repositories/d-pow.github.io/src/ServiceWorker.js",
+				"/D/Documents/Google Drive/Work/Programming/Web/Service_worker.js",
+				"/D/Documents/Repositories/d-pow.github.io/build/static/js/main.8bbed305.js",
+				"/D/Documents/Repositories/d-pow.github.io/build/static/css/main.c17080f1.css",
+				"/D/Documents/Repositories/d-pow.github.io/build/index.html",
+				"/D/Documents/Repositories/d-pow.github.io/public/index.html",
+				"/C/Sublime_Text_3/Data/Packages/Emmet/Default (Windows).sublime-keymap",
+				"/C/Users/djp93/Desktop/Rick quotes.txt",
+				"/C/Users/djp93/Downloads/DownloadScript.txt",
+				"/C/Users/djp93/Desktop/AcceptableWords.txt",
+				"/C/Users/djp93/Desktop/WordsWithFriends_AllWords.py",
+				"/C/Users/djp93/Desktop/test.py",
+				"/C/Users/djp93/Desktop/Japan todo.txt",
+				"/D/Documents/Google Drive/Work/Travel/Japan/Japan budget.txt",
+				"/C/Mamp/htdocs/03 - Feature Tracking/Ex10_ColorTrackingSimple/sketch.js",
+				"/D/Documents/Repositories/atoms-context-paper/tex/results.tex",
+				"/D/Documents/Google Drive/Work/NYU/Semester 4/Interactive computing/VR/libraries/aframep5.js",
+				"/D/Documents/Google Drive/Work/NYU/Semester 4/Interactive computing/VR/AFrame with P5/sketch.js",
+				"/D/Documents/Repositories/DragonGame/dist/credits9207000121117050013.txt",
+				"/D/Documents/Repositories/AndroidStudioProjects/android-BluetoothChat/Application/src/main/java/com/example/android/common/activities/SampleActivityBase.java",
+				"/D/Documents/Repositories/AndroidSync/AndroidSyncDesktop/build.gradle",
+				"/D/Documents/Repositories/AndroidSync/AndroidSyncDesktop/local.properties",
+				"/D/Documents/Repositories/AndroidSync/AndroidSyncDesktop/gradle/wrapper/gradle-wrapper.properties",
+				"/D/Documents/Repositories/AndroidSync/AndroidSyncMobile/output.txt",
+				"/D/Documents/Repositories/AndroidSync/AndroidSyncDesktop/settings.gradle",
+				"/D/Documents/Repositories/AndroidSync/AndroidSyncMobile/.gitignore",
+				"/D/Documents/Repositories/AndroidSync/AndroidSyncDesktop/ReadMe.txt",
+				"/D/Documents/Repositories/atoms-context-paper/AtomsContextPaper.tex",
+				"/C/Users/djp93/Desktop/del/688a7188eb3f71cfd5faff76a6c557b7829d932043cade38f04f677a4f9688cc.jpg",
+				"/C/Sublime_Text_3/Data/Packages/SublimeREPL/SublimeREPL.sublime-settings",
+				"/C/Sublime_Text_3/Data/Packages/User/SublimeREPL.sublime-settings",
+				"/D/Documents/Current work/HW 6/SMTP.py",
+				"/C/Sublime_Text_3/Data/Packages/User/LaTeX.sublime-build",
+				"/C/Sublime_Text_3/Data/Packages/User/LaTeX.sublime-settings",
+				"/D/Documents/Google Drive/Work/NYU/Atoms of Confusion/Get num right and wrong from db.txt",
+				"/D/Documents/Repositories/atoms-context-paper/tex/experimental_design.tex",
+				"/D/Documents/Current work/Interactive computing/MidTerm/welcom_screen.js",
+				"/D/Documents/Current work/Interactive computing/MidTerm/index.html",
+				"/D/Documents/Repositories/DragonGame/src/platformcontrol/GameState.java",
+				"/C/Users/djp93/Downloads/MidTerm/style.css",
+				"/D/Documents/Current work/wireshark-traces/tcp-ethereal-trace-1",
+				"/D/Documents/Google Drive/Work/Japanese notes.tex",
+				"/D/Documents/Game Setup files/Witcher3Modder/mymod/gameplay/abilities/geralt_levelups.xml",
+				"/D/Documents/Repositories/atoms-context-paper/AtomsContextPaper.tex;",
+				"/D/Documents/Repositories/atoms-context-paper/exit",
+				"/D/B",
+				"/D/Documents/Google Drive/Work/Japanese notes[Conflict].tex",
+				"/C/Users/djp93/open_chrome.bat",
+				"/D/Documents/Google Drive/Work/ChangesSinceBackup (1).txt",
+				"/C/Users/djp93/Desktop/ChangesSinceBackup.txt",
+				"/D/Documents/Work/ChangesSinceBackup.txt",
+				"/C/Users/djp93/Desktop/User_folder/ChangesSinceBackup.txt",
+				"/D/Documents/Program setup files/Adobe Acrobat Pro/Adobe Acrobat XI Pro 11.0.9 Multilanguage [ChingLiu]/ChingLiu.Install.Notes.nfo",
+				"/D/Documents/Program setup files/Mathcad 14 setup/Readme.txt",
+				"/D/Documents/Program setup files/New Computer Random Files/ReadMe.txt",
+				"/C/Users/djp93/.sqliterc",
+				"/C/Users/djp93/Desktop/User_folder/New Computer Random Files/ReadMe.txt",
+				"/E/User Folder/Games/Readme.txt",
+				"/C/Users/djp93/Desktop/User_folder/Sublime/Sublime_license.txt"
+			],
+			"find":
+			{
+				"height": 52.0
+			},
+			"find_in_files":
+			{
+				"height": 0.0,
+				"where_history":
+				[
+				]
+			},
+			"find_state":
+			{
+				"case_sensitive": false,
+				"find_history":
+				[
+					"world",
+					"wget",
+					"\"/",
+					"service",
+					"service-",
+					"service-worker",
+					"register",
+					"error",
+					"error(?=.*?duplicate)",
+					"error(?!.*?duplicate)",
+					"error",
+					"cannot",
+					"corrupt",
+					"shochu"
+				],
+				"highlight": true,
+				"in_selection": false,
+				"preserve_case": false,
+				"regex": true,
+				"replace_history":
+				[
+				],
+				"reverse": false,
+				"show_context": true,
+				"use_buffer2": true,
+				"whole_word": false,
+				"wrap": true
+			},
+			"incremental_find":
+			{
+				"height": 32.0
+			},
+			"input":
+			{
+				"height": 48.0
+			},
+			"menu_visible": true,
+			"output.SublimeLinter":
+			{
+				"height": 0.0
+			},
+			"output.exec":
+			{
+				"height": 179.0
+			},
+			"output.find_results":
+			{
+				"height": 0.0
+			},
+			"output.unsaved_changes":
+			{
+				"height": 148.0
+			},
+			"pinned_build_system": "",
+			"replace":
+			{
+				"height": 59.0
+			},
+			"save_all_on_build": true,
+			"select_file":
+			{
+				"height": 0.0,
+				"last_filter": "",
+				"selected_items":
+				[
+				],
+				"width": 0.0
+			},
+			"select_project":
+			{
+				"height": 0.0,
+				"last_filter": "",
+				"selected_items":
+				[
+				],
+				"width": 0.0
+			},
+			"select_symbol":
+			{
+				"height": 0.0,
+				"last_filter": "",
+				"selected_items":
+				[
+				],
+				"width": 0.0
+			},
+			"show_minimap": true,
+			"show_open_files": false,
+			"show_tabs": true,
+			"side_bar_visible": true,
+			"side_bar_width": 227.0,
+			"status_bar_visible": true,
+			"template_settings":
+			{
+			}
+		},
+		"new_window_width": 1330.0
+	},
+	"windows":
+	[
+		{
+			"auto_complete":
+			{
+				"selected_items":
+				[
+					[
+						"exten",
+						"extends\t? "
+					],
+					[
+						"get",
+						"getAcceptableWordsWithRegex"
+					],
+					[
+						"download",
+						"downloadAllEpisodes_Kissanime(start, end)"
+					],
+					[
+						"downlaoall",
+						"downloadAllEpisodes_Kissanime(start, end)"
+					],
+					[
+						"slice",
+						"slice\t.slice()"
+					],
+					[
+						"getElementsBy",
+						"getElementsByTagName"
+					],
+					[
+						"con",
+						"containers\t[]"
+					],
+					[
+						"input",
+						"Input"
+					],
+					[
+						"dra",
+						"drawScreen\tfn "
+					],
+					[
+						"dr",
+						"drawScreen\tfn "
+					]
+				]
+			},
+			"build_system": "",
+			"build_system_choices":
+			[
+				[
+					[
+						[
+							"Packages/Java/Ant.sublime-build",
+							""
+						],
+						[
+							"Packages/Java/JavaC.sublime-build",
+							""
+						]
+					],
+					[
+						"Packages/Java/JavaC.sublime-build",
+						""
+					]
+				],
+				[
+					[
+						[
+							"Packages/Java/Ant.sublime-build",
+							""
+						],
+						[
+							"Packages/Java/JavaC.sublime-build",
+							""
+						],
+						[
+							"Packages/SublimeREPL/sublimerepl_build_system_hack.sublime-build",
+							""
+						]
+					],
+					[
+						"Packages/Java/JavaC.sublime-build",
+						""
+					]
+				],
+				[
+					[
+						[
+							"Packages/Python/Python.sublime-build",
+							""
+						],
+						[
+							"Packages/Python/Python.sublime-build",
+							"Syntax Check"
+						]
+					],
+					[
+						"Packages/Python/Python.sublime-build",
+						""
+					]
+				],
+				[
+					[
+						[
+							"Packages/Python/Python.sublime-build",
+							""
+						],
+						[
+							"Packages/Python/Python.sublime-build",
+							"Syntax Check"
+						],
+						[
+							"Packages/SublimeREPL/sublimerepl_build_system_hack.sublime-build",
+							""
+						]
+					],
+					[
+						"Packages/Python/Python.sublime-build",
+						""
+					]
+				],
+				[
+					[
+						[
+							"Packages/SublimeREPL/sublimerepl_build_system_hack.sublime-build",
+							""
+						],
+						[
+							"Packages/User/LaTeX.sublime-build",
+							""
+						]
+					],
+					[
+						"Packages/User/LaTeX.sublime-build",
+						""
+					]
+				]
+			],
+			"build_varint": "",
+			"command_palette":
+			{
+				"height": 173.0,
+				"last_filter": "package install",
+				"selected_items":
+				[
+					[
+						"package install",
+						"Package Control: Install Package"
+					],
+					[
+						"package control insta",
+						"Package Control: Install Package"
+					],
+					[
+						"package control in",
+						"Package Control: Install Package"
+					],
+					[
+						"package control li",
+						"Package Control: List Packages"
+					],
+					[
+						"package control remo",
+						"Package Control: Remove Package"
+					],
+					[
+						"package control install",
+						"Package Control: Install Package"
+					],
+					[
+						"package control ",
+						"Package Control: Remove Package"
+					],
+					[
+						"package control list",
+						"Package Control: List Packages"
+					],
+					[
+						"package",
+						"PackageResourceViewer: Open Resource"
+					],
+					[
+						"packageresour",
+						"PackageResourceViewer: Open Resource"
+					],
+					[
+						"repl: python run",
+						"SublimeREPL: Python - RUN current file"
+					],
+					[
+						"install",
+						"Package Control: Install Package"
+					],
+					[
+						"packagresou",
+						"PackageResourceViewer: Open Resource"
+					]
+				],
+				"width": 609.0
+			},
+			"console":
+			{
+				"height": 241.0,
+				"history":
+				[
+					"import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+				]
+			},
+			"distraction_free":
+			{
+				"menu_visible": true,
+				"show_minimap": false,
+				"show_open_files": false,
+				"show_tabs": false,
+				"side_bar_visible": false,
+				"status_bar_visible": false
+			},
+			"file_history":
+			[
+				"/D/Documents/Google Drive/Work/Japanese/Japanese notes.tex",
+				"/D/Documents/Google Drive/Work/ToDo.txt",
+				"/D/Documents/Google Drive/Work/ChangesSinceBackup.txt",
+				"/D/Documents/Google Drive/Work/Programming/Web/Download_All_Kissanime_Episodes.js",
+				"/D/Documents/Repositories/d-pow.github.io/src/registerServiceWorker.js",
+				"/D/Documents/Repositories/d-pow.github.io/src/App.js",
+				"/D/Documents/Repositories/d-pow.github.io/.env",
+				"/D/Documents/Repositories/d-pow.github.io/src/ServiceWorker.js",
+				"/D/Documents/Google Drive/Work/Programming/Web/Service_worker.js",
+				"/D/Documents/Repositories/d-pow.github.io/build/static/js/main.8bbed305.js",
+				"/D/Documents/Repositories/d-pow.github.io/build/static/css/main.c17080f1.css",
+				"/D/Documents/Repositories/d-pow.github.io/build/index.html",
+				"/D/Documents/Repositories/d-pow.github.io/public/index.html",
+				"/C/Sublime_Text_3/Data/Packages/Emmet/Default (Windows).sublime-keymap",
+				"/C/Users/djp93/Desktop/Rick quotes.txt",
+				"/C/Users/djp93/Downloads/DownloadScript.txt",
+				"/C/Users/djp93/Desktop/AcceptableWords.txt",
+				"/C/Users/djp93/Desktop/WordsWithFriends_AllWords.py",
+				"/C/Users/djp93/Desktop/test.py",
+				"/C/Users/djp93/Desktop/Japan todo.txt",
+				"/D/Documents/Google Drive/Work/Travel/Japan/Japan budget.txt",
+				"/C/Mamp/htdocs/03 - Feature Tracking/Ex10_ColorTrackingSimple/sketch.js",
+				"/D/Documents/Repositories/atoms-context-paper/tex/results.tex",
+				"/D/Documents/Google Drive/Work/NYU/Semester 4/Interactive computing/VR/libraries/aframep5.js",
+				"/D/Documents/Google Drive/Work/NYU/Semester 4/Interactive computing/VR/AFrame with P5/sketch.js",
+				"/D/Documents/Repositories/DragonGame/dist/credits9207000121117050013.txt",
+				"/D/Documents/Repositories/AndroidStudioProjects/android-BluetoothChat/Application/src/main/java/com/example/android/common/activities/SampleActivityBase.java",
+				"/D/Documents/Repositories/AndroidSync/AndroidSyncDesktop/build.gradle",
+				"/D/Documents/Repositories/AndroidSync/AndroidSyncDesktop/local.properties",
+				"/D/Documents/Repositories/AndroidSync/AndroidSyncDesktop/gradle/wrapper/gradle-wrapper.properties",
+				"/D/Documents/Repositories/AndroidSync/AndroidSyncMobile/output.txt",
+				"/D/Documents/Repositories/AndroidSync/AndroidSyncDesktop/settings.gradle",
+				"/D/Documents/Repositories/AndroidSync/AndroidSyncMobile/.gitignore",
+				"/D/Documents/Repositories/AndroidSync/AndroidSyncDesktop/ReadMe.txt",
+				"/D/Documents/Repositories/atoms-context-paper/AtomsContextPaper.tex",
+				"/C/Users/djp93/Desktop/del/688a7188eb3f71cfd5faff76a6c557b7829d932043cade38f04f677a4f9688cc.jpg",
+				"/C/Sublime_Text_3/Data/Packages/SublimeREPL/SublimeREPL.sublime-settings",
+				"/C/Sublime_Text_3/Data/Packages/User/SublimeREPL.sublime-settings",
+				"/D/Documents/Current work/HW 6/SMTP.py",
+				"/C/Sublime_Text_3/Data/Packages/User/LaTeX.sublime-build",
+				"/C/Sublime_Text_3/Data/Packages/User/LaTeX.sublime-settings",
+				"/D/Documents/Google Drive/Work/NYU/Atoms of Confusion/Get num right and wrong from db.txt",
+				"/D/Documents/Repositories/atoms-context-paper/tex/experimental_design.tex",
+				"/D/Documents/Current work/Interactive computing/MidTerm/welcom_screen.js",
+				"/D/Documents/Current work/Interactive computing/MidTerm/index.html",
+				"/D/Documents/Repositories/DragonGame/src/platformcontrol/GameState.java",
+				"/C/Users/djp93/Downloads/MidTerm/style.css",
+				"/D/Documents/Current work/wireshark-traces/tcp-ethereal-trace-1",
+				"/D/Documents/Google Drive/Work/Japanese notes.tex",
+				"/D/Documents/Game Setup files/Witcher3Modder/mymod/gameplay/abilities/geralt_levelups.xml",
+				"/D/Documents/Repositories/atoms-context-paper/AtomsContextPaper.tex;",
+				"/D/Documents/Repositories/atoms-context-paper/exit",
+				"/D/B",
+				"/D/Documents/Google Drive/Work/Japanese notes[Conflict].tex",
+				"/C/Users/djp93/open_chrome.bat",
+				"/D/Documents/Google Drive/Work/ChangesSinceBackup (1).txt",
+				"/C/Users/djp93/Desktop/ChangesSinceBackup.txt",
+				"/D/Documents/Work/ChangesSinceBackup.txt",
+				"/C/Users/djp93/Desktop/User_folder/ChangesSinceBackup.txt",
+				"/D/Documents/Program setup files/Adobe Acrobat Pro/Adobe Acrobat XI Pro 11.0.9 Multilanguage [ChingLiu]/ChingLiu.Install.Notes.nfo",
+				"/D/Documents/Program setup files/Mathcad 14 setup/Readme.txt",
+				"/D/Documents/Program setup files/New Computer Random Files/ReadMe.txt",
+				"/C/Users/djp93/.sqliterc",
+				"/C/Users/djp93/Desktop/User_folder/New Computer Random Files/ReadMe.txt",
+				"/E/User Folder/Games/Readme.txt",
+				"/C/Users/djp93/Desktop/User_folder/Sublime/Sublime_license.txt"
+			],
+			"find":
+			{
+				"height": 52.0
+			},
+			"find_in_files":
+			{
+				"height": 0.0,
+				"where_history":
+				[
+				]
+			},
+			"find_state":
+			{
+				"case_sensitive": false,
+				"find_history":
+				[
+					"world",
+					"wget",
+					"\"/",
+					"service",
+					"service-",
+					"service-worker",
+					"register",
+					"error",
+					"error(?=.*?duplicate)",
+					"error(?!.*?duplicate)",
+					"error",
+					"cannot",
+					"corrupt",
+					"shochu"
+				],
+				"highlight": true,
+				"in_selection": false,
+				"preserve_case": false,
+				"regex": true,
+				"replace_history":
+				[
+				],
+				"reverse": false,
+				"show_context": true,
+				"use_buffer2": true,
+				"whole_word": false,
+				"wrap": true
+			},
+			"incremental_find":
+			{
+				"height": 32.0
+			},
+			"input":
+			{
+				"height": 48.0
+			},
+			"layout":
+			{
+				"cells":
+				[
+					[
+						0,
+						0,
+						1,
+						1
+					]
+				],
+				"cols":
+				[
+					0.0,
+					1.0
+				],
+				"rows":
+				[
+					0.0,
+					1.0
+				]
+			},
+			"menu_visible": true,
+			"output.SublimeLinter":
+			{
+				"height": 0.0
+			},
+			"output.exec":
+			{
+				"height": 179.0
+			},
+			"output.find_results":
+			{
+				"height": 0.0
+			},
+			"output.unsaved_changes":
+			{
+				"height": 148.0
+			},
+			"pinned_build_system": "",
+			"position": "0,0,1,-1,-1,-1,-1,996,198,47,1546",
+			"replace":
+			{
+				"height": 59.0
+			},
+			"save_all_on_build": true,
+			"select_file":
+			{
+				"height": 0.0,
+				"last_filter": "",
+				"selected_items":
+				[
+				],
+				"width": 0.0
+			},
+			"select_project":
+			{
+				"height": 0.0,
+				"last_filter": "",
+				"selected_items":
+				[
+				],
+				"width": 0.0
+			},
+			"select_symbol":
+			{
+				"height": 0.0,
+				"last_filter": "",
+				"selected_items":
+				[
+				],
+				"width": 0.0
+			},
+			"settings":
+			{
+			},
+			"show_minimap": true,
+			"show_open_files": false,
+			"show_tabs": true,
+			"side_bar_visible": true,
+			"side_bar_width": 227.0,
+			"status_bar_visible": true,
+			"template_settings":
+			{
+			},
+			"window_id": 35
+		}
+	],
+	"workspaces":
+	{
+		"recent_workspaces":
+		[
+		]
+	}
+}

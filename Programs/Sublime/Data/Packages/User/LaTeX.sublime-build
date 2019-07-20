@@ -1,0 +1,9 @@
+{
+    //&& bibtex \"${file_base_name}.aux\" && pdflatex \"$file\" && pdflatex \"$file\" && ...
+    //Windows
+    "shell_cmd": "pdflatex \"$file\" && pdflatex \"$file\" && del /f \"${file_base_name}.log\" \"${file_base_name}.aux\" \"${file_base_name}.out\" \"${file_base_name}.bbl\" \"${file_base_name}.blg\" \"${file_base_name}.toc\" \"${file_base_name}.up*\" && start /B \"\" \"${file_base_name}.pdf\"",
+    //Ubuntu
+    //"shell_cmd": "pdflatex \"$file\" && pdflatex \"$file\" && rm -f \"${file_base_name}.log\" \"${file_base_name}.aux\" \"${file_base_name}.out\" \"${file_base_name}.bbl\" \"${file_base_name}.blg\" \"${file_base_name}.toc\" \"${file_base_name}.up*\" && xdg-open \"${file_base_name}.pdf\"",
+    "file_regex": "^(...*?):([0-9]*):?([0-9]*)",
+    "selector": "text.tex.latex"
+}
