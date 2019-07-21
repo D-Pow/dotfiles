@@ -13,14 +13,14 @@ function sortObjectByKeys(obj) {
 }
 
 function getCookie(cookie = document.cookie) {
-    cookie.split('; ').reduce((cookie, entry) => {
+    return cookie.split('; ').reduce((cookieObj, entry) => {
         const keyVal = entry.split('=');
         const key = keyVal[0];
         let value = keyVal.slice(1).join('=');
 
-        cookie[key] = value;
+        cookieObj[key] = value;
 
-        return cookie;
+        return cookieObj;
     }, {});
 }
 
