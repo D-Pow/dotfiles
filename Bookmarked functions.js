@@ -189,7 +189,7 @@ function getVideoFromKissanimeUrl(url = window.location.href) {
         .then(mp4Url => fetchCors(mp4Url))
         .then(res => res.text());
 
-    if (url.includes('rapidvideo')) {
+    if (url.includes('rapidvid')) { /* rapidvideo.com && rapidvid.to */
         return getVideoFromRapidvideo(commonHostPromise);
     }
 
