@@ -116,7 +116,7 @@ function setInnerHtmlToVideoWithSrc() {
  */
 function getHighestResVideoFromHtml(htmlText) {
     const videoTagRegex = /<video[\w\W]*<\/video>/;
-    const sourceTagRegex = /<source[\w\W]*?\/>/g;
+    const sourceTagRegex = /<source[\w\W]*?>/g;
     const sourceSrcRegex = /(?<=source src=")[^"]*(?=")/;
     const resolutionRegex = /(?<=data-res=")[^"]*(?=")/;
 
