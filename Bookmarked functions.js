@@ -181,20 +181,23 @@ function getVideoFromMp4upload(commonHostPromise) {
  * URL must contain the 's' query param
  */
 function getVideoFromKissanimeUrl(url = window.location.href) {
-    const kissanimeUrlParam = getUrlQueryParams()['s'];
-    const videoHostUrlRegex = new RegExp(`(?<=src=")[^"]*${kissanimeUrlParam}.com[^"]*(?=")`, 'g');
-    const commonHostPromise = fetch(url)
-        .then(res => res.text())
-        .then(html => html.match(videoHostUrlRegex)[0])
-        .then(mp4Url => fetchCors(mp4Url))
-        .then(res => res.text());
+    const getCommonHostPromise = () => {
+        const kissanimeUrlParam = getUrlQueryParams()['s'];
+        const videoHostUrlRegex = new RegExp(`(?<=src=")[^"]*${kissanimeUrlParam}.com[^"]*(?=")`, 'g');
+        return fetch(url)
+            .then(res => res.text())
+            .then(html => html.match(videoHostUrlRegex)[0])
+            .catch(e => open(document.querySelector('iframe#my_video_1').src))
+            .then(mp4Url => fetchCors(mp4Url))
+            .then(res => res.text());
+    };
 
     if (url.includes('rapidvid')) { /* rapidvideo.com && rapidvid.to */
-        return getVideoFromRapidvideo(commonHostPromise);
+        return getVideoFromRapidvideo(getCommonHostPromise());
     }
 
     if (url.includes('mp4upload')) {
-        return getVideoFromMp4upload(commonHostPromise);
+        return getVideoFromMp4upload(getCommonHostPromise());
     }
 
     return Promise.reject('Error: Video URL could not be obtained');
