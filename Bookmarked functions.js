@@ -102,8 +102,11 @@ function setInnerHtmlToVideoWithSrc() {
     const srcUrl = prompt('Video src URL:');
     const video = document.createElement('video');
     video.controls = true;
+    video.autoplay = true;
     video.src = srcUrl;
+
     document.body.appendChild(video);
+    videoArrowKeyListenerExec();
 }
 
 /**
