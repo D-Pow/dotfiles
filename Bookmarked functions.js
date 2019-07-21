@@ -193,6 +193,10 @@ function getVideoFromKissanimeUrl(url = window.location.href) {
     };
 
     if (url.includes('rapidvid')) { /* rapidvideo.com && rapidvid.to */
+        if (!url.includes('kissanime')) {
+            return getVideoFromRapidvideo(Promise.resolve(document.body.innerHTML));
+        }
+
         return getVideoFromRapidvideo(getCommonHostPromise());
     }
 
