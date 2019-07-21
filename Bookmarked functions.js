@@ -147,6 +147,13 @@ function fetchCors(url) {
 }
 
 function getVideoFromRapidvideo(commonHostPromise) {
+    /* if run on the rapidvideo site itself */
+    if (commonHostPromise == null) {
+        const videoSrc = getHighestResVideoFromHtml(document.body.innerHTML).srcUrl;
+        console.log(videoSrc);
+        return Promise.resolve(videoSrc);
+    }
+
     return commonHostPromise
         .then(html => {
             const videoSrc = getHighestResVideoFromHtml(html).srcUrl;
