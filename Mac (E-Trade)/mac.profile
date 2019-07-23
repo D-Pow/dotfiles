@@ -57,7 +57,8 @@ alias editprofile="subl -n -w ~/.profile && source ~/.profile"
 alias rmpom='find . -name "pom.xml" -type f -delete'
 alias pomgen='mvn pomgenerator:generate'
 alias mvnsetup='chmod a+x setup.py && ./setup.py'
-alias mvninstall='mvn clean install -Dmaven.javadoc.skip=true -DskipTests -U'
+alias mvninstall='mvn clean install -Dmaven.javadoc.skip=true -DskipTests' #Add -U to force download from nexus
+alias spainstall='mvn clean install -Dmaven.javadoc.skip=true -DskipTests -Puat'
 alias buildMutualFundsAIP='rmpom && pomgen && mvnsetup && mvninstall'
 
 cf() {
@@ -75,15 +76,16 @@ gril() {
     grep "$1" -ril .
 }
 
-sitUsernames=('SREENI_REBRAND' 'sreeni_ap' 'nambi9' 'ABEK2800' 'ABZM8200' 'SIT-AJ-510' 'AAYR3600' 'TZ529300' 'ABAN3400' 'ABDV0100' 'ABED5900' 'TL858500')
-uatUsernames=('nambi9' 'op282200')
-sitBetaUsernames=(
+sitMfUsernames=('SREENI_REBRAND' 'sreeni_ap' 'nambi9' 'ABEK2800' 'ABZM8200' 'SIT-AJ-510' 'AAYR3600' 'TZ529300' 'ABAN3400' 'ABDV0100' 'ABED5900' 'TL858500')
+uatMfUsernames=('nambi9' 'op282200')
+sitAipUsernames=(
+    'ACWU1700' #CAP 1 with both brokerage and IRA accounts
+    'ACTG0100' #can modify endDate in fromolaaip0403
+    'ACYA2700' #has multiple completed plans and endDate plans
     'NAMBI-105'
     'NAMBI-210'
     'ACTZ9600'
     'ACUC0200'
-    'ACTG0100' #can modify endDate in fromolaaip0403
-    'ACWU1700' #CAP 1 with both brokerage and IRA accounts
     'ACTG0100' #owns GTLOX
     'ACUA4900' #CAP 1 with IRA account
     'ACVV7200' #CAP 1 with transaction fee funds
@@ -93,10 +95,10 @@ sitBetaUsernames=(
     'AAVW3300' #no accounts
     'ACCN9200' #no accounts
 )
-uatBetaUsernames=(
+uatAipUsernames=(
+    'BCXH8500' #has IRA
     'BFCV1900' #CAP 1, owns fund ANIAX
     'BEVL7000'
-    'BCXH8500'
     'BETX0800'
     'BETX1000'
 )
@@ -105,19 +107,11 @@ capUsernames=('ACTJ3500' 'ACPE2900' 'ABZM8200')
 copy() {
     echo -n "$1" | pbcopy
 }
-sitCopy() {
-    copy "${sitUsernames[$1]}"
-}
-uatCopy() {
-    copy "${uatUsernames[$1]}"
-}
-alias sit='sitCopy 2'
-alias aip='sitCopy 1'
-alias mas='sitCopy 2'
-alias uat='uatCopy 0'
+
+alias mas="copy ${sitMfUsernames[0]}"
+alias sit="copy ${sitAipUsernames[0]}"
+alias uat="copy ${uatAipUsernames[0]}"
 alias cap="copy ${capUsernames[0]}"
-alias beta="copy ${sitBetaUsernames[5]}"
-alias betauat="copy ${uatBetaUsernames[0]}"
 
 
 # webapp -> em.properties
@@ -195,7 +189,7 @@ gcon() {
 
 # Make bash autocomplete when tabbing after "git commit" alias like gc or gac
 getGitBranch() {
-    # sed -rEgex 'substitute|pattern|show-only-matching|'
+    # sed -rEgex 'substitute|pattern|\1 = show-only-match|'
     branch=$(git branch | grep '*' | sed -E 's|.*/([A-Z]+-[0-9]+).*|\1|')
     if [[ $branch = *"feature/"* ]]; then
         branch=$(echo $branch | cut -c 9-20)
