@@ -24,28 +24,38 @@ alias scan='savscan -all -rec -f -archive'
 
 alias lah='ls -lah'
 
+alias    g='git'
+alias   gs='git status'
+alias   gd='git diff'
+alias  gdc='git diff --cached'
+alias   ga='git add'
+alias  gap='git add -p'
+alias   gc='git commit -m'
+alias  gca='git commit --amend'
+alias  gac='git commit -am'
+alias   gb='git branch'
+alias  gbd='git branch -d $(git branch | grep -v "*")'
+alias  gck='git checkout'
+alias gckb="git checkout $bl"
+alias   gl='git log --stat --graph'
+alias  glo='git log --stat --graph --oneline'
+alias  gla='git log --stat --graph --oneline --all'
+alias   gp='git push'
+alias   gr='git reset'
+alias  grH='git reset HEAD'
+alias  grh='git reset --hard'
+alias grhH='git reset --hard HEAD'
+alias  gpl='git pull'
+alias  gst='git stash'
+alias gsta='git stash apply'
+alias gsts='git stash save'
+alias  gau='git update-index --assume-unchanged'
+alias gnau='git update-index --no-assume-unchanged'
+alias  gaud='git update-index --assume-unchanged src/data/mocks/DefaultPageConfig.js'
+alias gnaud='git update-index --no-assume-unchanged src/data/mocks/DefaultPageConfig.js'
+alias gcmd='cat ~/.profile | grep -e "alias *g" | grep -v "grep"'
 
-alias g='git'
-alias gs='git status'
-alias gd='git diff'
-alias gdc='git diff --cached'
-alias ga='git add'
-alias gap='git add -p'
-alias gc='git commit -m'
-alias gac='git commit -am'
-alias gb='git branch'
-alias gck='git checkout'
-alias gl='git log'
-alias gls='git log --stat --graph'
-alias gp='git push'
-alias gpl='git pull'
-alias gr='git reset'
-alias gcmd='cat ~/.profile | grep "alias g"'
-# Make bash autocomplete when tabbing after "git commit" alias like gc or gac
-getGitBranch() {
-    COMPREPLY=$(git branch | grep '*' | cut -d ' ' -f 2)
-    return 0
+# Open merge conflict files
+gcon() {
+    subl $(gs | grep both | sed 's|both modified:||')
 }
-# Requires alias because spaces aren't allowed
-complete -F getGitBranch "gc"
-complete -f getGitBranch "gac"
