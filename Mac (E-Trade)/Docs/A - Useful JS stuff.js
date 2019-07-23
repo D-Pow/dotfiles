@@ -1,3 +1,10 @@
+function getAllStoriesInPR() {
+    return [...document.querySelectorAll('tr td.message')].reduce((set, td) => {
+        set.add(td.innerText.match(/MAS-\d{3,4}/)[0]);
+        return set;
+    }, new Set())
+}
+
 getAxios() {
     const s = document.createElement('script');
     s.src = 'https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js';
