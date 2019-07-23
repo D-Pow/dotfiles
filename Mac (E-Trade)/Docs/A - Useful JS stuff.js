@@ -5,17 +5,17 @@ function getAllStoriesInPR() {
     }, new Set())
 }
 
-getAxios() {
+function getAxios() {
     const s = document.createElement('script');
     s.src = 'https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js';
     document.body.appendChild(s);
 }
 
-c(content) {
+function c(content) {
     copy(content);
 }
 
-getNewAuth(newUserId) {
+function getNewAuth(newUserId) {
     return btoa(JSON.stringify({
         anon: false,
         customer: {
