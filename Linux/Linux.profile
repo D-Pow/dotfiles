@@ -20,9 +20,23 @@ alias apachestatus='/etc/init.d/apache2 status'
 
 alias listupdate='sudo apt update && sudo apt list --upgradable'
 
+alias editprofile="subl -n -w ~/.profile && source ~/.profile"
+
 alias scan='savscan -all -rec -f -archive'
 
 alias lah='ls -lah'
+
+npms() {
+    # regex is homemade ~/bin/regex python script
+    regex '"scripts": [^\}]*\}' ./package.json
+}
+alias npmr='npm run'
+alias grep='grep --exclude-dir={node_modules,.git,.idea,lcov-report}'
+alias egrep='egrep --exclude-dir={node_modules,.git,.idea,lcov-report}'
+gril() {
+    grep "$1" -ril .
+}
+
 
 alias    g='git'
 alias   gs='git status'
