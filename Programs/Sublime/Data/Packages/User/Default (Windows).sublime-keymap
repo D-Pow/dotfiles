@@ -1,19 +1,14 @@
 [
-    { "keys": ["ctrl+tab"], "command": "next_view" },
-    { "keys": ["ctrl+shift+tab"], "command": "prev_view" },
-    { "keys": ["ctrl+shift+o"], "command": "prompt_add_folder"},
-    { "keys": ["ctrl+shift+b"], "command": "cancel_build" },
-    { "keys": ["ctrl+shift+c"], "command": "exec", "args": {"kill": true} },
-
-    /* Japanese on Linux */
+    /* Linux only - toggle Japanese input */
     { "keys": ["ctrl+\\"], "command": "toggle_mozc"},
+
+    /* Mac only */
+    {"keys": ["super+shift+up"], "command": "swap_line_up"},
+    {"keys": ["super+shift+down"], "command": "swap_line_down"},
+
     
     { "keys": ["alt+s"], "command": "toggle_side_bar" },
 
-    { "keys": ["ctrl+shift+1"], "command": "move_tab", "args": { "position": "-1" } },
-    { "keys": ["ctrl+shift+2"], "command": "move_tab", "args": { "position": "+1" } },
-
-    /* Change IntelliDocs command */
     { "keys": ["alt+d"], "command": "intelli_docs" },
 
     /* For closing JSX in .js files */
@@ -25,6 +20,15 @@
         ]
     },
 
+    { "keys": ["ctrl+shift+1"], "command": "move_tab", "args": { "position": "-1" } },
+    { "keys": ["ctrl+shift+2"], "command": "move_tab", "args": { "position": "+1" } },
+
+    { "keys": ["ctrl+tab"], "command": "next_view" },
+    { "keys": ["ctrl+shift+tab"], "command": "prev_view" },
+    { "keys": ["ctrl+shift+o"], "command": "prompt_add_folder"},
+    { "keys": ["ctrl+shift+b"], "command": "cancel_build" },
+    { "keys": ["ctrl+shift+c"], "command": "exec", "args": {"kill": true} },
+
     { "keys": ["ctrl+1"], "command": "select_by_index", "args": { "index": 0 } },
     { "keys": ["ctrl+2"], "command": "select_by_index", "args": { "index": 1 } },
     { "keys": ["ctrl+3"], "command": "select_by_index", "args": { "index": 2 } },
@@ -34,7 +38,65 @@
     { "keys": ["ctrl+7"], "command": "select_by_index", "args": { "index": 6 } },
     { "keys": ["ctrl+8"], "command": "select_by_index", "args": { "index": 7 } },
     { "keys": ["ctrl+9"], "command": "select_by_index", "args": { "index": 8 } },
-    { "keys": ["ctrl+0"], "command": "select_by_index", "args": { "index": 9 } }
+    { "keys": ["ctrl+0"], "command": "select_by_index", "args": { "index": 9 } },
+
+    /* JavaScript Enhancements */
+    {
+        "keys": ["alt+ctrl+j"],
+        "command": "javascript_enhancements_can_i_use"
+    },
+    {
+        "keys": ["alt+ctrl+b"],
+        "command": "javascript_enhancements_navigate_flow_errors",
+        "args": {
+            "type":  "next"
+        }
+    },
+    {
+        "keys": ["alt+ctrl+v"],
+        "command": "javascript_enhancements_navigate_flow_errors",
+        "args": {
+            "type":  "previous"
+        }
+    },
+    {
+        "keys": ["alt+ctrl+g"],
+        "command": "javascript_enhancements_go_to_definition"
+    },
+    {
+        "keys": ["alt+ctrl+h"],
+        "command": "javascript_enhancements_show_hint_parameters"
+    },
+    {
+        "keys": ["tab"],
+        "command": "javascript_enhancements_window_view_keypress",
+        "args": {
+            "key": "tab"
+        },
+        "context": [{
+            "key": "setting.javascript_enhancements_window_view"
+        }]
+    },
+    {
+        "keys": ["shift+tab"],
+        "command": "javascript_enhancements_window_view_keypress",
+        "args": {
+            "key": "shift+tab"
+        },
+        "context": [{
+            "key": "setting.javascript_enhancements_window_view"
+        }]
+    },
+    {
+        "keys": ["alt+ctrl+a"],
+        "command": "javascript_enhancements_window_view_keypress",
+        "args": {
+            "key": "super+alt+a"
+        },
+        "context": [{
+            "key": "setting.javascript_enhancements_window_view"
+        }]
+    }
 ]
 
 /*
