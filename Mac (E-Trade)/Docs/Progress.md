@@ -37,9 +37,11 @@
 #######################
 #   AIP Performance   #
 #######################
-* In the first month, number of new accounts in automatic investing went from 9 to 490 -> 5,400% increase
+* In the first month, number of new accounts went from 9 to 490 -> 5,400% increase
 * Increase in number of automatic investing plans made per day by 500%
+* 15% growth in number of automatic investing customers
 * Growth of 5% in new accounts and 6% in new plans total for entire company
+* Estimated annual increase in revenue of $7 million
 
 #########################
 ## Efficient/Inventive ##
