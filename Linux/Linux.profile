@@ -2,21 +2,18 @@
 # set PATH so it includes user's private bin directories
 PATH="$HOME/bin:$HOME/.local/bin:$PATH"
 
-# Oracle JDK
 JAVA_HOME="/usr/java"
-PATH="$PATH:$JAVA_HOME/bin"
-export JAVA_HOME
-export PATH
-
-# Gradle
 GRADLE_HOME="/opt/gradle"
-PATH="$PATH:$GRADLE_HOME/bin"
+export JAVA_HOME
 export GRADLE_HOME
+PATH="$PATH:$JAVA_HOME/bin:$GRADLE_HOME/bin"
 export PATH
 
-alias apachestart='/etc/init.d/apache2 start'
-alias apachestop='/etc/init.d/apache2 stop'
-alias apachestatus='/etc/init.d/apache2 status'
+alias ls='ls -Fh'
+alias lah='ls -Flah'
+
+# LS_COLORS="${LS_COLORS}di=01;35"
+# export $LS_COLORS
 
 alias listupdate='sudo apt update && sudo apt list --upgradable'
 
@@ -24,17 +21,27 @@ alias editprofile="subl -n -w ~/.profile && source ~/.profile"
 
 alias scan='savscan -all -rec -f -archive'
 
-alias lah='ls -lah'
+alias grep='grep --exclude-dir={node_modules,.git,.idea,lcov-report} --color=auto'
+alias egrep='egrep --exclude-dir={node_modules,.git,.idea,lcov-report} --color=auto'
+gril() {
+    grep "$1" -ril .
+}
+
+alias apachestart='/etc/init.d/apache2 start'
+alias apachestop='/etc/init.d/apache2 stop'
+alias apachestatus='/etc/init.d/apache2 status'
+
 
 npms() {
     # regex is homemade ~/bin/regex python script
     regex '"scripts": [^\}]*\}' ./package.json
 }
 alias npmr='npm run'
-alias grep='grep --exclude-dir={node_modules,.git,.idea,lcov-report}'
-alias egrep='egrep --exclude-dir={node_modules,.git,.idea,lcov-report}'
-gril() {
-    grep "$1" -ril .
+
+copy() {
+    # Linux: xclip (will need install)
+    # Mac:   pbcopy
+    echo -n "$1" | pbcopy
 }
 
 
