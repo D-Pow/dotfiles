@@ -285,7 +285,7 @@ videoArrowKeyListenerExec();  /* Video controls */
 /*
 getVolumeThatCanSurpass1();  /* Volume to surpass 1 */
 /*
-getVideoFromKissanimeUrl(window.location.href).then(alert).catch(alert); /* Get this Kissanime video URL */
+getVideoFromKissanimeUrl(window.location.href).then(videoUrl => window.location.href = videoUrl).catch(alert); /* Get this Kissanime video URL */
 /*
 setInnerHtmlToVideoWithSrc();  /* Set document to <video /> */
 /*
