@@ -9,8 +9,7 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Hom
 export BOOST_HOME=/usr/local/boost_1_67_0
 export PIP3_HOME=/Users/dpowell1/Library/Python/3.6/bin
 export PIP2_HOME=/Users/dpowell1/Library/Python/2.7/bin
-export user_bin=/Users/dpowell1/bin
-export PATH=$user_bin:$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$APACHE_HOME:$GRADLE_HOME:$SUBLIME_HOME:$BOOST_HOME:/usr/local/bin:$PATH
+export PATH=$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$APACHE_HOME:$GRADLE_HOME:$SUBLIME_HOME:$BOOST_HOME:/usr/local/bin:$PATH
 
 # node-sass binary (since `npm install node-sass` always fails on post-install script)
 export SASS_BINARY_PATH=/Users/dpowell1/repositories/binaries/node-sass-binary.node
@@ -20,7 +19,6 @@ export SASS_BINARY_PATH=/Users/dpowell1/repositories/binaries/node-sass-binary.n
 export PS1="\[\033[36m\]\u\[\033[m\]:\[\033[33;1m\]\w\[\033[m\]\$ "
 export CLICOLOR=1
 export LSCOLORS=GxFxBxDxCxegedabagacad
-alias ls='ls -Fh'
 
 workMode='true'
 # workMode='false'
@@ -46,12 +44,14 @@ else
 fi
 
 
+copy() {
+    echo -n "$1" | pbcopy
+}
 
-alias lah='ls -lah'
+
 alias python='python3'
 alias python2='/usr/bin/python'
 alias devcurl="curl --noproxy '*'"
-alias editprofile="subl -n -w ~/.profile && source ~/.profile"
 
 
 alias rmpom='find . -name "pom.xml" -type f -delete'
@@ -65,27 +65,17 @@ cf() {
     touch "$1" && chmod a+x "$1"
 }
 
-npms() {
-    # regex is homemade ~/bin/regex python script
-    regex '"scripts": [^\}]*\}' ./package.json
-}
-alias npmr='npm run'
-alias grep='grep --exclude-dir={node_modules,.git,.idea,lcov-report}'
-alias egrep='egrep --exclude-dir={node_modules,.git,.idea,lcov-report}'
-gril() {
-    grep "$1" -ril .
-}
-
 sitMfUsernames=('SREENI_REBRAND' 'sreeni_ap' 'nambi9' 'ABEK2800' 'ABZM8200' 'SIT-AJ-510' 'AAYR3600' 'TZ529300' 'ABAN3400' 'ABDV0100' 'ABED5900' 'TL858500')
 uatMfUsernames=('nambi9' 'op282200')
 sitAipUsernames=(
+    'ADBX9200' #has many held funds
+    'ACUC0200'
     'ACWU1700' #CAP 1 with both brokerage and IRA accounts
     'ACTG0100' #can modify endDate in fromolaaip0403
     'ACYA2700' #has multiple completed plans and endDate plans
     'NAMBI-105'
     'NAMBI-210'
     'ACTZ9600'
-    'ACUC0200'
     'ACTG0100' #owns GTLOX
     'ACUA4900' #CAP 1 with IRA account
     'ACVV7200' #CAP 1 with transaction fee funds
@@ -103,10 +93,6 @@ uatAipUsernames=(
     'BETX1000'
 )
 capUsernames=('ACTJ3500' 'ACPE2900' 'ABZM8200')
-
-copy() {
-    echo -n "$1" | pbcopy
-}
 
 alias mas="copy ${sitMfUsernames[0]}"
 alias sit="copy ${sitAipUsernames[0]}"
@@ -149,43 +135,8 @@ export norm2='sit241w80m7'
 #edna -c start -d sit-wm-s2core-mfetf
 #edna -c start -d sit-wm-s2-mfetf
 
-export bl='feature/baseline-R3'
-
-alias    g='git'
-alias   gs='git status'
-alias   gd='git diff'
-alias  gdc='git diff --cached'
-alias   ga='git add'
-alias  gap='git add -p'
-alias   gc='git commit -m'
-alias  gca='git commit --amend'
-alias  gac='git commit -am'
-alias   gb='git branch'
-alias  gbd='git branch -d $(git branch | grep -v "*")'
-alias  gck='git checkout'
+export bl='feature/baseline-sept'
 alias gckb="git checkout $bl"
-alias   gl='git log --stat --graph'
-alias  glo='git log --stat --graph --oneline'
-alias  gla='git log --stat --graph --oneline --all'
-alias   gp='git push'
-alias   gr='git reset'
-alias  grH='git reset HEAD'
-alias  grh='git reset --hard'
-alias grhH='git reset --hard HEAD'
-alias  gpl='git pull'
-alias  gst='git stash'
-alias gsta='git stash apply'
-alias gsts='git stash save'
-alias  gau='git update-index --assume-unchanged'
-alias gnau='git update-index --no-assume-unchanged'
-alias  gaud='git update-index --assume-unchanged src/data/mocks/DefaultPageConfig.js'
-alias gnaud='git update-index --no-assume-unchanged src/data/mocks/DefaultPageConfig.js'
-alias gcmd='cat ~/.profile | grep -e "alias *g" | grep -v "grep"'
-
-# Open merge conflict files
-gcon() {
-    subl $(gs | grep both | sed 's|both modified:||')
-}
 
 # Make bash autocomplete when tabbing after "git commit" alias like gc or gac
 getGitBranch() {
