@@ -1,0 +1,163 @@
+Terminology:
+local = on computer
+remote = on server
+
+
+
+~~~~~~~~~~~~~~~~~~~~~*#####        General commands:         #####*~~~~~~~~~~~~~~~~~~~~~
+These are added between commands (e.g. push, pull, fetch, remote) and
+subcommands (e.g. name, branchName)
+
+--force or -f
+    you can add this after any command (e.g. git checkout -f <branchName>)
+    to force git to do the command.
+    Master branch requires -f
+
+--verbose or -v
+    make git more verbal/give more information on the screen
+
+
+
+
+
+~~~~~~~~~~~~~~~~~~~~~*#####           Configure git          #####*~~~~~~~~~~~~~~~~~~~~~
+See all options:                git config
+Change repo username/email:     git config user.name/user.email
+Change global username/email:   git config --global user.name/user.email
+Change default text editor:     git config --global core.editor "subl -n -w"
+                                #-w = wait for sublime to close before proceeding with rebase
+                                #-n = open in new window
+
+
+~~~~~~~~~~~~~~~~~~~~~*#####   Create new local repository    #####*~~~~~~~~~~~~~~~~~~~~~
+git init
+
+
+~~~~~~~~~~~~~~~~~~~~~*#####  Clone local/remote repository   #####*~~~~~~~~~~~~~~~~~~~~~
+git clone <repo-name, can be url>
+
+
+~~~~~~~~~~~~~~~~~~~~~*#####             Branches             #####*~~~~~~~~~~~~~~~~~~~~~
+Display all branches:           git branch
+Checkout branch:                git checkout <branchName>
+Create and checkout branch:     git checkout -b <branchName>
+Push new local brnch to remote: git push -u origin <newBranchName>
+
+
+~~~~~~~~~~~~~~~~~~~~~*#####            Fetch/Pull            #####*~~~~~~~~~~~~~~~~~~~~~
+git fetch/pull <repo> <branchName>
+e.g. git pull origin master
+(origin is an alias used to represent repo name/url)
+Merge different branch onto current branch: git merge <branchName>
+
+
+~~~~~~~~~~~~~~~~~~~~~*#####         Stage (aka Index)        #####*~~~~~~~~~~~~~~~~~~~~~
+Add single file:  git add <fileName>
+Add all files:    git add *
+
+
+~~~~~~~~~~~~~~~~~~~~~*#####              Commit              #####*~~~~~~~~~~~~~~~~~~~~~
+Commit with title message:                    git commit -m "<message>"
+Commit with title and body messages:          git commit -m "<title>" -m "<body>"
+Commit all:                                   git commit --all/-a
+Commit single file (skips adding to index):   git commit <fileName>
+
+
+~~~~~~~~~~~~~~~~~~~~~*#####  Viewing repository information  #####*~~~~~~~~~~~~~~~~~~~~~
+View remote alias name:            git remote
+View what alias name stands for:   git remote -v
+More details:                      git remote show [optional: name, e.g. origin]
+
+
+~~~~~~~~~~~~~~~~~~~~~*#####            Differences           #####*~~~~~~~~~~~~~~~~~~~~~
+List files that have been changed:                  git status
+List file differences between fetch or commit:      git diff
+List file differences on the stage/index vs Head:   git diff --cached/--staged
+
+
+~~~~~~~~~~~~~~~~~~~~~*#####       Remove untracked files     #####*~~~~~~~~~~~~~~~~~~~~~
+To view (not delete) files that would be deleted:        git clean -n
+To (forcibly) delete files that are untracked:           git clean -f
+
+
+~~~~~~~~~~~~~~~~~~~~~*#####   Resolving Pull/Push Conflicts  #####*~~~~~~~~~~~~~~~~~~~~~
+If you try to push/pull and 1+ files have a conflict, git will not pull the file.
+In this case, you'll have to stash the file, then pull, then fix conflicts accordingly.
+In order:
+`git stash`
+`git pull`
+`git stash pop`
+The conflicts will be outlined with <<<< Upstream (what was in remote repo) ==== Local >>>>>>
+
+
+~~~~~~~~~~~~~~~~~~~~~*#####          More on stash           #####*~~~~~~~~~~~~~~~~~~~~~
+Stash current code with automatic message:      git stash      (same as `git stash save`)
+Stash with specific message:                    git stash save "<message>"
+View different stashes:                         git stash list
+Apply a specific stash:                         git stash apply <stashName>
+                                                (stashName usually looks like `stash@{n}`)
+Apply and remove top stash:                     git stash pop
+Remove a specific stash:                        git stash drop <stashName>
+
+
+~~~~~~~~~~~~~~~~~~~~~*#####   Viewing a log of the changes   #####*~~~~~~~~~~~~~~~~~~~~~
+Show list of commits:                           git log
+Show list of commits for single file:           git log <filename>
+Show details of each commit for a single file:  git log -p <filename>
+
+
+~~~~~~~~~~~~~~~~~~~~~*#####     Resetting stages/commits     #####*~~~~~~~~~~~~~~~~~~~~~
+Generally, you'll use:
+      git reset <option> <commit>
+Note: HEAD is the current head; HEAD~ is the parent of HEAD;
+      HEAD~ == HEAD~1; HEAD~n is the nth ancestor of HEAD on the
+      same branch (i.e. ignoring the commits from merged branches).
+Thus, for <commit>, if you have already committed and want to undo
+your commit to the commit right before the one you made, you'll write
+HEAD~. If you haven't committed yet and want to revert to what it was
+before you made changes/staged files, you'll write HEAD.
+<option> is either --soft (for not changing working tree, i.e. not
+reverting the files that you changed) or --hard (for changing the
+working tree, i.e. reverting files you changed to the specified commit).
+The default (when no option is given) is --mixed which doesn't change
+the files but does change the stage.
+Examples:
+Uncommitting (but leaving files staged):                  git reset --soft HEAD~
+Uncommitting and unstage files (but not reverting files): git reset HEAD~
+Uncommitting and removing all changes (lose all work):    git reset --hard HEAD~
+Removing all changes (revert files) when you haven't made any commits:
+        git reset --hard HEAD
+
+
+~~~~~~~~~~~~~~~~~*##### Ignoring a file that is already in repo #####*~~~~~~~~~~~~~~~~~~
+If you have committed a file and don't want to change the repo's copy of it
+even though you're going to change the file itself (e.g. you want to store
+a database online, but when you alter it when testing, you don't want to change
+the data in the repo), then use the command:
+    git update-index --assume-unchanged [file]
+which will turn off git checking that file's status.
+If you want to turn it back on, use the command:
+    git update-index --no-assume-unchanged [file]
+
+
+~~~~~~~~~~~~~~~~~~~~~*#####            Rebasing              #####*~~~~~~~~~~~~~~~~~~~~~
+`git rebase -i <commit's short hash or HEAD~n where n = number of commits before HEAD>`
+-i is interactive; you will want this
+To erase history
+    Squash all commits except one (most recent will show at bottom of list), comment
+    out their commit messages (using `fixup` instead of `squash` will automatically delete
+    them), and `git push -f origin <branch>` to force over the current branch
+To keep history
+    Generally, just decide which to pick, squash, etc. and pick commit message(s)
+    accordingly. Then, instead of push -f, you'll do a merge and include a message
+If there are conflicts
+    Treat them the same as a merge conflict, i.e. open up a text editor and choose
+    which items to keep. Then, `git add <file>`
+
+
+
+~~~~~~~~~~~~~~~~~~~~~*#####            Resources             #####*~~~~~~~~~~~~~~~~~~~~~
+Graphical system to learn git:          http://pcottle.github.io/learnGitBranching/
+Documentation (in-depth on commands):   https://git-scm.com/docs
+Description of commit/pull/push/etc.:   http://stackoverflow.com/a/30733500/5771107
+Description of resetting:               http://stackoverflow.com/a/2846154/5771107
