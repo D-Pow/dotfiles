@@ -46,7 +46,7 @@ alias  gau='git update-index --assume-unchanged'
 alias gnau='git update-index --no-assume-unchanged'
 alias  gaud='git update-index --assume-unchanged src/data/mocks/DefaultPageConfig.js'
 alias gnaud='git update-index --no-assume-unchanged src/data/mocks/DefaultPageConfig.js'
-alias gcmd='cat ~/.profile | grep -e "alias *g" | grep -v "grep"'
+alias gcmd="cat ~/.profile | grep -e 'alias *g' | grep -v 'grep'"
 
 # Open merge conflict files
 gcon() {
