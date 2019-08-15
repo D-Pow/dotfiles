@@ -28,6 +28,44 @@ window.getNewAuth = newUserId => {
     }));
 };
 
+/* Copied from "Bookmarked functions.js" */
+const jsFunctionRegex = '^\(?\s*@?(?!if|constructor|switch|runInAction)(?:async )?(function )?(\w+)(?=(?:\s*=?\s*)\(.*\{[\s\n])';
+
+window.sortObjectByKeys = (obj) => {
+    return Object.keys(obj).sort().reduce((sortedObj, key) => {
+        sortedObj[key] = obj[key];
+        return sortedObj;
+    }, {});
+};
+
+window.getCookie = (cookie = document.cookie) => {
+    return cookie.split('; ').reduce((cookieObj, entry) => {
+        const keyVal = entry.split('=');
+        const key = keyVal[0];
+        let value = keyVal.slice(1).join('=');
+
+        cookieObj[key] = value;
+
+        return cookieObj;
+    }, {});
+};
+
+window.resetCookie = () => {
+    document.cookie = 'expires=Thu, 01 Jan 1970 00:00:01 GMT';
+};
+
+window.getUrlQueryParams = (url = window.location.href) => {
+    return url.split('?')[1].split('&').reduce((queries, queryString) => {
+        const keyVals = queryString.split('=');
+        const key = keyVals[0];
+        const val = keyVals.slice(1).join('=');
+
+        queries[key] = val;
+
+        return queries;
+    }, {});
+};
+
 })()
 
 
