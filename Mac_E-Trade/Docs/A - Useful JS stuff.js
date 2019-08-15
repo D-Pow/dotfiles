@@ -1,21 +1,24 @@
-function getAllStoriesInPR() {
+// Useful bookmarked functions
+javascript:(function setUsefulFunctions() {
+
+window.getAllStoriesInPR = () => {
     return [...document.querySelectorAll('tr td.message')].reduce((set, td) => {
         set.add(td.innerText.match(/MAS-\d{3,4}/)[0]);
         return set;
     }, new Set())
-}
+};
 
-function getAxios() {
+window.getAxios = () => {
     const s = document.createElement('script');
     s.src = 'https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js';
     document.body.appendChild(s);
-}
+};
 
-function c(content) {
+window.c = content => {
     copy(content);
-}
+};
 
-function getNewAuth(newUserId) {
+window.getNewAuth = newUserId => {
     return btoa(JSON.stringify({
         anon: false,
         customer: {
@@ -23,7 +26,12 @@ function getNewAuth(newUserId) {
             userId: String(newUserId)
         }
     }));
-}
+};
+
+})()
+
+
+
 
 let designCdnLink = document.createElement('link');
 designCdnLink.rel = 'stylesheet';
