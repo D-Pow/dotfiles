@@ -128,12 +128,12 @@ export uat2='uat370w228m7'
 export norm1='sit215w86m7'
 export norm2='sit241w80m7'
 
-#SIT Shutdown Sequence:
-#edna -c stop -d sit-wm-s2-mfetf
-#edna -c stop -d sit-wm-s2core-mfetf
-#Restart Sequence:
-#edna -c start -d sit-wm-s2core-mfetf
-#edna -c start -d sit-wm-s2-mfetf
+# SIT Shutdown Sequence:
+#   edna -c stop -d sit-wm-s2-mfetf
+#   edna -c stop -d sit-wm-s2core-mfetf
+# Restart Sequence:
+#   edna -c start -d sit-wm-s2core-mfetf
+#   edna -c start -d sit-wm-s2-mfetf
 
 export bl='feature/baseline-sept'
 alias gckb="git checkout $bl"
