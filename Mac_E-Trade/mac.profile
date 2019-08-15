@@ -135,6 +135,9 @@ export norm2='sit241w80m7'
 #   edna -c start -d sit-wm-s2core-mfetf
 #   edna -c start -d sit-wm-s2-mfetf
 
+# Look at logs
+# tail -f *mutualFundEtf.log
+
 export bl='feature/baseline-sept'
 alias gckb="git checkout $bl"
 
