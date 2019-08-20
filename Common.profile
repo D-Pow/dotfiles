@@ -28,6 +28,7 @@ alias   gc='git commit -m'
 alias  gca='git commit --amend'
 alias  gac='git commit -am'
 alias   gb='git branch'
+alias  gbb="git branch | grep '*' | cut -c 3-"
 alias  gbd='git branch -d $(git branch | grep -v "*")'
 alias  gck='git checkout'
 alias   gl='git log --stat --graph'
