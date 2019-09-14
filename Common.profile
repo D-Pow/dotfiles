@@ -54,3 +54,8 @@ alias  gcmd="cat ~/.profile | grep -e 'alias *g' | grep -v 'grep'"
 gcon() {
     subl $(gs | grep both | sed 's|both modified:||')
 }
+
+# Ignore a file
+gdci() {
+    git diff --cached -- . ":!$1"
+}
