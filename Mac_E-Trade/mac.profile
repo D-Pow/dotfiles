@@ -9,7 +9,7 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Hom
 export BOOST_HOME=/usr/local/boost_1_67_0
 export PIP3_HOME=/Users/dpowell1/Library/Python/3.6/bin
 export PIP2_HOME=/Users/dpowell1/Library/Python/2.7/bin
-export PATH=$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$APACHE_HOME:$GRADLE_HOME:$SUBLIME_HOME:$BOOST_HOME:/usr/local/bin:$PATH
+export PATH=$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$APACHE_HOME:$GRADLE_HOME:$SUBLIME_HOME:$BOOST_HOME:/usr/local/bin:/Users/dpowell1/bin:$PATH
 
 # node-sass binary (since `npm install node-sass` always fails on post-install script)
 export SASS_BINARY_PATH=/Users/dpowell1/repositories/binaries/node-sass-binary.node
@@ -138,7 +138,7 @@ export norm2='sit241w80m7'
 # Look at logs
 # tail -f *mutualFundEtf.log
 
-export bl='feature/baseline-sept'
+export bl='feature/baseline-prebuiltmvp'
 alias gckb="git checkout $bl"
 
 # Make bash autocomplete when tabbing after "git commit" alias like gc or gac
