@@ -145,9 +145,6 @@ alias gckb="git checkout $bl"
 getGitBranch() {
     # sed -rEgex 'substitute|pattern|\1 = show-only-match|'
     branch=$(git branch | grep '*' | sed -E 's|.*/([A-Z]+-[0-9]+).*|\1|')
-    if [[ $branch = *"feature/"* ]]; then
-        branch=$(echo $branch | cut -c 9-20)
-    fi
     COMPREPLY=$branch
     return 0
 }
