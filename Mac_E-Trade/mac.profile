@@ -149,8 +149,8 @@ getGitBranch() {
     return 0
 }
 # Requires alias because spaces aren't allowed
-complete -F getGitBranch "gc"
-complete -F getGitBranch "gac"
+complete -F getGitBranch -P \" "gc"
+complete -F getGitBranch -P \" "gac"
 
 # Make bash only display the options (not autocomplete) by using compgen
 getGitBranches() {
