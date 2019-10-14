@@ -1,0 +1,3 @@
+.headers on
+.mode column
+pragma foreign_keys=on;
