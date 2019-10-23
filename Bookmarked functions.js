@@ -313,23 +313,24 @@ goToNextKissanimeEpisode();  /* Next Kissanime */
 
 })();
 
-// Fetch API: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-// Fetch API + CORS: https://developers.google.com/web/ilt/pwa/working-with-the-fetch-api
-// Using CORS proxy: https://stackoverflow.com/a/43268098/5771107
-// CORS proxy: https://cors-anywhere.herokuapp.com/ + URL (e.g. https://www.rapidvideo.com/e/FUM5608RR8)
-// headers: {
-//     'X-Requested-With': 'XMLHttpRequest',
-//     // rest aren't needed
-//     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-//     'Accept-Encoding': 'gzip, deflate, br',
-//     'Accept-Language': 'en-US,en;q=0.9',
-//     'Cache-Control': 'no-cache',
-//     'Connection': 'keep-alive',
-//     // 'Cookie': '__cfduid=d898329e93f1e1c34153c5202cb6e38f51528459175; _ym_uid=1558315021152344108; _ym_d=1558315021; PHPSESSID=2tak4cckqftdssa9b6lgn11gu6; _ym_isad=2; last_watched=FUUCN2549A',
-//     'DNT': '1',
-//     'Host': 'www.rapidvideo.com',
-//     'Pragma': 'no-cache',
-//     'Referer': 'https://kissanime.ru/Anime/Boku-no-Hero-Academia-3rd-Season/Episode-059?id=149673&s=rapidvideo',
-//     'Upgrade-Insecure-Requests': '1',
-//     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
-// }
+/*
+Fetch API: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+Fetch API + CORS: https://developers.google.com/web/ilt/pwa/working-with-the-fetch-api
+Using CORS proxy: https://stackoverflow.com/a/43268098/5771107
+CORS proxy: https://cors-anywhere.herokuapp.com/ + URL (e.g. https://www.rapidvideo.com/e/FUM5608RR8)
+headers: {
+    'X-Requested-With': 'XMLHttpRequest',
+    // rest aren't needed
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+    // 'Cookie': '__cfduid=d898329e93f1e1c34153c5202cb6e38f51528459175; _ym_uid=1558315021152344108; _ym_d=1558315021; PHPSESSID=2tak4cckqftdssa9b6lgn11gu6; _ym_isad=2; last_watched=FUUCN2549A',
+    'DNT': '1',
+    'Host': 'www.rapidvideo.com',
+    'Pragma': 'no-cache',
+    'Referer': 'https://kissanime.ru/Anime/Boku-no-Hero-Academia-3rd-Season/Episode-059?id=149673&s=rapidvideo',
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
+}
+*/
