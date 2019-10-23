@@ -109,6 +109,17 @@ function setInnerHtmlToVideoWithSrc() {
     videoArrowKeyListenerExec();
 }
 
+function getVideoSrcFromHtml(html) {
+    const videoTagRegex = /<video[\w\W]*<\/video>/;
+    const srcContentRegex = /(?<=src=")[^"]+(?=")/;
+
+    try {
+        return html.match(videoTagRegex)[0].match(srcContentRegex)[0];
+    } catch (e) {
+        return false;
+    }
+}
+
 /**
  * Rapidvideo.com nests <source /> elements inside <video />
  * each with a 'data-res' field containing the resolution.
@@ -202,6 +213,14 @@ function getVideoFromKissanimeUrl(url = window.location.href) {
 
     if (url.includes('mp4upload')) {
         return getVideoFromMp4upload(getCommonHostPromise());
+    }
+
+    /* Last-ditch effort: try to parse html for video src content */
+
+    const videoSrcFromDocument = getVideoSrcFromHtml(document.body.innerHTML);
+
+    if (videoSrcFromDocument) {
+        return Promise.resolve(videoSrcFromDocument);
     }
 
     return Promise.reject('Error: Video URL could not be obtained');
