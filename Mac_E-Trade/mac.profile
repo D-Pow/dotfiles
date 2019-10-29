@@ -142,19 +142,19 @@ export bl='feature/baseline-prebuiltmvp'
 alias gckb="git checkout $bl"
 
 # Make bash autocomplete when tabbing after "git commit" alias like gc or gac
-getGitBranch() {
+autocompleteWithJiraTicket() {
     # sed -rEgex 'substitute|pattern|\1 = show-only-match|'
     branch=$(git branch | grep '*' | sed -E 's|.*/([A-Z]+-[0-9]+).*|\1|')
     COMPREPLY=$branch
     return 0
 }
 # Requires alias because spaces aren't allowed
-complete -F getGitBranch -P \" "gc"
-complete -F getGitBranch -P \" "gac"
+complete -F autocompleteWithJiraTicket -P \" "gc"
+complete -F autocompleteWithJiraTicket -P \" "gac"
 
 # Make bash only display the options (not autocomplete) by using compgen
-getGitBranches() {
+autocompleteWithAllGitBranches() {
     COMPREPLY=($(compgen -W '$(git branch)'))
     return 0
 }
-#complete -F getGitBranches "gck"
+#complete -F autocompleteWithAllGitBranches "gck"

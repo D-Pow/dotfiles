@@ -57,7 +57,7 @@ gcon() {
     subl $(gs | grep both | sed 's|both modified:||')
 }
 
-# Ignore a file
+# Ignore a file in git diff
 gdci() {
     git diff --cached -- . ":!$1"
 }
