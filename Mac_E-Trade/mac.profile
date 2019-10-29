@@ -144,7 +144,7 @@ alias gckb="git checkout $bl"
 # Make bash autocomplete when tabbing after "git commit" alias like gc or gac
 autocompleteWithJiraTicket() {
     # sed -rEgex 'substitute|pattern|\1 = show-only-match|'
-    branch=$(git branch | grep '*' | sed -E 's|.*/([A-Z]+-[0-9]+).*|\1|')
+    branch=$(getGitBranch | sed -E 's|.*/([A-Z]+-[0-9]+).*|\1|')
     COMPREPLY=$branch
     return 0
 }
