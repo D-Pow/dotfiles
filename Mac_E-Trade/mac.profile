@@ -138,8 +138,17 @@ export norm2='sit241w80m7'
 # Look at logs
 # tail -f *mutualFundEtf.log
 
-export bl='feature/baseline-prebuiltmvp'
-alias gckb="git checkout $bl"
+gckb() {
+    repoName="$(getGitRepoName)"
+
+    if [ "$repoName" == "react-mutualfundsandetf" ]; then
+        git checkout feature/PrebuiltxAIP-controls
+    elif [ "$repoName" == "react-aip" ]; then
+        git checkout feature/baseline-prebuiltmvp
+    elif [ "$repoName" == "mutual_fund_etf" ]; then
+        git checkout feature/baseline-prebuilt-aip-mvp-features
+    fi
+}
 
 # Make bash autocomplete when tabbing after "git commit" alias like gc or gac
 autocompleteWithJiraTicket() {
