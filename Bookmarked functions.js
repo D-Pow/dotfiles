@@ -278,6 +278,29 @@ function downloadAllKissanimeEpisodes(start, end) {
     });
 }
 
+async function getVideoFromWatchCartoonOnline() {
+    const videoDivSecretVar = document.body.innerHTML.match(/document.write[^;]+/)[0]
+                        .match(/(?<=\()\w+(?=\))/)[0];
+    const videoDiv = window[videoDivSecretVar];
+    const videoPhpSrc = videoDiv.match(/(?<=src=")[^"]+/)[0];
+    const res = await fetch(videoPhpSrc);
+    const videoPhpHtml = await res.text();
+    const secretVideoSrcUrl = videoPhpHtml.match(/(?<=getJSON\(")[^"]+/)[0];
+    /* jquery is already loaded */
+    return new Promise(
+        resolve => {
+            $.getJSON(secretVideoSrcUrl, response => {
+                const videoUrlId = response.enc;
+                const videoUrlServer = response.server;
+                const videoUrl = `${videoUrlServer}/getvid?evid=${videoUrlId}`;
+
+                resolve(videoUrl);
+            });
+        },
+        reject => 'Could not obtain video URL'
+    );
+}
+
 
 
 /*************************************************
@@ -297,6 +320,7 @@ window.getVideoFromRapidvideo = getVideoFromRapidvideo;
 window.getVideoFromMp4upload = getVideoFromMp4upload;
 window.getVideoFromKissanimeUrl = getVideoFromKissanimeUrl;
 window.downloadAllKissanimeEpisodes = downloadAllKissanimeEpisodes;
+window.getVideoFromWatchCartoonOnline = getVideoFromWatchCartoonOnline;
 
 
 /*
@@ -305,6 +329,8 @@ videoArrowKeyListenerExec();  /* Video controls */
 getVolumeThatCanSurpass1();  /* Volume to surpass 1 */
 /*
 getVideoFromKissanimeUrl(window.location.href).then(videoUrl => window.location.href = videoUrl).catch(alert); /* Get this Kissanime video URL */
+/*
+getVideoFromWatchCartoonOnline().then(videoUrl => window.location.href = videoUrl).catch(alert);
 /*
 setInnerHtmlToVideoWithSrc();  /* Set document to <video /> */
 /*
