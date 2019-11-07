@@ -13,6 +13,10 @@
         + I have **improved the way we code** with support from the shared developer Slack channels
         + Contributed to a similar degree and higher quality than the lead dev
         + Practically completed the entire last sprint **completely alone**
+* Solved a company-wide issue using a small library written in my free time
+    - E-Trade had notorious issues with the network going down, both within roll periods (happened twice a week, lasted for most of the work day) and randomly throughout the week (often from problems outside the team's control, e.g. a server goes down, was poorly configured, or another team changed a config file without informing our team)
+    - I solved this in my free time by writing a very small open-source library for mocking network requests in the front-end. This way, devs could continue their work even in the presence of such a wide array of network issues
+    - Added to multiple apps currently in use, as well as a scaffolding app that will serve as the foundation of all new React apps within E-Trade
 * Challenge and improve the way teams at E*TRADE code
     - I made multiple well-constructed points in the shared code channels, resulting in a deep consideration about how to write code and **improving our coding practices**
     - Completely revamped the way the premarket team worked. **Increased productivity of the whole team** by moving them from inefficient vim usage to IDE usage. Wrote a readme and scripts to make a **seamless transition** and easy usage so that they wouldn't have to do any configuration themselves
@@ -34,6 +38,14 @@
 #######################
 #      Specifics      #
 #######################
+
+#######################
+#    Prebuilt/AIP     #
+#######################
+* Played a key role in reducing technical debt, constantly refactoring the app to be more reusable and easier to understand
+* Researched, set up, and deployed the first end-to-end testing framework, and introduced it to our team
+* Made multiple contributions to other apps within E-Trade, including our design-language (repo with common tools/components for use throught the company), scaffolding app, and other investing products
+
 #######################
 #   AIP Performance   #
 #######################
