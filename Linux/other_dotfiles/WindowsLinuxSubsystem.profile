@@ -19,8 +19,7 @@ clip () {
 }
 
 dotfilesRepo='/mnt/d/Documents/Repositories/dotfiles'
-PATH="$dotfilesRepo/Linux/bin:$PATH"
-export PATH
+export PATH="$dotfilesDir/Linux/bin:$HOME/.local/bin:$PATH"
 source "$dotfilesRepo/Common.profile"
 
 # Note: don't edit Linux subsystem files with Windows programs
