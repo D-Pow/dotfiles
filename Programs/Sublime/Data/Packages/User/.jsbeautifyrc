@@ -1,0 +1,20 @@
+{
+    "all": {
+        "end_with_newline": true,
+        "remove_trailing_whitespace": true
+    },
+    "json": {
+        "brace_style": "end-expand"
+    },
+    "js": {
+        "brace_style": "end-expand",
+        "object_curly_spacing": false
+    },
+    "custom": {
+        "*.sublime-@(settings|keymap|commands|menu)": {
+            "indent_size": 4,
+            "indent_style": "space",
+            "brace_style": "end-expand"
+        }
+    }
+}
