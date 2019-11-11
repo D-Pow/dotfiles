@@ -23,6 +23,7 @@
 	"show_full_path": true,
 	"tab_size": 4,
 	"translate_tabs_to_spaces": true,
+	"default_line_ending": "unix",
 	"update_check": false,
 	"xxxx_Notes_xxxx": {
 		"Keyboard Shortcuts": [
