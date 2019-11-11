@@ -58,11 +58,6 @@
             "For OS X, make symbolic link to subl to get command line:",
             "ln -s /Applications/SublimeText.app/Contents/SharedSupport/bin/subl /bin/location/subl"
         ],
-        "Mac only": [
-            "open_files_in_new_window",
-            "scroll_past_end",
-            "show_full_path"
-        ],
         "Packages to install": [
             "Babel",
             "Babel Snippets",
