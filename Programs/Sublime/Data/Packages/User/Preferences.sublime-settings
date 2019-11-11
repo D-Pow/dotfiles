@@ -1,112 +1,112 @@
 {
-	"auto_complete_triggers": [
-		{
-			"characters": "<",
-			"selector": "text.html"
-		},
-		{
-			"characters": ".",
-			"selector": "source.js"
-		}
-	],
-	"color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme",
-	"font_face": "Consolas",
-	"font_face_linux": "Ubuntu Mono",
-	"font_size": 11,
-	"hot_exit": false,
-	"ignored_packages": [
-		"Vintage"
-	],
-	"open_files_in_new_window": false,
-	"remember_open_files": false,
-	"scroll_past_end": true,
-	"show_full_path": true,
-	"tab_size": 4,
-	"translate_tabs_to_spaces": true,
-	"default_line_ending": "unix",
-	"update_check": false,
-	"xxxx_Notes_xxxx": {
-		"Keyboard Shortcuts": [
-			"Keyboard Shortcuts",
-			"Sublime:",
-			"Multiple cursors:",
-			"    Single additions          -> Ctrl + left click",
-			"    Single subtractions       -> Alt + Shift + right click",
-			"    Drag for multiple cursors -> Shift + right click",
-			"    Single additions          -> Ctrl + Alt + Up/Down (Winodws)",
-			"                                 Shift+ Alt + Up/Down (Linux)",
-			"    Cancel                    -> Escape",
-			"Highlight next repetition of a word -> Crtl + D",
-			"Highlight all repetitions of a word -> Alt + f3",
-			"",
-			"JavaIME",
-			"Import              -> Capital first letter",
-			"Auto-completes:",
-			"    Listeners         -> L-",
-			"    Listener events   -> E-",
-			"    Class instance    -> l- (lowercase L)",
-			"    Try-Catch         -> try",
-			"    Methods           -> just start typing",
-			"    Static properties -> S- (e.g. RED as a color)",
-			"Class beginning:",
-			"    pc   -> generates a public class declaration",
-			"    pcm  -> generates the public class declaration with a main method",
-			"    pcc  -> generates the public class declaration with a constructor",
-			"    pccm -> generates the public class declaration with a main method and constructor",
-			"    pcfx -> generates a public class declaration for JavaFX and a main method.",
-			"",
-			"For OS X, make symbolic link to subl to get command line:",
-			"ln -s /Applications/SublimeText.app/Contents/SharedSupport/bin/subl /bin/location/subl"
-		],
-		"Mac only": [
-			"open_files_in_new_window",
-			"scroll_past_end",
-			"show_full_path"
-		],
-		"Packages to install": [
-			"Babel",
-			"Babel Snippets",
-			"Emmet",
-			"IntelliDocs",
-			"JavaIME",
-			"JavaScript & NodeJS Snippets",
-			"JavaScript Enhancements",
-			"jQuery",
-			"MoveTab",
-			"Package Control",
-			"Package Resource Viewer",
-			"SublimeLinter (uses ESLint)",
-			"SublimeLinter-eslint (also required with SublimeLinter",
-			"tern_for_sublime (after installing in sublime, `npm install` in the tern_for_sublime directory)",
-			"TernJS"
-		],
-		"TernJS": [
-			"Put .tern-project in project root",
-			"and open project root folder",
-			{
-				"ecmaVersion": 6,
-				"libs": [
-					"ecma5",
-					"ecma6",
-					"browser",
-					"react",
-					"jquery"
-				],
-				"plugins": {
-					"es_modules": {},
-					"jasmine": {},
-					"modules": {},
-					"node": {},
-					"requirejs": {}
-				}
-			}
-		],
-		"ToDo": [
-			"View -> Syntax -> Change all JS extenstions to Babel",
-			"Go in tern_for_sublime and run npm install",
-			"PackageResourceViewer -> open babel-snippets -> change react_component_class.sublime-snippet",
-			"for default `rcc` react autocomplete"
-		],
-		"Version details": "update_check is necessary to prevent checking of updates past Build 3176"
-	}
+    "auto_complete_triggers": [
+        {
+            "characters": "<",
+            "selector": "text.html"
+        },
+        {
+            "characters": ".",
+            "selector": "source.js"
+        }
+    ],
+    "color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme",
+    "font_face": "Consolas",
+    "font_face_linux": "Ubuntu Mono",
+    "font_size": 11,
+    "hot_exit": false,
+    "ignored_packages": [
+        "Vintage"
+    ],
+    "open_files_in_new_window": false,
+    "remember_open_files": false,
+    "scroll_past_end": true,
+    "show_full_path": true,
+    "tab_size": 4,
+    "translate_tabs_to_spaces": true,
+    "default_line_ending": "unix",
+    "update_check": false,
+    "xxxx_Notes_xxxx": {
+        "Keyboard Shortcuts": [
+            "Keyboard Shortcuts",
+            "Sublime:",
+            "Multiple cursors:",
+            "    Single additions          -> Ctrl + left click",
+            "    Single subtractions       -> Alt + Shift + right click",
+            "    Drag for multiple cursors -> Shift + right click",
+            "    Single additions          -> Ctrl + Alt + Up/Down (Winodws)",
+            "                                 Shift+ Alt + Up/Down (Linux)",
+            "    Cancel                    -> Escape",
+            "Highlight next repetition of a word -> Crtl + D",
+            "Highlight all repetitions of a word -> Alt + f3",
+            "",
+            "JavaIME",
+            "Import              -> Capital first letter",
+            "Auto-completes:",
+            "    Listeners         -> L-",
+            "    Listener events   -> E-",
+            "    Class instance    -> l- (lowercase L)",
+            "    Try-Catch         -> try",
+            "    Methods           -> just start typing",
+            "    Static properties -> S- (e.g. RED as a color)",
+            "Class beginning:",
+            "    pc   -> generates a public class declaration",
+            "    pcm  -> generates the public class declaration with a main method",
+            "    pcc  -> generates the public class declaration with a constructor",
+            "    pccm -> generates the public class declaration with a main method and constructor",
+            "    pcfx -> generates a public class declaration for JavaFX and a main method.",
+            "",
+            "For OS X, make symbolic link to subl to get command line:",
+            "ln -s /Applications/SublimeText.app/Contents/SharedSupport/bin/subl /bin/location/subl"
+        ],
+        "Mac only": [
+            "open_files_in_new_window",
+            "scroll_past_end",
+            "show_full_path"
+        ],
+        "Packages to install": [
+            "Babel",
+            "Babel Snippets",
+            "Emmet",
+            "IntelliDocs",
+            "JavaIME",
+            "JavaScript & NodeJS Snippets",
+            "JavaScript Enhancements",
+            "jQuery",
+            "MoveTab",
+            "Package Control",
+            "Package Resource Viewer",
+            "SublimeLinter (uses ESLint)",
+            "SublimeLinter-eslint (also required with SublimeLinter",
+            "tern_for_sublime (after installing in sublime, `npm install` in the tern_for_sublime directory)",
+            "TernJS"
+        ],
+        "TernJS": [
+            "Put .tern-project in project root",
+            "and open project root folder",
+            {
+                "ecmaVersion": 6,
+                "libs": [
+                    "ecma5",
+                    "ecma6",
+                    "browser",
+                    "react",
+                    "jquery"
+                ],
+                "plugins": {
+                    "es_modules": {},
+                    "jasmine": {},
+                    "modules": {},
+                    "node": {},
+                    "requirejs": {}
+                }
+            }
+        ],
+        "ToDo": [
+            "View -> Syntax -> Change all JS extenstions to Babel",
+            "Go in tern_for_sublime and run npm install",
+            "PackageResourceViewer -> open babel-snippets -> change react_component_class.sublime-snippet",
+            "for default `rcc` react autocomplete"
+        ],
+        "Version details": "update_check is necessary to prevent checking of updates past Build 3176"
+    }
 }
