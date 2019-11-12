@@ -18,6 +18,11 @@ npms() {
 }
 alias npmr='npm run'
 
+getAllCrlfFiles() {
+    # find [args] -exec [command] "output from find" "necessary `-exec` terminator to show end of command"
+    find . -not -type d -exec file "{}" ";" | grep CRLF
+}
+
 alias     g='git'
 alias    gs='git status'
 alias    gd='git diff'
