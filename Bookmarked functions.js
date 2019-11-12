@@ -122,11 +122,20 @@ function goToNextKissanimeEpisode() {
     window.location.href = `${document.getElementById('btnNext').parentNode.href}&s=${queryParam}`;
 }
 
-function setInnerHtmlToVideoWithSrc() {
+function setInnerHtmlToVideoWithSrc(src = null, removeReferrerHeader = false) {
     /* first, erase document content */
     document.body.parentElement.innerHTML = '';
 
-    const srcUrl = prompt('Video src URL:');
+    let srcUrl = src;
+
+    if (!src) {
+        srcUrl = prompt('Video src URL:');
+    }
+
+    if (removeReferrerHeader) {
+        setDocumentReferer();
+    }
+
     const video = document.createElement('video');
     video.controls = true;
     video.autoplay = true;
