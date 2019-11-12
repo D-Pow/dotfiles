@@ -241,6 +241,9 @@ function getVideoFromKissanimeUrl(url = window.location.href) {
     };
 
     if (url.includes('rapidvid')) { /* rapidvideo.com && rapidvid.to */
+        /* first, try to get video from kissanime.com
+         * if that doesn't work, open rapidvideo url in new tab and try again using innerHTML
+         */
         if (!url.includes('kissanime')) {
             return getVideoFromRapidvideo(Promise.resolve(document.body.innerHTML));
         }
