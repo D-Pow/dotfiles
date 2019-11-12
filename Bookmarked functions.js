@@ -373,7 +373,11 @@ getVolumeThatCanSurpass1();  /* Volume to surpass 1 */
 /*
 getVideoFromKissanimeUrl(window.location.href)
     .then(videoUrl => window.location.href = videoUrl)
-    .catch(alert); /* Get this Kissanime video URL */
+    .catch(message => {
+        if (message !== true) {
+            alert(message);
+        }
+    }); /* if message === true, then setInnerHtmlToVideoWithSrc() is called, so don't alert */
 /*
 getVideoFromWatchCartoonOnline()
     .then(videoUrl => window.location.href = videoUrl)
