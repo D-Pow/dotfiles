@@ -27,6 +27,7 @@ alias     g='git'
 alias    gs='git status'
 alias    gd='git diff'
 alias   gdc='git diff --cached'
+alias   gdl='git diff -R'  # show line endings - CRLF or CR; any CR removed will be a red `^M` in green lines
 alias    ga='git add'
 alias   gap='git add -p'
 alias    gc='git commit -m'
