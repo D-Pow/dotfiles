@@ -40,6 +40,30 @@ function getUrlQueryParams(url = window.location.href) {
     }, {});
 }
 
+function setDocumentReferer(url = null, useOrigin = false) {
+    if (!url) {
+        /*
+         * Create  <meta name="referrer" content="never" />
+         * This header removes all referrer headers completely
+         */
+        const meta = document.createElement('meta');
+        meta.name = 'referrer';
+        meta.content = 'never';
+        document.head.appendChild(meta);
+        return;
+    }
+
+    let referrerUrl = url;
+
+    if (useOrigin) {
+        const originRegex = /(?<=https:\/\/)[^/]+/;
+        referrerUrl = url.match(originRegex)[0];
+    }
+
+    delete document.referrer;
+    document.__defineGetter__('referrer', () => referrerUrl);
+}
+
 
 
 /************************************************
