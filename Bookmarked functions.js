@@ -371,9 +371,13 @@ videoArrowKeyListenerExec();  /* Video controls */
 /*
 getVolumeThatCanSurpass1();  /* Volume to surpass 1 */
 /*
-getVideoFromKissanimeUrl(window.location.href).then(videoUrl => window.location.href = videoUrl).catch(alert); /* Get this Kissanime video URL */
+getVideoFromKissanimeUrl(window.location.href)
+    .then(videoUrl => window.location.href = videoUrl)
+    .catch(alert); /* Get this Kissanime video URL */
 /*
-getVideoFromWatchCartoonOnline().then(videoUrl => window.location.href = videoUrl).catch(alert);
+getVideoFromWatchCartoonOnline()
+    .then(videoUrl => window.location.href = videoUrl)
+    .catch(alert); /* Get video from watchcartoononline */
 /*
 setInnerHtmlToVideoWithSrc();  /* Set document to <video /> */
 /*
