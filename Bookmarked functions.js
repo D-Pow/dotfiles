@@ -221,8 +221,24 @@ function getVideoFromMp4upload(commonHostPromise) {
         return videoSrc;
     }
 
+    function setDocumentToSrcWithSpoofedRefererHeader(videoSrc) {
+        /* navigating to mp4upload video URL tries to download for some reason
+         * so just replace current html with <video src={videoSrc} />
+         *
+         * Note that we must remove the referrer header since it is `kissanime.com`
+         * and the referrer must either be mp4upload or null. Null is easier, so
+         * let's do that. Luckily, setInnerHtmlToVideoWithSrc() accepts an optional
+         * 'remove referrer' option.
+         */
+        setInnerHtmlToVideoWithSrc(videoSrc, true);
+
+        /* rejecting with `true` prevents the final `alert()` in getVideoFromKissanimeUrl() */
+        return Promise.reject(true);
+    }
+
     return commonHostPromise
-        .then(getVideoSrc);
+        .then(getVideoSrc)
+        .then(setDocumentToSrcWithSpoofedRefererHeader);
 }
 
 /**
