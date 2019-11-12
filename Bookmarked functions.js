@@ -211,15 +211,18 @@ function getVideoFromRapidvideo(commonHostPromise) {
 }
 
 function getVideoFromMp4upload(commonHostPromise) {
-    return commonHostPromise
-        .then(html => {
-            const videoInfo = html.match(/(?<=video\|)\w+\|\d+/g)[0];
-            const [url, port] = videoInfo.split('|');
-            const videoSrc = `https://www11.mp4upload.com:${port}/d/${url}/video.mp4`;
+    function getVideoSrc(html) {
+        const videoInfo = html.match(/(?<=video\|)\w+\|\d+/g)[0];
+        const wwwPrefix = html.match(/www\d\d/g)[0];
+        const [url, port] = videoInfo.split('|');
+        const videoSrc = `https://${wwwPrefix}.mp4upload.com:${port}/d/${url}/video.mp4`;
 
-            console.log(videoSrc);
-            return videoSrc;
-        });
+        console.log(videoSrc);
+        return videoSrc;
+    }
+
+    return commonHostPromise
+        .then(getVideoSrc);
 }
 
 /**
