@@ -123,6 +123,9 @@ function goToNextKissanimeEpisode() {
 }
 
 function setInnerHtmlToVideoWithSrc() {
+    /* first, erase document content */
+    document.body.parentElement.innerHTML = '';
+
     const srcUrl = prompt('Video src URL:');
     const video = document.createElement('video');
     video.controls = true;
@@ -130,6 +133,7 @@ function setInnerHtmlToVideoWithSrc() {
     video.src = srcUrl;
 
     document.body.appendChild(video);
+
     videoArrowKeyListenerExec();
 }
 
