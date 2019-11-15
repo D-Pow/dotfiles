@@ -65,7 +65,10 @@ cf() {
     touch "$1" && chmod a+x "$1"
 }
 
-sitMfUsernames=('SREENI_REBRAND' 'sreeni_ap' 'nambi9' 'ABEK2800' 'ABZM8200' 'SIT-AJ-510' 'AAYR3600' 'TZ529300' 'ABAN3400' 'ABDV0100' 'ABED5900' 'TL858500')
+sitMfUsernames=(
+    'ACKP4100' # Owns aggressive portfolio under account 5212
+    'SREENI_REBRAND' 'sreeni_ap' 'nambi9' 'ABEK2800' 'ABZM8200' 'SIT-AJ-510' 'AAYR3600' 'TZ529300' 'ABAN3400' 'ABDV0100' 'ABED5900' 'TL858500'
+    )
 uatMfUsernames=('nambi9' 'op282200')
 sitAipUsernames=(
     'ADBX9200' #has many held funds
