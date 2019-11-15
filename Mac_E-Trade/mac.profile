@@ -149,7 +149,7 @@ gckb() {
     elif [ "$repoName" == "react-aip" ]; then
         git checkout feature/baseline-prebuiltmvp
     elif [ "$repoName" == "mutual_fund_etf" ]; then
-        git checkout feature/baseline-prebuilt-aip-mvp-features
+        git checkout feature/baseline-aip-prebuilt
     fi
 }
 
