@@ -68,6 +68,22 @@ window.getUrlQueryParams = (url = window.location.href) => {
 
 })()
 
+// fetch with necessary headers from RequestService
+fetch('https://us.sit.etrade.com/phx/mutual_fund_etf/prebuilt_portfolios/public/getETFAllocation', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'stk1': pageConfig.uaa_vt
+    },
+    body: JSON.stringify({
+        accountId: "84517794",
+        cash: 647,
+        portfolioType: "Aggressive",
+        productType: "MF"
+    })
+}).then(res => res.json()).then(console.log)
+
 
 
 
