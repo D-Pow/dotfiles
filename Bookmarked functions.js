@@ -5,14 +5,14 @@ javascript:(function bookmarkUsefulFunctions() {
  ********************************/
 const jsFunctionRegex = '^\(?\s*@?(?!if|constructor|switch|runInAction)(?:async )?(function )?(\w+)(?=(?:\s*=?\s*)\(.*\{[\s\n])';
 
-function sortObjectByKeys(obj) {
+window.sortObjectByKeys = function(obj) {
     return Object.keys(obj).sort().reduce((sortedObj, key) => {
         sortedObj[key] = obj[key];
         return sortedObj;
     }, {});
-}
+};
 
-function getCookie(cookie = document.cookie) {
+window.getCookie = function(cookie = document.cookie) {
     return cookie.split('; ').reduce((cookieObj, entry) => {
         const keyVal = entry.split('=');
         const key = keyVal[0];
@@ -22,13 +22,13 @@ function getCookie(cookie = document.cookie) {
 
         return cookieObj;
     }, {});
-}
+};
 
-function resetCookie() {
+window.resetCookie = function() {
     document.cookie = 'expires=Thu, 01 Jan 1970 00:00:01 GMT';
-}
+};
 
-function getUrlQueryParams(url = window.location.href) {
+window.getUrlQueryParams = function(url = window.location.href) {
     return url.split('?')[1].split('&').reduce((queries, queryString) => {
         const keyVals = queryString.split('=');
         const key = keyVals[0];
@@ -38,9 +38,9 @@ function getUrlQueryParams(url = window.location.href) {
 
         return queries;
     }, {});
-}
+};
 
-function setDocumentReferer(url = null, useOrigin = false) {
+window.setDocumentReferer = function(url = null, useOrigin = false) {
     if (!url) {
         /*
          * Create  <meta name="referrer" content="never" />
@@ -62,14 +62,14 @@ function setDocumentReferer(url = null, useOrigin = false) {
 
     delete document.referrer;
     document.__defineGetter__('referrer', () => referrerUrl);
-}
+};
 
 
 
 /************************************************
  ********    Video manipulation tools    ********
  ***********************************************/
-function getVolumeThatCanSurpass1() {
+window.getVolumeThatCanSurpass1 = function() {
     /* https://stackoverflow.com/a/43794379/5771107 */
     const audioCtx = new AudioContext();
     const audioSource = audioCtx.createMediaElementSource(document.querySelector('video'));
@@ -77,9 +77,9 @@ function getVolumeThatCanSurpass1() {
     audioSource.connect(audioGain);
     audioGain.connect(audioCtx.destination);
     window.volume = audioGain.gain;
-}
+};
 
-function videoArrowKeyListenerExec() {
+window.videoArrowKeyListenerExec = function() {
     /* useful arrow functionality for video players that don't include it automatically */
     window.seekSpeed = 5;
     window.video = document.querySelector('video');
@@ -110,19 +110,19 @@ function videoArrowKeyListenerExec() {
                 break;
         }
     }
-}
+};
 
 
 
 /*********************************
  ********    Kissanime    ********
  ********************************/
-function goToNextKissanimeEpisode() {
+window.goToNextKissanimeEpisode = function() {
     const queryParam = window.location.href.match(/(?<=s=).+/g)[0];
     window.location.href = `${document.getElementById('btnNext').parentNode.href}&s=${queryParam}`;
-}
+};
 
-function setInnerHtmlToVideoWithSrc(src = null, removeReferrerHeader = false) {
+window.setInnerHtmlToVideoWithSrc = function(src = null, removeReferrerHeader = false) {
     /* first, erase document content */
     document.body.parentElement.innerHTML = '';
 
@@ -144,9 +144,9 @@ function setInnerHtmlToVideoWithSrc(src = null, removeReferrerHeader = false) {
     document.body.appendChild(video);
 
     videoArrowKeyListenerExec();
-}
+};
 
-function getVideoSrcFromHtml(html) {
+window.getVideoSrcFromHtml = function(html) {
     const videoTagRegex = /<video[\w\W]*<\/video>/;
     const srcContentRegex = /(?<=src=")[^"]+(?=")/;
 
@@ -155,14 +155,14 @@ function getVideoSrcFromHtml(html) {
     } catch (e) {
         return false;
     }
-}
+};
 
 /**
  * Rapidvideo.com nests <source /> elements inside <video />
  * each with a 'data-res' field containing the resolution.
  * Get the best one here
  */
-function getHighestResVideoFromHtml(htmlText) {
+window.getHighestResVideoFromHtml = function(htmlText) {
     const videoTagRegex = /<video[\w\W]*<\/video>/;
     const sourceTagRegex = /<source[\w\W]*?>/g;
     const sourceSrcRegex = /(?<=source src=")[^"]*(?=")/;
@@ -178,12 +178,12 @@ function getHighestResVideoFromHtml(htmlText) {
     }).sort((a, b) => b.resolution - a.resolution);
 
     return videoMapping[0];
-}
+};
 
 /**
  * fetch() using CORS proxy
  */
-function fetchCors(url) {
+window.fetchCors = function(url) {
     return fetch(
         'https://cors-anywhere.herokuapp.com/' + url,
             {
@@ -192,9 +192,9 @@ function fetchCors(url) {
                 }
             }
     );
-}
+};
 
-function getVideoFromRapidvideo(commonHostPromise) {
+window.getVideoFromRapidvideo = function(commonHostPromise) {
     /* if run on the rapidvideo site itself */
     if (commonHostPromise == null) {
         const videoSrc = getHighestResVideoFromHtml(document.body.innerHTML).srcUrl;
@@ -208,9 +208,9 @@ function getVideoFromRapidvideo(commonHostPromise) {
             console.log(videoSrc);
             return videoSrc;
         });
-}
+};
 
-function getVideoFromMp4upload(commonHostPromise) {
+window.getVideoFromMp4upload = function(commonHostPromise) {
     function getVideoSrc(html) {
         const videoInfo = html.match(/(?<=video\|)\w+\|\d+/g)[0];
         const wwwPrefix = html.match(/www\d\d/g)[0];
@@ -239,7 +239,7 @@ function getVideoFromMp4upload(commonHostPromise) {
     return commonHostPromise
         .then(getVideoSrc)
         .then(setDocumentToSrcWithSpoofedRefererHeader);
-}
+};
 
 /**
  * Gets the mp4 file's URL from the nested Rapidvideo iframe
@@ -247,7 +247,7 @@ function getVideoFromMp4upload(commonHostPromise) {
  *
  * URL must contain the 's' query param
  */
-function getVideoFromKissanimeUrl(url = window.location.href) {
+window.getVideoFromKissanimeUrl = function(url = window.location.href) {
     const getCommonHostPromise = () => {
         const kissanimeUrlParam = getUrlQueryParams()['s'];
         const videoHostUrlRegex = new RegExp(`(?<=src=")[^"]*${kissanimeUrlParam}.com[^"]*(?=")`, 'g');
@@ -283,14 +283,14 @@ function getVideoFromKissanimeUrl(url = window.location.href) {
     }
 
     return Promise.reject('Error: Video URL could not be obtained');
-}
+};
 
 /**
  * Downloads all the episodes of a given series from kissanime.ru
  * Call the function after searching for your video and coming upon the
  * episode-list page
  */
-function downloadAllKissanimeEpisodes(start, end) {
+window.downloadAllKissanimeEpisodes = function(start, end) {
     const episodesDiv = document.getElementsByClassName('episodeList')[0];
     const episodeList = episodesDiv.getElementsByTagName('a');
     let episodeLinks = Array.from(episodeList).reduce((viableLinks, currentLink) => {
@@ -335,9 +335,9 @@ function downloadAllKissanimeEpisodes(start, end) {
         downloadAnchor.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(downloadCommands.join(' && '));
         downloadAnchor.click();
     });
-}
+};
 
-async function getVideoFromWatchCartoonOnline() {
+window.getVideoFromWatchCartoonOnline = async function() {
     const videoDivSecretVar = document.body.innerHTML.match(/document.write[^;]+/)[0]
                         .match(/(?<=\()\w+(?=\))/)[0];
     const videoDiv = window[videoDivSecretVar];
@@ -358,28 +358,13 @@ async function getVideoFromWatchCartoonOnline() {
         },
         reject => 'Could not obtain video URL'
     );
-}
+};
 
 
 
-/*************************************************
- ********    Make functions accessible    ********
- ************************************************/
-window.sortObjectByKeys = sortObjectByKeys;
-window.getCookie = getCookie;
-window.resetCookie = resetCookie;
-window.getVolumeThatCanSurpass1 = getVolumeThatCanSurpass1;
-window.videoArrowKeyListenerExec = videoArrowKeyListenerExec;
-window.goToNextKissanimeEpisode = goToNextKissanimeEpisode;
-window.setInnerHtmlToVideoWithSrc = setInnerHtmlToVideoWithSrc;
-window.getHighestResVideoFromHtml = getHighestResVideoFromHtml;
-window.fetchCors = fetchCors;
-window.getUrlQueryParams = getUrlQueryParams;
-window.getVideoFromRapidvideo = getVideoFromRapidvideo;
-window.getVideoFromMp4upload = getVideoFromMp4upload;
-window.getVideoFromKissanimeUrl = getVideoFromKissanimeUrl;
-window.downloadAllKissanimeEpisodes = downloadAllKissanimeEpisodes;
-window.getVideoFromWatchCartoonOnline = getVideoFromWatchCartoonOnline;
+/***********************************************
+ ***  Calling function in separate bookmark  ***
+ ***********************************************/
 
 
 /*
