@@ -28,7 +28,7 @@ window.getNewAuth = newUserId => {
     }));
 };
 
-})()
+})();
 
 // fetch with necessary headers from RequestService
 fetch('https://us.sit.etrade.com/phx/mutual_fund_etf/prebuilt_portfolios/public/getETFAllocation', {
