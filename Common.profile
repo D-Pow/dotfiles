@@ -29,6 +29,10 @@ openGitMergeConflictFilesWithSublime() {
     subl $(gs | grep both | sed 's|both modified:||')
 }
 
+ignoreFileInGitDiff() {
+    git diff -- . ":!$1"
+}
+
 ignoreFileInGitDiffCached() {
     git diff --cached -- . ":!$1"
 }
@@ -51,6 +55,7 @@ alias    gs='git status'
 alias    gd='git diff'
 alias   gdc='git diff --cached'
 alias   gdl='git diff -R'  # show line endings - CRLF or CR; any CR removed will be a red `^M` in green lines
+alias   gdi='ignoreFileInGitDiff'
 alias  gdci='ignoreFileInGitDiffCached'
 alias    ga='git add'
 alias   gap='git add -p'
