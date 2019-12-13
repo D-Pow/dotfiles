@@ -25,13 +25,11 @@ getAllCrlfFiles() {
 
 ##### Aliases and functions for git commands #####
 
-# Open merge conflict files
-gcon() {
+openGitMergeConflictFilesWithSublime() {
     subl $(gs | grep both | sed 's|both modified:||')
 }
 
-# Ignore a file in git diff
-gdci() {
+ignoreFileInGitDiffCached() {
     git diff --cached -- . ":!$1"
 }
 
@@ -53,6 +51,7 @@ alias    gs='git status'
 alias    gd='git diff'
 alias   gdc='git diff --cached'
 alias   gdl='git diff -R'  # show line endings - CRLF or CR; any CR removed will be a red `^M` in green lines
+alias  gdci='ignoreFileInGitDiffCached'
 alias    ga='git add'
 alias   gap='git add -p'
 alias    gc='git commit -m'
@@ -77,6 +76,7 @@ alias  gstl='git stash list'
 alias  gsta='git stash apply'
 alias  gsts='git stash save'
 alias  gstd='git stash drop'
+alias  gcon='openGitMergeConflictFilesWithSublime'
 alias   gau='git update-index --assume-unchanged'
 alias  gnau='git update-index --no-assume-unchanged'
 alias  gauf="git ls-files -v | grep '^[[:lower:]]'"
