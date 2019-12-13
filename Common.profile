@@ -23,6 +23,31 @@ getAllCrlfFiles() {
     find . -not -type d -exec file "{}" ";" | grep CRLF
 }
 
+##### Aliases and functions for git commands #####
+
+# Open merge conflict files
+gcon() {
+    subl $(gs | grep both | sed 's|both modified:||')
+}
+
+# Ignore a file in git diff
+gdci() {
+    git diff --cached -- . ":!$1"
+}
+
+getGitBranch() {
+    # get the current branch (one that starts with '* ')
+    # replace '* ' with ''
+    git branch | grep '*' | sed -E 's|(^\* )||'
+}
+
+getGitRepoName() {
+    # get remote URL for 'origin'
+    # | filter out '/repo-name.git' -o-onlyReturnMatch -m-getNmatches
+    # | sed -rEgex substitute~(/|.git)~['']~globally (apply to all matches, not just 1)
+    git remote -v | grep origin | egrep -o -m 1 "/[^/]+\.git" | sed -E 's~(/|.git)~~g'
+}
+
 alias     g='git'
 alias    gs='git status'
 alias    gd='git diff'
@@ -58,26 +83,3 @@ alias  gauf="git ls-files -v | grep '^[[:lower:]]'"
 alias  gaud='git update-index --assume-unchanged src/data/mocks/DefaultPageConfig.js'
 alias gnaud='git update-index --no-assume-unchanged src/data/mocks/DefaultPageConfig.js'
 alias  gcmd="cat ~/.profile | grep -e 'alias *g' | grep -v 'grep='"
-
-# Open merge conflict files
-gcon() {
-    subl $(gs | grep both | sed 's|both modified:||')
-}
-
-# Ignore a file in git diff
-gdci() {
-    git diff --cached -- . ":!$1"
-}
-
-getGitBranch() {
-    # get the current branch (one that starts with '* ')
-    # replace '* ' with ''
-    git branch | grep '*' | sed -E 's|(^\* )||'
-}
-
-getGitRepoName() {
-    # get remote URL for 'origin'
-    # | filter out '/repo-name.git' -o-onlyReturnMatch -m-getNmatches
-    # | sed -rEgex substitute~(/|.git)~['']~globally (apply to all matches, not just 1)
-    git remote -v | grep origin | egrep -o -m 1 "/[^/]+\.git" | sed -E 's~(/|.git)~~g'
-}
