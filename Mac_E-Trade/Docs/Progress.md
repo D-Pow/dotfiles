@@ -91,8 +91,7 @@
 ###################
 ## Quick learner ##
 ###################
-* Learned the premarket dashboard quickly enough to **teach it to the
-  other new hires**
+* Learned the premarket dashboard quickly enough to **teach it to the other new hires**
 * Learned React
     - I learned enough to make informed decisions about component design
     - I successfully contributed to the design language
