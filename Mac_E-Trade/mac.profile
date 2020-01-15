@@ -54,6 +54,13 @@ alias python2='/usr/bin/python'
 alias devcurl="curl --noproxy '*'"
 
 
+resetJetbrains() {
+    cd ~/Library/Preferences/
+    rm jetbrains.* com.jetbrains.*
+    rm -rf WebStorm2019.3/eval/ WebStorm2019.3/options/other.xml IntelliJIdea2018.1/eval/ IntelliJIdea2018.1/options/options.xml
+}
+
+
 alias rmpom='find . -name "pom.xml" -type f -delete'
 alias pomgen='mvn pomgenerator:generate'
 alias mvnsetup='chmod a+x setup.py && ./setup.py'
