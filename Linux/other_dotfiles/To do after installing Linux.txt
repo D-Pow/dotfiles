@@ -16,7 +16,7 @@ entries using a colon.
             # storage mount
             UUID=[UUID_of_storage] /media/storage/    ntfs-3g        auto,dmask=022,fmask=111,uid=1000,gid=1000,rw 0 0
             `
-         where [UUID] is the UUID of the storage partition from step (ii), 
+         where [UUID] is the UUID of the storage partition from step (ii),
          /media/storage is the new mount point, ntfs-3g is the driver
          used to read NTFS, dmask is directory permissions (need to be
          rwx for owner), fmask is file permissions (need to not be executable
@@ -26,7 +26,7 @@ entries using a colon.
     iv) Edit ~/.config/user-dirs.dirs to point to storage partition's Documents,
         Picturs, Music, and Video folders
 
-1) Install correct drivers (super important!!).
+1) Install correct drivers (super important!!). Will need `quiet splash nomodeset` along with the drivers in "Nvidia installations.txt" or similar (there might be some that are more up-to-date). See my reddit post here (https://www.reddit.com/r/linuxquestions/comments/eqdugr/any_way_to_diable_my_gpu_before_boot/fet00g0?utm_source=share&utm_medium=web2x).
 
 2) Install updates.
 
