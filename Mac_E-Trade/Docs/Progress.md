@@ -20,6 +20,11 @@
 * Challenge and improve the way teams at E*TRADE code
     - I made multiple well-constructed points in the shared code channels, resulting in a deep consideration about how to write code and **improving our coding practices**
     - Completely revamped the way the premarket team worked. **Increased productivity of the whole team** by moving them from inefficient vim usage to IDE usage. Wrote a readme and scripts to make a **seamless transition** and easy usage so that they wouldn't have to do any configuration themselves
+* Consistently improve workflow efficiency and share with others
+    - Util scripts (git branch Jira ticket autocomplete, AIP/Prebuilt set-token script)
+    - Improved ability for entire team to work on remote dev environments (including install/util scripts for setting up the connection, transporting files, etc.)
+    - Add Confluence pages for non-/poorly-documented procedures
+    - Help new teammates with environment setups, code base explanations, and particular company quirks (e.g. network proxies, handling random issues with specific things, etc.)
 
 ## Salary considerations ##
 * Software engineering in financial services average salary: $126,000
