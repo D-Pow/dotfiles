@@ -15,7 +15,7 @@ def main(new_uaa_vt, file_path='./src/data/mocks/DefaultPageConfig.js'):
     print('Done')
 
 def print_usage():
-    usage  = "Usage: setaip <uaa_vt>"
+    usage  = "Usage: setaip <uaa_vt> [filename]"
     usage += "\n    uaa_vt is value copied using JS: `copy(pageConfig['uaa_vt'])`"
     print(usage)
 
