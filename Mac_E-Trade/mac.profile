@@ -59,7 +59,7 @@ alias gradle4="$GRADLE_4_HOME/gradle"
 resetJetbrains() {
     cd ~/Library/Preferences/
     rm jetbrains.* com.jetbrains.*
-    rm -rf WebStorm2019.3/eval/ WebStorm2019.3/options/other.xml IntelliJIdea2018.1/eval/ IntelliJIdea2018.1/options/options.xml
+    rm -rf WebStorm2019.3/eval/ WebStorm2019.3/options/other.xml IntelliJIdea2019.3/eval/ IntelliJIdea2019.3/options/options.xml
 }
 
 
