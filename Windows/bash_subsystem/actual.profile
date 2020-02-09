@@ -18,7 +18,7 @@ fi
 
 export dotfilesDir="/mnt/d/Documents/Repositories/dotfiles"
 export commonProfile="$dotfilesDir/Common.profile"
-export subsystemProfile="$dotfilesDir/Windows/bash_subsystem.profile"
+export subsystemProfile="$dotfilesDir/Windows/bash_subsystem/subsystem.profile"
 
 source "$commonProfile"
 source "$subsystemProfile"
