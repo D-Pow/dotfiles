@@ -1,11 +1,9 @@
 # User stuff
-PATH="$HOME/.local/bin:$PATH"
-
 JAVA_HOME="/usr/java"
 GRADLE_HOME="/opt/gradle"
 export JAVA_HOME
 export GRADLE_HOME
-PATH="$PATH:$JAVA_HOME/bin:$GRADLE_HOME/bin"
+PATH="$JAVA_HOME/bin:$GRADLE_HOME/bin:$HOME/.local/bin:$PATH"
 export PATH
 
 # LS_COLORS="${LS_COLORS}di=01;35"
