@@ -16,9 +16,9 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
-dotfilesDir="/home/dpow/Documents/Repositories/dotfiles"
-commonProfile="$dotfilesDir/Common.profile"
-linuxProfile="$dotfilesDir/Linux/Linux.profile"
+export dotfilesDir="/home/dpow/Documents/Repositories/dotfiles"
+export commonProfile="$dotfilesDir/Common.profile"
+export linuxProfile="$dotfilesDir/Linux/Linux.profile"
 
 source "$commonProfile"
 source "$linuxProfile"

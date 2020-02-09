@@ -1,6 +1,6 @@
-dotfilesDir="/Users/dpowell1/repositories/dotfiles"
-commonProfile="$dotfilesDir/Common.profile"
-macProfile="$dotfilesDir/Mac_E-Trade/mac.profile"
+export dotfilesDir="/Users/dpowell1/repositories/dotfiles"
+export commonProfile="$dotfilesDir/Common.profile"
+export macProfile="$dotfilesDir/Mac_E-Trade/mac.profile"
 
 source "$commonProfile"
 source "$macProfile"

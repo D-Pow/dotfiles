@@ -3,8 +3,7 @@ JAVA_HOME="/usr/java"
 GRADLE_HOME="/opt/gradle"
 export JAVA_HOME
 export GRADLE_HOME
-PATH="$JAVA_HOME/bin:$GRADLE_HOME/bin:$HOME/.local/bin:$PATH"
-export PATH
+export PATH="$JAVA_HOME/bin:$GRADLE_HOME/bin:$HOME/.local/bin:$PATH"
 
 # LS_COLORS="${LS_COLORS}di=01;35"
 # export $LS_COLORS
