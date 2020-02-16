@@ -12,6 +12,16 @@ gril() {
     grep "$1" -ril .
 }
 
+dirsize() {
+    # Prints out size of all folders and files of current directory
+    # ls -lah has a max-size display of 4.0K or 1G, so doesn't show dirs bigger than that
+    # du = disk usage
+    #   -h human readable
+    #   --max-depth of only this dir
+    # sort -reverse -human-readable - sorts based on size number in descending order
+    du -h --max-depth=1 ./ | sort -rh
+}
+
 npms() {
     # regex is homemade ~/bin/regex python script
     regex '"scripts": [^\}]*\}' ./package.json
