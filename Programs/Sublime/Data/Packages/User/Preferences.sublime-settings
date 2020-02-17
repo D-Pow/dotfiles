@@ -23,6 +23,7 @@
     "show_full_path": true,
     "tab_size": 4,
     "translate_tabs_to_spaces": true,
+    "trim_trailing_white_space_on_save": true,
     "default_line_ending": "unix",
     "change_line_endings_on_save": true,
     "update_check": false,
