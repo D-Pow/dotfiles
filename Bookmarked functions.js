@@ -64,6 +64,77 @@ window.setDocumentReferer = function(url = null, useOrigin = false) {
     document.__defineGetter__('referrer', () => referrerUrl);
 };
 
+/**
+ * fetch() using CORS proxy
+ *
+ * Fetch API: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+ * Fetch API + CORS: https://developers.google.com/web/ilt/pwa/working-with-the-fetch-api
+ * Using CORS proxy: https://stackoverflow.com/a/43268098/5771107
+ * CORS proxy: https://cors-anywhere.herokuapp.com/ + URL (e.g. https://www.rapidvideo.com/e/FUM5608RR8)
+ *
+ * Attempt at using headers for getting video from rapidvideo.com
+ * headers: {
+ *     'X-Requested-With': 'XMLHttpRequest',
+ *     // rest aren't needed
+ *     'Accept-Encoding': 'gzip, deflate, br',
+ *     'Accept-Language': 'en-US,en;q=0.9',
+ *     'Cache-Control': 'no-cache',
+ *     'Connection': 'keep-alive',
+ *     // 'Cookie': 'key1=val1; key2=val2',
+ *     'DNT': '1',
+ *     'Host': 'www.rapidvideo.com',
+ *     'Pragma': 'no-cache',
+ *     'Referer': 'https://kissanime.ru/Anime/Boku-no-Hero-Academia-3rd-Season/Episode-059?id=149673&s=rapidvideo',
+ *     'Upgrade-Insecure-Requests': '1',
+ *     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
+ * }
+ */
+window.fetchCors = function(url) {
+    return fetch(
+        'https://cors-anywhere.herokuapp.com/' + url,
+            {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            }
+    );
+};
+
+window.setInnerHtmlToVideoWithSrc = function(src = null, removeReferrerHeader = false) {
+    /* first, erase document content */
+    document.body.parentElement.innerHTML = '';
+
+    let srcUrl = src;
+
+    if (!src) {
+        srcUrl = prompt('Video src URL:');
+    }
+
+    if (removeReferrerHeader) {
+        setDocumentReferer();
+    }
+
+    const video = document.createElement('video');
+    video.controls = true;
+    video.autoplay = true;
+    video.src = srcUrl;
+
+    document.body.appendChild(video);
+
+    videoArrowKeyListenerExec();
+};
+
+window.getVideoSrcFromHtml = function(html) {
+    const videoTagRegex = /<video[\w\W]*<\/video>/;
+    const srcContentRegex = /(?<=src=")[^"]+(?=")/;
+
+    try {
+        return html.match(videoTagRegex)[0].match(srcContentRegex)[0];
+    } catch (e) {
+        return false;
+    }
+};
+
 
 
 /************************************************
@@ -115,46 +186,39 @@ window.videoArrowKeyListenerExec = function() {
 
 
 /*********************************
+ ****    WatchCartoonOnline    ***
+ ********************************/
+window.getVideoFromWatchCartoonOnline = async function() {
+    const videoDivSecretVar = document.body.innerHTML.match(/document.write[^;]+/)[0]
+                        .match(/(?<=\()\w+(?=\))/)[0];
+    const videoDiv = window[videoDivSecretVar];
+    const videoPhpSrc = videoDiv.match(/(?<=src=")[^"]+/)[0];
+    const res = await fetch(videoPhpSrc);
+    const videoPhpHtml = await res.text();
+    const secretVideoSrcUrl = videoPhpHtml.match(/(?<=getJSON\(")[^"]+/)[0];
+    /* jquery is already loaded */
+    return new Promise(
+        resolve => {
+            $.getJSON(secretVideoSrcUrl, response => {
+                const videoUrlId = response.hd || response.enc;
+                const videoUrlServer = response.server;
+                const videoUrl = `${videoUrlServer}/getvid?evid=${videoUrlId}`;
+
+                resolve(videoUrl);
+            });
+        },
+        reject => 'Could not obtain video URL'
+    );
+};
+
+
+
+/*********************************
  ********    Kissanime    ********
  ********************************/
 window.goToNextKissanimeEpisode = function() {
     const queryParam = window.location.href.match(/(?<=s=).+/g)[0];
     window.location.href = `${document.getElementById('btnNext').parentNode.href}&s=${queryParam}`;
-};
-
-window.setInnerHtmlToVideoWithSrc = function(src = null, removeReferrerHeader = false) {
-    /* first, erase document content */
-    document.body.parentElement.innerHTML = '';
-
-    let srcUrl = src;
-
-    if (!src) {
-        srcUrl = prompt('Video src URL:');
-    }
-
-    if (removeReferrerHeader) {
-        setDocumentReferer();
-    }
-
-    const video = document.createElement('video');
-    video.controls = true;
-    video.autoplay = true;
-    video.src = srcUrl;
-
-    document.body.appendChild(video);
-
-    videoArrowKeyListenerExec();
-};
-
-window.getVideoSrcFromHtml = function(html) {
-    const videoTagRegex = /<video[\w\W]*<\/video>/;
-    const srcContentRegex = /(?<=src=")[^"]+(?=")/;
-
-    try {
-        return html.match(videoTagRegex)[0].match(srcContentRegex)[0];
-    } catch (e) {
-        return false;
-    }
 };
 
 /**
@@ -178,42 +242,6 @@ window.getHighestResVideoFromHtml = function(htmlText) {
     }).sort((a, b) => b.resolution - a.resolution);
 
     return videoMapping[0];
-};
-
-/**
- * fetch() using CORS proxy
- *
- * Fetch API: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
- * Fetch API + CORS: https://developers.google.com/web/ilt/pwa/working-with-the-fetch-api
- * Using CORS proxy: https://stackoverflow.com/a/43268098/5771107
- * CORS proxy: https://cors-anywhere.herokuapp.com/ + URL (e.g. https://www.rapidvideo.com/e/FUM5608RR8)
- *
- * Attempt at using headers for getting video from rapidvideo.com
- * headers: {
- *     'X-Requested-With': 'XMLHttpRequest',
- *     // rest aren't needed
- *     'Accept-Encoding': 'gzip, deflate, br',
- *     'Accept-Language': 'en-US,en;q=0.9',
- *     'Cache-Control': 'no-cache',
- *     'Connection': 'keep-alive',
- *     // 'Cookie': 'key1=val1; key2=val2',
- *     'DNT': '1',
- *     'Host': 'www.rapidvideo.com',
- *     'Pragma': 'no-cache',
- *     'Referer': 'https://kissanime.ru/Anime/Boku-no-Hero-Academia-3rd-Season/Episode-059?id=149673&s=rapidvideo',
- *     'Upgrade-Insecure-Requests': '1',
- *     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
- * }
- */
-window.fetchCors = function(url) {
-    return fetch(
-        'https://cors-anywhere.herokuapp.com/' + url,
-            {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                }
-            }
-    );
 };
 
 window.getVideoFromRapidvideo = function(commonHostPromise) {
@@ -357,29 +385,6 @@ window.downloadAllKissanimeEpisodes = function(start, end) {
         downloadAnchor.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(downloadCommands.join(' && '));
         downloadAnchor.click();
     });
-};
-
-window.getVideoFromWatchCartoonOnline = async function() {
-    const videoDivSecretVar = document.body.innerHTML.match(/document.write[^;]+/)[0]
-                        .match(/(?<=\()\w+(?=\))/)[0];
-    const videoDiv = window[videoDivSecretVar];
-    const videoPhpSrc = videoDiv.match(/(?<=src=")[^"]+/)[0];
-    const res = await fetch(videoPhpSrc);
-    const videoPhpHtml = await res.text();
-    const secretVideoSrcUrl = videoPhpHtml.match(/(?<=getJSON\(")[^"]+/)[0];
-    /* jquery is already loaded */
-    return new Promise(
-        resolve => {
-            $.getJSON(secretVideoSrcUrl, response => {
-                const videoUrlId = response.hd || response.enc;
-                const videoUrlServer = response.server;
-                const videoUrl = `${videoUrlServer}/getvid?evid=${videoUrlId}`;
-
-                resolve(videoUrl);
-            });
-        },
-        reject => 'Could not obtain video URL'
-    );
 };
 
 
