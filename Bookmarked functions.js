@@ -371,7 +371,7 @@ window.getVideoFromWatchCartoonOnline = async function() {
     return new Promise(
         resolve => {
             $.getJSON(secretVideoSrcUrl, response => {
-                const videoUrlId = response.enc;
+                const videoUrlId = response.hd || response.enc;
                 const videoUrlServer = response.server;
                 const videoUrl = `${videoUrlServer}/getvid?evid=${videoUrlId}`;
 
