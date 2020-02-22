@@ -136,6 +136,16 @@ window.getVideoSrcFromHtml = function(html) {
 };
 
 
+/************************************
+ ********    GitHub utils    ********
+ ***********************************/
+window.collapseFilesChangedInPr = function() {
+    document
+        .querySelectorAll('.btn-octicon.js-details-target')
+        .forEach(e => e.click());
+};
+
+
 
 /************************************************
  ********    Video manipulation tools    ********
