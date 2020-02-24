@@ -13,7 +13,8 @@ export PIP2_HOME=/Users/dpowell1/Library/Python/2.7/bin
 export PATH=$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$APACHE_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$SUBLIME_HOME:$BOOST_HOME:/usr/local/bin:/Users/dpowell1/bin:$PATH
 
 # node-sass binary (since `npm install node-sass` always fails on post-install script)
-export SASS_BINARY_PATH=/Users/dpowell1/repositories/binaries/node-sass-binary.node
+#export SASS_BINARY_PATH=/Users/dpowell1/repositories/binaries/node-sass-binary.node
+# was replaced with .npmrc entry: sass_binary_site=https://artifactory.etrade.com/artifactory/github/sass/node-sass/releases/download/
 
 # Colored terminal
 # export PS1="\[\033[36m\]\u\[\033[m\]@\[\033[32m\]\h:\[\033[33;1m\]\w\[\033[m\]\$ "
