@@ -67,12 +67,19 @@ axios({
 
 
 
-
+/**
+ * ADP
+ */
 
 // get average overtime
 [...document.querySelectorAll('div[data-e2e="total-hours-value"]')].reduce((total, elm) => {
     return total + Number(elm.innerText.replace(/[^\d.]/g, ''));
 }, 0) / 11 // 11 = number of paychecks
+
+// get total pay for the year
+[...document.querySelectorAll('div[data-e2e="gross-pay-amount"]')].reduce((total, el) => {
+    return total + Number(el.textContent.replace(/[^\d.]/g, ''));
+}, 0)
 
 
 
