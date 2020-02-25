@@ -40,6 +40,26 @@ window.getUrlQueryParams = function(url = window.location.href) {
     }, {});
 };
 
+window.htmlEscape = str => {
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;')
+        .replace(/\//g, '&#x2F;');
+};
+
+window.htmlUnescape = str => {
+    return str
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#x27;/g, "'")
+        .replace(/&#x2F;/g, '/');
+};
+
 window.setDocumentReferer = function(url = null, useOrigin = false) {
     if (!url) {
         /*
