@@ -331,6 +331,26 @@ window.getVideoFromMp4upload = function(commonHostPromise) {
         .then(setDocumentToSrcWithSpoofedRefererHeader);
 };
 
+window.getVideoFromNovelplanet = async novaUrlPromise => {
+    const novaUrl = await novaUrlPromise;
+    const hostBaseName = 'novelplanet';
+    const novaVideoRetrievalApiPath = '/api/source/';
+    const domainVideoSeparatorRegex = new RegExp(`${hostBaseName}([^/]+)/[^/]+/(.*)`); /* e.g. 'https://www.novelplanet.me/api/source/yxv3gg6pqol' */
+    const [ fullUrl, topLevelDomain, videoHashIdentifier ] = novaUrl.match(domainVideoSeparatorRegex);
+    const novaVideoRetrievalApiUrl = 'https://www.' + hostBaseName + topLevelDomain + novaVideoRetrievalApiPath + videoHashIdentifier;
+
+    /*
+     * TODO: novelplanet sets a secure cookie in the vanilla novelplanet.me/v/{hash} request
+     * Need to find out how to get this cookie so that the below fetchCors() call can send
+     * the needed cookie in order to have a JSON response that has valid URLs
+     */
+
+    return fetchCors(novaVideoRetrievalApiUrl, { method: 'POST' })
+        .then(res => res.json())
+        .then(json => json.data.sort((obj1, obj2) => parseInt(obj2.label, 10) - parseInt(obj1.label, 10)))
+        .then(sortedVideoDataInfo => sortedVideoDataInfo[0].file);
+};
+
 /**
  * Gets the mp4 file's URL from the nested Rapidvideo iframe
  * at a given kissanime.ru URL.
@@ -366,6 +386,10 @@ window.getVideoFromKissanimeUrl = function(url = window.location.href) {
 
     if (url.includes('mp4upload')) {
         return getVideoFromMp4upload(getCommonHostPromise());
+    }
+
+    if (url.includes('nova') || url.includes('default')) { /* nova is the default video player for kissanime.ru */
+        return getVideoFromNovelplanet(getVideoIframeUrl('novelplanet'));
     }
 
     /* Last-ditch effort: try to parse html for video src content */
