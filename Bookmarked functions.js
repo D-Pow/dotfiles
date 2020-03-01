@@ -109,14 +109,24 @@ window.setDocumentReferer = function(url = null, useOrigin = false) {
  *     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
  * }
  */
-window.fetchCors = function(url) {
+window.fetchCors = function(url, options) {
+    const corsAnywhereRequiredHeaders = {
+        'X-Requested-With': 'XMLHttpRequest'
+    };
+    const fetchOptions = options
+        ? {
+            ...options,
+            headers: {
+                ...options.headers,
+                ...corsAnywhereRequiredHeaders
+            }
+        } : {
+            headers: corsAnywhereRequiredHeaders
+        };
+
     return fetch(
         'https://cors-anywhere.herokuapp.com/' + url,
-            {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                }
-            }
+        {...fetchOptions}
     );
 };
 
