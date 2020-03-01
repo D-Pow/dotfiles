@@ -256,7 +256,7 @@ window.goToNextKissanimeEpisode = function() {
  * each with a 'data-res' field containing the resolution.
  * Get the best one here
  */
-window.getHighestResVideoFromHtml = function(htmlText) {
+window.getHighestResVideoFromRapidVideoHtml = function(htmlText) {
     const videoTagRegex = /<video[\w\W]*<\/video>/;
     const sourceTagRegex = /<source[\w\W]*?>/g;
     const sourceSrcRegex = /(?<=source src=")[^"]*(?=")/;
@@ -277,14 +277,14 @@ window.getHighestResVideoFromHtml = function(htmlText) {
 window.getVideoFromRapidvideo = function(commonHostPromise) {
     /* if run on the rapidvideo site itself */
     if (commonHostPromise == null) {
-        const videoSrc = getHighestResVideoFromHtml(document.body.innerHTML).srcUrl;
+        const videoSrc = getHighestResVideoFromRapidVideoHtml(document.body.innerHTML).srcUrl;
         console.log(videoSrc);
         return Promise.resolve(videoSrc);
     }
 
     return commonHostPromise
         .then(html => {
-            const videoSrc = getHighestResVideoFromHtml(html).srcUrl;
+            const videoSrc = getHighestResVideoFromRapidVideoHtml(html).srcUrl;
             console.log(videoSrc);
             return videoSrc;
         });
