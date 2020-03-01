@@ -338,16 +338,20 @@ window.getVideoFromMp4upload = function(commonHostPromise) {
  * URL must contain the 's' query param
  */
 window.getVideoFromKissanimeUrl = function(url = window.location.href) {
-    const getCommonHostPromise = () => {
-        const kissanimeUrlParam = getUrlQueryParams()['s'];
-        const videoHostUrlRegex = new RegExp(`(?<=src=")[^"]*${kissanimeUrlParam}.com[^"]*(?=")`, 'g');
+    const getIframeVideoHostUrlRegex = iframeHost => new RegExp(`(?<=src=")[^"]*${iframeHost}[^"]*(?=")`, 'g');
+
+    function getVideoIframeUrl(iframeHost) {
         return fetch(url)
             .then(res => res.text())
-            .then(html => html.match(videoHostUrlRegex)[0])
+            .then(html => html.match(getIframeVideoHostUrlRegex(iframeHost))[0]);
+    }
+
+    function getCommonHostPromise(kissanimeUrlParam = getUrlQueryParams()['s']) {
+        return getVideoIframeUrl(kissanimeUrlParam)
             .catch(e => open(document.querySelector('iframe#my_video_1').src))
             .then(mp4Url => fetchCors(mp4Url))
             .then(res => res.text());
-    };
+    }
 
     if (url.includes('rapidvid')) { /* rapidvideo.com && rapidvid.to */
         /* first, try to get video from kissanime.com
