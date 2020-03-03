@@ -331,22 +331,16 @@ window.getVideoFromMp4upload = function(commonHostPromise) {
         .then(setDocumentToSrcWithSpoofedRefererHeader);
 };
 
-window.getVideoFromNovelplanet = async novaUrlPromise => {
-    const novaUrl = await novaUrlPromise;
+window.getVideoUrlFromNovelplanet =  novaUrl => {
     const hostBaseName = 'novelplanet';
     const novaVideoRetrievalApiPath = '/api/source/';
-    const domainVideoSeparatorRegex = new RegExp(`${hostBaseName}([^/]+)/[^/]+/(.*)`); /* e.g. 'https://www.novelplanet.me/api/source/yxv3gg6pqol' */
+    const domainVideoSeparatorRegex = new RegExp(`${hostBaseName}([^/]+)/[^/]+/(.*)`); /* e.g. 'https://www.novelplanet.me/v/yxv3gg6pqol' */
     const [ fullUrl, topLevelDomain, videoHashIdentifier ] = novaUrl.match(domainVideoSeparatorRegex);
     const novaVideoRetrievalApiUrl = 'https://www.' + hostBaseName + topLevelDomain + novaVideoRetrievalApiPath + videoHashIdentifier;
 
-    /*
-     * TODO: novelplanet sets a secure cookie in the vanilla novelplanet.me/v/{hash} request
-     * Need to find out how to get this cookie so that the below fetchCors() call can send
-     * the needed cookie in order to have a JSON response that has valid URLs
-     */
-
-    return fetchCors(novaVideoRetrievalApiUrl, { method: 'POST' })
+    return fetch(novaVideoRetrievalApiUrl, { method: 'POST' }) /* credentials defaults to 'same-origin' */
         .then(res => res.json())
+        /* sort in descending order from e.g. `label: '1080p'` */
         .then(json => json.data.sort((obj1, obj2) => parseInt(obj2.label, 10) - parseInt(obj1.label, 10)))
         .then(sortedVideoDataInfo => sortedVideoDataInfo[0].file);
 };
@@ -388,8 +382,12 @@ window.getVideoFromKissanimeUrl = function(url = window.location.href) {
         return getVideoFromMp4upload(getCommonHostPromise());
     }
 
-    if (url.includes('nova') || url.includes('default')) { /* nova is the default video player for kissanime.ru */
-        return getVideoFromNovelplanet(getVideoIframeUrl('novelplanet'));
+    if (url.includes('nov') || url.includes('default')) { /* nova is the default video player for kissanime.ru */
+        if (url.includes('kissanime')) {
+            return getVideoIframeUrl('novelplanet').then(url => window.location.href = url);
+        }
+
+        return getVideoUrlFromNovelplanet(url).then(videoUrl => window.location.href = videoUrl);
     }
 
     /* Last-ditch effort: try to parse html for video src content */
