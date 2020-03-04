@@ -382,7 +382,7 @@ window.getVideoFromKissanimeUrl = function(url = window.location.href) {
         return getVideoFromMp4upload(getCommonHostPromise());
     }
 
-    if (url.includes('nov') || url.includes('default')) { /* nova is the default video player for kissanime.ru */
+    if (url.includes('nov')) {
         if (url.includes('kissanime')) {
             return getVideoIframeUrl('novelplanet').then(url => window.location.href = url);
         }
