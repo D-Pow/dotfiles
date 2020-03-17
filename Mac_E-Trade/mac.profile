@@ -1,4 +1,6 @@
 # Employee ID: 147783
+# IntelliJ license link: https://account.jetbrains.com/a/a1fwiqa3
+# WebStorm license link: https://account.jetbrains.com/a/5vmhuqob
 
 # Program paths
 export APACHE_HOME=/Applications/apache-maven-3.2.5/bin
