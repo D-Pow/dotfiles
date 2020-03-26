@@ -1,3 +1,23 @@
+E-Trade license:
+
+----- BEGIN LICENSE -----
+MIKE BONAGURA
+Single User License
+EA7E-8631575
+1290B7B2 31A79889 6A78A5BE C7DD0ADF
+C3B45FF7 1A4DB4DC 25AD523C 648D0D96
+D60752DD 3C4080C7 B26548ED F5C8B799
+A830C0CC C3B49B58 6F129960 261EC593
+7800466F EAB61DA5 36F8ACE4 618BF66F
+84A43E75 89280A48 D00339AC 04C3A88E
+3445E174 0A663B71 C3F2FEED 665DB2CA
+5BCEB73D 6838228C 8B5E9BF8 34A95141
+------ END LICENSE ------
+
+
+
+If the above doesn't work, try the hacky way below.
+
 Update: the below licenses have expired, but still register
 as valid upon first entering them since they were once valid.
 Thus, after entering one, you simply need to disable the
