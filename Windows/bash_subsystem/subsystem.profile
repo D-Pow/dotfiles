@@ -6,11 +6,11 @@ alias subl='cmd subl'
 
 alias listupdate='sudo apt update && sudo apt list --upgradable'
 
-topath () {
+topath() {
     readlink -m "$1"
 }
 
-towindowspath () {
+towindowspath() {
     path=$(topath "$1")
     # sed -e (execute script that uses regex) interpretation:
     #     1st -e: replace anything that isn't '/mnt/c' with '$rootdir/'
@@ -23,13 +23,13 @@ towindowspath () {
     echo $path | sed -e "/^\\/mnt\\/c/! s|/|$rootdir/|" -e "s|/mnt/c|C:|"
 }
 
-cmd () {
+cmd() {
     # For some reason, flags aren't picked up in $@, $2, etc. so just parse out the command
     commandToRun="$1"
     rest=${@/$commandToRun/""}
     /mnt/c/Windows/System32/cmd.exe "/C" "$commandToRun" $rest
 }
 
-clip () {
+clip() {
     echo "$1" | cmd clip
 }
