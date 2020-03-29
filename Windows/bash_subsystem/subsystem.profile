@@ -2,7 +2,6 @@ export rootdir='C:/Users/djp93/AppData/Local/Packages/CanonicalGroupLimited.Ubun
 export homedir="$rootdir/home/dpow"
 
 # alias sourceprofile='chmod a+rx /home/dpow/.profile && source /home/dpow/.profile'
-alias subl='cmd subl'
 
 alias listupdate='sudo apt update && sudo apt list --upgradable'
 
@@ -29,6 +28,10 @@ cmd() {
     commandToRun="$1"
     rest=${@/$commandToRun/""}
     /mnt/c/Windows/System32/cmd.exe "/C" "$commandToRun" $rest
+}
+
+subl() {
+    cmd subl $(towindowspath $1)
 }
 
 clip() {
