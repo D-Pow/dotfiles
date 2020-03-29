@@ -11,16 +11,22 @@ topath() {
 
 towindowspath() {
     path=$(topath "$1")
-    # sed -e (execute script that uses regex) interpretation:
-    #     1st -e: replace anything that isn't '/mnt/c' or '/mnt/d' with '$rootdir/'.
-    #         Used for the case that path isn't in /mnt/c or /mnt/d
-    #         in which case just append $rootdir to the beginning.
-    #         `!` == "cases that don't match"
-    #     2nd -e: replace '/mnt/X' with 'X:'.
-    #         Used for the case that path is in a Windows directory,
-    #         e.g. /mnt/c or /mnt/d, so no need to append $rootdir.
-    #         Simply change '/mnt/c' with 'C:', likewise for 'D:'
-    echo $path | sed -e "/^\\/mnt\\/[dc]/! s|/|$rootdir/|" -e "s|/mnt/c|C:|" -e "s|/mnt/d|D:|"
+    # sed -e (execute script that uses regex)
+    #     Allows multiple sed executions instead of only one.
+    #
+    # Interpretation:
+    #     "/^\/mnt\//! s|/|$rootdir/|"
+    #         * Match any string that doesn't start with '^/mnt/' and replace '/' with '$rootdir/'.
+    #         * Used for the case that path is in the Linux subsystem instead of
+    #           a native Windows directory (like /mnt/c or /mnt/d).
+    #         * In this case, append $rootdir to the beginning to get the
+    #           Windows path.
+    #         * `!` == "cases that don't match"
+    #     "s|/mnt/\(.\)|\U\1:|"
+    #         * Replace '/mnt/x' with uppercase letter and colon, i.e. 'X:'
+    #         * Used for the case that path is in a native Windows directory,
+    #           (e.g. /mnt/c or /mnt/d), so don't append $rootdir.
+    echo $path | sed -e "/^\/mnt\//! s|/|$rootdir/|" -e "s|/mnt/\(.\)|\U\1:|"
 }
 
 cmd() {
