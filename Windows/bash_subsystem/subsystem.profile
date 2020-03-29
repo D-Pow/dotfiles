@@ -52,8 +52,21 @@ cmd() {
     /mnt/c/Windows/System32/cmd.exe "/C" "$commandToRun" $rest
 }
 
-subl() {
-    cmd subl $(towindowspath $1)
+alias subl=/mnt/c/Sublime_Text_3/subl.exe
+
+# TODO make the command below work
+# subl -n `towindowspath '/mnt/d/file with spaces.txt' /home/file`
+testargs() {
+    argArray=()
+
+    # $@ is all args
+    # Wrapping "$@" in double quotes preserves args that have spaces in them
+    for i in "$@"; do
+        parsedPath=`towindowspath "$i"`
+        argArray+=("$parsedPath")
+    done
+
+    subl -n "${argArray[@]}"
 }
 
 clip() {
