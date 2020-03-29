@@ -13,14 +13,15 @@ topath() {
 towindowspath() {
     path=$(topath "$1")
     # sed -e (execute script that uses regex) interpretation:
-    #     1st -e: replace anything that isn't '/mnt/c' with '$rootdir/'
-    #         Used for the case that path isn't in /mnt/c
-    #         in which case just append $rootdir to the beginning
-    #     2nd -e: replace '/mnt/c' with 'C:'
-    #         Used for the case that path is in /mnt/c
-    #         in which case, we're in a Windows directory, so no need to append $rootdir
-    #         so we simply need to change '/mnt/c' with 'C:'
-    echo $path | sed -e "/^\\/mnt\\/c/! s|/|$rootdir/|" -e "s|/mnt/c|C:|"
+    #     1st -e: replace anything that isn't '/mnt/c' or '/mnt/d' with '$rootdir/'.
+    #         Used for the case that path isn't in /mnt/c or /mnt/d
+    #         in which case just append $rootdir to the beginning.
+    #         `!` == "cases that don't match"
+    #     2nd -e: replace '/mnt/X' with 'X:'.
+    #         Used for the case that path is in a Windows directory,
+    #         e.g. /mnt/c or /mnt/d, so no need to append $rootdir.
+    #         Simply change '/mnt/c' with 'C:', likewise for 'D:'
+    echo $path | sed -e "/^\\/mnt\\/[dc]/! s|/|$rootdir/|" -e "s|/mnt/c|C:|" -e "s|/mnt/d|D:|"
 }
 
 cmd() {
