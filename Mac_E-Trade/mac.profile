@@ -24,28 +24,33 @@ export PS1="\[\033[36m\]\u\[\033[m\]:\[\033[33;1m\]\w\[\033[m\]\$ "
 export CLICOLOR=1
 export LSCOLORS=GxFxBxDxCxegedabagacad
 
-workMode='true'
-# workMode='false'
-if [ "$workMode" = "true" ]; then
-    # Run proxy
-    cntlmIsRunning=$(lsof -Pn -i4 | grep cntlm)
-    if [[ -z $cntlmIsRunning ]]; then
-        cntlm
+
+toggleProxy() {
+    if [ "$1" = "on" ]; then
+        echo 'Activating cntlm with proxy to "http://localhost:3128"'
+        # Run proxy
+        cntlmIsRunning=$(lsof -Pn -i4 | grep cntlm)
+        if [[ -z $cntlmIsRunning ]]; then
+            cntlm
+        fi
+        #DEV: iadwg-lb.corp.etradegrp.com
+        #PRD: atlwg-lb.corp.etradegrp.com
+        #export http_proxy=http://user:pass@iadwg-lb.corp.etradegrp.com:9090/
+        export http_proxy=http://localhost:3128
+        export HTTP_PROXY=$http_proxy
+        export https_proxy=$http_proxy
+        export HTTPS_PROXY=$http_proxy
+    elif [ "$1" = "off" ]; then
+        echo 'Deactivating cntlm and unsetting proxy'
+        killall cntlm
+        unset http_proxy
+        unset HTTP_PROXY
+        unset https_proxy
+        unset HTTPS_PROXY
+    else
+        echo 'Usage: toggleProxy [on|off]'
     fi
-    #DEV: iadwg-lb.corp.etradegrp.com
-    #PRD: atlwg-lb.corp.etradegrp.com
-    #export http_proxy=http://user:pass@iadwg-lb.corp.etradegrp.com:9090/
-    export http_proxy=http://localhost:3128
-    export HTTP_PROXY=$http_proxy
-    export https_proxy=$http_proxy
-    export HTTPS_PROXY=$http_proxy
-else
-    killall cntlm
-    unset http_proxy
-    unset HTTP_PROXY
-    unset https_proxy
-    unset HTTPS_PROXY
-fi
+}
 
 
 copy() {
