@@ -1,0 +1,12 @@
+#!/bin/bash
+
+pacLocation="file:///Users/dpowell1/repositories/dotfiles/Mac_E-Trade/bin/fixed-proxy.pac"
+macNetworkProxyConfigLocation="/Library/Preferences/SystemConfiguration/preferences.plist"
+
+# on Mac, `sed -i` requires an additional parameter for inline replacement
+# b/c Mac copies the old file before replacing the lines. The extension goes on the
+# old file that was replaced
+sed -i '.bak' "s|http://[0-9.]*:[0-9]*/localproxy-[0-9]*.pac|$pacLocation|" $macNetworkProxyConfigLocation
+
+defaults read $macNetworkProxyConfigLocation > /dev/null
+networksetup -getautoproxyurl "Wi-Fi"
