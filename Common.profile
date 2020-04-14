@@ -77,6 +77,7 @@ alias   gbb='getGitBranch'
 alias   gbd='git branch -d $(git branch | grep -v "*")'
 alias   gck='git checkout'
 alias    gl='git log --stat --graph'
+alias   gld='git log --stat --graph -p' # show diff in git log (i.e. detailed `git blame`). Choose single file with `gld -- <file>`
 alias   glo='git log --stat --graph --oneline'
 alias   gla='git log --stat --graph --oneline --all'
 alias   glb='gl --first-parent $(getGitBranch)' # only show this branch's commits
