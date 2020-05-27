@@ -3,7 +3,7 @@
 # WebStorm license link: https://account.jetbrains.com/a/5vmhuqob
 
 # Program paths
-export APACHE_HOME=/Applications/apache-maven-3.2.5/bin
+export MAVEN_HOME=/Applications/apache-maven-3.6.3/bin
 export GRADLE_4_HOME=/opt/gradle/gradle-4.5.1/bin
 export GRADLE_HOME=/opt/gradle/gradle-6.0.1/bin
 export SUBLIME_HOME=/Applications/Sublime\ Text.app/Contents/SharedSupport/bin
@@ -12,7 +12,7 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Hom
 export BOOST_HOME=/usr/local/boost_1_67_0
 export PIP3_HOME=/Users/dpowell1/Library/Python/3.6/bin
 export PIP2_HOME=/Users/dpowell1/Library/Python/2.7/bin
-export PATH=$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$APACHE_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$SUBLIME_HOME:$BOOST_HOME:/usr/local/bin:/Users/dpowell1/bin:$PATH
+export PATH=$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$MAVEN_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$SUBLIME_HOME:$BOOST_HOME:/usr/local/bin:/Users/dpowell1/bin:$PATH
 
 # node-sass binary (since `npm install node-sass` always fails on post-install script)
 #export SASS_BINARY_PATH=/Users/dpowell1/repositories/binaries/node-sass-binary.node
