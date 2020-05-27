@@ -1,0 +1,17 @@
+Phoenix is just for session management: stk1 token -> userId
+
+RabbitMQ login in em.properties
+
+Start Rabbit server
+    localhost:15672 (in Dominika chat)
+
+Start tomcat
+    should have s2-core webapp jdk8 in it
+    localhost:8081 (in Dominika chat)
+
+May have to comment out the exclusion tags in pom files related to Oracle
+to remove ClassNotFound exceptions b/c locally we don't
+have access to a database
+
+Change local em.properties so that
+S2_DEFAULT_HTTP(S?)_PROXY_PORT point to local rabbit

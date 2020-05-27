@@ -1,0 +1,23 @@
+X-ray is used for updating Jira tickets with test plans and execution pass/fail status
+    Example: STRUM-7046
+
+Report portal - shows stats of tests
+
+Alternatives to Nightwatch
+    TestCafe
+        Couldn't aggregate selections, e.g. counting how many elements of a selector exists on the page
+    Cypress
+        Only supports Chrome
+        Has a fantastic network-mocking system that intercepts requests and returns desired mock objects
+    Webdriver.io
+        Uses standard jest syntax, so no new flows to learn
+        Doesn't have a wrapper around selenium, so devs can run selenium commands directly
+    Note: Alternatives won't be able to use common commands in e-watch (e.g. logging in, x-ray integration)
+
+There's already a Java testing framework that has support for cross-browser testing
+    It's in a separate repo and would thus need to stay separate from the current front-end rep
+    Devs need approval by QA to get access to this repo
+    Takes videos/images of tests & says where they failed
+
+Tips when writing code
+    If you add a special attribute (e.g. `<div data-test="myComponent" />`), it makes finding your element much easier because you can access it directly without needing to worry about nested CSS selectors or the page layout changing later
