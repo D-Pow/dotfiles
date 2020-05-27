@@ -7,7 +7,7 @@
         "brace_style": "end-expand"
     },
     "js": {
-        "brace_style": "end-expand",
+        "brace_style": "collapse-preserve-inline",
         "object_curly_spacing": false
     },
     "custom": {
