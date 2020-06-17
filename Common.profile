@@ -64,9 +64,18 @@ getGitBothModified() {
     git status | grep both | sed 's|both modified:||'
 }
 
+getGitModifiedContaining() {
+    git status | grep 'modified:' | sed 's|modified:||' | egrep -o '\S+' | grep "$1"
+}
+
+getGitDiffOfFilesContaining() {
+    git diff $(getGitModifiedContaining "$1")
+}
+
 alias     g='git'
 alias    gs='git status'
 alias    gd='git diff'
+alias   gds='getGitDiffOfFilesContaining'
 alias   gdc='git diff --cached'
 alias   gdl='git diff -R'  # show line endings - CRLF or CR; any CR removed will be a red `^M` in green lines
 alias   gdi='ignoreFileInGitDiff'
