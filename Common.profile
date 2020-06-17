@@ -36,7 +36,7 @@ getAllCrlfFiles() {
 ##### Aliases and functions for git commands #####
 
 openGitMergeConflictFilesWithSublime() {
-    subl $(gs | grep both | sed 's|both modified:||')
+    subl $(getGitBothModified)
 }
 
 ignoreFileInGitDiff() {
@@ -58,6 +58,10 @@ getGitRepoName() {
     # | filter out '/repo-name.git' -o-onlyReturnMatch -m-getNmatches
     # | sed -rEgex substitute~(/|.git)~['']~globally (apply to all matches, not just 1)
     git remote -v | grep origin | egrep -o -m 1 "/[^/]+\.git" | sed -E 's~(/|.git)~~g'
+}
+
+getGitBothModified() {
+    git status | grep both | sed 's|both modified:||'
 }
 
 alias     g='git'
