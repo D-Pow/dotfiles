@@ -191,7 +191,7 @@ window.getVolumeThatCanSurpass1 = function() {
 };
 
 window.videoArrowKeyListenerExec = function() {
-    /* useful arrow functionality for video players that don't include it automatically */
+    /* useful video seek arrow functionality for video players that don't include it automatically */
     window.seekSpeed = 5;
     window.video = document.querySelector('video');
     document.onkeydown = event => {
