@@ -47,3 +47,23 @@ task libJar(type: Jar) {
     // Exclude signature files
     exclude('META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA')
 }
+
+
+// war task configuration from
+// https://docs.gradle.org/current/userguide/war_plugin.html#sec:war_default_settings
+
+war {
+    from 'src/rootContent' // adds a file-set to the root of the archive
+    webInf { from 'src/additionalWebInf' } // adds a file-set to the WEB-INF dir.
+    classpath fileTree('additionalLibs') // adds a file-set to the WEB-INF/lib dir.
+    classpath configurations.moreLibs // adds a configuration to the WEB-INF/lib dir.
+    webXml = file('src/someWeb.xml') // copies a file to WEB-INF/web.xml
+}
+
+
+// Adding local directories to `repositories` search block (for if a dependency is downloaded locally)
+
+repositories {
+   flatDir { dirs "lib" }
+   jcenter()
+}
