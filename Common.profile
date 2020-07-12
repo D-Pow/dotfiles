@@ -22,6 +22,28 @@ dirsize() {
     du -h -d 1 ./ | sort -rh
 }
 
+memusage() {
+    # `ps` = process status, gets information about a running process.
+    # vsz = Virtual Memory Size: all memory the process can access, including shared memory and shared libraries.
+    # rss = Resident Set Size: how much memory allocated to the process (both stack and heap), not including
+    #       shared libraries, unless the process is actually using those libraries.
+    # TL;DR, RSS is memory the process is using while VSZ is what the process could possibly use
+    #
+    # ps
+    # | grep (column title line and search query)
+    # | awk 'change columns 3 and higher to be in MB instead of KB'
+    # | sed 'remove double-space from CPU column b/c not sure why it is there'
+    ps x -eo pid,%cpu,user,command,vsz,rss | egrep -i "(RSS|$1)" | awk '{
+        for (i=2; i<=NF; i++) {
+            if ($i~/^[0-9]+$/) {
+                $i=$i/1024 "MB";
+            }
+        }
+
+        print
+    }' | sed 's|  %CPU| %CPU|'
+}
+
 npms() {
     # regex is homemade ~/bin/regex python script
     regex '"scripts": [^\}]*\}' ./package.json
