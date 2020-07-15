@@ -82,7 +82,7 @@ alias mvninstall='mvn clean install -Dmaven.javadoc.skip=true -DskipTests' #Add 
 alias mvntest='mvn clean install -Dmaven.javadoc.skip=true'
 alias mvntestsubmodule='mvn test -pl'
 alias spainstall='mvn clean install -Dmaven.javadoc.skip=true -DskipTests -Puat'
-alias buildMutualFundsAIP='rmpom && pomgen && mvnsetup && mvninstall'
+alias buildMutualFundsAIP='mvnsetup'
 
 cf() {
     touch "$1" && chmod a+x "$1"
@@ -112,6 +112,7 @@ sitAipUsernames=(
     'ACCN9200' #no accounts
 )
 uatAipUsernames=(
+    'BLXF9400' #has reg-bi beta flag
     'BCXH8500' #has IRA
     'BFCV1900' #CAP 1, owns fund ANIAX
     'BEVL7000'
@@ -168,11 +169,11 @@ gckb() {
     repoName="$(getGitRepoName)"
 
     if [ "$repoName" == "react-mutualfundsandetf" ]; then
-        git checkout feature/PrebuiltxAIP-controls
+        git checkout feature/baseline/reg-bi
     elif [ "$repoName" == "react-aip" ]; then
-        git checkout feature/baseline-prebuiltmvp
+        git checkout feature/baseline-20200529
     elif [ "$repoName" == "mutual_fund_etf" ]; then
-        git checkout feature/baseline-aip-prebuilt
+        git checkout feature/baseline-etf-aip-mvp
     fi
 }
 
