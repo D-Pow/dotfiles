@@ -71,11 +71,16 @@ resetJetbrains() {
 }
 
 
+mvntestfileinsubmodule() {
+    mvn test -Dtest=$1
+}
+
 alias rmpom='find . -name "pom.xml" -type f -delete'
 alias pomgen='mvn pomgenerator:generate'
 alias mvnsetup='chmod a+x setup.py && ./setup.py'
 alias mvninstall='mvn clean install -Dmaven.javadoc.skip=true -DskipTests' #Add -U to force download from nexus
 alias mvntest='mvn clean install -Dmaven.javadoc.skip=true'
+alias mvntestsubmodule='mvn test -pl'
 alias spainstall='mvn clean install -Dmaven.javadoc.skip=true -DskipTests -Puat'
 alias buildMutualFundsAIP='rmpom && pomgen && mvnsetup && mvninstall'
 
