@@ -94,6 +94,10 @@ getGitDiffOfFilesContaining() {
     git diff $(getGitModifiedContaining "$1")
 }
 
+getGitIgnoredFiles() {
+    git status --ignored
+}
+
 alias     g='git'
 alias    gs='git status'
 alias    gd='git diff'
