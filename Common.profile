@@ -100,6 +100,7 @@ getGitIgnoredFiles() {
 
 alias     g='git'
 alias    gs='git status'
+alias   gsi='getGitIgnoredFiles'
 alias    gd='git diff'
 alias   gds='getGitDiffOfFilesContaining'
 alias   gdc='git diff --cached'
