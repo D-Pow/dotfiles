@@ -12,6 +12,7 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
     - [Advanced Commands](#advanced-commands)
     - [Util Commands](#util-commands)
 * [Best Practices](#best-practices)
+* [Shortcuts](#shortcuts)
 
 ## Terms
 
@@ -233,3 +234,52 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
     - This is especially true when you and your team don't remember the exact reason why a piece of code was changed or why it exists in the first place.
     - In this case, it makes a world of difference to read a good commit message and see only the changes related to that change instead of seeing lots of other code unrelated to the change.
     - `git blame` and `git log -p` become your best friends in these cases!
+
+## Shortcuts
+
+    "Doing incremental commits sounds like a great idea,
+    but what about all the time spent typing in the terminal?"
+
+Something I've personally found very helpful to speed up my work flow are aliases and functions for commands I use frequently. For example, some of the aliases I use include:
+
+```
+// ~/.profile
+alias  gs='git status'
+alias  gd='git diff'
+alias gdc='git diff --cached'
+alias  gc='git commit -m'       # gc "MAS-1234 My message" -m "Long description"
+alias gac='git commit -am'      # same as `gc` but adds all files
+
+getGitBranch() {
+    # sed: replace '* ' with ''
+    git branch | grep '*' | sed -E 's|(^\* )||'
+}
+
+alias   gpu='git push -u origin $(getGitBranch)'
+```
+
+These aliases/functions become very useful for automating git functions and speeding up your work flow.
+
+For example, in this company, it is required to include a Jira ticket ID with every commit so it can be tracked. Since it becomes quite tedious over time to remember the Jira ticket and type it in every commit, you could use a terminal autocomplete function to fill it out for you with aliases and functions, assuming your branch is named `(feature|hotfix|bugfix)/JIRA-1234-optionalBranchDescription`.
+
+e.g. If you use a Mac, there is a built-in `complete` function that defines how `Tab` works in the terminal. I like to use that to type `gc [Tab]` and have it add the Jira ticket as a prelude to my commit message:
+
+```
+# Make bash autocomplete when tabbing after "git commit" alias like gc or gac
+autocompleteWithJiraTicket() {
+    # sed -rEgex
+    #   'substitute|Jira ticket at start of branch regex|\1 = extract matching text only|'
+    branch=$(getGitBranch | sed -E 's|.*/([A-Z]+-[0-9]+).*|\1|')
+    COMPREPLY=$branch
+    return 0
+}
+
+# Requires alias because spaces aren't allowed (so can't use `git commit`)
+# -P = Character with which to prepend text.
+#   Set to use `"` but you could use `'` instead to allow back-ticks, `, in
+#   your messages.
+complete -F autocompleteWithJiraTicket -P \" "gc"
+complete -F autocompleteWithJiraTicket -P \" "gac"
+```
+
+This will make `gc [Tab]` autocomplete in the terminal to `gc "JIRA-1234 ` which will allow you to type your git commit message after the Jira ticket number. Just remember to close it off with a `"` at the end.
