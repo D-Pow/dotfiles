@@ -219,5 +219,7 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
         + Sometimes, features require lots of changes before you can verify that foundational code blocks work correctly.
         + e.g. Adding a new util function in the process of adding a new endpoint, but you need that endpoint in order to call that function.
         + In these situations, you could essentially code the entire feature without any commits, and then selectively commit portions of code so that the repository history is dev-friendly while also not impeding your work flow.
-* The reason incremental commits with good messages are helpful isn't apparent at first, rather months down the line when you and your team don't remember the exact reason why a piece of code was changed or why it exists in the first place.
-    - `git blame` becomes your best friend in these cases!
+* The reason incremental commits with good messages are helpful isn't apparent at first, rather months down the line.
+    - This is especially true when you and your team don't remember the exact reason why a piece of code was changed or why it exists in the first place.
+    - In this case, it makes a world of difference to read a good commit message and see only the changes related to that change instead of seeing lots of other code unrelated to the change.
+    - `git blame` and `git log -p` become your best friends in these cases!
