@@ -159,6 +159,12 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
         + `-m "message"` - Add a message to the stash entry.
         + `-p` - "Patch," only stash some lines, same concept as `git add -p`.
         + `-- <glob>` - Only stash files matching the glob pattern.
+* **`git revert <commit>`** - Undoes a commit, leaving it in the history.
+    - Very helpful to undo a commit when working with remote repositories since `git push -f` is highly discouraged (and blocked on some repositories).
+* **`git cherry-pick <commit>`** - Copies the changes of the commit specified onto your branch.
+    - Useful if you need the changes from a second branch in your branch.
+        + e.g. You made commits in the wrong branch and need them in another branch.
+        + e.g. You can't run `git revert` since other code was added after that commit, so you copy the commits you want to a new branch without that commit.
 * **`git rebase`** - Allows you to rewrite history.
     - Can only be done with a clean working directory (so stash any changes you want to keep).
     - `-i <commit>` - Rebases in interactive mode. Will first pull up a screen to let you choose what to do with each commit, followed by subsequent screens that allow you to apply your changes and/or exiting the core.editor to allow you to modify a commit.
