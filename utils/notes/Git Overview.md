@@ -196,8 +196,6 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
 
 ## Best Practices
 
-* Incremental commits end up being more helpful than large "god" commits.
-    - // TODO
 * Write **good commit messages and descriptions**.
     - Good messages/descriptions are extremely helpful to explain why a change was made, especially when code comments aren't really appropriate.
     - For example, if I changed a CSS class on an HTML element to assist with centering, it would likely be both superfluous and annoying if I added a comment in the code explaining why `margin: auto;` didn't work but `text-align: center;` did.
@@ -212,5 +210,14 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
     and requires its own special CSS style, `text-align`. Thus, center text
     within the div by swapping the .m-auto Bootstrap class with .text-center.
     ```
+* Make **small, incremental commits** instead of large "god" commits.
+    - Multiple small commits allow the team to be able to operate on the repository's history much easier than when they see a god commit with a generic description, such as "Add new endpoint to do X." This includes:
+        + Reverting code
+        + Cherry-picking commits
+        + Better understanding of what changes were associated with a particular line of code when using `git blame`/`git log -p`.
+    - `git add -p` is an incredibly useful tool to assist with this because it allows you to select small parts of code to make commits even when you have made many changes in a repository.
+        + Sometimes, features require lots of changes before you can verify that foundational code blocks work correctly.
+        + e.g. Adding a new util function in the process of adding a new endpoint, but you need that endpoint in order to call that function.
+        + In these situations, you could essentially code the entire feature without any commits, and then selectively commit portions of code so that the repository history is dev-friendly while also not impeding your work flow.
 * The reason incremental commits with good messages are helpful isn't apparent at first, rather months down the line when you and your team don't remember the exact reason why a piece of code was changed or why it exists in the first place.
     - `git blame` becomes your best friend in these cases!
