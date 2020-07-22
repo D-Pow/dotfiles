@@ -23,20 +23,20 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
     * commit 96f935a1b27bebbd34d2c4965ad9885e0d31b146 (HEAD -> feature/MAS-3238, origin/feature/MAS-3238)
     | Author: dpowell1 <devon.powell@etrade.com>
     | Date:   Mon Jul 20 16:51:45 2020 -0400
-    | 
+    |
     |     MAS-3238 Bug fix: Make mock sessionStorage.getItem() return null if key not found
-    |     
+    |
     |     Objects lacking keys return 'undefined' but getItem() returns 'null'
-    | 
+    |
     |  testSetup.js | 2 +-
     |  1 file changed, 1 insertion(+), 1 deletion(-)
-    | 
+    |
     * commit c228dfe193cd1424923726dfc043e7f9f9f6cc3c
     | Author: dpowell1 <devon.powell@etrade.com>
     | Date:   Mon Jul 20 16:39:37 2020 -0400
-    | 
+    |
     |     MAS-3238 Add tests for new Store.getFrequencyMapping() function
-    | 
+    |
     |  tests/store/Store.test.js | 47 +++++++++++++++++++++++++++++++++++++++++++++++
     |  1 file changed, 47 insertions(+)
     ```
@@ -46,7 +46,7 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
     On branch feature/MAS-4215-updateAipServicePortAndProtocol
     Changes to be committed:
       (use "git reset HEAD <file>..." to unstage)
-    
+
         modified:   mutualFundEtf-services-webapp/src/main/resources/config/em.properties.template
 
     Changes not staged for commit:
@@ -198,7 +198,7 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
     ```
     Bug fix: Center text within div
     ```
-    and a description of 
+    and a description of
     ```
     `margin: auto` centers HTML elements, but not the content inside them.
     Since text is not an HTML element, it isn't affected by margin changes,
