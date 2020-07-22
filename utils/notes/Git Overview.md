@@ -198,8 +198,9 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
 
 * Incremental commits end up being more helpful than large "god" commits.
     - // TODO
-* Likewise, good messages and descriptions are particularly helpful to explain why a change was made, especially when comments aren't really appropriate.
-    - For example, if I changed a CSS class on an HTML element to assist with centering, it would likely be both superfluous and annoying if I added a comment in the code explaining why `margin: auto` didn't work but `text-align: center` did.
+* Write **good commit messages and descriptions**.
+    - Good messages/descriptions are extremely helpful to explain why a change was made, especially when code comments aren't really appropriate.
+    - For example, if I changed a CSS class on an HTML element to assist with centering, it would likely be both superfluous and annoying if I added a comment in the code explaining why `margin: auto;` didn't work but `text-align: center;` did.
     - In this case, it would be super helpful to have a message somewhat along the lines of
     ```
     Bug fix: Center text within div
