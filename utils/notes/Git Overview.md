@@ -240,7 +240,7 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
     "Doing incremental commits sounds like a great idea,
     but what about all the time spent typing in the terminal?"
 
-Something I've personally found very helpful to speed up my work flow are aliases and functions for commands I use frequently. For example, some of the aliases I use include:
+Something I've personally found very helpful to speed up my work flow are **aliases and functions** for commands I use frequently. For example, some of the aliases I use include:
 
 ```
 // ~/.profile
