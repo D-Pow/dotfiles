@@ -69,7 +69,7 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
         + You don't want to be in a *detached HEAD* state. Instead, use `git reset` (below).
 * **origin** - The most common nickname for a remote repository. "origin" is automatically chosen when using `git (pull|fetch|push)` commands.
     - You can have multiple remote repositories associated with your local git repository, such as having one remote for holding source code (`origin`) and one remote for the deployment (`heroku`).
-* **Pull-request** - The process used in a remote repository to merge one branch into another branch while also showing the two branches' differences and allowing other users to comment on those differences.
+* **Pull-request** (a.k.a **PR**) - The process used in a remote repository to merge one branch into another branch while also showing the two branches' differences and allowing other users to comment on those differences.
     - Very useful feature of remote repositories because it allows your teammates to review your code before merging, and vice versa.
     - e.g. You will need to make a pull-request before merging your new feature/bug-fix branch to the main branch in the remote repository.
 * **Merge conflict** - When the same line(s) in the same file(s) were modified in the source and destination branches of a pull-request or merge.
