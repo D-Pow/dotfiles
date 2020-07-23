@@ -329,6 +329,16 @@ Things to keep in mind:
     * Add tests for each option in new `Store.getFrequencyMapping()`
     * Replace `FREQUENCY_MAPPING` usage with new util function
     ```
+* No one is always right.
+    - There have been times I commented on a PR to request a change just to find out the change would've broken something else.
+    - There have also been times someone commented on my PR requesting a change and, after I explained why I made those changes how I did, they ended up agreeing with me.
+    - Again, PR comments are a *conversation*, not a one-way street where all suggested changes should be made.
+* Pick your battles.
+    - Remember, **you're a team first**, and a reviewer second.
+    - Sometimes, especially when I've made many other comments on the PR, I'll decide not to make a new minor "Nit" suggestion so I don't overwhelm the other person.
+    - Similarly, sometimes it's reasonable to postpone a really good suggestion to a future PR and/or make a new Jira ticket in the backlog so it doesn't get forgotten so you can merge your code in the interest of time.
+    - On the other hand, if the PR would break something or go against library guidelines, it would be worthwhile to not postpone the change to a future PR/Jira ticket.
+* Be patient and understanding.
 
 ## Shortcuts
 
