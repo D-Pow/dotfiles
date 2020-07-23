@@ -12,6 +12,8 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
     - [Advanced Commands](#advanced-commands)
     - [Util Commands](#util-commands)
 * [Best Practices](#best-practices)
+    - [Commits](#commits)
+    - [Code Reviews](#code-reviews)
 * [Shortcuts](#shortcuts)
 
 ## Terms
@@ -207,6 +209,8 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
 
 ## Best Practices
 
+### Commits
+
 * Write **good commit messages and descriptions**.
     - Good messages/descriptions are extremely helpful to explain why a change was made, especially when code comments aren't really appropriate.
     - For example, if I changed a CSS class on an HTML element to assist with centering, it would likely be both superfluous and annoying if I added a comment in the code explaining why `margin: auto;` didn't work but `text-align: center;` did.
@@ -238,6 +242,80 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
     - https://bitbucket.etrade.com/projects/WEBC/repos/design-language-react/pull-requests/197/commits
     - https://github.com/spring-projects/spring-boot/commit/e4fa9ce8c6751f4ad696ff75b7783b7f7af516f9
         + Great message, but could be improved by splitting into multiple commits, at least for src/test files.
+
+### Code Reviews
+
+* Code reviews take place for every pull-request.
+* They are a great way to share ideas and learn from one another.
+
+Things to keep in mind:
+
+* Don't take comments personal; **assume best intent**.
+    - Tone doesn't travel through text.
+    - Comments are often short and to the point, which could come across as rude. It's unlikely the reviewer was trying to be rude when they wrote that.
+    - If someone asks for you to rewrite or refactor the code, it's not a slight on your coding skills. In fact, it serves as a great learning opportunity.
+* Likewise, **be conscientious of your wording**.
+    - Rephrasing a command to a question often both softens the comment and invites a conversation instead of just an "okay, will do" response.
+    - Try to avoid "you" when possible. Replace with "I feel like..." or "Do you think..."
+* **Don't be shy** when commenting.
+    - If you have trouble understanding what's going on, ask!
+    - No one will be disappointed with a curious mind.
+    - You may be thinking of an important edge case that, if you stayed silent, would become a bug later on.
+* You can **comment on your own PR** to give context or clarify a change.
+    - Sometimes git makes strange decisions in where it decides to mark lines as added/removed which could make some code blocks display more added/removed lines than what you actually did.
+    - If you were to comment on that code block to call out e.g. the one line that was actually changed vs the lines that changed based only on spacing, it would be helps reviewers to filter out the red and green noise of the code surrounding the part that's actually important.
+* Take the time to **add a helpful description** for the PR. Your teammates will be grateful.
+    - BitBucket defaults to pre-filling the description with commit messages.
+    - It helps to replace them with a few paragraphs/bullet-points that summarize what you did and why.
+    - This is a lot more readable than a list of commits.
+    - You can still see a list of commits in the "Commits" tab, so they are still visible.
+    - Unlike the message in a single commit, the PR description covers all commits. It can be helpful to split the description into sections, such as "Primary/Secondary Additions" or "Source/Test Changes"
+    ```
+    This PR adds various customizations to the rendered icon.
+
+    Primary additions:
+    * The ability for the user to apply CSS classes to the icon
+    * The ability to toggle on/off the rotation of the icon upon expanding content
+    * The ability to put the icon to the right of the label instead of always on the left
+
+    Also in this PR:
+    * Fix classnames() not reading arguments keyword properly
+    * Fix React error 'Children in arrays must have unique keys'
+        - The logic to change the btnChildren declaration order in ExpandCollapse was simplified by
+          using an array. However, this array causes React to throw an error claiming they must have
+          unique keys. Fix that by specifying the two children of the array individually instead of
+          just rendering the array directly.
+    * Remove deprecated class declaration
+    ```
+    or
+    ```
+    This PR refactors the front-end code base to call an endpoint to get the frequency-investmentDay
+    mappings array instead of using a hard-coded constant, allowing the back-end to be the single
+    source of truth for frequency IDs (i.e. frequencyCode) and displayed text.
+
+    Source changes:
+    * Add API call to new endpoint `/getFrequenciesAndInvestmentDays`
+    * Set the results of the API call to new sessionStorage field
+        - Caches the response only for the browser session
+        - Allows subsequent page loads to be quicker
+        - Data will be up-to-date since sessionStorage is cleared when the browser closes
+    * Add new `Store.getFrequencyMapping()` util function for getting frequency mappings. Includes:
+        - Getting single mapping based on `frequencyName`, `frequencyCode`, or index in mappings
+          array
+        - Getting the whole array with or without the backwards-compatible
+          "When funds available" option
+    * Replace `FREQUENCY_MAPPING` usage with new util function
+
+    Test changes:
+    * Enhance testSetup.js
+        - Fix mock sessionStorage object to return `null` instead of `undefined` if key not found
+          to match actual sessionStorage object in the browser
+        - Add mocks for `fetch` and `XHR` for easier network mocking using `MockRequests`
+        - Mock design-language's `Flyout` component since it was the source of many of the erroneous
+          errors printed to the console when testing
+    * Add tests for each option in new `Store.getFrequencyMapping()`
+    * Replace `FREQUENCY_MAPPING` usage with new util function
+    ```
 
 ## Shortcuts
 
