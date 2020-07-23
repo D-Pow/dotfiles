@@ -234,6 +234,10 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
     - This is especially true when you and your team don't remember the exact reason why a piece of code was changed or why it exists in the first place.
     - In this case, it makes a world of difference to read a good commit message and see only the changes related to that change instead of seeing lots of other code unrelated to the change.
     - `git blame` and `git log -p` become your best friends in these cases!
+* Some samples of incremental commits with good messages:
+    - https://bitbucket.etrade.com/projects/WEBC/repos/design-language-react/pull-requests/197/commits
+    - https://github.com/spring-projects/spring-boot/commit/e4fa9ce8c6751f4ad696ff75b7783b7f7af516f9
+        + Great message, but could be improved by splitting into multiple commits, at least for src/test files.
 
 ## Shortcuts
 
