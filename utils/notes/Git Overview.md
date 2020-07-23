@@ -257,19 +257,32 @@ Things to keep in mind:
 * Likewise, **be conscientious of your wording**.
     - Rephrasing a command to a question often both softens the comment and invites a conversation instead of just an "okay, will do" response.
     - Try to avoid "you" when possible. Replace with "I feel like..." or "Do you think..."
+    - IMO I've found adding "Nit: " (stands for nitpick) before the rest of the comment helpful when it deals with minor code improvements that don't break functionality (e.g. variable naming, strange indentions, extracting repeated code to a function, etc.).
 * **Don't be shy** when commenting.
     - If you have trouble understanding what's going on, ask!
     - No one will be disappointed with a curious mind.
     - You may be thinking of an important edge case that, if you stayed silent, would become a bug later on.
+* Compliments are helpful, not noise.
+    - If you really like what someone did or thought it was crafty, let them know!
+    - It doesn't add noise to the PR or annoy people to see a teammate lifting up a fellow teammate.
 * You can **comment on your own PR** to give context or clarify a change.
     - Sometimes git makes strange decisions in where it decides to mark lines as added/removed which could make some code blocks display more added/removed lines than what you actually did.
-    - If you were to comment on that code block to call out e.g. the one line that was actually changed vs the lines that changed based only on spacing, it would be helps reviewers to filter out the red and green noise of the code surrounding the part that's actually important.
+    - If you were to comment on that code block to call out e.g. the one line that was actually changed vs the lines that changed based only on spacing, it would help reviewers to filter out the red and green noise of the code surrounding the part that's actually important.
+    - You can also **request teammates' opinion** on pieces of code that you were on the fence about. This would be a great chance to learn a new perspective and improve yourself!
+    - Examples:
+        + Clarifying a change: https://bitbucket.etrade.com/projects/WEBP/repos/react-mutualfundsandetf/pull-requests/1319/overview
+        + Asking for advice: https://bitbucket.etrade.com/projects/WEBP/repos/react-mutualfundsandetf/pull-requests/1261/overview
+* Change the **PR title to reflect the main change** that was done.
+    - More helpful than just leaving the pre-filled Jira ticket number alone.
+* Always get at least one approval before merging a PR.
+    - Even if an approval isn't marked as necessary by the repository's permissions/rules.
 * Take the time to **add a helpful description** for the PR. Your teammates will be grateful.
     - BitBucket defaults to pre-filling the description with commit messages.
     - It helps to replace them with a few paragraphs/bullet-points that summarize what you did and why.
     - This is a lot more readable than a list of commits.
     - You can still see a list of commits in the "Commits" tab, so they are still visible.
-    - Unlike the message in a single commit, the PR description covers all commits. It can be helpful to split the description into sections, such as "Primary/Secondary Additions" or "Source/Test Changes"
+    - You can add images to your PR description if it helps in understanding what's going on. Particularly helpful for front-end design tweaks.
+    - Unlike the message in a single commit, the PR description covers all commits. It can be helpful to split the description into sections, such as "Primary/Secondary Additions" or "Source/Test Changes" or "File A/File B/..."
     ```
     This PR adds various customizations to the rendered icon.
 
