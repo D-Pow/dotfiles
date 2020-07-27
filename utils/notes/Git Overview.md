@@ -238,6 +238,15 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
     - This is especially true when you and your team don't remember the exact reason why a piece of code was changed or why it exists in the first place.
     - In this case, it makes a world of difference to read a good commit message and see only the changes related to that change instead of seeing lots of other code unrelated to the change.
     - `git blame` and `git log -p` become your best friends in these cases!
+* It's **not always clear** what a worthy incremental commit looks like; it's a learning experience/play-by-ear activity.
+    - When should one change be broken down into multiple commits, and vice versa?
+    - Sometimes one type of incremental commit in one situation isn't incremental in another.
+        + e.g. Adding a constant variable in a separate commit or with a new function addition: either could be justified.
+        + e.g. Changing src/tests in one commit works sometimes but not others.
+    - General **rules of thumb** I use:
+        + Could I add a helpful commit description for this or not?
+        + Are the changes of the same category/result or different?
+        + Does this change add anything useful to the code base (regardless of if it's used or not)?
 * Some samples of incremental commits with good messages:
     - https://bitbucket.etrade.com/projects/WEBC/repos/design-language-react/pull-requests/197/commits
     - https://github.com/spring-projects/spring-boot/commit/e4fa9ce8c6751f4ad696ff75b7783b7f7af516f9
