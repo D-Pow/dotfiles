@@ -103,13 +103,6 @@ In the world of software engineering, git helps us to organize code changes thro
 
 ### Base Commands
 
-* **`git config`** - Configure git to function the way you want.
-    - `--global` - Configure a global setting. Without this flag, it only changes the configs in the current repository.
-    - `user.name <name>` - Set your username.
-    - `user.email <email>` - Set your email.
-    - `core.editor "<command>"` - Set the default editor to open for interactive git commands, such as `git commit`, `git add -p`, and `git rebase -i`.
-        + e.g. `git config --global core.editor "subl -n -w"` - Run the command `subl -n -w` whenever an interactive git action is taking place.
-        + `-n` to open a new window, `-w` to make git wait for the Sublime window to close before continuing
 * **`git init`** - Initializes a new repository in the current directory.
 * **`git clone <url> <local-dir-name>`** - Clones a remote repository to your computer in a new directory specified by local-dir-name.
     - local-dir-name defaults to `./(remote-repo-name)`.
@@ -192,6 +185,13 @@ In the world of software engineering, git helps us to organize code changes thro
 
 ### Util Commands
 
+* **`git config`** - Configure git to function the way you want.
+    - `--global` - Configure a global setting. Without this flag, it only changes the configs in the current repository.
+    - `user.name <name>` - Set your username.
+    - `user.email <email>` - Set your email.
+    - `core.editor "<command>"` - Set the default editor to open for interactive git commands, such as `git commit`, `git add -p`, and `git rebase -i`.
+        + e.g. `git config --global core.editor "subl -n -w"` - Run the command `subl -n -w` whenever an interactive git action is taking place.
+        + `-n` to open a new window, `-w` to make git wait for the Sublime window to close before continuing
 * **`git clean`** - Cleans the working directory of untracked files.
     - `-n` - Displays, but doesn't delete, files that would be deleted in `git clean -f`.
     - `-f` - Deletes untracked files.
