@@ -6,6 +6,7 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
 
 ## Contents
 
+* [What is git?](#what-is-git)
 * [Terms](#terms)
 * [Common Commands](#common-commands)
     - [Base Commands](#base-commands)
@@ -15,6 +16,12 @@ More details can be found in the [git docs](https://git-scm.com/docs/) or `man`/
     - [Commits](#commits)
     - [Code Reviews](#code-reviews)
 * [Shortcuts](#shortcuts)
+
+## What is git?
+
+A utility for tracking file changes, sharing those changes, and understanding when/why that change was made. It helps organize teams such that multiple people can work on the same set of files without being blocked by others or complicating the cooperation process when changing the same files.
+
+In the world of software engineering, git helps us to organize code changes through explanations of each change, and grouping changes that introduce new features into separate branches.
 
 ## Terms
 
