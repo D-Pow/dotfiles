@@ -286,7 +286,7 @@ Things to keep in mind:
     - If you were to comment on that code block to call out e.g. the one line that was actually changed vs the lines that changed based only on spacing, it would help reviewers to filter out the red and green noise of the code surrounding the part that's actually important.
     - You can also **request teammates' opinion** on pieces of code that you were on the fence about. This would be a great chance to learn a new perspective and improve yourself!
     - Examples:
-        + Clarifying a change: https://bitbucket.etrade.com/projects/WEBP/repos/react-mutualfundsandetf/pull-requests/1319/overview
+        + Clarifying a change (with images): https://bitbucket.etrade.com/projects/WEBP/repos/react-mutualfundsandetf/pull-requests/1319/overview
         + Asking for advice: https://bitbucket.etrade.com/projects/WEBP/repos/react-mutualfundsandetf/pull-requests/1261/overview
 * Change the **PR title to reflect the main change** that was done.
     - More helpful than just leaving the pre-filled Jira ticket number alone.
