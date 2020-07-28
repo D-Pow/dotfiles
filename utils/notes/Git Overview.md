@@ -112,7 +112,7 @@ In the world of software engineering, git helps us to organize code changes thro
     - `-d <name>` - Deletes a local branch.
 * **`git checkout`** - Checks out a branch. Alternatively, functions similarly to `git reset --hard` for specific files/paths.
     - `<branch-name>` - Checks out the branch with the given name.
-    - `-b <new-branch-name` - Combination of `git branch <new-branch-name>` and `git checkout <new-branch-name>`.
+    - `-b <new-branch-name>` - Combination of `git branch <new-branch-name>` and `git checkout <new-branch-name>`.
     - `-- <glob>` - Hard-resets the files/directories specified by the glob pattern.
 * **`git status`** - Get an overview of your current git state.
     - Includes staged/unstaged/untracked files, current branch name, differences between current branch and respective remote branch, suggested next commands to run, and other details.
