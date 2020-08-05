@@ -1,0 +1,7 @@
+{
+    "color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme",
+    "extensions": [
+        "md"
+    ],
+    "trim_trailing_white_space_on_save": true
+}
