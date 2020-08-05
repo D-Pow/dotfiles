@@ -75,7 +75,7 @@
             "MarkdownPreview",
             "MoveTab",
             "Package Control",
-            "Package Resource Viewer",
+            "PackageResourceViewer",
             "Sass",
             "SublimeLinter (uses ESLint)",
             "SublimeLinter-eslint (also required with SublimeLinter",
