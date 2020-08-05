@@ -3,6 +3,7 @@
         "js",
         "ts",
         "mjs",
-        "cjs"
+        "cjs",
+        "pac"
     ]
 }
