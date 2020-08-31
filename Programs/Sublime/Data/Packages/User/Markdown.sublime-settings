@@ -3,5 +3,6 @@
     "extensions": [
         "md"
     ],
+    "mde.keymap_disable.fold_section": true, // key bindings for shift+tab are on both indent_list_item and fold_section
     "trim_trailing_white_space_on_save": true
 }
