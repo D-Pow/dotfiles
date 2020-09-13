@@ -15,26 +15,31 @@ gril() {
 dirsize() {
     usage="Displays total disk usages of all directories within the given path.
 
-    Usage: dirsize [-d=1] [path=./]
+    Usage: dirsize [-d=1] [-f] [path=./]
 
     Options:
         -d | Depth of directories to display; defaults to 1 (dirs inside <path>).
-           | Total disk usages will be calculated regardless of -d value."
+           | Total disk usages will be calculated regardless of -d value.
+        -f | Include files in output."
 
     # local vars to avoid them being accessible outside this function
     local OPTIND=1 # bash is retarded and uses a *global* OPTIND, so it isn't reset on subsequent calls
     local depth=1
+    local showFiles=false
     local path="."
 
     # "abc" == flags without an input following them, e.g. `-h` for --help
     # "a:"  == flags with an input following them, e.g. `-d 5`
     # ":ab" == leading colon activates silent mode, e.g. don't print `illegal option -- x`
-    while getopts "d:h" opt; do
+    while getopts "d:fh" opt; do
         case "$opt" in # OPTARG is the variable containing the arg value
             d)
                 depth="$OPTARG"
                 ;;
-            *|h)
+            f)
+                showFiles=true
+                ;;
+            *)
                 # While nested functions are valid syntax in bash, we cannot create a
                 # nested printUsage() function because it would be available outside the
                 # scope of this function, and `local myFunc() {...}` is invalid syntax
@@ -57,6 +62,10 @@ dirsize() {
         path="${!OPTIND}"
     fi
 
+    if [ "$showFiles" = true ]; then
+        echo -e "Directories:"
+    fi
+
     # ls -lah has a max size display of 4.0K or 1G, so it doesn't show sizes bigger than that,
     # and doesn't tally up total size of nested directories.
     # du = disk usage
@@ -66,6 +75,14 @@ dirsize() {
     #   human-readable sizes like KB, MB, GB, etc.) in descending order
     # Manually add '/' at the end of output to show they are directories
     du -h -d $depth "$path" | sort -rh | sed -E 's|(.)$|\1/|'
+
+    if [ "$showFiles" = true ]; then
+        # -e flag enables interpreting backslashes instead of printing them, e.g. \n
+        echo -e "\nFiles:"
+
+        # du can't mix -a (show files) and -d (depth) flags, so run it again for files
+        find "$path" -maxdepth $depth -type f -print0 | xargs -0 du -h | sort -rh
+    fi
 }
 
 memusage() {
