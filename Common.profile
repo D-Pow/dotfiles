@@ -64,7 +64,8 @@ dirsize() {
     #   -d [--max-depth] of only this dir
     # sort -reverse -human-numeric-sort - sorts based on size number (taking into account
     #   human-readable sizes like KB, MB, GB, etc.) in descending order
-    du -h -d $depth "$path" | sort -rh
+    # Manually add '/' at the end of output to show they are directories
+    du -h -d $depth "$path" | sort -rh | sed -E 's|(.)$|\1/|'
 }
 
 memusage() {
