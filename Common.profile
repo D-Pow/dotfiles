@@ -13,13 +13,58 @@ gril() {
 }
 
 dirsize() {
-    # Prints out size of all folders and files of current directory
-    # ls -lah has a max-size display of 4.0K or 1G, so doesn't show dirs bigger than that
+    usage="Displays total disk usages of all directories within the given path.
+
+    Usage: dirsize [-d=1] [path=./]
+
+    Options:
+        -d | Depth of directories to display; defaults to 1 (dirs inside <path>).
+           | Total disk usages will be calculated regardless of -d value."
+
+    # local vars to avoid them being accessible outside this function
+    local OPTIND=1 # bash is retarded and uses a *global* OPTIND, so it isn't reset on subsequent calls
+    local depth=1
+    local path="."
+
+    # "abc" == flags without an input following them, e.g. `-h` for --help
+    # "a:"  == flags with an input following them, e.g. `-d 5`
+    # ":ab" == leading colon activates silent mode, e.g. don't print `illegal option -- x`
+    while getopts "d:h" opt; do
+        case "$opt" in # OPTARG is the variable containing the arg value
+            d)
+                depth="$OPTARG"
+                ;;
+            *|h)
+                # While nested functions are valid syntax in bash, we cannot create a
+                # nested printUsage() function because it would be available outside the
+                # scope of this function, and `local myFunc() {...}` is invalid syntax
+                echo "$usage"
+                return  # since this function is in a .profile, cannot use `exit` as that
+                        # would exit the terminal session
+                ;;
+        esac
+    done
+
+    # ! (not) expression goes outside braces
+    # -z is unary operator for length == 0
+    # OPTIND gives the index of the next arg after getopts cycles through flags
+    # Could instead do `shift "$((OPTIND - 1))"` to delete all args that getopts processed
+    #   to allow for using $1 instead of ${!OPTIND}
+    # ${x} == $x, gets arg at index `x`, e.g. $1
+    # ${!x} is "indirection" - !x gets the value of x instead of its name, similar
+    #   to JavaScript's `var x = 'hi'; return obj[x];` instead of `obj['x']`.
+    if ! [[ -z "${!OPTIND}" ]]; then
+        path="${!OPTIND}"
+    fi
+
+    # ls -lah has a max size display of 4.0K or 1G, so it doesn't show sizes bigger than that,
+    # and doesn't tally up total size of nested directories.
     # du = disk usage
     #   -h human readable
     #   -d [--max-depth] of only this dir
-    # sort -reverse -human-readable - sorts based on size number in descending order
-    du -h -d 1 ./ | sort -rh
+    # sort -reverse -human-numeric-sort - sorts based on size number (taking into account
+    #   human-readable sizes like KB, MB, GB, etc.) in descending order
+    du -h -d $depth "$path" | sort -rh
 }
 
 memusage() {
