@@ -14,10 +14,6 @@ export PIP3_HOME=/Users/dpowell1/Library/Python/3.6/bin
 export PIP2_HOME=/Users/dpowell1/Library/Python/2.7/bin
 export PATH=$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$MAVEN_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$SUBLIME_HOME:$BOOST_HOME:/usr/local/bin:/Users/dpowell1/bin:$PATH
 
-# node-sass binary (since `npm install node-sass` always fails on post-install script)
-#export SASS_BINARY_PATH=/Users/dpowell1/repositories/binaries/node-sass-binary.node
-# was replaced with .npmrc entry: sass_binary_site=https://artifactory.etrade.com/artifactory/github/sass/node-sass/releases/download/
-
 # Colored terminal
 # export PS1="\[\033[36m\]\u\[\033[m\]@\[\033[32m\]\h:\[\033[33;1m\]\w\[\033[m\]\$ "
 export PS1="\[\033[36m\]\u\[\033[m\]:\[\033[33;1m\]\w\[\033[m\]\$ "
@@ -69,6 +65,17 @@ resetJetbrains() {
     rm jetbrains.* com.jetbrains.*
     rm -rf WebStorm2019.3/eval/ WebStorm2019.3/options/other.xml IntelliJIdea2019.3/eval/ IntelliJIdea2019.3/options/options.xml
 }
+
+
+# E-Trade uses its own hosted npm registry; as such, the registry needs to be set
+#  to find the private E-Trade packages.
+# Similarly, since the registry is changed, `npm install node-sass` always fails on post-install script,
+#  so the SASS binary site needs to be set as well (see https://github.com/sass/node-sass/tree/master#binary-configuration-parameters).
+# This can be done via repo-root-level .npmrc file with entries:
+#  registry=https://repo.etrade.com/registry/npm/npm-all/
+#  sass_binary_site=https://artifactory.etrade.com/artifactory/github/sass/node-sass/releases/download
+# Or it can be done using this alias
+alias enpm='npm --registry="https://repo.etrade.com/registry/npm/npm-all/" --sass-binary-site="https://artifactory.etrade.com/artifactory/github/sass/node-sass/releases/download"'
 
 
 mvntestfileinsubmodule() {
