@@ -91,3 +91,9 @@ If Linux won't boot randomly and only goes into emergency mode, boot into Window
             Title: Turn on numlock
             Command: numlockx on
             Startup delay: 10
+
+9) Import terminal profile settings:
+    Import:
+        dconf load /org/gnome/terminal/ < gnome_terminal_settings.txt
+    Export:
+        dconf dump /org/gnome/terminal/ > gnome_terminal_settings.txt
