@@ -3,8 +3,8 @@ export PATH
 
 alias editprofile="subl -n -w ~/.profile && source ~/.profile"
 
-alias ls='ls -Fh'
-alias lah='ls -Flah'
+alias ls='ls -Fh --color'
+alias lah='ls -Flah --color'
 
 alias grep='grep --exclude-dir={node_modules,.git,.idea,lcov-report} --color=auto'
 alias egrep='egrep --exclude-dir={node_modules,.git,.idea,lcov-report} --color=auto'
