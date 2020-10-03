@@ -1,12 +1,11 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
-Encoding=UTF-8
-Icon=/home/dpow/JetBrains/IntelliJ/bin/idea.png
+Name=IntelliJ
 Exec="/home/dpow/JetBrains/IntelliJ/bin/idea.sh" %f
+Icon=/home/dpow/JetBrains/IntelliJ/bin/idea.png
+Comment=The smartest Java IDE
 Type=Application
 Terminal=false
-Comment=The smartest JavaScript IDE
-Name=IntelliJ
 GenericName=intellij
 StartupNotify=false
-Categories=Development;IDE;Java;Programming
+Categories=Development;IDE;Java;

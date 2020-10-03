@@ -1,12 +1,11 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
-Encoding=UTF-8
-Icon=/home/dpow/JetBrains/WebStorm/bin/webstorm.png
+Name=WebStorm
 Exec="/home/dpow/JetBrains/WebStorm/bin/webstorm.sh" %f
+Icon=/home/dpow/JetBrains/WebStorm/bin/webstorm.png
+Comment=The smartest JavaScript IDE
 Type=Application
 Terminal=false
-Comment=The smartest JavaScript IDE
-Name=Webstorm
 GenericName=webstorm
 StartupNotify=false
-Categories=Development;IDE;JavaScript;Programming
+Categories=Development;IDE;JavaScript;
