@@ -86,3 +86,8 @@ If Linux won't boot randomly and only goes into emergency mode, boot into Window
     Activate:
         `Default Numeric Keys`
         `Numeric keypad always enter digits`
+    Also set in startup applications:
+        Startup Apps -> Add:
+            Title: Turn on numlock
+            Command: numlockx on
+            Startup delay: 10
