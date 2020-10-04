@@ -97,3 +97,8 @@ If Linux won't boot randomly and only goes into emergency mode, boot into Window
         dconf load /org/gnome/terminal/ < gnome_terminal_settings.txt
     Export:
         dconf dump /org/gnome/terminal/ > gnome_terminal_settings.txt
+10) Allow webpack to auto-recompile code (sometimes not allowed by certain installations):
+    Run:
+        echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+    Reference:
+        https://github.com/webpack/docs/wiki/troubleshooting#not-enough-watchers
