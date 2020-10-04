@@ -92,12 +92,19 @@ If Linux won't boot randomly and only goes into emergency mode, boot into Window
             Command: numlockx on
             Startup delay: 10
 
-9) Import terminal profile settings:
+9) Add useful keyboard shortcuts:
+    * System > Lock screen > Super+L
+    * Custom:
+        - Open sublime: subl
+        - Home button to play/pause Spotify (for Kinesis keyboard): dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause
+
+10) Import terminal profile settings:
     Import:
         dconf load /org/gnome/terminal/ < gnome_terminal_settings.txt
     Export:
         dconf dump /org/gnome/terminal/ > gnome_terminal_settings.txt
-10) Allow webpack to auto-recompile code (sometimes not allowed by certain installations):
+
+11) Allow webpack to auto-recompile code (sometimes not allowed by certain installations):
     Run:
         echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
     Reference:
