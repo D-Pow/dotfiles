@@ -14,7 +14,7 @@ entries using a colon.
          of fstab:
             `
             # storage mount
-            UUID=[UUID_of_storage] /media/storage/    ntfs-3g        auto,dmask=022,fmask=111,uid=1000,gid=1000,rw 0 0
+            UUID=[UUID_of_storage] /media/storage/    ntfs-3g        auto,dmask=022,fmask=011,uid=1000,gid=1000,rw 0 0
             `
          where [UUID] is the UUID of the storage partition from step (ii),
          /media/storage is the new mount point, ntfs-3g is the driver
