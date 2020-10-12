@@ -12,6 +12,9 @@ export PATH="$JAVA_HOME/bin:$GRADLE_HOME/bin:$HOME/.local/bin:$PATH"
 # [green]\username[white]:[teal]\working_directory[white]$[space]
 export PS1="\[\033[01;32m\]\u\[\033[00m\]:\[\033[00m\]\[\033[01;34m\]\w\[\033[00m\]\$ "
 
+alias ls='ls -Fh --color'
+alias lah='ls -Flah --color'
+
 alias listupdate='sudo apt update && sudo apt list --upgradable'
 
 alias scan='savscan -all -rec -f -archive'
