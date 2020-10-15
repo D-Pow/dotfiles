@@ -3,8 +3,8 @@ export PATH
 
 alias editprofile="subl -n -w ~/.profile && source ~/.profile"
 
-alias ls='ls -Fh --color'
-alias lah='ls -Flah --color'
+alias ls='ls -Fh'
+alias lah='ls -Flah'
 
 alias grep='grep --exclude-dir={node_modules,.git,.idea,lcov-report} --color=auto'
 alias egrep='egrep --exclude-dir={node_modules,.git,.idea,lcov-report} --color=auto'
@@ -112,6 +112,7 @@ npms() {
     regex '"scripts": [^\}]*\}' ./package.json
 }
 alias npmr='npm run'
+alias npmf="npm run test 2>&1 | egrep -o '^FAIL.*'" # only print filenames of suites that failed
 
 getAllCrlfFiles() {
     # find [args] -exec [command] "output from find" "necessary `-exec` terminator to show end of command"
