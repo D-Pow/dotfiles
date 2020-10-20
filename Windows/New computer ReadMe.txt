@@ -43,7 +43,27 @@ Prevent easy user switching
 Disable hybrid sleep to activate hibernate functionality
 Remove unnecessary programs at startup
 
-Install clink for command prompt
+Programs to install:
+    Programs from google drive
+    clink (command prompt autocompletion)
+    7zip
+    BitDefender
+    KeyTweak (remaps keyboard keys)
+    Linux subsystem
+    Chrome
+    Discord
+    Steam
+    Epic Games
+    Git
+    Microsoft Office
+    Spotify
+    VLC (video player)
+    Java/Python/Node (nvm)/IDEs/Postman
+    LaTeX (try to find a portable version)
+    Windscribe
+    iTunes
+    Gimp 2
+    wireshark
 
 For Python-IDLE right-click menu:
 Regedit as administrator
