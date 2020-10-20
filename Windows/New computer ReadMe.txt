@@ -2,7 +2,7 @@ In addTo.etc.fstab, everything in that line is correct and follows the instructi
 at <https://www.howtogeek.com/howto/35807/how-to-harmonize-your-dual-boot-setup-for-windows-and-ubuntu/>,
 but adds the additional dmask and fmask to prevent the storage NTFS partition
 from being executable by default.
-*Note: you MUST change the UUID of the storage drive and make sure that you 
+*Note: you MUST change the UUID of the storage drive and make sure that you
 actually follow the instructions at the website above so you don't miss something.
 Will look almost exactly like what's seen in addTo.etc.fstab.txt (note the intentional Xmasks, Xid, and permission entries)
 
@@ -10,7 +10,7 @@ Will look almost exactly like what's seen in addTo.etc.fstab.txt (note the inten
 
 ~In Windows Registry:
 Open command prompt anywhere
-    In BOTH HKEY_CLASSES_ROOT\Directory\shell (for clicking *on* folder) and 
+    In BOTH HKEY_CLASSES_ROOT\Directory\shell (for clicking *on* folder) and
             HKEY_CLASSES_ROOT\Directory\Background\shell (for clicking *in* folder):
     Add new key, "CommandPrompt", with data=`Open Command Prompt Here`
     Make new key for CommandPrompt, titled "command" with data=`cmd.exe /s /k pushd "%V"`
@@ -36,4 +36,17 @@ In Linux, after installing Mozc and IBus (for Japanese input):
     Repeat for Direct Input, Composition, and Precomposition:
         Ctrl ` --> Set input mode to Hiragana
         Ctrl 1 --> Set input mode to full-width Katakana
-        
+
+Power options: disable wake timers and (multimedia-> when sharing media-> allow the computer to sleep) to prevent a program from keeping computer from sleeping
+Disk check disabled
+Prevent easy user switching
+Disable hybrid sleep to activate hibernate functionality
+Remove unnecessary programs at startup
+
+Install clink for command prompt
+
+For Python-IDLE right-click menu:
+Regedit as administrator
+HKEY_CLASSES_ROOT --> Python.File --> shell --> (make the following keys:)
+Edit with IDLE 3.5 --> command --> "C:\Python3\pythonw.exe" "C:\Python3\Lib\idlelib\idle.pyw" -e "%1"
+Edit with IDLE 2.7 --> command --> "C:\Python27\pythonw.exe" "C:\Python27\Lib\idlelib\idle.pyw" -e "%1"
