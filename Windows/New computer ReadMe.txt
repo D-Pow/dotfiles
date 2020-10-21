@@ -16,7 +16,9 @@ Open command prompt anywhere
     Make new key for CommandPrompt, titled "command" with data=`cmd.exe /s /k pushd "%V"`
         for /Background/shell or `cmd.exe /k cd %1` for /Directory/shell
     Delete the "Extended" value inside HKEY_CLASSES_ROOT\Directory\shell\cmd
+
 Also, add sublime to context menu (see Sublime folder's ReadMe)
+
 You might also want to add "Take ownership" to avoid Windows' stupid "you do not
     have permission for this action." This is in the Windows bookmarks.
 
@@ -38,28 +40,46 @@ In Linux, after installing Mozc and IBus (for Japanese input):
         Ctrl 1 --> Set input mode to full-width Katakana
 
 Power options: disable wake timers and (multimedia-> when sharing media-> allow the computer to sleep) to prevent a program from keeping computer from sleeping
+
 Disk check disabled
-Prevent easy user switching
+
 Disable hybrid sleep to activate hibernate functionality
+
 Remove unnecessary programs at startup
+
+Prevent easy user switching
+    HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+        New DWORD (32-bit) value
+        Name: HideFastUserSwitching
+        Data: 1
 
 Programs to install:
     Programs from google drive
-    clink (command prompt autocompletion)
+    // clink (command prompt autocompletion), git bash using MinTTY is better to use as default terminal
     7zip
     BitDefender
     KeyTweak (remaps keyboard keys)
     Linux subsystem
     Chrome
     Discord
-    Steam
-    Epic Games
+    Steam; To copy games:
+        * Install Steam
+        * Copy userdata/ and steamapps/ folders to new location
+    Epic Games; To copy games: (see https://www.gamingpcbuilder.com/how-to-copy-fortnite-without-redownloading/)
+        * Install Epic Games
+        * Start download of game
+        * Cancel (not pause) game after install is >= 1%
+        * Quit Epic Games
+        * Copy game files over
+        * Reopen Epic Games
+        * Click "Resume" -> will now verify files instead of re-downloading them
     Git
     Microsoft Office
     Spotify
     VLC (video player)
-    Java/Python/Node (nvm)/IDEs/Postman
+    Java/Python/Node (nvm)/IDEs/Postman/SQLite
     LaTeX (try to find a portable version)
+    Japanese
     Windscribe
     iTunes
     Gimp 2
@@ -67,6 +87,6 @@ Programs to install:
 
 For Python-IDLE right-click menu:
 Regedit as administrator
-HKEY_CLASSES_ROOT --> Python.File --> shell --> (make the following keys:)
+HKEY_CLASSES_ROOT\.py\shell --> (make the following keys:)
 Edit with IDLE 3.5 --> command --> "C:\Python3\pythonw.exe" "C:\Python3\Lib\idlelib\idle.pyw" -e "%1"
 Edit with IDLE 2.7 --> command --> "C:\Python27\pythonw.exe" "C:\Python27\Lib\idlelib\idle.pyw" -e "%1"
