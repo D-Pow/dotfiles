@@ -1,6 +1,8 @@
 // Useful bookmarked functions
 javascript:(function setUsefulFunctions() {
 
+window.deepCopyObj = obj => JSON.parse(JSON.stringify(obj));
+
 window.getAllStoriesInPR = () => {
     return [...document.querySelectorAll('tr td.message')].reduce((set, td) => {
         set.add(td.innerText.match(/MAS-\d{3,4}/)[0]);
@@ -26,6 +28,28 @@ window.getNewAuth = newUserId => {
             userId: String(newUserId)
         }
     }));
+};
+
+window.getAllPortfoliosProducts = () => {
+    var deepCopyObj = obj => JSON.parse(JSON.stringify(obj));
+
+    return deepCopyObj($r.props.model.portfolioAllocationResponse).reduce((allPortfolios, portfolio) => {
+        const allPortfolioProducts = portfolio.assetGroup.reduce((allProducts, assetGroup) => {
+            const allGroupProducts = assetGroup.assetClass.reduce((groupProducts, assetClass) => {
+                const assetClassProducts = assetClass.assetSubClass.reduce((assetSubClassProducts, assetSubClass) => {
+                    return assetSubClassProducts.concat([...assetSubClass.product]);
+                }, []);
+
+                return groupProducts.concat(assetClassProducts);
+            }, []);
+
+            return allProducts.concat(allGroupProducts);
+        }, []);
+
+        allPortfolios[portfolio.id] = allPortfolioProducts;
+
+        return allPortfolios;
+    }, {});
 };
 
 })();
