@@ -85,6 +85,13 @@ Programs to install:
     Gimp 2
     wireshark
 
+If dual-booting, convert the disk from MBR (Master Boot Record) to GPT (GUID):
+    1. Install Linux first so Grub is accessible.
+    2. Change BIOS to boot using UEFI instead of Legacy.
+    3. If the Linux install didn't automatically convert the disk to GPT:
+        i. Use MBR2GPT in Windows to convert it: https://docs.microsoft.com/en-us/windows/deployment/mbr-to-gpt
+        ii. MBR2GPT prefers to be run in the Windows Preinstallation Environment rather than in a booted OS. It's possible to run in the OS, but you could run into issues, e.g. the system recovery being messed up.
+
 For Python-IDLE right-click menu:
 Regedit as administrator
 HKEY_CLASSES_ROOT\.py\shell --> (make the following keys:)
