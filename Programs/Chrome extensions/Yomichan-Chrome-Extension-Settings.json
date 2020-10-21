@@ -1,0 +1,321 @@
+{
+    "version": 0,
+    "date": "2020-10-20 23:31:57",
+    "url": "chrome-extension://ogmnaimimemjmbakcfefmnahgdfhfami/",
+    "manifest": {
+        "author": "Alex Yatskov",
+        "background": {
+            "page": "bg/background.html",
+            "persistent": true
+        },
+        "browser_action": {
+            "default_icon": {
+                "16": "mixed/img/icon16.png",
+                "19": "mixed/img/icon19.png",
+                "32": "mixed/img/icon32.png",
+                "38": "mixed/img/icon38.png",
+                "48": "mixed/img/icon48.png",
+                "64": "mixed/img/icon64.png",
+                "128": "mixed/img/icon128.png"
+            },
+            "default_popup": "bg/context.html",
+            "default_title": "Yomichan"
+        },
+        "commands": {
+            "search": {
+                "description": "Open search window",
+                "suggested_key": {
+                    "default": "Alt+Insert"
+                }
+            },
+            "toggle": {
+                "description": "Toggle text scanning",
+                "suggested_key": {
+                    "default": "Alt+Delete"
+                }
+            }
+        },
+        "content_scripts": [
+            {
+                "all_frames": true,
+                "js": [
+                    "mixed/js/core.js",
+                    "mixed/js/yomichan.js",
+                    "mixed/js/comm.js",
+                    "mixed/js/api.js",
+                    "mixed/js/dynamic-loader.js",
+                    "mixed/js/frame-client.js",
+                    "mixed/js/text-scanner.js",
+                    "mixed/js/document-util.js",
+                    "fg/js/dom-text-scanner.js",
+                    "fg/js/popup.js",
+                    "fg/js/source.js",
+                    "fg/js/popup-factory.js",
+                    "fg/js/frame-offset-forwarder.js",
+                    "fg/js/popup-proxy.js",
+                    "fg/js/popup-window.js",
+                    "fg/js/frontend.js",
+                    "fg/js/content-script-main.js"
+                ],
+                "match_about_blank": true,
+                "matches": [
+                    "http://*/*",
+                    "https://*/*",
+                    "file://*/*"
+                ]
+            }
+        ],
+        "content_security_policy": "script-src 'self'; object-src 'self'",
+        "description": "Japanese dictionary with Anki integration",
+        "icons": {
+            "16": "mixed/img/icon16.png",
+            "19": "mixed/img/icon19.png",
+            "32": "mixed/img/icon32.png",
+            "38": "mixed/img/icon38.png",
+            "48": "mixed/img/icon48.png",
+            "64": "mixed/img/icon64.png",
+            "128": "mixed/img/icon128.png"
+        },
+        "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAug/0Wtc35jGyy+Jkf4Kt9DUAzvziCJbhwlwzdro0cPnN+2K6Y2rCBVgAJln7SffCKVWa0k6BM3D7m7yydAECgSo8VUn2zUgInXpfQAuI2dG+6OEi0SOu2SkXJFvvAMjM/JAXY0zQRofnxeDRqvT7EtHW9lLwtgLTBuJObuq5zCHAPFa3PZ5ZORvUEmQZ2HDxUxaUZzsFW4kZ/rxPaNXTWe+qM30wqvlk79DBUJVq9zlzsDGM6G5qWcCk3vT5MEGuZVK7IPi6w9dPfOA3myicuywhDxumteg6wFraarMMAR2Stc80Yb9pCZT5Jav9e7eG97DuBAh97IOKrfI6mU8CkwIDAQAB",
+        "manifest_version": 2,
+        "minimum_chrome_version": "57.0.0.0",
+        "name": "Yomichan",
+        "optional_permissions": [
+            "clipboardRead"
+        ],
+        "options_ui": {
+            "open_in_tab": true,
+            "page": "bg/settings.html"
+        },
+        "permissions": [
+            "<all_urls>",
+            "storage",
+            "clipboardWrite",
+            "unlimitedStorage",
+            "nativeMessaging",
+            "webRequest",
+            "webRequestBlocking"
+        ],
+        "sandbox": {
+            "content_security_policy": "sandbox allow-scripts; script-src 'self' 'unsafe-eval'; object-src 'self'",
+            "pages": [
+                "bg/template-renderer.html"
+            ]
+        },
+        "update_url": "https://clients2.google.com/service/update2/crx",
+        "version": "20.9.28.1",
+        "web_accessible_resources": [
+            "fg/float.html",
+            "bg/template-renderer.html"
+        ]
+    },
+    "environment": {
+        "browser": "chrome",
+        "platform": {
+            "os": "win"
+        }
+    },
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36",
+    "options": {
+        "version": 0,
+        "profiles": [
+            {
+                "name": "Default",
+                "conditionGroups": [],
+                "options": {
+                    "version": 0,
+                    "general": {
+                        "enable": true,
+                        "enableClipboardPopups": false,
+                        "resultOutputMode": "group",
+                        "debugInfo": false,
+                        "maxResults": 32,
+                        "showAdvanced": false,
+                        "popupDisplayMode": "default",
+                        "popupWidth": 400,
+                        "popupHeight": 250,
+                        "popupHorizontalOffset": 0,
+                        "popupVerticalOffset": 10,
+                        "popupHorizontalOffset2": 10,
+                        "popupVerticalOffset2": 0,
+                        "popupHorizontalTextPosition": "below",
+                        "popupVerticalTextPosition": "before",
+                        "popupScalingFactor": 1,
+                        "popupScaleRelativeToPageZoom": false,
+                        "popupScaleRelativeToVisualViewport": true,
+                        "showGuide": false,
+                        "compactTags": false,
+                        "compactGlossaries": false,
+                        "mainDictionary": "JMdict (English)",
+                        "popupTheme": "default",
+                        "popupOuterTheme": "default",
+                        "customPopupCss": "",
+                        "customPopupOuterCss": "",
+                        "enableWanakana": true,
+                        "enableClipboardMonitor": false,
+                        "showPitchAccentDownstepNotation": true,
+                        "showPitchAccentPositionNotation": true,
+                        "showPitchAccentGraph": false,
+                        "showIframePopupsInRootFrame": false,
+                        "useSecurePopupFrameUrl": true,
+                        "usePopupShadowDom": true,
+                        "usePopupWindow": false
+                    },
+                    "audio": {
+                        "enabled": true,
+                        "sources": [
+                            "jpod101"
+                        ],
+                        "volume": 100,
+                        "autoPlay": false,
+                        "customSourceUrl": "",
+                        "textToSpeechVoice": ""
+                    },
+                    "scanning": {
+                        "inputs": [
+                            {
+                                "include": "shift",
+                                "exclude": "mouse0",
+                                "types": {
+                                    "mouse": true,
+                                    "touch": false,
+                                    "pen": false
+                                },
+                                "options": {
+                                    "showAdvanced": false,
+                                    "searchTerms": true,
+                                    "searchKanji": true,
+                                    "scanOnTouchMove": true,
+                                    "scanOnPenHover": true,
+                                    "scanOnPenPress": true,
+                                    "scanOnPenRelease": false,
+                                    "preventTouchScrolling": false
+                                }
+                            },
+                            {
+                                "include": "mouse2",
+                                "exclude": "",
+                                "types": {
+                                    "mouse": true,
+                                    "touch": false,
+                                    "pen": false
+                                },
+                                "options": {
+                                    "showAdvanced": false,
+                                    "searchTerms": true,
+                                    "searchKanji": true,
+                                    "scanOnTouchMove": true,
+                                    "scanOnPenHover": true,
+                                    "scanOnPenPress": true,
+                                    "scanOnPenRelease": false,
+                                    "preventTouchScrolling": true
+                                }
+                            },
+                            {
+                                "include": "",
+                                "exclude": "",
+                                "types": {
+                                    "mouse": false,
+                                    "touch": true,
+                                    "pen": true
+                                },
+                                "options": {
+                                    "showAdvanced": false,
+                                    "searchTerms": true,
+                                    "searchKanji": true,
+                                    "scanOnTouchMove": true,
+                                    "scanOnPenHover": true,
+                                    "scanOnPenPress": true,
+                                    "scanOnPenRelease": false,
+                                    "preventTouchScrolling": true
+                                }
+                            }
+                        ],
+                        "preventMiddleMouse": {
+                            "onWebPages": false,
+                            "onPopupPages": false,
+                            "onSearchPages": false,
+                            "onSearchQuery": false
+                        },
+                        "touchInputEnabled": true,
+                        "pointerEventsEnabled": false,
+                        "selectText": true,
+                        "alphanumeric": true,
+                        "autoHideResults": false,
+                        "delay": 20,
+                        "hideDelay": 0,
+                        "length": 10,
+                        "deepDomScan": false,
+                        "popupNestingMaxDepth": 0,
+                        "enablePopupSearch": false,
+                        "enableOnPopupExpressions": false,
+                        "enableOnSearchPage": true,
+                        "enableSearchTags": false,
+                        "layoutAwareScan": false
+                    },
+                    "translation": {
+                        "convertHalfWidthCharacters": "false",
+                        "convertNumericCharacters": "false",
+                        "convertAlphabeticCharacters": "false",
+                        "convertHiraganaToKatakana": "false",
+                        "convertKatakanaToHiragana": "variant",
+                        "collapseEmphaticSequences": "false"
+                    },
+                    "dictionaries": {
+                        "JMdict (English)": {
+                            "priority": 0,
+                            "enabled": true,
+                            "allowSecondarySearches": false
+                        },
+                        "KANJIDIC (English)": {
+                            "priority": 0,
+                            "enabled": true,
+                            "allowSecondarySearches": false
+                        },
+                        "KireiCake": {
+                            "priority": 0,
+                            "enabled": true,
+                            "allowSecondarySearches": false
+                        }
+                    },
+                    "parsing": {
+                        "enableScanningParser": true,
+                        "enableMecabParser": false,
+                        "selectedParser": null,
+                        "termSpacing": true,
+                        "readingMode": "hiragana"
+                    },
+                    "anki": {
+                        "enable": false,
+                        "server": "http://127.0.0.1:8765",
+                        "tags": [
+                            "yomichan"
+                        ],
+                        "sentenceExt": 200,
+                        "screenshot": {
+                            "format": "png",
+                            "quality": 92
+                        },
+                        "terms": {
+                            "deck": "",
+                            "model": "",
+                            "fields": {}
+                        },
+                        "kanji": {
+                            "deck": "",
+                            "model": "",
+                            "fields": {}
+                        },
+                        "duplicateScope": "collection"
+                    }
+                }
+            }
+        ],
+        "profileCurrent": 0,
+        "global": {
+            "database": {
+                "prefixWildcardsSupported": false
+            }
+        }
+    }
+}
