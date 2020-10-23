@@ -101,6 +101,7 @@ sitMfUsernames=(
     )
 uatMfUsernames=('nambi9' 'op282200')
 sitAipUsernames=(
+    'AGVY2400' #can place an order in Prebuilt
     'ADBX9200' #has many held funds
     'ACUC0200'
     'ACWU1700' #CAP 1 with both brokerage and IRA accounts
@@ -179,11 +180,13 @@ gckb() {
     repoName="$(getGitRepoName)"
 
     if [ "$repoName" == "react-mutualfundsandetf" ]; then
-        git checkout feature/baseline/reg-bi
+        git checkout feature/baseline-income-portfolio
     elif [ "$repoName" == "react-aip" ]; then
-        git checkout feature/baseline-20200529
+        git checkout feature/baseline-etf-aip
     elif [ "$repoName" == "mutual_fund_etf" ]; then
-        git checkout feature/baseline-etf-aip-mvp
+        git checkout feature/baseline-etf-aip-mvp-2
+    elif [ "$repoName" == "aip_java8" ]; then
+        git checkout feature/baseline-aipetf-mvp
     fi
 }
 
