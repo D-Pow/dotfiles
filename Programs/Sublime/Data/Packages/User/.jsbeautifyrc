@@ -1,14 +1,16 @@
 {
     "all": {
         "end_with_newline": true,
-        "remove_trailing_whitespace": true
+        "remove_trailing_whitespace": true,
+        "operator_position": "before-newline"
     },
     "json": {
-        "brace_style": "end-expand"
+        "brace_style": "end-expand",
+        "keep_array_indentation": true
     },
     "js": {
-        "brace_style": "collapse-preserve-inline",
-        "object_curly_spacing": false
+        "brace_style": "end-expand",
+        "keep_array_indentation": true
     },
     "custom": {
         "*.sublime-@(settings|keymap|commands|menu)": {
