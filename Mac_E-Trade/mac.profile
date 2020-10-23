@@ -172,6 +172,9 @@ export norm2='sit241w80m7'
 # Look at logs
 # tail -f *mutualFundEtf.log
 
+alias  gaud='git update-index --assume-unchanged src/data/mocks/DefaultPageConfig.js'
+alias gnaud='git update-index --no-assume-unchanged src/data/mocks/DefaultPageConfig.js'
+
 gckb() {
     repoName="$(getGitRepoName)"
 
