@@ -202,4 +202,5 @@ alias  gcon='openGitMergeConflictFilesWithSublime'
 alias   gau='git update-index --assume-unchanged'
 alias  gnau='git update-index --no-assume-unchanged'
 alias  gauf="git ls-files -v | grep '^[[:lower:]]'"
+alias gaufo='subl $(gauf | cut -f 2 -d " ")'
 alias  gcmd="cat ~/.profile | grep -e 'alias *g' | grep -v 'grep='"
