@@ -6,7 +6,7 @@
     {"keys": ["super+shift+up"], "command": "swap_line_up"},
     {"keys": ["super+shift+down"], "command": "swap_line_down"},
 
-    
+
     { "keys": ["alt+s"], "command": "toggle_side_bar" },
 
     { "keys": ["alt+d"], "command": "intelli_docs" },
