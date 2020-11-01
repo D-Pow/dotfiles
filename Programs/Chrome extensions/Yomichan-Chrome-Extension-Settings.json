@@ -1,6 +1,6 @@
 {
     "version": 0,
-    "date": "2020-10-20 23:31:57",
+    "date": "2020-11-01 19:19:56",
     "url": "chrome-extension://ogmnaimimemjmbakcfefmnahgdfhfami/",
     "manifest": {
         "author": "Alex Yatskov",
@@ -115,19 +115,19 @@
             "os": "win"
         }
     },
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36",
     "options": {
-        "version": 0,
+        "version": 4,
         "profiles": [
             {
                 "name": "Default",
                 "conditionGroups": [],
                 "options": {
-                    "version": 0,
+                    "version": 14,
                     "general": {
                         "enable": true,
                         "enableClipboardPopups": false,
-                        "resultOutputMode": "group",
+                        "resultOutputMode": "split",
                         "debugInfo": false,
                         "maxResults": 32,
                         "showAdvanced": false,
@@ -162,7 +162,7 @@
                         "usePopupWindow": false
                     },
                     "audio": {
-                        "enabled": true,
+                        "enabled": false,
                         "sources": [
                             "jpod101"
                         ],
@@ -189,7 +189,7 @@
                                     "scanOnPenHover": true,
                                     "scanOnPenPress": true,
                                     "scanOnPenRelease": false,
-                                    "preventTouchScrolling": false
+                                    "preventTouchScrolling": true
                                 }
                             },
                             {
