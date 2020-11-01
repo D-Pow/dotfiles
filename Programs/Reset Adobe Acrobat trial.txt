@@ -1,0 +1,4 @@
+Change the TrialSerialNumber entry in the files below to another random number of the same length:
+
+C:/Program Files (x86)/Adobe/Acrobat DC/Acrobat/amt_assets/AMT/application.xml
+C:/Program Files (x86)/Adobe/Acrobat DC/Acrobat/AMT/application.xml
