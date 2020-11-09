@@ -30,6 +30,14 @@ window.getNewAuth = newUserId => {
     }));
 };
 
+window.getJiraTicketsInPr = () => {
+    return new Set(
+        [...document.querySelectorAll('.commits-issues-trigger')]
+            .map(aElem => aElem.innerText)
+            .filter(jiraNumber => !jiraNumber.includes(' '))
+    );
+};
+
 window.getAllPortfoliosProducts = () => {
     var deepCopyObj = obj => JSON.parse(JSON.stringify(obj));
 
