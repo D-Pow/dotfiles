@@ -97,3 +97,17 @@ Regedit as administrator
 HKEY_CLASSES_ROOT\.py\shell --> (make the following keys:)
 Edit with IDLE 3.5 --> command --> "C:\Python3\pythonw.exe" "C:\Python3\Lib\idlelib\idle.pyw" -e "%1"
 Edit with IDLE 2.7 --> command --> "C:\Python27\pythonw.exe" "C:\Python27\Lib\idlelib\idle.pyw" -e "%1"
+
+
+If running into issues with GRUB after modifying boot partitions (e.g. deleting/moving partitions you can boot from):
+    1. Boot into live Linux USB.
+    2. Mount the "Linux filesystem" drive in the USB instance
+        `sudo fdisk -l`
+        `sudo blkid`
+        Get the /dev/sdXX of "Linux Filesystem"
+        `sudo mount /dev/sdXX /mnt` to mount that partition into /mnt/ directory
+    3. Run "Boot repair" (in start menu) or `boot-repair` (in terminal).
+        Advanced options
+        Uncheck "Secure Boot" (secure boot was disabled above)
+        Uncheck "Repair Windows boot loader" (Windows data should be totally fine, only GRUB is messed up)
+    4. Reboot into Linux on hard drive and re-run GrubCustomizer to customize as desired.
