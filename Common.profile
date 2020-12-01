@@ -162,6 +162,32 @@ getGitIgnoredFiles() {
     git status --ignored
 }
 
+getGitParent() {
+    local numLinesToShow=5
+
+    if ! [ -z "$1" ]; then
+        numLinesToShow=$1
+    fi
+
+    echo 'Possible parents (with respective commits for manual `git log`ing):'
+
+    echo "Ancestor branches before $(getGitBranch):"
+    # git log requires --decorate, otherwise the branch names are stripped from the output
+    # when piped to other programs, like grep.
+    # Find $numLinesToShow entries of commits that were on different branches within the git
+    # log of only this branch's history.
+    glb --decorate | egrep '\* commit [a-z0-9]+ \(' | head -n $numLinesToShow
+
+    echo -e "\nMerges to $(getGitBranch)"
+    # git log only this branch's history
+    # filter to display only 5 lines before anything that was merged to this branch
+    # get the commit hash of only the last entry (since this hash was the very first merge to the current branch)
+    local commitsMergingToCurrentBranch=$(glb | grep -B 5 "to $(getGitBranch)" | grep "commit" | awk '{print $3}' | tail -1)
+    # again, decorate git log, and print out only the latest few logs for the above first merge to the current branch,
+    # in the hopes that one of those latest logs would be where the current branch was created out of
+    git log --decorate $commitsMergingToCurrentBranch | egrep '^commit [a-z0-9]+ \(' | awk '{print "* "$0}' | head -n $numLinesToShow
+}
+
 alias     g='git'
 alias    gs='git status'
 alias   gsi='getGitIgnoredFiles'
