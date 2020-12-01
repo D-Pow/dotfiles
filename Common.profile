@@ -163,13 +163,16 @@ getGitIgnoredFiles() {
 }
 
 getGitParent() {
+    # git doesn't track what a branch's parent is, so we have to guess from the git log output.
+    # Hence, here we guess based off git log's default branch output first and output from merges second.
+    # ref: https://github.community/t/is-there-a-way-to-find-the-parent-branch-from-which-branch-head-is-detached-for-detached-head/825
     local numLinesToShow=5
 
     if ! [ -z "$1" ]; then
         numLinesToShow=$1
     fi
 
-    echo 'Possible parents (with respective commits for manual `git log`ing):'
+    echo -e 'Possible parents (with respective commits for manual `git log`ing):\n'
 
     echo "Ancestor branches before $(getGitBranch):"
     # git log requires --decorate, otherwise the branch names are stripped from the output
