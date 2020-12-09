@@ -5,9 +5,11 @@ window.deepCopyObj = obj => JSON.parse(JSON.stringify(obj));
 
 window.getAllStoriesInPR = () => {
     return [...document.querySelectorAll('tr td.message')].reduce((set, td) => {
-        set.add(td.innerText.match(/MAS-\d{3,4}/)[0]);
+        try {
+            set.add(td.innerText.match(/MAS-\d{3,4}/)[0]);
+        } catch (e) {}
         return set;
-    }, new Set())
+    }, new Set());
 };
 
 window.getAxios = () => {
