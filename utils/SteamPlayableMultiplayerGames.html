@@ -42,14 +42,9 @@
     </style>
 </head>
 <body>
-
     <h1 id="title">
         Loading...
     </h1>
-
-    <table id="remote-play-games" />
-    <table id="shared-multiplayer-games" />
-
 <script>
     // Steam Docs: https://developer.valvesoftware.com/wiki/Steam_Web_API
     // Team Fortress docs (better): https://wiki.teamfortress.com/wiki/WebAPI
@@ -257,7 +252,8 @@
                 return gameNames;
             }, new Set());
 
-            const tableElem = document.getElementById(elemId);
+            const tableElem = document.createElement('table');
+            document.body.appendChild(tableElem);
 
             const tableTitleElem = document.createElement('h2');
             const tableCaption = document.createElement('caption');
