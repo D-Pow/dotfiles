@@ -88,14 +88,20 @@
     }
 
     async function getSteamFriendIds(steamId) {
-        const res = await fetch(getSteamApiUrl(Urls.getFriendList, { steamid: steamId, relationship: 'friend' }));
+        const res = await fetch(getSteamApiUrl(Urls.getFriendList, {
+            steamid: steamId,
+            relationship: 'friend'
+        }));
         const { friendslist: { friends }} = await res.json();
 
         return friends.map(friend => friend.steamid);
     }
 
     async function getOwnedGamesNamesAndIds(steamId) {
-        const res = await fetch(getSteamApiUrl(Urls.getOwnedGamesNamesAndIds, { steamid: steamId, include_appinfo: 'true' }));
+        const res = await fetch(getSteamApiUrl(Urls.getOwnedGamesNamesAndIds, {
+            steamid: steamId,
+            include_appinfo: 'true'
+        }));
         const { response: { games }} = await res.json();
         const gameInfo = games.map(game => ({ appId: game.appid, name: game.name }));
 
@@ -173,7 +179,10 @@
 
         const friendSteamIds = await getSteamFriendIds(userSteamId);
         const friendProfileInfo = await Promise.all(friendSteamIds.map(getProfileInfo));
-        const friendNamesAndIds = friendProfileInfo.map(friend => ({ steamId: friend.steamid, username: friend.personaname }));
+        const friendNamesAndIds = friendProfileInfo.map(friend => ({
+            steamId: friend.steamid,
+            username: friend.personaname
+        }));
 
         for (let friend of friendNamesAndIds) {
             const friendOwnedGames = await getOwnedGamesNamesAndIds(friend.steamId);
