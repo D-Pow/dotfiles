@@ -228,6 +228,10 @@
             return multiplayerGames;
         }, { sharedMultiplayerGames: {}, remotePlayGames: {} });
 
+        Object.values(gamesPlayableWithEachUser).forEach(gameType =>
+            Object.keys(gameType).forEach(user => gameType[user].sort())
+        );
+
         return gamesPlayableWithEachUser;
     }
 </script>
