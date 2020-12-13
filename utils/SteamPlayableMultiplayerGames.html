@@ -59,6 +59,8 @@
         getGameInfo: 'https://store.steampowered.com/api/appdetails',
         getGameStatsForUser: 'http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/'
     };
+    const cacheName = 'gameDataCache';
+    const gameDataCache = sessionStorage.getItem(cacheName) ? JSON.parse(sessionStorage.getItem(cacheName)) : {};
 
     const getCorsUrl = url => Urls.corsProxyUrl + encodeURIComponent(url);
     const getQueryParamUriComponent = queryParamMap => '?' + Object
@@ -109,11 +111,19 @@
     }
 
     async function getGameInfo(appId) {
+        if (gameDataCache[appId]) {
+            return gameDataCache[appId];
+        }
+
         try {
             const res = await fetch(getSteamApiUrl(Urls.getGameInfo, { appids: appId })); // cannot do multiple IDs, see https://wiki.teamfortress.com/wiki/User:RJackson/StorefrontAPI#appdetails
             const json = await res.json();
+            const gameData = json[appId].data;
 
-            return json[appId].data;
+            gameDataCache[appId] = gameData;
+            sessionStorage.setItem(cacheName, JSON.stringify(gameDataCache));
+
+            return gameData;
         } catch (e) {
             console.error(`Could not get game info for appId "${appId}"`);
             return null;
@@ -168,7 +178,6 @@
     }
 
     async function getMultiplayerGamesPlayableWithFriends(username) {
-        // TODO cache game info by appId to avoid duplicate calls
         const multiplayerGamesByUsername = {};
         const userSteamId = await getSteamId(username);
         const ownedGames = await getOwnedGamesNamesAndIds(userSteamId);
