@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Playable Multiplayer Games</title>
+</head>
+<body>
+
+<script>
+    // Steam Docs: https://developer.valvesoftware.com/wiki/Steam_Web_API
+    // Team Fortress docs (better): https://wiki.teamfortress.com/wiki/WebAPI
+    // Steam store docs: https://wiki.teamfortress.com/wiki/User:RJackson/StorefrontAPI
+    const steamApiKey = '9579CEC7CAC658F1EA5BA34AC6DB2F29';
+    const Urls = {
+        corsProxyUrl: 'https://anime-atsume.herokuapp.com/corsProxy?origin=' + encodeURIComponent('http://api.steampowered.com') + '&url=',
+        getSteamId: 'http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/',
+        getSteamProfileInfo: 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/',
+        getFriendList: 'http://api.steampowered.com/ISteamUser/GetFriendList/v0001/',
+        getOwnedGamesNamesAndIds: 'http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/',
+        getGameInfo: 'https://store.steampowered.com/api/appdetails',
+        getGameStatsForUser: 'http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/'
+    };
+
+    const getCorsUrl = url => Urls.corsProxyUrl + encodeURIComponent(url);
+    const getQueryParamUriComponent = queryParamMap => '?' + Object
+        .entries(queryParamMap)
+        .map(([ key, val ]) => `${key}=${val}`)
+        .join('&');
+    const getSteamApiUrl = (url, queryParamMap) => getCorsUrl(
+        url + getQueryParamUriComponent({
+            ...queryParamMap,
+            key: steamApiKey,
+            format: 'json'
+        })
+    );
+
+    async function getSteamId(username) {
+        const res = await fetch(getSteamApiUrl(Urls.getSteamId, { vanityurl: username }));
+        const { response: { steamid }} = await res.json();
+
+        return steamid;
+    }
+
+    async function getProfileInfo(steamId) {
+        const res = await fetch(getSteamApiUrl(Urls.getSteamProfileInfo, { steamids: steamId }));
+        const { response: { players }} = await res.json();
+
+        return players.find(player => player.steamid === steamId);
+    }
+
+    async function getSteamFriendIds(steamId) {
+        const res = await fetch(getSteamApiUrl(Urls.getFriendList, { steamid: steamId, relationship: 'friend' }));
+        const { friendslist: { friends }} = await res.json();
+
+        return friends.map(friend => friend.steamid);
+    }
+
+    async function getOwnedGamesNamesAndIds(steamId) {
+        const res = await fetch(getSteamApiUrl(Urls.getOwnedGamesNamesAndIds, { steamid: steamId, include_appinfo: 'true' }));
+        const { response: { games }} = await res.json();
+        const gameInfo = games.map(game => ({ appId: game.appid, name: game.name }));
+
+        return gameInfo;
+    }
+
+    async function getGameInfo(appId) {
+        try {
+            const res = await fetch(getSteamApiUrl(Urls.getGameInfo, { appids: appId })); // cannot do multiple IDs, see https://wiki.teamfortress.com/wiki/User:RJackson/StorefrontAPI#appdetails
+            const json = await res.json();
+
+            return json[appId].data;
+        } catch (e) {
+            console.error(`Could not get game info for appId "${appId}"`);
+            return null;
+        }
+    }
+
+    /* Game Categories
+        1: 'Multi-player',
+        2: 'Single-player',
+        9: 'Co-op',
+        22: 'Steam Achievements',
+        23: 'Steam Cloud',
+        24: 'Shared/Split Screen',
+        25: 'Steam Leaderboards',
+        28: 'Full controller support',
+        29: 'Steam Trading Cards',
+        36: 'Online PvP',
+        37: 'Shared/Split Screen PvP',
+        38: 'Online Co-op',
+        39: 'Shared/Split Screen Co-op',
+        41: 'Remote Play on Phone',
+        42: 'Remote Play on Tablet',
+        43: 'Remote Play on TV',
+        44: 'Remote Play Together',
+        49: 'PvP'
+    */
+
+    const GameCategories = {
+        MultiplayerByType: {
+            Multiplayer: 1,
+            SplitScreen: 24,
+            RemotePlayTogether: 44
+        },
+        MultiplayerById: {
+            1: 'Multiplayer',
+            24: 'Split-Screen',
+            44: 'Remote Play Together'
+        }
+    };
+
+    async function getMultiplayerGames(...appIds) {
+        const allGameData = await Promise.all(appIds.map(getGameInfo));
+        const multiplayerGames = allGameData
+            .filter(game => game)
+            .filter(game => {
+                const gameCategoryIds = game.categories.map(category => category.id);
+                return Object.values(GameCategories.MultiplayerByType)
+                    .some(multiplayerId => gameCategoryIds.includes(multiplayerId));
+            });
+
+        return multiplayerGames;
+    }
+
+    async function getMultiplayerGamesPlayableWithFriends(username) {
+        // TODO cache game info by appId to avoid duplicate calls
+        const multiplayerGamesByUsername = {};
+        const userSteamId = await getSteamId(username);
+        const ownedGames = await getOwnedGamesNamesAndIds(userSteamId);
+        const ownedMultiplayerGames = await getMultiplayerGames(...ownedGames.map(game => game.appId));
+        const ownedMultiplayerGameIds = new Set(ownedMultiplayerGames.map(game => game.steam_appid));
+
+        multiplayerGamesByUsername[username] = ownedMultiplayerGames;
+
+        const friendSteamIds = await getSteamFriendIds(userSteamId);
+        const friendProfileInfo = await Promise.all(friendSteamIds.map(getProfileInfo));
+        const friendNamesAndIds = friendProfileInfo.map(friend => ({ steamId: friend.steamid, username: friend.personaname }));
+
+        for (let friend of friendNamesAndIds) {
+            const friendOwnedGames = await getOwnedGamesNamesAndIds(friend.steamId);
+            const friendMultiplayerGames = await getMultiplayerGames(...friendOwnedGames.map(game => game.appId));
+
+            multiplayerGamesByUsername[friend.username] = friendMultiplayerGames;
+        }
+
+        const gamesPlayableWithEachUser = Object.entries(multiplayerGamesByUsername).reduce((multiplayerGames, [ gamerTag, games ]) => {
+            // gamerTag === username
+            const gamesPlayableWithUser = games.reduce((gamesForUser, game) => {
+                const gameId = game.steam_appid;
+                const gameName = game.name;
+                const gameCategoryIds = game.categories.map(category => category.id);
+
+                if (gameCategoryIds.includes(GameCategories.MultiplayerByType.RemotePlayTogether)) {
+                    gamesForUser.remotePlayGames.push(gameName);
+                }
+
+                if (
+                    gamerTag !== username
+                    && ownedMultiplayerGameIds.has(gameId)
+                    && gameCategoryIds.includes(GameCategories.MultiplayerByType.Multiplayer)
+                ) {
+                    gamesForUser.sharedMultiplayerGames.push(gameName);
+                }
+
+                return gamesForUser;
+            }, { sharedMultiplayerGames: [], remotePlayGames: [] });
+
+            multiplayerGames.remotePlayGames[gamerTag] = gamesPlayableWithUser.remotePlayGames;
+            multiplayerGames.sharedMultiplayerGames[gamerTag] = gamesPlayableWithUser.sharedMultiplayerGames;
+
+            return multiplayerGames;
+        }, { sharedMultiplayerGames: {}, remotePlayGames: {} });
+
+        return gamesPlayableWithEachUser;
+    }
+
+    getMultiplayerGamesPlayableWithFriends('DextreBeDextre').then(console.log);
+</script>
+
+</body>
+</html>
