@@ -5,6 +5,13 @@
 </head>
 <body>
 
+    <h1 id="title">
+        Loading...
+    </h1>
+
+    <table id="remote-play-games" />
+    <table id="shared-multiplayer-games" />
+
 <script>
     // Steam Docs: https://developer.valvesoftware.com/wiki/Steam_Web_API
     // Team Fortress docs (better): https://wiki.teamfortress.com/wiki/WebAPI
@@ -172,8 +179,89 @@
 
         return gamesPlayableWithEachUser;
     }
+</script>
 
-    getMultiplayerGamesPlayableWithFriends('DextreBeDextre').then(console.log);
+<script>
+    (async () => {
+        const {
+            sharedMultiplayerGames,
+            remotePlayGames
+        } = await getMultiplayerGamesPlayableWithFriends('DextreBeDextre');
+        const titleElem = document.getElementById('title');
+        const remotePlayGamesTableId = 'remote-play-games';
+        const sharedGamesTableId = 'shared-multiplayer-games';
+        const tableGamesMappings = [
+            {
+                tableTitle: 'Remote Play Games',
+                elemId: remotePlayGamesTableId,
+                userGamesMap: remotePlayGames
+            },
+            {
+                tableTitle: 'Shared Multiplayer Games',
+                elemId: sharedGamesTableId,
+                userGamesMap: sharedMultiplayerGames
+            }
+        ];
+
+        titleElem.innerText = 'Playable Multiplayer Games';
+
+        tableGamesMappings.forEach(({ elemId, userGamesMap, tableTitle }) => {
+            const usersWithGames = Object.entries(userGamesMap).reduce((withGames, [ username, games ]) => {
+                if (games.length) {
+                    withGames[username] = games;
+                }
+
+                return withGames;
+            }, {});
+            const uniqueGameNames = Object.values(usersWithGames).reduce((gameNames, gamesForUser) => {
+                gamesForUser.forEach(gameName => gameNames.add(gameName));
+
+                return gameNames;
+            }, new Set());
+
+            const tableElem = document.getElementById(elemId);
+
+            const tableTitleElem = document.createElement('h2');
+            const tableCaption = document.createElement('caption');
+            tableTitleElem.innerText = tableTitle;
+            tableCaption.appendChild(tableTitleElem);
+            tableElem.appendChild(tableCaption);
+
+            const headerRow = document.createElement('thead');
+            headerRow.setAttribute('id', `${elemId}-header`);
+            tableElem.appendChild(headerRow);
+
+            const gameNameColHeader = document.createElement('th');
+            gameNameColHeader.innerText = 'Game Name';
+            headerRow.appendChild(gameNameColHeader);
+
+            Object.keys(usersWithGames).forEach(username => {
+                const usernameColHeader = document.createElement('th');
+                usernameColHeader.innerText = username;
+                headerRow.appendChild(usernameColHeader);
+            });
+
+            const tableBody = document.createElement('tbody');
+            tableBody.setAttribute('id', `${elemId}-body`);
+            tableElem.appendChild(tableBody);
+
+            uniqueGameNames.forEach(gameName => {
+                const gameOwnershipRow = document.createElement('tr');
+                const gameNameCell = document.createElement('td');
+                gameNameCell.innerText = gameName;
+                gameNameCell.classList.add('game-name');
+                gameOwnershipRow.appendChild(gameNameCell);
+
+                Object.entries(usersWithGames).forEach(([ username, games ]) => {
+                    const gameOwnershipCol = document.createElement('td');
+                    gameOwnershipCol.innerText = games.includes(gameName) ? 'X' : '';
+                    gameOwnershipRow.appendChild(gameOwnershipCol);
+                });
+
+                tableBody.appendChild(gameOwnershipRow);
+            });
+        });
+    })();
 </script>
 
 </body>
