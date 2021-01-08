@@ -210,9 +210,9 @@
         // Path used when invoking tex & friends; "" is fine for MiKTeX
         // For TeXlive 2011 (or other years) use
         // "texpath" : "C:\\texlive\\2011\\bin\\win32;$PATH",
-        "texpath" : "",
+        "texpath" : "C:\\texlive\\bin\\win32;$PATH",
         // TeX distro: "miktex" or "texlive"
-        "distro" : "miktex",
+        "distro" : "texlive",
         // Command to invoke Sumatra. If blank, "SumatraPDF.exe" is used (it has to be on your PATH)
         "sumatra": "",
         // Command to invoke Sublime Text. Used if the keep_focus toggle is true.
@@ -288,7 +288,7 @@
     // if you do so, however, note that the path will be interpreted
     // relative to the location of your project file
 
-    "aux_directory": "",
+    "aux_directory": "<<temp>>",  // Only works on MiKTeX: https://github.com/SublimeText/LaTeXTools/blob/45376f12449e32c4ad769f5baa0a75c1fa72194d/docs/settings.md#output-directory-settings
 
     // OPTION: "output_directory"
     // Specifies the output directory
@@ -324,7 +324,7 @@
     // if you do so, however, note that the path will be interpreted
     // relative to the location of your project file
 
-    "output_directory": "",
+    "output_directory": "<<temp>>",
 
     // OPTION: "jobname"
     // Specifies the jobname to use when building the document
@@ -399,9 +399,10 @@
 
         // General settings:
         // See README or third-party documentation
+        // https://latextools.readthedocs.io/en/latest/settings/?q=delete&check_keywords=yes&area=default#builder-settings
 
         // (built-ins): true shows the log of each command in the output panel
-        "display_log" : false,
+        "display_log" : true,
 
         // Platform-specific settings:
         "osx" : {
@@ -409,7 +410,7 @@
         },
 
         "windows" : {
-            // See README or third-party documentation
+            "display_log" : true,
         },
 
         "linux" : {
@@ -434,13 +435,13 @@
     // "no_warnings" (only hide the panel if no warnings occur)
     // "no_badboxes" (only hide the panel if no badbox messages occur when badboxes are enabled) and
     // "never" (default, never hide the build panel)
-    "hide_build_panel": "no_badboxes",
+    "hide_build_panel": "no_errors",
 
     // OPTION: "display_bad_boxes"
     // controls whether or not to display any bad boxes in the build output
     // if this is not set to true, the setting "no_badboxes" for
     // "hide_build_panel" is equivalent to "no_warnings"
-    "display_bad_boxes": false,
+    "display_bad_boxes": true,
 
     // OPTION: "show_error_phantoms"
     // (ST3, Build 3118+ only)
