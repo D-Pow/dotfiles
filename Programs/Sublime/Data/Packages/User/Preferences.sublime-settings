@@ -71,6 +71,8 @@
             "JavaScript & NodeJS Snippets",
             "JavaScript Enhancements",
             "jQuery",
+            "LaTeXTools",
+            "Markdown Extended", "Only if MarkdownEditing causes code block language syntax issues"
             "MarkdownEditing",
             "MarkdownPreview",
             "MoveTab",
