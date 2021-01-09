@@ -7,3 +7,13 @@ There are several ways to make a script (or any program) launch automatically ev
 1. Find the script file, select it, and press `Ctrl+C`.
 2. Press `Win+R` to open the Run dialog, then enter `shell:startup` and click OK or `Enter`. This will open the Startup folder for the current user. To instead open the folder for all users, enter `shell:common startup` (however, in that case you must be an administrator to proceed).
 3. Right click inside the window, and click `"Paste Shortcut"`. The shortcut to the script should now be in the Startup folder.
+
+## Other info
+
+* Mapping keys via registry:
+    - Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\AppKey\
+        + 7 is home key
+        + 1 is browser back key
+        + 2 is browser forward key
+* Possible AutoHotKey keylogger script:
+    - `Hotkey, % [color=red]"~"[/color] Chr(A_Index+96),SomeLabel`
