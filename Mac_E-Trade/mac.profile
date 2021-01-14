@@ -128,6 +128,9 @@ uatAipUsernames=(
     'BETX1000'
 )
 capUsernames=('ACTJ3500' 'ACPE2900' 'ABZM8200')
+prdUsernames=(
+    'qatest_02' # password (Test@234) - do NOT place prebuilt order
+)
 
 alias mas="copy ${sitMfUsernames[0]}"
 alias sit="copy ${sitAipUsernames[0]}"
@@ -154,6 +157,11 @@ essh() {
     ssh "$1.etrade.com"
 }
 # sit:wm:s2:mfetf
+# All SIT instances
+# sit:wm:s2:mfetf:sit429w86m7
+# sit:wm:s2:mfetf:sit390w224m7
+# sit:cs:s2:mfetf:sit175w186m7
+# sit:cs:s2:mfetf:sit172w188m7
 export sit1='sit390w224m7'
 export sit2='sit429w86m7'
 # uat:wm:s2:mfetf
@@ -162,6 +170,18 @@ export uat2='uat370w228m7'
 # Norm's sit boxes
 export norm1='sit215w86m7'
 export norm2='sit241w80m7'
+# DB box
+export sitdb='sit108w80m7'
+
+# PRD login through Jump Hosts
+# Uses LDAP password + Symantec VIP token
+# Symantec VIP token gotten from:
+#   1. Install app from your phone's app store
+#   2. Authenticate your phone's Symantec ID by going to  https://symantec.etrade.com/  (Found from <https://channele.corp.etradegrp.com/mywork/technical-support/_layouts/15/WopiFrame.aspx?sourcedoc=/mywork/technical-support/Documents/Logon-Portal-Instructions.docx&action=default&DefaultItemOpen=1>  ->  <https://employeelogin.etrade.com/profile> which redirects to <https://employeelogin.etrade.com/eauth/XUI/?realm=/employees#dashboard/>)
+# More info at: https://confluence.corp.etradegrp.com/pages/viewpage.action?pageId=205997157
+export loginprd='ssh dpowell1@ssh.etrade.com'
+
+alias dvl='ssh lxdm7876m53.etrade.com'
 
 # SIT Shutdown Sequence:
 #   edna -c stop -d sit-wm-s2-mfetf
