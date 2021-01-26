@@ -119,6 +119,11 @@ getAllCrlfFiles() {
     find . -not -type d -exec file "{}" ";" | grep CRLF
 }
 
+getAllLinesAfter() {
+    # sed -rEgex '[start_line],[end_line]/pattern/ delete_lines_before_including_pattern_match'
+    sed -E "1,/$1/ d"
+}
+
 ##### Aliases and functions for git commands #####
 
 openGitMergeConflictFilesWithSublime() {
