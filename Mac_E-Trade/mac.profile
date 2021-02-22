@@ -170,8 +170,14 @@ export uat2='uat370w228m7'
 # Norm's sit boxes
 export norm1='sit215w86m7'
 export norm2='sit241w80m7'
-# DB box
-export sitdb='sit108w80m7'
+# DB boxes
+export sitdb1='sit108w80m7'
+export sitdb2='sit141w86m7'
+# sit:ets:batch:ord for batch jobs
+export cbassbatch='sit108w80m7'
+
+alias mountbatchserver='sshfs dpowell1@sit108w80m7.etrade.com:/ ~/cbass_batch/'
+alias unmountbatchserver='umount -f ~/cbass_batch/'
 
 # PRD login through Jump Hosts
 # Uses LDAP password + Symantec VIP token
