@@ -62,6 +62,15 @@ window.getAllPortfoliosProducts = () => {
     }, {});
 };
 
+window.get401kInvestmentRatesOfReturnDetails = () => [...document
+    .querySelector('.table.table-investments.ror-table tbody')
+    .querySelectorAll('tr')]
+    .map(tr =>
+        [...tr.querySelectorAll('td')]
+            .map(td => td.textContent.trim())
+            .filter(tdText => tdText)
+    );
+
 })();
 
 // fetch with necessary headers from RequestService
