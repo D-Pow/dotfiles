@@ -26,19 +26,6 @@ open_chrome* belongs in Windows only. Put the shortcut on the desktop.
     You might need to keep deleting and re-creating the keyboard shortcut
     before the shortcut actually works
 
-For LaTeX (TexLive), run the following commands:
-    tlmgr init-usertree
-    sudo tlmgr update --all
-If that fails, you'll have to switch to the old repo (tlmgr not supported in new one):
-    tlmgr option repository ftp://tug.org/historic/systems/texlive/2015/tlnet-final
-Use sudo for installing things
-
-In Linux, after installing Mozc and IBus (for Japanese input):
-    Mozc settings -> Keymap style -> Customize
-    Repeat for Direct Input, Composition, and Precomposition:
-        Ctrl ` --> Set input mode to Hiragana
-        Ctrl 1 --> Set input mode to full-width Katakana
-
 Power options: disable wake timers and (multimedia-> when sharing media-> allow the computer to sleep) to prevent a program from keeping computer from sleeping
 
 Disk check disabled
@@ -85,29 +72,8 @@ Programs to install:
     Gimp 2
     wireshark
 
-If dual-booting, convert the disk from MBR (Master Boot Record) to GPT (GUID):
-    1. Install Linux first so Grub is accessible.
-    2. Change BIOS to boot using UEFI instead of Legacy.
-    3. If the Linux install didn't automatically convert the disk to GPT:
-        i. Use MBR2GPT in Windows to convert it: https://docs.microsoft.com/en-us/windows/deployment/mbr-to-gpt
-        ii. MBR2GPT prefers to be run in the Windows Preinstallation Environment rather than in a booted OS. It's possible to run in the OS, but you could run into issues, e.g. the system recovery being messed up.
-
 For Python-IDLE right-click menu:
 Regedit as administrator
 HKEY_CLASSES_ROOT\.py\shell --> (make the following keys:)
 Edit with IDLE 3.5 --> command --> "C:\Python3\pythonw.exe" "C:\Python3\Lib\idlelib\idle.pyw" -e "%1"
 Edit with IDLE 2.7 --> command --> "C:\Python27\pythonw.exe" "C:\Python27\Lib\idlelib\idle.pyw" -e "%1"
-
-
-If running into issues with GRUB after modifying boot partitions (e.g. deleting/moving partitions you can boot from):
-    1. Boot into live Linux USB.
-    2. Mount the "Linux filesystem" drive in the USB instance
-        `sudo fdisk -l`
-        `sudo blkid`
-        Get the /dev/sdXX of "Linux Filesystem"
-        `sudo mount /dev/sdXX /mnt` to mount that partition into /mnt/ directory
-    3. Run "Boot repair" (in start menu) or `boot-repair` (in terminal).
-        Advanced options
-        Uncheck "Secure Boot" (secure boot was disabled above)
-        Uncheck "Repair Windows boot loader" (Windows data should be totally fine, only GRUB is messed up)
-    4. Reboot into Linux on hard drive and re-run GrubCustomizer to customize as desired.

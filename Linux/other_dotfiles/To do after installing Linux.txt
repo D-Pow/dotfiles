@@ -109,3 +109,35 @@ If Linux won't boot randomly and only goes into emergency mode, boot into Window
         echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
     Reference:
         https://github.com/webpack/docs/wiki/troubleshooting#not-enough-watchers
+
+12) In Linux, after installing Mozc and IBus (for Japanese input):
+    Mozc settings -> Keymap style -> Customize
+    Repeat for Direct Input, Composition, and Precomposition:
+        Ctrl ` --> Set input mode to Hiragana
+        Ctrl 1 --> Set input mode to full-width Katakana
+
+13) For LaTeX (TexLive), run the following commands:
+    - tlmgr init-usertree
+    - sudo tlmgr update --all
+    If that fails, you'll have to switch to the old repo (tlmgr not supported in new one): tlmgr option repository ftp://tug.org/historic/systems/texlive/2015/tlnet-final
+        - Use sudo for installing things
+
+14) If dual-booting, convert the disk from MBR (Master Boot Record) to GPT (GUID):
+    1. Install Linux first so Grub is accessible.
+    2. Change BIOS to boot using UEFI instead of Legacy.
+    3. If the Linux install didn't automatically convert the disk to GPT:
+        i. Use MBR2GPT in Windows to convert it: https://docs.microsoft.com/en-us/windows/deployment/mbr-to-gpt
+        ii. MBR2GPT prefers to be run in the Windows Preinstallation Environment rather than in a booted OS. It's possible to run in the OS, but you could run into issues, e.g. the system recovery being messed up.
+
+15) If running into issues with GRUB after modifying boot partitions (e.g. deleting/moving partitions you can boot from):
+    1. Boot into live Linux USB.
+    2. Mount the "Linux filesystem" drive in the USB instance
+        `sudo fdisk -l`
+        `sudo blkid`
+        Get the /dev/sdXX of "Linux Filesystem"
+        `sudo mount /dev/sdXX /mnt` to mount that partition into /mnt/ directory
+    3. Run "Boot repair" (in start menu) or `boot-repair` (in terminal).
+        Advanced options
+        Uncheck "Secure Boot" (secure boot was disabled above)
+        Uncheck "Repair Windows boot loader" (Windows data should be totally fine, only GRUB is messed up)
+    4. Reboot into Linux on hard drive and re-run GrubCustomizer to customize as desired.
