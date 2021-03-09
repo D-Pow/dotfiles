@@ -196,6 +196,29 @@ getGitParent() {
     git log --decorate $commitsMergingToCurrentBranch | egrep '^commit [a-z0-9]+ \(' | awk '{print "* "$0}' | head -n $numLinesToShow
 }
 
+getAllGitReposInDir() {
+    local parentDir='.'
+    local gitDirs=()
+
+    if ! [ -z "$1" ]; then
+        parentDir="$1"
+    fi
+
+    parentDir="$(cd "$parentDir" && pwd)"
+
+    local parentDirContents=$parentDir/*
+
+    for file in $parentDirContents; do
+        if [ -d "$file" ]; then # -d = isDirectory
+            if [ -d "$file/.git" ]; then # if $file directory contains .git/
+                gitDirs+=("$file")
+            fi
+        fi
+    done
+
+    echo ${gitDirs[@]}
+}
+
 alias     g='git'
 alias    gs='git status'
 alias   gsi='getGitIgnoredFiles'
