@@ -219,6 +219,16 @@ getAllGitReposInDir() {
     echo ${gitDirs[@]}
 }
 
+updateAllGitRepos() {
+    local gitDirs=$(getAllGitReposInDir $1)
+
+    for dir in $gitDirs; do
+        echo "Updating $dir..."
+        (cd "$dir" && git pull)
+        echo ""
+    done
+}
+
 alias     g='git'
 alias    gs='git status'
 alias   gsi='getGitIgnoredFiles'
