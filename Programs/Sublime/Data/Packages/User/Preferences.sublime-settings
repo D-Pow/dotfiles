@@ -1,4 +1,23 @@
 {
+    "added_words": [
+        "app",
+        "apps",
+        "app's",
+        "Craigslist",
+        "Idk",
+        "Trello",
+        "Reddit",
+        "versioning",
+        "online",
+        "multiplayer",
+        "dev",
+        "devs",
+        "repo",
+        "repos",
+        "refactor",
+        "refactors",
+        "refactoring"
+    ],
     "auto_complete_triggers": [
         {
             "characters": "<",
