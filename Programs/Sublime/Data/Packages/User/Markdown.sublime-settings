@@ -1,9 +1,10 @@
 {
     "color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme",
     "extensions": [
-        "md"
+        "md",
+        "txt"
     ],
-    "mde.keymap_disable.fold_section": true, // key bindings for shift+tab are on both indent_list_item and fold_section
+    "mde.keymap_disable.fold_section": true, // key bindings for Shift+Tab are on both indent_list_item and fold_section
     "trim_trailing_white_space_on_save": true,
     "line_numbers": true,
     "wrap_width": 120
