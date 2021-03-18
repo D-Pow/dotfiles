@@ -168,6 +168,10 @@ export sit2='sit429w86m7'
 export uat1='uat345w92m7'
 export uat2='uat370w228m7'
 # Norm's sit boxes
+# sit:rb:s2:aip:sit215w86m7
+# sit:rb:s2:aip:sit241w80m7
+# sit:rb:s2:csaip:sit141w86m7
+# sit:rb:s2:csaip:sit50w80m7
 export norm1='sit215w86m7'
 export norm2='sit241w80m7'
 # DB boxes
