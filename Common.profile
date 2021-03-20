@@ -12,6 +12,8 @@ gril() {
     grep "$1" -ril .
 }
 
+thisFile="$BASH_SOURCE"
+
 dirsize() {
     usage="Displays total disk usages of all directories within the given path.
 
