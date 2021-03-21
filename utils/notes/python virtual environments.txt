@@ -1,12 +1,12 @@
 This sets up a virtual environment for python on the system
 such that the installed dependencies are only used locally.
 Note that in this case the virtual environment name is
-"dependencies" but it could be named whatever you want.
+"pyvenv" but it could be named whatever you want.
 
 
 # In terminal:
-python3 -m venv dependencies
-source dependencies/bin/activate  # or on Windows:  dependencies/Scripts/activate
+python3 -m venv pyvenv
+source pyvenv/bin/activate  # or on Windows:  pyvenv/Scripts/activate
 pip install -r requirements.txt
 
 # do python stuff
