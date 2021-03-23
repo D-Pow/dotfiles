@@ -26,5 +26,6 @@ source "$linuxProfile"
 # Overwritten profile content based on relevant paths
 alias editprofile="subl -n -w '$linuxProfile' && source ~/.profile"
 alias editcommon="subl -n -w '$commonProfile' && source ~/.profile"
+alias repos="cd $dotfilesDir/.."
 
 export PATH="$dotfilesDir/Linux/bin:$HOME/.local/bin:$PATH"
