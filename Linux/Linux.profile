@@ -5,7 +5,7 @@ export JAVA_HOME
 export GRADLE_HOME
 export PATH="$JAVA_HOME/bin:$GRADLE_HOME/bin:$HOME/.local/bin:$PATH"
 
-alias python3=python3.9
+alias python3=python3.8
 
 # Change directory colors in `ls`
 # LS_COLORS="${LS_COLORS}di=01;35"
