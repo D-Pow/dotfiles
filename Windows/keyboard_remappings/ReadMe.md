@@ -10,6 +10,12 @@ There are several ways to make a script (or any program) launch automatically ev
 
 ## Other info
 
+* Possible way to check keyboard device ID to decide if right Ctrl should be context menu (right click) or normal right Ctrl (i.e. if on native keyboard or external one):
+    - [System](https://autohotkey.com/board/topic/38015-ahkhid-an-ahk-implementation-of-the-hid-functions/)
+        + [Script from above: AHKHID.ahk](https://raw.githubusercontent.com/jleb/AHKHID/master/AHKHID.ahk)
+    - [Remapping key only for external keyboard](https://www.autohotkey.com/boards/viewtopic.php?f=5&t=11896)
+    - [Detect USB keyboard](https://autohotkey.com/board/topic/113250-detect-usb-keypad/)
+        + [Similar thread](https://autohotkey.com/board/topic/8231-usb-device-connecteddisconnected-notification/://autohotkey.com/board/topic/8231-usb-device-connecteddisconnected-notification/page-2?&#entry168746)
 * Mapping keys via registry:
     - Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\AppKey\
         + 7 is home key
