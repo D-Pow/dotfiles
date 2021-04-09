@@ -1,6 +1,7 @@
 [
-    /* Linux only - toggle Japanese input */
-    { "keys": ["ctrl+\\"], "command": "toggle_mozc"},
+    /* Linux only - Requires `Toggle Scale/Expo` keybindings to be changed/removed */
+    { "keys": ["ctrl+alt+up"], "command": "select_lines", "args": {"forward": false} },
+    { "keys": ["ctrl+alt+down"], "command": "select_lines", "args": {"forward": true} },
 
     /* Mac only */
     { "keys": ["ctrl+shift+up"], "command": "swap_line_up" },
