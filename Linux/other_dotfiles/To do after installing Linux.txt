@@ -72,6 +72,16 @@ If Linux won't boot randomly and only goes into emergency mode, boot into Window
     `BrowseProtocols none`
 
 
+~ To add GitHub oauth personal access token via credential manager:
+    sudo apt install libsecret-1-0 libsecret-1-dev
+    cd /usr/share/doc/git/contrib/credential/libsecret/
+    sudo make
+    git config --global credential.helper /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret
+    cd some-git-dir
+    git pull
+    <paste oauth token in password section>
+
+
 ~ To install Java, you'll want to remove the underscore for the directory name.
     -First, install Java to /usr/
     -Rename the directory to just "java" and remove jdk_1.*.* name in folder
