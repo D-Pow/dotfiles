@@ -20,6 +20,7 @@ alias lah='ls -Flah --color'
 alias listupdate='sudo apt update && sudo apt list --upgradable'
 
 alias scan='savscan -all -rec -f -archive'
+alias sophosUpdate='sudo /opt/sophos-av/bin/savupdate && /opt/sophos-av/bin/savdstatus --version'
 
 alias apachestart='/etc/init.d/apache2 start'
 alias apachestop='/etc/init.d/apache2 stop'
