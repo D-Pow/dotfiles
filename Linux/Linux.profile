@@ -36,6 +36,9 @@ gsettings set org.gnome.Terminal.Legacy.Keybindings:/org/gnome/terminal/legacy/k
 gsettings set org.gnome.Terminal.Legacy.Keybindings:/org/gnome/terminal/legacy/keybindings/ paste '<Primary>V'
 gsettings set org.gnome.Terminal.Legacy.Keybindings:/org/gnome/terminal/legacy/keybindings/ reset-and-clear '<Primary>K'
 
+# Remove multiple workspaces
+gsettings set org.cinnamon.desktop.wm.preferences num-workspaces 1
+
 copy() {
     # Linux: xclip (will need install)
     # Mac:   pbcopy

@@ -123,6 +123,13 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         ```
         /usr/bin/discord
         ```
+    - Remap `Toggle Scale` (spreads all windows to tabl through):
+        + General > Toggle Scale > `Super+Tab`
+    - Remove `Toggle Expo` (shows all workspaces):
+        + General > Toggle Expo > Remove all keybindings
+    - Remove workspaces:
+        + `gsettings set org.cinnamon.desktop.wm.preferences num-workspaces 1`
+        + `Linux.profile` already has this in it.
 
 
 * Import terminal profile settings:
