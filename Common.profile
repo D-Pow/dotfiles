@@ -227,7 +227,7 @@ updateAllGitRepos() {
     for dir in $gitDirs; do
         echo "Updating $dir..."
         (cd "$dir" && git pull)
-        echo ""
+        echo -e "\n\n---------------------\n\n"
     done
 }
 
