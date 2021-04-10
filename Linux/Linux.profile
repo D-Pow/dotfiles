@@ -19,6 +19,8 @@ alias lah='ls -Flah --color'
 
 alias listupdate='sudo apt update && sudo apt list --upgradable'
 
+alias open='xdg-open'
+
 alias scan='savscan -all -rec -f -archive'
 alias sophosUpdate='sudo /opt/sophos-av/bin/savupdate && /opt/sophos-av/bin/savdstatus --version'
 
