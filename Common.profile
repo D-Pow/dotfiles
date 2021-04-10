@@ -222,11 +222,36 @@ getAllGitReposInDir() {
 }
 
 updateAllGitRepos() {
+    usage="Updates all git repositories with 'git pull' at the given parent path.
+
+    Usage: updateAllGitRepos [-s] [path=./]
+
+    Options:
+        -s | Run 'git status' after 'git pull'."
+
+    # local vars to avoid them being accessible outside this function
+    local OPTIND=1
+    local getStatus=false
+
+    while getopts "sh" opt; do
+        case "$opt" in
+            s)
+                getStatus=true
+                ;;
+            *)
+                echo "$usage"
+                return
+                ;;
+        esac
+    done
+
+    shift "$((OPTIND - 1))"
+
     local gitDirs=$(getAllGitReposInDir $1)
 
     for dir in $gitDirs; do
         echo "Updating $dir..."
-        (cd "$dir" && git pull)
+        (cd "$dir" && git pull && [ "$getStatus" = true ] && git status)
         echo -e "\n\n---------------------\n\n"
     done
 }
