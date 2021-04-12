@@ -1,3 +1,4 @@
+#!/bin/bash
 #(...) array syntax
 ipaddresses=($(ifconfig | egrep -o "([0-9]{1,3}\.){3}[0-9]{1,3}"))
 localip="${ipaddresses[1]}"
