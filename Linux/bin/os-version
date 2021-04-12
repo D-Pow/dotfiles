@@ -1,0 +1,18 @@
+#!/bin/bash
+allSysInfo="$(uname -a)"
+
+if [[ "$allSysInfo" != *"Linux"* ]]; then
+    if [[ "$allSysInfo" == *"Mac"* ]]; then
+        echo "TODO"
+    fi
+fi
+
+os="$(cat /etc/issue.net)"
+
+echo "OS: $os"
+
+if [[ "$allSysInfo" == *"~"* ]]; then
+    osBranchedFromOs="$(echo $allSysInfo | grep -P -o '(?<=~)[\S]+')"
+
+    echo "Branched from: $osBranchedFromOs"
+fi
