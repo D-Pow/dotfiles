@@ -10,3 +10,7 @@ do
 done
 echo -e "\nYour guessed IP:"
 echo $localip
+
+publicIp="$(curl -s ifconfig.me)" # --silent hides download progress details
+echo -e "\nPublic IP:"
+echo $publicIp
