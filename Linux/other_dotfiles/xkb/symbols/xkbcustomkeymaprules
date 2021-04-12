@@ -1,0 +1,4 @@
+partial
+xkb_symbols "custommapping" {
+    key <RCTL> { [ Menu ] };
+};

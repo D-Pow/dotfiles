@@ -1,2 +1,64 @@
 #!/bin/bash
-xmodmap /home/dpow/.keymap.conf
+
+# Remap right Ctrl to context menu (right click) only on built-in keyboard
+#
+# Get device ID via `xinput list` and look for "AT Translated Set 2 keyboard"
+#   Ref: https://askubuntu.com/a/178741/625954
+#
+# Get keycodes and names from:
+#   /usr/share/X11/xkb/keycodes/evdev
+# Get available rules for setxkbmap from:
+#   /usr/share/X11/xkb/rules/base.lst
+#
+# Right Ctrl keycode: 105 (Menu)
+# Context menu keycode: 135 (rctl)
+#
+# Ref: https://unix.stackexchange.com/a/536022/203387
+
+printUsage() {
+    usage="Usage: custom-key-mapping [OPTION]\n
+        -a | Activate custom key mapping\n
+        -d | Deactivate custom key mapping"
+    echo -e ${usage}
+    exit 0
+}
+
+if [ $# -eq 0 ]; then
+    printUsage
+fi
+
+currentDir="$(dirname "$BASH_SOURCE")"
+mappingDir="$(readlink -m $currentDir/../other_dotfiles/xkb)" # convert to absolute path
+
+internalKeyboardId=$(xinput list | grep -P 'AT Translated Set \S+ keyboard' | grep -P -o 'id=\d+' | grep -P -o '\d+')
+
+while getopts "adh" opt; do
+    case "$opt" in
+        a)
+            # -i DeviceId -IdirectoryToSearch configFile destination
+            # directoryToSearch must contain nested directories corresponding to the xkb_TYPE
+            #   e.g. symbols/ for xkb_symbols
+            # configFile must append the new rule(s) within the nested dir via `prevEntries+nestedFileName(nestedFileRuleName)`
+            # Silence superfluous output from command
+            xkbcomp -i $internalKeyboardId -I$mappingDir "$mappingDir/xkbcustomkeymapconfig" $DISPLAY &>/dev/null
+            echo "Custom key mappings applied"
+            ;;
+        d)
+            # Not passing an available rule to setxkbmap resets all previous options
+            setxkbmap -device $internalKeyboardId -option
+            echo "Custom key mappings removed"
+            ;;
+        *)
+            printUsage
+            ;;
+    esac
+done
+
+# Original:
+# xmodmap "$currentDir/.keymap.conf"
+#
+# .keymap.conf held the following:
+# keycode 105 = Menu NoSymbol Menu
+#
+# one-liner could be:
+# `xmodmap -e "keycode 105 = Menu NoSymbol Menu"`
