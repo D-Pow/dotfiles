@@ -115,6 +115,7 @@ npms() {
 }
 alias npmr='npm run'
 alias npmf="npm run test 2>&1 | egrep -o '^FAIL.*'" # only print filenames of suites that failed
+export NVM_SYMLINK_CURRENT=true # Makes a symlink at ~/.nvm/current/bin/node so you don't have to chage IDEs' configurations when changing node versions
 
 getAllCrlfFiles() {
     # find [args] -exec [command] "output from find" "necessary `-exec` terminator to show end of command"
