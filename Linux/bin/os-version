@@ -3,7 +3,8 @@ allSysInfo="$(uname -a)"
 
 if [[ "$allSysInfo" != *"Linux"* ]]; then
     if [[ "$allSysInfo" == *"Mac"* ]]; then
-        echo "TODO"
+        echo "$allSysInfo" | cut -f 1-3 -d ' '
+        exit 0
     fi
 fi
 
