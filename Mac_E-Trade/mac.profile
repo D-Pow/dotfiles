@@ -45,6 +45,11 @@ copy() {
 }
 
 
+getAppBinaryPath() {
+    lsappinfo info -app "$1" -only CFBundleExecutablePath | sed -E 's/"|.*=//g'
+}
+
+
 resetJetbrains() {
     cd ~/Library/Preferences/
     rm jetbrains.* com.jetbrains.*
