@@ -127,6 +127,12 @@ getAllLinesAfter() {
     sed -E "1,/$1/ d"
 }
 
+getCommandsMatching() {
+    # `compgen -c` lists all commands available to bash,
+    # regardless of install location or binary vs function vs alias
+    compgen -c | grep -E "$1"
+}
+
 ##### Aliases and functions for git commands #####
 
 openGitMergeConflictFilesWithSublime() {
