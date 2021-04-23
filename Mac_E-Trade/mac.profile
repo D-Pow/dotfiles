@@ -22,6 +22,35 @@ export LSCOLORS=GxFxBxDxCxegedabagacad
 
 [[ -s $HOME/.nvm/nvm.sh ]] && source $HOME/.nvm/nvm.sh
 
+alias python='python3'
+alias python2='/usr/bin/python'
+export PIP_INDEX_URL='https://artifactory.etrade.com/artifactory/api/pypi/pypi/simple'
+
+alias devcurl="curl --noproxy '*'"
+alias gradle4="$GRADLE_4_HOME/gradle"
+
+# E-Trade uses its own hosted npm registry; as such, the registry needs to be set
+#  to find the private E-Trade packages.
+# Similarly, since the registry is changed, `npm install node-sass` always fails on post-install script,
+#  so the SASS binary site needs to be set as well (see https://github.com/sass/node-sass/tree/master#binary-configuration-parameters).
+# This can be done via repo-root-level .npmrc file with entries:
+#  registry=https://repo.etrade.com/registry/npm/npm-all/
+#  sass_binary_site=https://artifactory.etrade.com/artifactory/github/sass/node-sass/releases/download
+# Or it can be done using this alias
+alias enpm='npm --registry="https://repo.etrade.com/registry/npm/npm-all/" --sass-binary-site="https://artifactory.etrade.com/artifactory/github/sass/node-sass/releases/download"'
+
+
+copy() {
+    echo -n "$1" | pbcopy
+}
+
+
+resetJetbrains() {
+    cd ~/Library/Preferences/
+    rm jetbrains.* com.jetbrains.*
+    rm -rf WebStorm2019.3/eval/ WebStorm2019.3/options/other.xml IntelliJIdea2019.3/eval/ IntelliJIdea2019.3/options/options.xml
+}
+
 
 toggleProxy() {
     if [ "$1" = "on" ]; then
@@ -49,37 +78,6 @@ toggleProxy() {
         echo 'Usage: toggleProxy [on|off]'
     fi
 }
-
-
-copy() {
-    echo -n "$1" | pbcopy
-}
-
-
-alias python='python3'
-alias python2='/usr/bin/python'
-export PIP_INDEX_URL='https://artifactory.etrade.com/artifactory/api/pypi/pypi/simple'
-
-alias devcurl="curl --noproxy '*'"
-alias gradle4="$GRADLE_4_HOME/gradle"
-
-
-resetJetbrains() {
-    cd ~/Library/Preferences/
-    rm jetbrains.* com.jetbrains.*
-    rm -rf WebStorm2019.3/eval/ WebStorm2019.3/options/other.xml IntelliJIdea2019.3/eval/ IntelliJIdea2019.3/options/options.xml
-}
-
-
-# E-Trade uses its own hosted npm registry; as such, the registry needs to be set
-#  to find the private E-Trade packages.
-# Similarly, since the registry is changed, `npm install node-sass` always fails on post-install script,
-#  so the SASS binary site needs to be set as well (see https://github.com/sass/node-sass/tree/master#binary-configuration-parameters).
-# This can be done via repo-root-level .npmrc file with entries:
-#  registry=https://repo.etrade.com/registry/npm/npm-all/
-#  sass_binary_site=https://artifactory.etrade.com/artifactory/github/sass/node-sass/releases/download
-# Or it can be done using this alias
-alias enpm='npm --registry="https://repo.etrade.com/registry/npm/npm-all/" --sass-binary-site="https://artifactory.etrade.com/artifactory/github/sass/node-sass/releases/download"'
 
 
 mvntestfileinsubmodule() {
