@@ -84,6 +84,13 @@ window.setDocumentReferer = function(url = null, useOrigin = false) {
     document.__defineGetter__('referrer', () => referrerUrl);
 };
 
+window.toggleAllGithubFilesChangedOpenStatus = function() {
+    const fileCollapseButtonSelector = 'button[aria-label="Toggle diff contents"]';
+
+    [...document.querySelectorAll(fileCollapseButtonSelector)]
+        .forEach(elem => elem.click());
+};
+
 /**
  * fetch() using CORS proxy
  *
@@ -480,6 +487,9 @@ getVideoFromWatchCartoonOnline()
 setInnerHtmlToVideoWithSrc();  /* Set document to <video /> */
 /*
 goToNextKissanimeEpisode();  /* Next Kissanime */
+
+/*
+toggleAllGithubFilesChangedOpenStatus();  /* toggle "Files changed" tab so they can be viewed easier */
 
 
 })();
