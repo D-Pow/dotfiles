@@ -26,9 +26,9 @@ alias open='xdg-open'
 alias scan='savscan -all -rec -f -archive'
 alias sophosUpdate='sudo /opt/sophos-av/bin/savupdate && /opt/sophos-av/bin/savdstatus --version'
 
-alias apachestart='/etc/init.d/apache2 start'
-alias apachestop='/etc/init.d/apache2 stop'
-alias apachestatus='/etc/init.d/apache2 status'
+alias apachestart='systemctl start apache2'
+alias apachestop='systemctl stop apache2'
+alias apachestatus='systemctl status apache2'
 
 # Terminal key-bindings
 # Can't do 'Ctrl+C' for copy
