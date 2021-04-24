@@ -49,13 +49,7 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
     - Note: this is only if you didn't change any settings to break Linux (e.g. changing drivers). Once, Windows wouldn't let go of my shared Storage partition, even after shutting down. Running shutdown in command prompt helped for some reason.
 
 
-* Turn off automatic installation of all printers on network
-    - In `/etc/cups/cupsd.conf` and/or `/etc/cups/cups-browsed.conf`, change the following lines (if present or commented->uncommented) to:
-    ```
-    Browsing Off
-    BrowseLocalProtocols none
-    BrowseProtocols none
-    ```
+* Turn off unwanted startup services via `./disable-startup-services.sh` script.
 
 
 * To add GitHub oauth personal access token via credential manager:
