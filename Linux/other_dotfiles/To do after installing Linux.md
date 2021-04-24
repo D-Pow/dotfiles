@@ -146,10 +146,12 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
 
 
 * In Linux, after installing Mozc and IBus (for Japanese input):
-    - Mozc settings -> Keymap style -> Customize
-    - Repeat for Direct Input, Composition, and Precomposition:
-        + Ctrl ` --> Set input mode to Hiragana
-        + Ctrl 1 --> Set input mode to full-width Katakana
+    - Mozc settings
+        + Keymap style --> Import --> `./mozc-keymap-style.txt`
+        + Space input style --> Halfwidth
+        + Advanced --> Shift key mode switch --> Katakana
+    - IBus
+        + Next input method --> Ctrl+Super+Space (Super+Space doesn't work for some reason)
 
 
 * For LaTeX (TexLive), run the following commands:
