@@ -21,6 +21,20 @@ alias egrep='grep -P --exclude-dir={node_modules,.git,.idea,lcov-report} --color
 
 alias listupdate='sudo apt update && sudo apt list --upgradable'
 
+# systemctl commands:
+#   status              =  shows service status
+#   start               =  start a service
+#   stop                =  stop a service
+#   restart             =  restart a service
+#   enable              =  enable a service to start at boot
+#   disable             =  disable a service from starting at boot
+#   list-units          =  show service names (i.e. names used for above commands)
+#   list-unit-files     =  show service files themselves (i.e. what files are actually running when service starts)
+# Unit entries' details:
+#   avahi-daemon is used for personal computers (not servers) so they can scan for other devices on the network (printers, computers, etc.)
+#   docker.socket is used for listening to Docker commands (unrelated to Docker's server, so doesn't open a port itself)
+alias liststartupservices='sudo systemctl list-unit-files | grep enabled | sort'
+
 alias open='xdg-open'
 
 alias scan='savscan -all -rec -f -archive'
