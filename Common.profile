@@ -12,6 +12,11 @@ gril() {
     grep "$1" -ril .
 }
 
+# -P (show full port numbers)
+# -n (show full IPs)
+# -i (show internet addresses, can be -i4/-i6 for IPv4/6, or -i:PORT for showing specific port)
+alias listopenports='sudo lsof -Pn -i'
+
 thisFile="$BASH_SOURCE"
 
 dirsize() {
