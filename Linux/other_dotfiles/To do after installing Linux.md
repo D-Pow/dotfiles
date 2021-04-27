@@ -164,6 +164,11 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         + Use sudo for installing things
 
 
+* For Heroku CLI:
+    - Install instructions: https://devcenter.heroku.com/articles/heroku-cli
+    - If apt can't validate the public key for heroku, add via: `curl https://cli-assets.heroku.com/apt/release.key | sudo apt-key add -`
+
+
 * If dual-booting, convert the disk from MBR (Master Boot Record) to GPT (GUID):
     - Install Linux first so Grub is accessible.
     - Change BIOS to boot using UEFI instead of Legacy.
