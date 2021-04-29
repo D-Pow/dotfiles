@@ -46,7 +46,50 @@ copy() {
 
 
 getAppBinaryPath() {
-    lsappinfo info -app "$1" -only CFBundleExecutablePath | sed -E 's/"|.*=//g'
+    # lsappinfo - gets all info for a *running* app
+    # It's more robust than other solutions for getting the absolute path to the MyApp.app's binary file
+    # local plistKeys=( 'binary'='CFBundleExecutable' 'binary2'='CFBundleExecutablePath' )
+    local binaryPath="$(lsappinfo info -app "$1" -only CFBundleExecutablePath | sed -E 's/"|.*=//g')"
+
+    # echo "${plistKeys['binary2']}"
+
+    if ! [[ -z "${binaryPath}" ]]; then
+        # App is running, so we have safely found the absolute path
+        echo "$binaryPath"
+        return 0
+    else
+        # App is not running, so we have to manually generate the absolute path
+
+        # osascript is AppleScript. It's annoying, but required to get the app ID
+        # `mdfind` is basically the terminal's version of Spotlight (Cmd+Space search system)
+        #     `mdfind` is faster than `find` b/c it doesn't search all files everywhere, only those specified with the search criteria
+        # `mdls [-raw -name kMD_keyword] $appPath` - Gets app details, not including absolute paths for anything
+        #
+        # Once we have the app ID/path, we need to read the info about it to get the executable.
+        # `defaults read -app 'App Name'` - seems to work sometimes but not always
+        #     Reading the app's Info.plist seems to work well, though
+        # `lsregister` - Gets even more info about an app
+        #     Not on PATH, need to call directly from: /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister
+        #     or `mdfind -name lsregister`
+        local appId="$(osascript -e "id of app \"$1\"")"
+
+        if ! [[ -z "${appId}" ]]; then
+            local appPath="$(mdfind "kMDItemCFBundleIdentifier == $appId" | head -n 1)"
+
+            if ! [[ -z "${appPath}" ]]; then
+                local appRelativeRootDir='Contents'
+                local appRelativeExecutableDir='MacOS'
+                local binaryName="$(defaults read "$appPath/$appRelativeRootDir/Info" CFBundleExecutable)"
+
+                binaryPath="$appPath/$appRelativeRootDir/$appRelativeExecutableDir/$binaryName"
+
+                echo "$binaryPath"
+                return 0
+            fi
+        fi
+    fi
+
+    return 1  # can't do `exit 1` since this is in .profile (instead of a script file) and `exit` would close the terminal
 }
 
 
