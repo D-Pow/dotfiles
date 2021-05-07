@@ -230,6 +230,16 @@ export sitdb2='sit141w86m7'
 # sit:ets:batch:ord for batch jobs
 export cbassbatch='sit108w80m7'
 
+fetchSitLog() {
+    local server="$1"
+    local outFile="$2"
+
+    scp "dpowell1@$server.etrade.com:/etrade/sit-wm-s2-mfetf/logs/s2java-service-mutualFundEtf.log" "$outFile"
+}
+
+alias sit1-fetch-log="fetchSitLog $sit1 sit1.log"
+alias sit2-fetch-log="fetchSitLog $sit2 sit2.log"
+
 alias mountbatchserver='sshfs dpowell1@sit108w80m7.etrade.com:/ ~/cbass_batch/'
 alias unmountbatchserver='umount -f ~/cbass_batch/'
 
