@@ -118,8 +118,10 @@ npms() {
     # regex is homemade ~/bin/regex python script
     regex '"scripts": [^\}]*\}' ./package.json
 }
+
 alias npmr='npm run'
-alias npmf="npm run test 2>&1 | egrep -o '^FAIL.*'" # only print filenames of suites that failed
+alias npmrtf="npm run test 2>&1 | egrep -o '^FAIL.*'" # only print filenames of suites that failed
+alias npmPackagesWithVulns="npm audit | grep 'Dependency of' | sort | uniq -u | egrep -o '\S+(?=\s\[\w+\])'"
 export NVM_SYMLINK_CURRENT=true # Makes a symlink at ~/.nvm/current/bin/node so you don't have to chage IDEs' configurations when changing node versions
 
 getAllCrlfFiles() {
