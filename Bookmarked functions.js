@@ -132,13 +132,23 @@ window.fetchCors = function(url, options) {
 
 
 /************************************
- ********    GitHub utils    ********
+ ********    Website utils    *******
  ***********************************/
 window.toggleAllGithubFilesChangedOpenStatus = function() {
     const fileCollapseButtonSelector = 'button[aria-label="Toggle diff contents"]';
 
     [...document.querySelectorAll(fileCollapseButtonSelector)]
         .forEach(elem => elem.click());
+};
+
+window.sumCitiChargesForPreviousStatements = function() {
+    /* Helpful when "running balance" column doesn't exist */
+    [...document.querySelectorAll('.cA-ada-TRANSACTION_AMT_Column.cA-ada-ls-hide')]
+        .map(elem => elem.textContent
+            .replace(/[\$,]/g, '')
+            .replace('−', '-')
+            .trim()
+        ).reduce((sum, numStr) => sum + Number(numStr), 0);
 };
 
 
