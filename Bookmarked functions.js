@@ -84,13 +84,6 @@ window.setDocumentReferer = function(url = null, useOrigin = false) {
     document.__defineGetter__('referrer', () => referrerUrl);
 };
 
-window.toggleAllGithubFilesChangedOpenStatus = function() {
-    const fileCollapseButtonSelector = 'button[aria-label="Toggle diff contents"]';
-
-    [...document.querySelectorAll(fileCollapseButtonSelector)]
-        .forEach(elem => elem.click());
-};
-
 /**
  * fetch() using CORS proxy
  *
@@ -137,49 +130,15 @@ window.fetchCors = function(url, options) {
     );
 };
 
-window.setInnerHtmlToVideoWithSrc = function(src = null, removeReferrerHeader = false) {
-    /* first, erase document content */
-    document.body.parentElement.innerHTML = '';
-
-    let srcUrl = src;
-
-    if (!src) {
-        srcUrl = prompt('Video src URL:');
-    }
-
-    if (removeReferrerHeader) {
-        setDocumentReferer();
-    }
-
-    const video = document.createElement('video');
-    video.controls = true;
-    video.autoplay = true;
-    video.src = srcUrl;
-
-    document.body.appendChild(video);
-
-    videoArrowKeyListenerExec();
-};
-
-window.getVideoSrcFromHtml = function(html) {
-    const videoTagRegex = /<video[\w\W]*<\/video>/;
-    const srcContentRegex = /(?<=src=")[^"]+(?=")/;
-
-    try {
-        return html.match(videoTagRegex)[0].match(srcContentRegex)[0];
-    } catch (e) {
-        return false;
-    }
-};
-
 
 /************************************
  ********    GitHub utils    ********
  ***********************************/
-window.collapseFilesChangedInPr = function() {
-    document
-        .querySelectorAll('.btn-octicon.js-details-target')
-        .forEach(e => e.click());
+window.toggleAllGithubFilesChangedOpenStatus = function() {
+    const fileCollapseButtonSelector = 'button[aria-label="Toggle diff contents"]';
+
+    [...document.querySelectorAll(fileCollapseButtonSelector)]
+        .forEach(elem => elem.click());
 };
 
 
@@ -230,6 +189,40 @@ window.videoArrowKeyListenerExec = function() {
     }
 };
 
+window.setInnerHtmlToVideoWithSrc = function(src = null, removeReferrerHeader = false) {
+    /* first, erase document content */
+    document.body.parentElement.innerHTML = '';
+
+    let srcUrl = src;
+
+    if (!src) {
+        srcUrl = prompt('Video src URL:');
+    }
+
+    if (removeReferrerHeader) {
+        setDocumentReferer();
+    }
+
+    const video = document.createElement('video');
+    video.controls = true;
+    video.autoplay = true;
+    video.src = srcUrl;
+
+    document.body.appendChild(video);
+
+    videoArrowKeyListenerExec();
+};
+
+window.getVideoSrcFromHtml = function(html) {
+    const videoTagRegex = /<video[\w\W]*<\/video>/;
+    const srcContentRegex = /(?<=src=")[^"]+(?=")/;
+
+    try {
+        return html.match(videoTagRegex)[0].match(srcContentRegex)[0];
+    } catch (e) {
+        return false;
+    }
+};
 
 
 /*********************************
