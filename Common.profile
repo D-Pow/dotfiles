@@ -121,7 +121,7 @@ npms() {
 
 alias npmr='npm run'
 alias npmrtf="npm run test 2>&1 | egrep -o '^FAIL.*'" # only print filenames of suites that failed
-alias npmPackagesWithVulns="npm audit | grep 'Dependency of' | sort | uniq -u | egrep -o '\S+(?=\s\[\w+\])'"
+alias npmPackagesWithVulns="npm audit | grep 'Dependency of' | sort -u | egrep -o '\S+(?=\s\[\w+\])'"
 export NVM_SYMLINK_CURRENT=true # Makes a symlink at ~/.nvm/current/bin/node so you don't have to chage IDEs' configurations when changing node versions
 
 getAllCrlfFiles() {
