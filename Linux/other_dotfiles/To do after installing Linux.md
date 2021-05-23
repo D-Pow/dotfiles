@@ -186,6 +186,68 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         + MBR2GPT prefers to be run in the Windows Preinstallation Environment rather than in a booted OS. It's possible to run in the OS, but you could run into issues, e.g. the system recovery being messed up.
 
 
+* Grub Customizer details
+    - Generally, this should be redone by hand, but in case the entries are missing/confusing, the settings are pasted here.
+    - `General settings`
+        + Default entry
+            * Previously booted entry
+        + Visibility (check the following)
+            * Show menu
+            * Look for other configurations
+            * Boot default entry after `7 seconds`
+        + Kernel parameters
+            * `quiet splash`
+            * Generate recovery entries
+    - `Appearance settings`
+        + Font: `DejaVu Sans Book - 16 pt`
+    - `List configuration`:
+    - Entry:
+        + Name: `Windows 10`
+        + Type: `Other`
+        + Boot sequence:
+            ```
+            search --fs-uuid --no-floppy --set=root 2AC0-4083
+            chainloader (${root})/EFI/Boot/bkpbootx64.efi
+            ```
+    - Entry:
+        + Name: `Linux <version>`
+        + Type: `Other`
+        + Boot sequence:
+            ```
+            recordfail
+            load_video
+            gfxmode $linux_gfx_mode
+            insmod gzio
+            if [ x$grub_platform = xxen ]; then insmod xzio; insmod lzopio; fi
+            insmod part_gpt
+            insmod ext2
+            set root='hd1,gpt7'
+            if [ x$feature_platform_search_hint = xy ]; then
+              search --no-floppy --fs-uuid --set=root --hint-bios=hd1,gpt7 --hint-efi=hd1,gpt7 --hint-baremetal=ahci1,gpt7  fb226918-a90f-4d75-a3a8-f833ceba7eb1
+            else
+              search --no-floppy --fs-uuid --set=root fb226918-a90f-4d75-a3a8-f833ceba7eb1
+            fi
+                    linux   /boot/vmlinuz-4.15.0-142-generic root=UUID=fb226918-a90f-4d75-a3a8-f833ceba7eb1 ro  quiet splash $vt_handoff
+            initrd  /boot/initrd.img-4.15.0-142-generic
+
+            ```
+    - Entry:
+        + Name: `Windows 10 Troubleshooting`
+        + Type: `Other`
+        + Boot sequence:
+            ```
+            search --fs-uuid --no-floppy --set=root C25F-9A06
+            chainloader (${root})/EFI/Boot/bkpbootx64.efi
+            ```
+    - Entry:
+        + Name: `System setup`
+        + Type: `Other`
+        + Boot sequence:
+            ```
+            fwsetup
+            ```
+
+
 * If running into issues with GRUB after modifying boot partitions (e.g. deleting/moving partitions you can boot from):
     - Boot into live Linux USB.
     - Mount the "Linux filesystem" drive in the USB instance
