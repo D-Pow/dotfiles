@@ -20,8 +20,6 @@ export PS1="\[\033[36m\]\u\[\033[m\]:\[\033[33;1m\]\w\[\033[m\]\$ "
 export CLICOLOR=1
 export LSCOLORS=GxFxBxDxCxegedabagacad
 
-[[ -s $HOME/.nvm/nvm.sh ]] && source $HOME/.nvm/nvm.sh
-
 alias python='python3'
 alias python2='/usr/bin/python'
 export PIP_INDEX_URL='https://artifactory.etrade.com/artifactory/api/pypi/pypi/simple'
