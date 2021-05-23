@@ -110,7 +110,7 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         + `Numeric keypad always enter digits`
 
 
-* Import personalized settings for the following items via `dconf` in `./dconf_dumps/`.
+* Import personalized settings for the following items via `dconf` in [./dconf_dumps/`](./dconf_dumps/ReadMe.md)
 
 
 * If dconf for keyboard shortcuts didn't work, then add useful keyboard shortcuts manually
