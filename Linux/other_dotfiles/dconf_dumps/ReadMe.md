@@ -18,5 +18,15 @@
 
 * Terminal
     - `/org/gnome/terminal/`
-* Keyboard shortcuts
-    - `/org/cinnamon/desktop/keybindings/`
+* Cinnamon desktop settings
+    - `/org/cinnamon/desktop/`
+    - Includes:
+        + Look-and-feel
+            * Interface (`/interface/`) - clock display, keyboard layout flags, etc.
+        + Keyboard
+            * Shortcuts (`/keybindings/`)
+            * Layouts (`/a11y/keyboard/`)
+        + Mouse
+            * `/a11y/mouse/`
+        + Workspaces (set to 1 to remove them)
+            * `/wm/preferences/`
