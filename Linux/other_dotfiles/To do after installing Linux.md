@@ -134,15 +134,8 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         + `Linux.profile` already has this in it.
 
 
-* Import terminal profile settings:
-    - Import:
-    ```
-    dconf load /org/gnome/terminal/ < gnome_terminal_settings.txt
-    ```
-    - Export:
-    ```
-    dconf dump /org/gnome/terminal/ > gnome_terminal_settings.txt
-    ```
+* Import personalized settings for the following items via `dconf` in `./dconf_dumps/`:
+    - Terminal
 
 
 * Allow webpack to auto-recompile code (sometimes not allowed by certain installations):
