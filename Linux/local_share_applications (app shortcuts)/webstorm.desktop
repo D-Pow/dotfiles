@@ -8,4 +8,5 @@ Type=Application
 Terminal=false
 GenericName=webstorm
 StartupNotify=false
-Categories=Development;IDE;JavaScript;
+Categories=Development;IDE;JavaScript;Programming;
+StartupWMClass=jetbrains-webstorm

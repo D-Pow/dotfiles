@@ -8,4 +8,6 @@ Type=Application
 Terminal=false
 GenericName=intellij
 StartupNotify=false
-Categories=Development;IDE;Java;
+Categories=Development;IDE;Java;Programming;
+StartupWMClass=jetbrains-idea
+# StartupWMClass tells the OS to group all windows run with the script within the same app. See: https://askubuntu.com/questions/367396/what-does-the-startupwmclass-field-of-a-desktop-file-represent/367851#367851
