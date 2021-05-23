@@ -5,11 +5,11 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
 
 * Follow the tutorial [here](https://www.howtogeek.com/howto/35807/how-to-harmonize-your-dual-boot-setup-for-windows-and-ubuntu/) to setup shared NTFS Windows-Linux storage partition.
     - Generally, the steps are:
-        1. Backup fstab:<br/>
+        1. Backup fstab:
             ```
             sudo cp /etc/fstab /etc/fstab.backup
             ```
-        2. Get UUID of storage partition:<br/>
+        2. Get UUID of storage partition:
             ```
             sudo blkid
             ```
@@ -82,7 +82,6 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
     - Rename the directory to just "java" and remove jdk_1.*.* name in folder
     - Ensure `dotfiles/Linux/Linux.profile` has `JAVA_HOME` pointing to the correct dir.
     - Run `source ~/.profile`
-    <br/>
     - If the above didn't work, then:
         + Edit `/etc/environment`:
             * Add `JAVA_HOME=/usr/java/bin` under the PATH line
