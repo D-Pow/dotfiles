@@ -34,8 +34,26 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
     - If you want to switch back to UTC on Linux, replace `1` with `0`
 
 
-* Change desktop background automatically upon each login
-   - Add `dotfiles/Linux/bin/change_desktop_background` to startup programs
+* Add the following to Settings --> Startup Applications
+    - Numlock:
+        + Title: `Turn on numlock`
+        + Command: `turn-on-numlock`
+        + Delay: `10s`
+    - Changing desktop background image:
+        + Title: `Change background`
+        + Command: `change-desktop-image`
+        + Delay: `0s`
+    - Keyboard key re-maps:
+        + Title: `Map R-Ctrl to Menu`
+        + Command: `custom-key-mapping -a`
+        + Comment: `Only remap key on internal keyboard`
+        + Delay: `10s`
+    - (Optional) Disable bluetooth on boot (only if not using bluetooth devices):
+        + Title: `Turn off bluetooth`
+        + Command: `bluetoothoff`
+        + Delay: `0s`
+* Similarly, turn off unwanted startup services via `./disable-startup-services.sh`.
+    - Only run once, not in .profile/Startup Applications
 
 
 * Turn off Windows quick-boot
@@ -47,9 +65,6 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         /t [number] = timeout
     ```
     - Note: this is only if you didn't change any settings to break Linux (e.g. changing drivers). Once, Windows wouldn't let go of my shared Storage partition, even after shutting down. Running shutdown in command prompt helped for some reason.
-
-
-* Turn off unwanted startup services via `./disable-startup-services.sh` script.
 
 
 * To add GitHub oauth personal access token via credential manager:
@@ -94,12 +109,6 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
     - Activate:
         + `Default Numeric Keys`
         + `Numeric keypad always enter digits`
-    - Also set in startup applications: Startup Apps -> Add:
-        ```
-        Title: Turn on numlock
-        Command: numlockx on
-        Startup delay: 10
-        ```
 
 
 * Add useful keyboard shortcuts:
