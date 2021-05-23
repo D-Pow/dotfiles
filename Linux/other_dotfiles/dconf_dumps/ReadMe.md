@@ -18,3 +18,5 @@
 
 * Terminal
     - `/org/gnome/terminal/`
+* Keyboard shortcuts
+    - `/org/cinnamon/desktop/keybindings/`

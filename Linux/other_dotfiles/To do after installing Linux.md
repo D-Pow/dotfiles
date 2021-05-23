@@ -110,7 +110,10 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         + `Numeric keypad always enter digits`
 
 
-* Add useful keyboard shortcuts:
+* Import personalized settings for the following items via `dconf` in `./dconf_dumps/`.
+
+
+* If dconf for keyboard shortcuts didn't work, then add useful keyboard shortcuts manually
     - System > Lock screen > Super+L
     - Custom:
         + Open sublime - Ctrl+Alt+S
@@ -125,17 +128,13 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         ```
         /usr/bin/discord
         ```
-    - Remap `Toggle Scale` (spreads all windows to tabl through):
+    - Remap `Toggle Scale` (shows all windows for switching between them in an Alt+Tab-esque manner):
         + General > Toggle Scale > `Super+Tab`
     - Remove `Toggle Expo` (shows all workspaces):
         + General > Toggle Expo > Remove all keybindings
     - Remove workspaces:
         + `gsettings set org.cinnamon.desktop.wm.preferences num-workspaces 1`
         + `Linux.profile` already has this in it.
-
-
-* Import personalized settings for the following items via `dconf` in `./dconf_dumps/`:
-    - Terminal
 
 
 * Allow webpack to auto-recompile code (sometimes not allowed by certain installations):
