@@ -20,9 +20,10 @@ alias listopenports='sudo lsof -Pn -i'
 thisFile="$BASH_SOURCE"
 
 dirsize() {
+    # ${FUNCNAME[0]} gets the name of this function, regardless of where it was called/defined
     usage="Displays total disk usages of all directories within the given path.
 
-    Usage: dirsize [-d=1] [-f] [path=./]
+    Usage: ${FUNCNAME[0]} [-d=1] [-f] [path=./]
 
     Options:
         -d | Depth of directories to display; defaults to 1 (dirs inside <path>).
@@ -244,7 +245,7 @@ getAllGitReposInDir() {
 updateAllGitRepos() {
     usage="Updates all git repositories with 'git pull' at the given parent path.
 
-    Usage: updateAllGitRepos [-s] [path=./]
+    Usage: ${FUNCNAME[0]} [-s] [path=./]
 
     Options:
         -s | Run 'git status' after 'git pull'."
