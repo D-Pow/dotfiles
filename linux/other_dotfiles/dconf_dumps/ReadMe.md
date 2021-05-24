@@ -30,6 +30,7 @@
     - Windows: `/muffin/`
         + Settings in the actual "Windows" section of the Settings GUI.
         + Stuff like what the title bar does, the buttons on the right-hand side of the title bar, etc.
+        + Note: `draggable-border-width` changes how much space you have from the border for the resize-mouse to appear. It's not exposed as an option in the Windows settings GUI so it must be set manually. It [defaults to 10 px](https://github.com/linuxmint/cinnamon/issues/9341#issuecomment-636417578).
     - Sounds: `/sounds/`
         + Mostly just custom sound remappings
     - Other: `/settings-daemon/`
