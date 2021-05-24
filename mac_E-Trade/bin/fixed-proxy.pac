@@ -6,7 +6,7 @@ function FindProxyForURL(url, host) {
 	/**
 	 * Go to System Preferences -> Network -> Wifi -> Advanced -> Proxies
 	 * Original was: http://127.0.0.1:9000/localproxy-[someNumberThatChanges].pac
-	 * New is: file:///Users/<username>/path/dotfiles/Mac_E-Trade/bin/fixed-proxy.pac
+	 * New is: file:///Users/<username>/path/dotfiles/mac_E-Trade/bin/fixed-proxy.pac
 	 */
 	var privateIP = /^(0|10|127|192\.168|172\.1[6789]|172\.2[0-9]|172\.3[01]|169\.254|192\.88\.99)\.[0-9.]+$/;
 	var resolved_ip = dnsResolve(host);

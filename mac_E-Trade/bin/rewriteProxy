@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pacLocation="file:///Users/dpowell1/repositories/dotfiles/Mac_E-Trade/bin/fixed-proxy.pac"
+pacLocation="file:///Users/dpowell1/repositories/dotfiles/mac_E-Trade/bin/fixed-proxy.pac"
 macNetworkProxyConfigLocation="/Library/Preferences/SystemConfiguration/preferences.plist"
 
 # on Mac, `sed -i` requires an additional parameter for inline replacement
