@@ -18,7 +18,7 @@ fi
 
 export dotfilesDir="/home/dpow/Documents/Repositories/dotfiles"
 export commonProfile="$dotfilesDir/Common.profile"
-export linuxProfile="$dotfilesDir/Linux/Linux.profile"
+export linuxProfile="$dotfilesDir/linux/linux.profile"
 
 source "$commonProfile"
 source "$linuxProfile"
@@ -28,4 +28,4 @@ alias editprofile="subl -n -w '$linuxProfile' && source ~/.profile"
 alias editcommon="subl -n -w '$commonProfile' && source ~/.profile"
 alias repos="cd $dotfilesDir/.."
 
-export PATH="$dotfilesDir/Linux/bin:$HOME/.local/bin:$PATH"
+export PATH="$dotfilesDir/linux/bin:$HOME/.local/bin:$PATH"

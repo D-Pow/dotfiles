@@ -27,4 +27,4 @@ source "$subsystemProfile"
 alias editprofile="subl -n -w '$subsystemProfile' && source ~/.profile"
 alias editcommon="subl -n -w '$commonProfile' && source ~/.profile"
 
-export PATH="$dotfilesDir/Linux/bin:$HOME/.local/bin:$PATH"
+export PATH="$dotfilesDir/linux/bin:$HOME/.local/bin:$PATH"

@@ -9,4 +9,4 @@ source "$macProfile"
 alias editprofile="subl -n -w '$macProfile' && source ~/.profile"
 alias editcommon="subl -n -w '$commonProfile' && source ~/.profile"
 
-export PATH="$dotfilesDir/Linux/bin:$dotfilesDir/Mac_E-Trade/bin:$PATH"
+export PATH="$dotfilesDir/linux/bin:$dotfilesDir/Mac_E-Trade/bin:$PATH"

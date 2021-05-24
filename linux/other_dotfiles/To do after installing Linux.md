@@ -80,7 +80,7 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
 * To install Java, you'll want to remove the underscore for the directory name.
     - First, install Java to /usr/
     - Rename the directory to just "java" and remove jdk_1.*.* name in folder
-    - Ensure `dotfiles/Linux/Linux.profile` has `JAVA_HOME` pointing to the correct dir.
+    - Ensure `dotfiles/linux/linux.profile` has `JAVA_HOME` pointing to the correct dir.
     - Run `source ~/.profile`
     - If the above didn't work, then:
         + Edit `/etc/environment`:
@@ -134,7 +134,7 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         + General > Toggle Expo > Remove all keybindings
     - Remove workspaces:
         + `gsettings set org.cinnamon.desktop.wm.preferences num-workspaces 1`
-        + `Linux.profile` already has this in it.
+        + `linux.profile` already has this in it.
 
 
 * Allow webpack to auto-recompile code (sometimes not allowed by certain installations):
