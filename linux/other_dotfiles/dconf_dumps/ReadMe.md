@@ -13,6 +13,10 @@
     ```
     dconf dump /org/path/to/settings/or/program/ > my_settings.conf
     ```
+* Write new value:
+    ```
+    dconf write /path/to/settings/key value
+    ```
 
 ## Settings Paths
 
