@@ -279,6 +279,16 @@ updateAllGitRepos() {
     done
 }
 
+gitGetStashNames() {
+    local path='.'
+
+    if ! [[ -z "$1" ]]; then
+        path="$1"
+    fi
+
+    echo "$(cd "$path" && git stash list | cut -d: -f1)"
+}
+
 alias     g='git'
 alias    gs='git status'
 alias   gsi='getGitIgnoredFiles'
