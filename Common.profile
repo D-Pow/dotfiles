@@ -290,6 +290,83 @@ gitGetStashNames() {
     echo "$(cd "$path" && git stash list | cut -d: -f1)"
 }
 
+gitExportStashes() {
+    usage="Exports all git stashes to a single zip file.
+    Usage: ${FUNCNAME[0]} [path=./]"
+
+    local OPTIND=1
+
+    while getopts ":h" opt; do
+        case "$opt" in
+            *)
+                echo "$usage"
+                return
+                ;;
+        esac
+    done
+
+    local path='.'
+
+    if ! [[ -z "$1" ]]; then
+        path="$1"
+    fi
+
+    local currDir="$(pwd)"
+    local stashList=$(gitGetStashNames "$path")
+
+    if [[ -z "$stashList" ]]; then
+        echo "No stashes to export"
+        return
+    fi
+
+    cd "$path"
+
+    for stashName in $stashList; do
+        # `--binary` flag shows the actual diff between two binary files
+        # rather than only "Binary files X and Y differ", so it can be used to actually
+        # save the diff for storage/usage on a different device.
+        # See: https://git-scm.com/docs/git-diff/2.8.6#Documentation/git-diff.txt---binary
+        git stash show -p --binary "$stashName" > "$stashName.patch"
+        # Note: If you have a custom pager (e.g. so-fancy/diff-so-fancy or dandavison/delta)
+        # then disabling the pager might help.
+        # See: https://gist.github.com/alexeds/3641372#gistcomment-3236251
+    done
+
+    # TODO add option to create an entry for untracked files as well
+
+    local stashPatchFileGlob='stash*.patch'
+    local outputFileName='stashes.tar.gz'
+
+    # `-` passes the output of the previous command to the piped command as input.
+    # See: https://askubuntu.com/questions/1074067/what-does-the-syntax-of-pipe-and-ending-dash-mean/1074072#1074072
+    #
+    # It's like `xargs` except that `xargs` passes the piped fields as CLI arguments
+    # whereas `-` passes it as input. For example:
+    # `cat output.txt | myCommand -` is equivalent to `myCommand < output.txt`
+    # but `cat output.txt | xargs myCommand` is equivalent to `myCommand output-line-1 output-line-2 ...`
+    # See: https://askubuntu.com/questions/703397/what-does-the-in-bash-mean/703434#703434
+    find . -maxdepth 1 -type f -name "$stashPatchFileGlob" | tar -czf $outputFileName -T -
+
+    rm $stashPatchFileGlob
+
+    local outputFilePath="$(pwd)/$outputFileName"
+
+    cd "$currDir"
+
+    # TODO add info on how to push them onto current stash list rather than applying them
+    # Places to start:
+    # https://stackoverflow.com/a/47186156/5771107
+    # https://gist.github.com/senthilmurukang/29b55a0c0e8694c406991799153f3c43
+    # https://stackoverflow.com/questions/26116899/generating-patch-file-from-an-old-stash
+    # https://stackoverflow.com/questions/20586009/how-to-recover-from-git-stash-save-all/20589663#20589663
+    # https://stackoverflow.com/questions/1105253/how-would-i-extract-a-single-file-or-changes-to-a-file-from-a-git-stash
+
+    echo "Stashes zipped to '$outputFilePath'
+    * View zipped contents via 'tar -tf $outputFileName'
+    * Unzip via 'tar -xzf $outputFileName'
+    * Apply via 'git apply stash@{i}.patch'"
+}
+
 alias     g='git'
 alias    gs='git status'
 alias   gsi='getGitIgnoredFiles'
