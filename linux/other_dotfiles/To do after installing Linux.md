@@ -110,7 +110,20 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         + `Numeric keypad always enter digits`
 
 
+* In Linux, after installing Mozc and IBus (for Japanese input):
+    - Mozc settings
+        + Keymap style --> Import --> `./mozc-keymap-style.txt`
+        + Space input style --> Halfwidth
+        + Advanced --> Shift key mode switch --> Katakana
+    - IBus
+        + Next input method --> Ctrl+Super+Space (Super+Space doesn't work for some reason)
+
+
+* Copy the `home_config_backups/.local/` to `~`.
+
+
 * Import personalized settings for the following items via `dconf` in [./dconf_dumps/`](./dconf_dumps/ReadMe.md)
+    - Do this **after** installing programs and copying the `home_config_backups/.local/` dir to the home `~` dir.
 
 
 * If dconf for keyboard shortcuts didn't work, then add useful keyboard shortcuts manually
@@ -143,15 +156,6 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
     echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
     ```
     - [Reference](https://github.com/webpack/docs/wiki/troubleshooting#not-enough-watchers)
-
-
-* In Linux, after installing Mozc and IBus (for Japanese input):
-    - Mozc settings
-        + Keymap style --> Import --> `./mozc-keymap-style.txt`
-        + Space input style --> Halfwidth
-        + Advanced --> Shift key mode switch --> Katakana
-    - IBus
-        + Next input method --> Ctrl+Super+Space (Super+Space doesn't work for some reason)
 
 
 * For LaTeX (TexLive), run the following commands:

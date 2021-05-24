@@ -1,0 +1,30 @@
+{
+    "section1": {
+        "type": "section",
+        "description": "Behavior"
+    },
+    "launcherList": {
+        "type": "generic",
+        "default": [
+            "firefox.desktop",
+            "gnome-terminal.desktop",
+            "nemo.desktop"
+        ],
+        "value": [
+            "google-chrome.desktop",
+            "spotify.desktop",
+            "gnome-system-monitor.desktop",
+            "gnome-terminal.desktop",
+            "nemo.desktop",
+            "discord.desktop",
+            "chrome-hpfldicfbfomlpcikngkocigghgafkph-Default.desktop"
+        ]
+    },
+    "allow-dragging": {
+        "type": "switch",
+        "default": true,
+        "description": "Allow dragging of launchers",
+        "value": true
+    },
+    "__md5__": "11474ba983ca660d140dedf9e087884c"
+}
