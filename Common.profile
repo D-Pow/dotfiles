@@ -286,6 +286,7 @@ gitGetStashNames() {
         path="$1"
     fi
 
+    # TODO add way to get stash message
     echo "$(cd "$path" && git stash list | cut -d: -f1)"
 }
 
