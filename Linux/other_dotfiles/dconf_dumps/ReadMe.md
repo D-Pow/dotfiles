@@ -16,17 +16,25 @@
 
 ## Settings Paths
 
-* Terminal
-    - `/org/gnome/terminal/`
-* Cinnamon desktop settings
-    - `/org/cinnamon/desktop/`
-    - Includes:
-        + Look-and-feel
-            * Interface (`/interface/`) - clock display, keyboard layout flags, etc.
+* Terminal: `/org/gnome/terminal/`
+* Cinnamon settings: `/org/cinnamon/`. Includes:
+    - Look-and-feel: `/desktop/`
+        + High-level/non-specific display details: `/interface/`
+            * Clock display, keyboard layout flags, etc.
         + Keyboard
-            * Shortcuts (`/keybindings/`)
-            * Layouts (`/a11y/keyboard/`)
-        + Mouse
-            * `/a11y/mouse/`
-        + Workspaces (set to 1 to remove them)
-            * `/wm/preferences/`
+            * Shortcuts: `/keybindings/`
+            * Layouts: `/a11y/keyboard/`
+        + Mouse: `/a11y/mouse/`
+        + Workspaces: `/wm/preferences/`
+            * Set to 1 to remove them completely
+    - Windows: `/muffin/`
+        + Settings in the actual "Windows" section of the Settings GUI.
+        + Stuff like what the title bar does, the buttons on the right-hand side of the title bar, etc.
+    - Sounds: `/sounds/`
+        + Mostly just custom sound remappings
+    - Other: `/settings-daemon/`
+        + Power options: `/plugins/power/`
+        + Peripherals (plugged-in devices): `/peripherals/`
+            * Touchpad
+            * External mouse
+            * Keyboard --> Typing
