@@ -22,7 +22,7 @@ Folders:
         Same as above, with files, except the command needs to be changed from "%1" to "%V"
 
 Linux:
-    Put the sublime.nemo_action file in the correct location to add it to right click menu
+    Put the sublime.nemo_action file in the location specified within the action file to add it to right click menu
 
 Part B - Install helpful things and change settings manually
  a) Install PackageControl, then PackageResourceViewer (ctrl+shift+p -> install package).
@@ -30,7 +30,7 @@ Part B - Install helpful things and change settings manually
     PackageControl at https://packagecontrol.io
 
  b) Copy the Preferences file to the correct location
-  
+
  c) Add following key mappings:
     [
         { "keys": ["ctrl+tab"], "command": "next_view" },
