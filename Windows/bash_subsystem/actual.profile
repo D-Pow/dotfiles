@@ -17,7 +17,7 @@ if [ -n "$BASH_VERSION" ]; then
 fi
 
 export dotfilesDir="/mnt/d/Documents/Repositories/dotfiles"
-export commonProfile="$dotfilesDir/Common.profile"
+export commonProfile="$dotfilesDir/common.profile"
 export subsystemProfile="$dotfilesDir/Windows/bash_subsystem/subsystem.profile"
 
 source "$commonProfile"
