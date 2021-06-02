@@ -1,6 +1,6 @@
 #!/bin/bash
 #Changes desktop background randomly
-DIR="/media/storage/Pictures/Wallpapers/linuxmint-*"
+DIR="/media/storage/Pictures/Wallpapers/**"
 PIC=$(ls $DIR/*.jpg | shuf -n1)
 #Line below will change based on Cinnamon vs Ubuntu
 gsettings set org.cinnamon.desktop.background picture-uri  "file://$PIC"
