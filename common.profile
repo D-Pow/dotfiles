@@ -409,4 +409,4 @@ alias  gnau='git update-index --no-assume-unchanged'
 alias  gauf="git ls-files -v | grep '^[[:lower:]]' | awk '{print \$2}'" # awk: only print second column (space-delimited by default)
 alias gaufo='subl $(gauf | cut -f 2 -d " ")'
 
-alias  gcmd="cat '$thisFile' | grep -E '(alias *g|^\w*Git\w*\(\))' | grep -v 'grep=' | sed -E 's/ \{$//'"
+alias  gcmd="cat '$thisFile' | egrep -i '(alias *g|^\w*Git\w*\(\))' | grep -v 'grep=' | sed -E 's/ \{$//'"
