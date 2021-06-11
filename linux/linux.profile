@@ -49,3 +49,7 @@ copy() {
     # Mac:   pbcopy
     echo -n "$1" | pbcopy
 }
+
+workDir='/home/dpow/Documents/Google Drive/Work'
+
+alias todo="subl '$workDir/ToDo.md'"
