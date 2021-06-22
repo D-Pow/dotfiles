@@ -33,6 +33,9 @@ copy() {
 }
 
 
+alias repos='cd ~/repositories/'
+
+
 getAppBinaryPath() {
     # lsappinfo - gets all info for a *running* app
     # It's more robust than other solutions for getting the absolute path to the MyApp.app's binary file
