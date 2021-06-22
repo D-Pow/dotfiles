@@ -18,6 +18,14 @@
                         {
                             "key_code": "left_command"
                         }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
                     ]
                 },
                 {
@@ -33,6 +41,14 @@
                     "to": [
                         {
                             "key_code": "left_option"
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
                         }
                     ]
                 },
@@ -50,6 +66,14 @@
                         {
                             "key_code": "left_control"
                         }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
                     ]
                 },
                 {
@@ -66,6 +90,14 @@
                         {
                             "key_code": "right_command"
                         }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
                     ]
                 },
                 {
@@ -81,6 +113,140 @@
                     "to": [
                         {
                             "key_code": "right_control"
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+
+        {
+            "description": "Ctrl/Command Swap for JetBrains (keep Ctrl to match PC keyboard shortcuts)",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "left_control",
+                        "modifiers": {
+                            "optional": [
+                                "any"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "left_control"
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_if",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "left_command",
+                        "modifiers": {
+                            "optional": [
+                                "any"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "left_option"
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_if",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "left_option",
+                        "modifiers": {
+                            "optional": [
+                                "any"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "left_command"
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_if",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "right_control",
+                        "modifiers": {
+                            "optional": [
+                                "any"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "right_control"
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_if",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "right_option",
+                        "modifiers": {
+                            "optional": [
+                                "any"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "right_command"
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_if",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
                         }
                     ]
                 }
@@ -110,6 +276,14 @@
                                 "control"
                             ]
                         }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
                     ]
                 },
                 {
@@ -130,6 +304,14 @@
                             "key_code": "tab",
                             "modifiers": [
                                 "command"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
                             ]
                         }
                     ]
@@ -157,6 +339,14 @@
                                 "command"
                             ]
                         }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
                     ]
                 },
                 {
@@ -172,6 +362,38 @@
                     "to": [
                         {
                             "key_code": "mission_control"
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "grave_accent_and_tilde",
+                        "modifiers": {
+                            "mandatory": [
+                                "control"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "mission_control"
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_if",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
                         }
                     ]
                 }
@@ -193,6 +415,14 @@
                                 "command"
                             ]
                         }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
                     ]
                 },
                 {
@@ -205,6 +435,14 @@
                             "key_code": "right_arrow",
                             "modifiers": [
                                 "command"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
                             ]
                         }
                     ]
@@ -227,6 +465,14 @@
                                 "command"
                             ]
                         }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
                     ]
                 },
                 {
@@ -244,6 +490,14 @@
                             "key_code": "down_arrow",
                             "modifiers": [
                                 "command"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
                             ]
                         }
                     ]
@@ -267,6 +521,14 @@
                                 "shift"
                             ]
                         }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
                     ]
                 },
                 {
@@ -285,6 +547,14 @@
                             "modifiers": [
                                 "command",
                                 "shift"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
                             ]
                         }
                     ]
@@ -308,6 +578,14 @@
                                 "shift"
                             ]
                         }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
                     ]
                 },
                 {
@@ -326,6 +604,14 @@
                             "key_code": "end",
                             "modifiers": [
                                 "shift"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
                             ]
                         }
                     ]
@@ -353,6 +639,14 @@
                                 "option"
                             ]
                         }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
                     ]
                 },
                 {
@@ -370,6 +664,14 @@
                             "key_code": "down_arrow",
                             "modifiers": [
                                 "option"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
                             ]
                         }
                     ]
@@ -391,6 +693,14 @@
                                 "option"
                             ]
                         }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
                     ]
                 },
                 {
@@ -408,6 +718,14 @@
                             "key_code": "right_arrow",
                             "modifiers": [
                                 "option"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
                             ]
                         }
                     ]
@@ -437,6 +755,14 @@
                                 "shift"
                             ]
                         }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
                     ]
                 },
                 {
@@ -456,6 +782,14 @@
                             "modifiers": [
                                 "option",
                                 "shift"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
                             ]
                         }
                     ]
@@ -483,6 +817,14 @@
                                 "option"
                             ]
                         }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
+                            ]
+                        }
                     ]
                 },
                 {
@@ -500,6 +842,14 @@
                             "key_code": "delete_forward",
                             "modifiers": [
                                 "option"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_unless",
+                            "bundle_identifiers": [
+                                "com.jetbrains.*"
                             ]
                         }
                     ]
