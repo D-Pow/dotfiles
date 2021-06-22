@@ -17,6 +17,7 @@ The best option out there for re-mapping keyboard/mouse buttons to custom functi
 
 * [Manual](https://karabiner-elements.pqrs.org/docs/manual/configuration/configure-complex-modifications/)
 * [Sample complex configurations](https://ke-complex-modifications.pqrs.org/)
+* [Helpful tool for generating/verifying syntax of complex rules](https://genesy.github.io/karabiner-complex-rules-generator/)
 
 
 
