@@ -23,7 +23,8 @@
                         {
                             "type": "frontmost_application_unless",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -47,7 +48,8 @@
                         {
                             "type": "frontmost_application_unless",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -71,7 +73,8 @@
                         {
                             "type": "frontmost_application_unless",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -95,7 +98,8 @@
                         {
                             "type": "frontmost_application_unless",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -119,7 +123,8 @@
                         {
                             "type": "frontmost_application_unless",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -128,7 +133,7 @@
         },
 
         {
-            "description": "Ctrl/Command Swap for JetBrains (keep Ctrl to match PC keyboard shortcuts)",
+            "description": "Ctrl/Command Revert for apps similar across OSes (Super|Alt still need to be fixed)",
             "manipulators": [
                 {
                     "type": "basic",
@@ -149,7 +154,8 @@
                         {
                             "type": "frontmost_application_if",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -173,7 +179,8 @@
                         {
                             "type": "frontmost_application_if",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -197,7 +204,8 @@
                         {
                             "type": "frontmost_application_if",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -221,7 +229,8 @@
                         {
                             "type": "frontmost_application_if",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -245,7 +254,8 @@
                         {
                             "type": "frontmost_application_if",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -281,7 +291,8 @@
                         {
                             "type": "frontmost_application_unless",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -311,7 +322,8 @@
                         {
                             "type": "frontmost_application_unless",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -344,7 +356,8 @@
                         {
                             "type": "frontmost_application_unless",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -368,7 +381,8 @@
                         {
                             "type": "frontmost_application_unless",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -392,7 +406,8 @@
                         {
                             "type": "frontmost_application_if",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -420,7 +435,8 @@
                         {
                             "type": "frontmost_application_unless",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -442,7 +458,8 @@
                         {
                             "type": "frontmost_application_unless",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -729,6 +746,60 @@
                             ]
                         }
                     ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "left_arrow",
+                        "modifiers": {
+                            "mandatory": [
+                                "control"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "left_arrow",
+                            "modifiers": [
+                                "option"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_if",
+                            "bundle_identifiers": [
+                                "com.apple.Terminal"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "right_arrow",
+                        "modifiers": {
+                            "mandatory": [
+                                "control"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "right_arrow",
+                            "modifiers": [
+                                "option"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_if",
+                            "bundle_identifiers": [
+                                "com.apple.Terminal"
+                            ]
+                        }
+                    ]
                 }
             ]
         },
@@ -822,7 +893,8 @@
                         {
                             "type": "frontmost_application_unless",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
                             ]
                         }
                     ]
@@ -849,7 +921,62 @@
                         {
                             "type": "frontmost_application_unless",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.Terminal"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "delete_or_backspace",
+                        "modifiers": {
+                            "mandatory": [
+                                "control"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "delete_or_backspace",
+                            "modifiers": [
+                                "option"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_if",
+                            "bundle_identifiers": [
+                                "com.apple.Terminal"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "delete_forward",
+                        "modifiers": {
+                            "mandatory": [
+                                "control"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "delete_forward",
+                            "modifiers": [
+                                "option"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_if",
+                            "bundle_identifiers": [
+                                "com.apple.Terminal"
                             ]
                         }
                     ]

@@ -4,6 +4,7 @@ The best option out there for re-mapping keyboard/mouse buttons to custom functi
 
 * **Don't map keys in System Preferences**, only use Karabiner since it takes care of e.g. Ctrl --> Command remapping itself.
 * Simply copy this folder to the `~/.config/` directory after installing Karabiner.
+* Make sure that `Terminal -> Preferences -> Profiles --> 'Use Option as Meta key'` is checked, otherwise the Option/Ctrl keys won't work for e.g. moving cursor by word.
 * [Manual](https://karabiner-elements.pqrs.org/docs/manual/configuration/)
 
 
