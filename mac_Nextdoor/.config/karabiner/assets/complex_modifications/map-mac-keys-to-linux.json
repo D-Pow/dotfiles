@@ -1092,6 +1092,26 @@
                     ]
                 }
             ]
+        },
+
+        {
+            "description": "Context Menu button ('application' in Mac) fix",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "application"
+                    },
+                    "to": [
+                        {
+                            "key_code": "f2",
+                            "modifiers": [
+                                "option"
+                            ]
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
