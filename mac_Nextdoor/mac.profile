@@ -3,6 +3,9 @@
 # WebStorm license link: https://account.jetbrains.com/a/5vmhuqob
 
 # Program paths
+BREW_GNU_UTILS_HOME=/usr/local/opt/grep/libexec/gnubin # Run: brew install bash coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep
+                                                       # Then, add `/usr/local/bin/bash` to `/etc/shells`
+                                                       # Then, set default bash for all users (including root): sudo chsh -s /usr/local/bin/bash
 export MAVEN_HOME=/Applications/apache-maven-3.6.3/bin
 export GRADLE_4_HOME=/opt/gradle/gradle-4.5.1/bin
 export GRADLE_HOME=/opt/gradle/gradle-6.0.1/bin
@@ -12,7 +15,7 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Hom
 export BOOST_HOME=/usr/local/boost_1_67_0
 export PIP3_HOME=/usr/local/opt/python\@3.7/bin/
 export PIP2_HOME=/Users/dpowell1/Library/Python/2.7/bin
-export PATH=$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$MAVEN_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$SUBLIME_HOME:$BOOST_HOME:/usr/local/bin:/Users/dpowell1/bin:$PATH
+export PATH=$BREW_GNU_UTILS_HOME:$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$MAVEN_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$SUBLIME_HOME:$BOOST_HOME:/usr/local/bin:/Users/dpowell1/bin:$PATH
 
 # Colored terminal
 # export PS1="\[\033[36m\]\u\[\033[m\]@\[\033[32m\]\h:\[\033[33;1m\]\w\[\033[m\]\$ "
