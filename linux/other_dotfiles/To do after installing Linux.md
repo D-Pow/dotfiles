@@ -183,6 +183,7 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
 
 * Grub Customizer details
     - Generally, this should be redone by hand, but in case the entries are missing/confusing, the settings are pasted here.
+    - **Note**: `savedefault` is required in entries to allow "Boot previously booted entry" to work. It's usually automatically added to `/boot/grub/grub.cfg` in Linux entries, but not Windows. In either case, add it manually if it doesn't exist.
     - `General settings`
         + Default entry
             * Previously booted entry
@@ -201,6 +202,7 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         + Type: `Other`
         + Boot sequence:
             ```
+            savedefault
             search --fs-uuid --no-floppy --set=root 2AC0-4083
             chainloader (${root})/EFI/Boot/bkpbootx64.efi
             ```
@@ -210,6 +212,7 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         + Boot sequence:
             ```
             recordfail
+            savedefault
             load_video
             gfxmode $linux_gfx_mode
             insmod gzio
@@ -224,7 +227,6 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
             fi
                     linux   /boot/vmlinuz-4.15.0-142-generic root=UUID=fb226918-a90f-4d75-a3a8-f833ceba7eb1 ro  quiet splash $vt_handoff
             initrd  /boot/initrd.img-4.15.0-142-generic
-
             ```
     - Entry:
         + Name: `Windows 10 Troubleshooting`
