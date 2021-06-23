@@ -16,6 +16,20 @@ Devon began his E*TRADE adventure as a member of the 2018 analyst team. After gr
 ######################################################################################
 
 
+Prescription costs for Aetna Choice POS II plan:
+    Generic:
+        Retail: $10
+        Mail: $20
+    Formulary:
+        Retail: $45
+        Mail: $90
+    Brand:
+        Retail: $75
+        Mail: $150
+RX Member Services: (800) 445-5298
+Aetna Mail Order Delivery: (888) 792-3862
+
+
 Health plan differences
 High deductible
 1500 - 500 (etrade cont) = 1000 deductible (almost always used)
