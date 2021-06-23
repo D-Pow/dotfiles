@@ -1112,6 +1112,28 @@
                     ]
                 }
             ]
+        },
+
+        {
+            "description": "Option + D to show desktop",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "d",
+                        "modifiers": {
+                            "mandatory": [
+                                "option"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "f11"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
