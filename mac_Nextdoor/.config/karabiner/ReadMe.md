@@ -5,6 +5,9 @@ The best option out there for re-mapping keyboard/mouse buttons to custom functi
 * **Don't map keys in System Preferences**, only use Karabiner since it takes care of e.g. Ctrl --> Command remapping itself.
 * Simply copy this folder to the `~/.config/` directory after installing Karabiner.
 * Make sure that `Terminal -> Preferences -> Profiles --> 'Use Option as Meta key'` is checked, otherwise the Option/Ctrl keys won't work for e.g. moving cursor by word.
+* **Disable `Spaces` in Mac keyboard shortcuts**
+    - `System Preferences --> Keyboard --> Shortcuts --> Mission Control --> Move (left|right) a space`.
+    - Required to allow `Ctrl+(left|right)_arrow` work in JetBrains.
 * [Rules defined first take precedence over rules defined later](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-evaluation-priority/)
 * [Manual](https://karabiner-elements.pqrs.org/docs/manual/configuration/)
 
