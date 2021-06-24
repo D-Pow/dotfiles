@@ -1330,6 +1330,31 @@
                     ]
                 }
             ]
+        },
+
+        {
+            "description": "Alt + F4 to close tab (impossible to close window other than red X)",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "f4",
+                        "modifiers": {
+                            "mandatory": [
+                                "control"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "w",
+                            "modifiers": [
+                                "command"
+                            ]
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
