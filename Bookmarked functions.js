@@ -151,6 +151,34 @@ window.sumCitiChargesForPreviousStatements = function() {
         ).reduce((sum, numStr) => sum + Number(numStr), 0);
 };
 
+window.getDrizlyAbvAndPricesFromSearchResults = async function(minAbv = 10) {
+    const searchResultElems = [...document.querySelectorAll('.section-body.list-view li')];
+    const searchResultInfoPromises = searchResultElems.map(async elem => {
+        try {
+            const name = elem.innerText.split('\n')[0];
+            const price = elem.innerText.match(/\$[\d.]+/)[0];
+            const url = elem.children[0].href;
+            const res = await fetch(url);
+            const text = await res.text();
+            const abv = text.match(/ABV[\s\S]*?\d+%/)[0].match(/\d+%/)[0];
+
+            return {
+                name,
+                price,
+                abv
+            };
+        } catch (e) {
+            return null
+        }
+    });
+
+    const allResolvedNamesWithAbv = await Promise.all(searchResultInfoPromises);
+    const allNamesWithAbv = allResolvedNamesWithAbv.filter(Boolean);
+    const aboveSpecifiedAbv = allNamesWithAbv.filter(({ abv }) => parseInt(abv) >= minAbv);
+
+    return aboveSpecifiedAbv;
+};
+
 
 
 /************************************************
