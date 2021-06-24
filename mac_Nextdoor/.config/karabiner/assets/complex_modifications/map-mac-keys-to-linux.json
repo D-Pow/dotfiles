@@ -346,6 +346,34 @@
                 {
                     "type": "basic",
                     "from": {
+                        "key_code": "c",
+                        "modifiers": {
+                            "mandatory": [
+                                "control",
+                                "shift"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "c",
+                            "modifiers": [
+                                "command"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_if",
+                            "bundle_identifiers": [
+                                "com.apple.Terminal"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
                         "key_code": "v",
                         "modifiers": {
                             "mandatory": [
