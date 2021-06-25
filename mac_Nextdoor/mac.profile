@@ -31,6 +31,14 @@ alias devcurl="curl --noproxy '*'"
 alias gradle4="$GRADLE_4_HOME/gradle"
 
 
+
+alias nxtdr='cd ~/repositories/nextdoor.com/apps/nextdoor/frontend'
+
+alias db-start-server='nd dev getdb'
+alias db-login='psql nextdoor django1'
+
+
+
 copy() {
     echo -n "$1" | pbcopy
 }
@@ -151,8 +159,6 @@ cf() {
     touch "$1" && chmod a+x "$1"
 }
 
-
-alias nxtdr='cd ~/repositories/nextdoor.com/apps/nextdoor/frontend'
 
 alias  gaud='git update-index --assume-unchanged src/data/mocks/DefaultPageConfig.js'
 alias gnaud='git update-index --no-assume-unchanged src/data/mocks/DefaultPageConfig.js'
