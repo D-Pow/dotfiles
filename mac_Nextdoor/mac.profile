@@ -30,6 +30,37 @@ alias python2='/usr/bin/python'
 alias devcurl="curl --noproxy '*'"
 alias gradle4="$GRADLE_4_HOME/gradle"
 
+if [[ -z `command -v tree` ]]; then
+    # `tree` isn't defined, so define it here
+    tree() {
+        local path="$1"
+
+        if [[ -z "$path" ]]; then
+            path='.'
+        fi
+
+        # `cd` into the directory to avoid extra slashes/nested `| ` text from appearing
+        #   e.g. `tree ../dir/` would result in `find ../dir/` being called and resulting file/dir entries
+        #   being printed as `../dir/file.txt` --> `| ├─file.txt` instead of `├─file.txt`
+        # `find` doesn't add a trailing slash on directories by default, so add them manually via `printf`
+        local allEntriesWithTrailingSlashOnDirsDirs="`(cd "$path" && find . -type d -exec sh -c 'printf "$0/\n"' {} \; -or -print)`"
+        # Remove duplicate `//` when runing `tree someDir/` (no double slashes with `tree someDir`)
+        local normalizedPaths="`echo "$allEntriesWithTrailingSlashOnDirsDirs" | sed -E "s#//#/#g"`"
+        # Replace preceding `path/to/` in `path/to/file.txt` with `| | ├─file.txt` to match standard `tree path/` output.
+        # sed -rEgex 'command-1; command-2'
+        # command-1: Replace `some-text/` with `| ` repeatedly for however many nested parent dirs exist for the file.
+        #   e.g. `dir1/dir2/file.txt` --> `| | file.txt`
+        #   However, if the line ends with `/`, then don't replace the final trailing `/` since that entry is a directory.
+        # command-2: Replace the final `| ` from the previous `| | file.txt` output with `├─` to show it's a file within that directory.
+        #   e.g. `| | file.txt` --> `| ├─file.txt`
+        local parentDirsReplacedWithTreeDelimiters="`echo "$normalizedPaths" | sed -E 's#[^/]*/([^/]*/$)?#| \1#g; s#\| ([^|])#├─\1#g'`"
+        # Replace first line of output with the user-specified path since it's erased in the sed commands above
+        local firstLineReplacedWithParentPath="`echo "$parentDirsReplacedWithTreeDelimiters" | sed -E "1 s|^.*$|$path|"`"
+
+        echo "$firstLineReplacedWithParentPath"
+    }
+fi
+
 
 
 alias nxtdr='cd ~/repositories/nextdoor.com/apps/nextdoor/frontend'
