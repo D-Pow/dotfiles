@@ -179,6 +179,186 @@ window.getDrizlyAbvAndPricesFromSearchResults = async function(minAbv = 10) {
     return aboveSpecifiedAbv;
 };
 
+class SlackInBrowserService {
+    /**
+     * @typedef {Object} Channel
+     * @property {string} id
+     * @property {string} name
+     * @property {Object} topic
+     * @property {string} topic.value - Short description of the channel.
+     * @property {Object} purpose
+     * @property {string} purpose.value - Long description of the channel.
+     * @property {string[]} shared_team_ids - Array of teams (i.e. servers/organizations) able to view the channel.
+     */
+    /**
+     * @typedef {Object} Member
+     * @property {string} id
+     * @property {string} name
+     */
+
+    // Get from dev tools - just watch other XHR requests and take a token from one of them
+    static TOKEN = 'xoxc-2151647278-2165858577591-2209341454208-707234e4c1034456af547e192cc56e1335ed1d229adce81bc1cca33414d63789';
+    // Get from dev tools - api.slack.com isn't necessarily used, sometimes a company-specific URL is used instead
+    static API_URL_BASE = 'https://nextdoor.slack.com/api';
+    // not sure what this is or why it's needed, but CORS errors are thrown if it's not present (at least at Nextdoor)
+    static API_QUERY_PARAMS = {
+        _x_gantry: true
+    };
+
+    /*
+     * See: https://api.slack.com/methods
+     */
+    static Apis = {
+        GetUserInfo: 'users.identity',
+        GetUserChannels: 'users.conversations',
+        GetAllUsers: 'users.list',
+        GetChannelTypes: 'users.channelSections.list', // e.g. channel, direct message, starred, etc.
+        GetAllChannelsInServer: 'channels.list',
+        GetChannelInfo: 'conversations.info',
+        GetChannelMembers: 'conversations.members',
+    };
+
+    /**
+     * Gets URL query parameter entries as either key-value pairs in an object
+     * or as a string formatted how they would appear in the URL bar (e.g. `?a=b&c=d`).
+     *
+     * Defaults to getting the query parameters from the current page's URL as an object.
+     * If `fromObj` is specified, then `fromUrl` will be ignored and a string will be returned instead.
+     *
+     * @param {Object} input
+     * @param {string} [input.fromUrl=window.location.search] - URL to get query parameters from; defaults to current page's URL.
+     * @param {Object} [input.fromObj] - Object to convert to query parameter string.
+     * @returns {Object} - All query param key-value pairs.
+     */
+    static getQueryParams({
+        fromUrl = window.location.search,
+        fromObj,
+    } = {}) {
+        if (fromObj) {
+            const queryParamEntries = Object.entries(fromObj);
+
+            return queryParamEntries.length > 0
+                ? `?${
+                    queryParamEntries
+                        .map(([ queryKey, queryValue ]) => `${encodeURIComponent(queryKey)}=${encodeURIComponent(queryValue)}`)
+                        .join('&')
+                }`
+                : '';
+        }
+
+        const urlSearchQuery = fromUrl.split('?')[1];
+
+        return [...new URLSearchParams(urlSearchQuery).entries()]
+            .reduce((queryParams, nextQueryParam) => {
+                const [ key, value ] = nextQueryParam;
+                queryParams[key] = value;
+                return queryParams;
+            }, {});
+    }
+
+
+    static getApiUrl(api = '', queryParams = {}) {
+        const { API_URL_BASE, API_QUERY_PARAMS, getQueryParams } = SlackInBrowserService;
+        const queryParamString = getQueryParams({
+            fromObj: Object.assign({}, getQueryParams(), API_QUERY_PARAMS, queryParams)
+        });
+
+        return `${API_URL_BASE}/${api}${queryParamString}`;
+    }
+
+    static async getSlackInfo(api, args = {}) {
+        const { getApiUrl, TOKEN } = SlackInBrowserService;
+        const res = await fetch(getApiUrl(api), {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                token: TOKEN,
+                ...args
+            })
+        });
+        const json = await res.json();
+
+        return json;
+    }
+
+    static async getUserInfo() {
+        const { Apis, getSlackInfo } = SlackInBrowserService;
+        const res = await getSlackInfo(Apis.GetUserInfo);
+        const {
+            user: {
+                name: username,
+                id: userId
+            },
+            team: {
+                id: teamId
+            }
+        } = res;
+
+        return {
+            username,
+            userId,
+            teamId,
+        };
+    }
+
+    /**
+     * @param {(Object|string)} channelName - Channel to search for.
+     *                                        If a string is passed, it will be treated as the channel name;
+     *                                        if searching by ID, specify it manually.
+     * @param {string} channelName.id
+     * @returns {Promise<Channel>}
+     */
+    static async getChannelInfo(channelName) {
+        const { Apis, getSlackInfo } = SlackInBrowserService;
+
+        if (typeof channelName === typeof '') {
+            // search for channel ID from all channels in the server
+            const res = await getSlackInfo(Apis.GetAllChannelsInServer);
+            const {
+                /** @type {Channel[]} */
+                channels
+            } = res;
+
+            return channels.find(channel => channel.name === channelName);
+        }
+
+        const { id: channelId } = channelName;
+
+        const res = await getSlackInfo(Apis.GetChannelInfo, { channel: channelId });
+
+        return res.channel;
+    }
+
+    /**
+     * @param {(Object|string)} channelName - Channel whose members to get.
+     *                                        If a string is passed, it will be treated as the channel name;
+     *                                        if searching by ID, specify it manually.
+     * @param {string} channelName.id
+     * @returns {Promise<Member>}
+     */
+    static async getMembersOfChannel(channelName) {
+        const { Apis, getSlackInfo, getChannelInfo } = SlackInBrowserService;
+
+        /** @type {Channel} */
+        const channel = await getChannelInfo(channelName);
+        const { id: channelId, shared_team_ids: teamIds } = channel;
+
+        const membersRes = await getSlackInfo(Apis.GetChannelMembers, { channel: channelId });
+        /** @type {Set<string>} */
+        const memberIds = new Set(membersRes.members);
+
+        const allUsersWhoCanAccessChannelRes = await Promise.all(teamIds.map(teamId => getSlackInfo(Apis.GetAllUsers, { team_id: teamId })));
+        const allUsersWhoCanAccessChannel = allUsersWhoCanAccessChannelRes.flatMap(({ members }) => members);
+
+        const members = allUsersWhoCanAccessChannel.filter(user => memberIds.has(user.id));
+
+        return members.map(user => ({ id: user.id, name: user.name }));
+    }
+}
+
 
 
 /************************************************
