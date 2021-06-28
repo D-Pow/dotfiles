@@ -28,17 +28,45 @@ window.resetCookie = function() {
     document.cookie = 'expires=Thu, 01 Jan 1970 00:00:01 GMT';
 };
 
-window.getUrlQueryParams = function(url = window.location.href) {
-    return url.split('?')[1].split('&').reduce((queries, queryString) => {
-        const keyVals = queryString.split('=');
-        const key = keyVals[0];
-        const val = keyVals.slice(1).join('=');
+/**
+ * Gets URL query parameter entries as either key-value pairs in an object
+ * or as a string formatted how they would appear in the URL bar (e.g. `?a=b&c=d`).
+ *
+ * Defaults to getting the query parameters from the current page's URL as an object.
+ * If `fromObj` is specified, then `fromUrl` will be ignored and a string will be returned instead.
+ *
+ * @param {Object} input
+ * @param {string} [input.fromUrl=window.location.search] - URL to get query parameters from; defaults to current page's URL.
+ * @param {Object} [input.fromObj] - Object to convert to query parameter string.
+ * @returns {Object} - All query param key-value pairs.
+ */
+function getQueryParams({
+    fromUrl = window.location.search,
+    fromObj,
+} = {}) {
+    if (fromObj) {
+        const queryParamEntries = Object.entries(fromObj);
 
-        queries[key] = val;
+        return queryParamEntries.length > 0
+            ? `?${
+                queryParamEntries
+                    .map(([ queryKey, queryValue ]) => `${encodeURIComponent(queryKey)}=${encodeURIComponent(queryValue)}`)
+                    .join('&')
+            }`
+            : '';
+    }
 
-        return queries;
-    }, {});
-};
+    const urlSearchQuery = fromUrl.split('?')[1];
+
+    return [...new URLSearchParams(urlSearchQuery).entries()]
+        .reduce((queryParams, nextQueryParam) => {
+            const [ key, value ] = nextQueryParam;
+            queryParams[key] = value;
+            return queryParams;
+        }, {});
+}
+
+window.getQueryParams = getQueryParams;
 
 window.htmlEscape = str => {
     return str
@@ -578,7 +606,7 @@ window.getVideoFromKissanimeUrl = function(url = window.location.href) {
             .then(html => html.match(getIframeVideoHostUrlRegex(iframeHost))[0]);
     }
 
-    function getCommonHostPromise(kissanimeUrlParam = getUrlQueryParams()['s']) {
+    function getCommonHostPromise(kissanimeUrlParam = getQueryParams()['s']) {
         return getVideoIframeUrl(kissanimeUrlParam)
             .catch(e => open(document.querySelector('iframe#my_video_1').src))
             .then(mp4Url => fetchCors(mp4Url))
