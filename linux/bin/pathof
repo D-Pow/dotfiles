@@ -1,4 +1,9 @@
 #!/bin/bash
 
-# -n strips newline
-echo -n "`pwd`/$1" | pbcopy
+path="$1"
+
+if [[ -z "$path" ]]; then
+    path='.'
+fi
+
+realpath "$path"
