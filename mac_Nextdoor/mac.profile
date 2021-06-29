@@ -75,9 +75,6 @@ copy() {
 }
 
 
-alias repos='cd ~/repositories/'
-
-
 # alias getAllApps=`mdfind "kMDItemKind == 'Application'"`
 getAppInfo() {
     local app="$1"

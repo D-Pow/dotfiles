@@ -38,6 +38,9 @@ gril() {
 alias listopenports='sudo lsof -Pn -i'
 
 thisFile="$BASH_SOURCE"
+thisDir="$(realpath "`dirname $thisFile`")"
+
+alias repos="cd '$thisDir/../'"
 
 dirsize() {
     # ${FUNCNAME[0]} gets the name of this function, regardless of where it was called/defined
