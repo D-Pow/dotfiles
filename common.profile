@@ -436,6 +436,19 @@ alias  gcmd="cat '$thisFile' | egrep -i '(alias *g|^\w*Git\w*\(\))' | grep -v 'g
 # Docs: https://www.gnu.org/software/bash/manual/html_node/Programmable-Completion-Builtins.html
 # Example: https://tldp.org/LDP/abs/html/tabexpansion.html
 _autocompleteWithAllGitBranches() {
+    # COMP_WORDS is the current entire line in the live shell as an array.
+    #   e.g. `my-cmd arg1 arg2` in the shell produces `COMP_WORDS=('my-cmd' 'arg1' 'arg2')`
+    # COMP_CWORD is the index of the last entry in COMP_WORDS.
+    #   e.g. `my-cmd arg1 arg2` in the shell produces `COMP_CWORD=2`
+    #   Note: `my-cmd ` also produces `COMP_CWORD=2`, with `COMP_WORDS=('my-cmd' '')`
+    # COMPREPLY is an array of suitable words with which to autocomplete.
+
+    # Get the latest word in the live shell.
+    # Will update to the only matching autocomplete prefix/word when <TAB> is pressed.
+    #   e.g. `git reba` will automatically prefill `git rebase` into the live shell
+    #   if it's the only suggestion.
+    local lastArg="${COMP_WORDS[COMP_CWORD]}"
+
     # Don't suggest branches if first arg has already been autocompleted.
     # Leave all args past that to the default shell autocomplete via `complete -o default`.
     if [[ $COMP_CWORD -gt 1 ]]; then
@@ -454,18 +467,6 @@ _autocompleteWithAllGitBranches() {
     # Remove out leading */spaces from output.
     # Remove remote name from branch names.
     gitBranches="`echo "$gitBranches" | grep -v 'HEAD' | sed -E 's$^(\*| )*$$; s$^[^/]*/$$'`"
-
-    # COMP_WORDS is the current entire line in the live shell as an array.
-    #   e.g. `my-cmd arg1 arg2` in the shell produces `COMP_WORDS=('my-cmd' 'arg1' 'arg2')`
-    # COMP_CWORD is the index of the last entry in COMP_WORDS.
-    #   e.g. `my-cmd arg1 arg2` in the shell produces `COMP_CWORD=2`
-    #   Note: `my-cmd ` also produces `COMP_CWORD=2`, with `COMP_WORDS=('my-cmd' '')`
-    # COMPREPLY is an array of suitable words with which to autocomplete.
-
-    # Get the latest word in the live shell.
-    # Will update to the only matching autocomplete prefix/word when <TAB> is pressed.
-    #   e.g. `git reba` will automatically prefill `git rebase` into the live shell.
-    local lastArg="${COMP_WORDS[COMP_CWORD]}"
 
     # Filter out non-matching branch names.
     # Replace \n with ' ' so the autocomplete system can format them with its internal logic.
