@@ -436,6 +436,12 @@ alias  gcmd="cat '$thisFile' | egrep -i '(alias *g|^\w*Git\w*\(\))' | grep -v 'g
 # Docs: https://www.gnu.org/software/bash/manual/html_node/Programmable-Completion-Builtins.html
 # Example: https://tldp.org/LDP/abs/html/tabexpansion.html
 _autocompleteWithAllGitBranches() {
+    # Don't suggest branches if first arg has already been autocompleted.
+    # Leave all args past that to the default shell autocomplete via `complete -o default`.
+    if [[ $COMP_CWORD -gt 1 ]]; then
+        return 0
+    fi
+
     local showRemoteBranches=yes # comment out to disable
     local cmdOption
 
@@ -469,4 +475,4 @@ _autocompleteWithAllGitBranches() {
 
     return 0
 }
-complete -F _autocompleteWithAllGitBranches "gck"
+complete -F _autocompleteWithAllGitBranches -o default "gck"
