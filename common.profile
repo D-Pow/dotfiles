@@ -459,6 +459,7 @@ _autocompleteWithAllGitBranches() {
     #   e.g. `my-cmd arg1 arg2` in the shell produces `COMP_WORDS=('my-cmd' 'arg1' 'arg2')`
     # COMP_CWORD is the index of the last entry in COMP_WORDS.
     #   e.g. `my-cmd arg1 arg2` in the shell produces `COMP_CWORD=2`
+    #   Note: `my-cmd ` also produces `COMP_CWORD=2`, with `COMP_WORDS=('my-cmd' '')`
     # COMPREPLY is an array of suitable words with which to autocomplete.
 
     # Get the latest word in the live shell.
