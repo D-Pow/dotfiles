@@ -455,6 +455,13 @@ _autocompleteWithAllGitBranches() {
         return 0
     fi
 
+    # Autocomplete `gck -` and `gck --` to `gck -- ` for automatic space injection and quicker typing.
+    if [[ "$lastArg" = "-" ]] || [[ "$lastArg" = "--" ]]; then
+        COMPREPLY=($(compgen -W '--'))
+
+        return 0
+    fi
+
     local showRemoteBranches=yes # comment out to disable
     local cmdOption
 
