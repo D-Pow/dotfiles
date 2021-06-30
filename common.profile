@@ -444,7 +444,7 @@ _autocompleteWithAllGitBranches() {
     # COMPREPLY is an array of suitable words with which to autocomplete.
 
     # Get the latest word in the live shell.
-    # Will update to the only matching autocomplete prefix/word when <TAB> is pressed.
+    # Will update to the only matching autocomplete prefix/word when <Tab> is pressed.
     #   e.g. `git reba` will automatically prefill `git rebase` into the live shell
     #   if it's the only suggestion.
     local lastArg="${COMP_WORDS[COMP_CWORD]}"
