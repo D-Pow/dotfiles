@@ -431,3 +431,26 @@ alias  gauf="git ls-files -v | grep '^[[:lower:]]' | awk '{print \$2}'" # awk: o
 alias gaufo='subl $(gauf | cut -f 2 -d " ")'
 
 alias  gcmd="cat '$thisFile' | egrep -i '(alias *g|^\w*Git\w*\(\))' | grep -v 'grep=' | sed -E 's/ \{$//'"
+
+# Add bash autocompletion for `git checkout`
+# Docs: https://www.gnu.org/software/bash/manual/html_node/Programmable-Completion-Builtins.html
+# Example: https://tldp.org/LDP/abs/html/tabexpansion.html
+_autocompleteWithAllGitBranches() {
+    local showRemoteBranches=yes # comment out to disable
+    local cmdOption
+
+    [[ $showRemoteBranches ]] && cmdOption='-r' || cmdOption=''
+
+    local gitBranches="`git branch $cmdOption`"
+
+    # Filter out HEAD since it just points to a branch that is defined later in the list
+    # Remove out leading */spaces from output
+    # Remove remote name from branch names
+    # Replace \n with ' ' - Note: Has to be done with `tr` b/c `sed` works one line at a time
+    gitBranches="`echo "$gitBranches" | grep -v 'HEAD' | sed -E 's$^(\*| )*$$; s$^[^/]*/$$' | tr '\n' ' '`"
+
+    COMPREPLY=($(compgen -W "$gitBranches"))
+
+    return 0
+}
+complete -F _autocompleteWithAllGitBranches "gck"

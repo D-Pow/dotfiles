@@ -206,19 +206,12 @@ gckb() {
 }
 
 # Make bash autocomplete when tabbing after "git commit" alias like gc or gac
-autocompleteWithJiraTicket() {
+_autocompleteWithJiraTicket() {
     # sed -rEgex 'substitute|pattern|\1 = show-only-match|'
     branch=$(getGitBranch | sed -E 's|.*/([A-Z]+-[0-9]+).*|\1|')
     COMPREPLY=$branch
     return 0
 }
 # Requires alias because spaces aren't allowed
-complete -F autocompleteWithJiraTicket -P \" "gc"
-complete -F autocompleteWithJiraTicket -P \" "gac"
-
-# Make bash only display the options (not autocomplete) by using compgen
-autocompleteWithAllGitBranches() {
-    COMPREPLY=($(compgen -W '$(git branch)'))
-    return 0
-}
-#complete -F autocompleteWithAllGitBranches "gck"
+complete -F _autocompleteWithJiraTicket -P \" "gc"
+complete -F _autocompleteWithJiraTicket -P \" "gac"
