@@ -443,11 +443,27 @@ _autocompleteWithAllGitBranches() {
 
     local gitBranches="`git branch $cmdOption`"
 
-    # Filter out HEAD since it just points to a branch that is defined later in the list
-    # Remove out leading */spaces from output
-    # Remove remote name from branch names
-    # Replace \n with ' ' - Note: Has to be done with `tr` b/c `sed` works one line at a time
-    gitBranches="`echo "$gitBranches" | grep -v 'HEAD' | sed -E 's$^(\*| )*$$; s$^[^/]*/$$' | tr '\n' ' '`"
+    # Maintain newlines by quoting `$gitBranches` so they're easier to read/modify.
+    # Filter out HEAD since it just points to a branch that is defined later in the list.
+    # Remove out leading */spaces from output.
+    # Remove remote name from branch names.
+    gitBranches="`echo "$gitBranches" | grep -v 'HEAD' | sed -E 's$^(\*| )*$$; s$^[^/]*/$$'`"
+
+    # COMP_WORDS is the current entire line in the live shell as an array.
+    #   e.g. `my-cmd arg1 arg2` in the shell produces `COMP_WORDS=('my-cmd' 'arg1' 'arg2')`
+    # COMP_CWORD is the index of the last entry in COMP_WORDS.
+    #   e.g. `my-cmd arg1 arg2` in the shell produces `COMP_CWORD=2`
+    # COMPREPLY is an array of suitable words with which to autocomplete.
+
+    # Get the latest word in the live shell.
+    # Will update to the only matching autocomplete prefix/word when <TAB> is pressed.
+    #   e.g. `git reba` will automatically prefill `git rebase` into the live shell.
+    local lastArg="${COMP_WORDS[COMP_CWORD]}"
+
+    # Filter out non-matching branch names.
+    # Replace \n with ' ' so the autocomplete system can format them with its internal logic.
+    #   Note: Has to be done with `tr` b/c `sed` works one line at a time.
+    gitBranches="`echo "$gitBranches" | egrep "^$lastArg"`"
 
     COMPREPLY=($(compgen -W "$gitBranches"))
 
