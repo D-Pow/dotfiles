@@ -16,7 +16,21 @@
                     },
                     "to": [
                         {
+                            "set_variable": {
+                                "name": "native_command",
+                                "value": 1
+                            }
+                        },
+                        {
                             "key_code": "left_command"
+                        }
+                    ],
+                    "to_after_key_up": [
+                        {
+                            "set_variable": {
+                                "name": "native_command",
+                                "value": 0
+                            }
                         }
                     ],
                     "conditions": [
@@ -40,7 +54,21 @@
                     },
                     "to": [
                         {
+                            "set_variable": {
+                                "name": "native_option",
+                                "value": 1
+                            }
+                        },
+                        {
                             "key_code": "left_option"
+                        }
+                    ],
+                    "to_after_key_up": [
+                        {
+                            "set_variable": {
+                                "name": "native_option",
+                                "value": 0
+                            }
                         }
                     ],
                     "conditions": [
@@ -64,7 +92,21 @@
                     },
                     "to": [
                         {
+                            "set_variable": {
+                                "name": "native_control",
+                                "value": 1
+                            }
+                        },
+                        {
                             "key_code": "left_control"
+                        }
+                    ],
+                    "to_after_key_up": [
+                        {
+                            "set_variable": {
+                                "name": "native_control",
+                                "value": 0
+                            }
                         }
                     ],
                     "conditions": [
@@ -88,7 +130,21 @@
                     },
                     "to": [
                         {
+                            "set_variable": {
+                                "name": "native_command",
+                                "value": 1
+                            }
+                        },
+                        {
                             "key_code": "right_command"
+                        }
+                    ],
+                    "to_after_key_up": [
+                        {
+                            "set_variable": {
+                                "name": "native_command",
+                                "value": 0
+                            }
                         }
                     ],
                     "conditions": [
@@ -112,7 +168,21 @@
                     },
                     "to": [
                         {
+                            "set_variable": {
+                                "name": "native_control",
+                                "value": 1
+                            }
+                        },
+                        {
                             "key_code": "right_control"
+                        }
+                    ],
+                    "to_after_key_up": [
+                        {
+                            "set_variable": {
+                                "name": "native_control",
+                                "value": 0
+                            }
                         }
                     ],
                     "conditions": [
@@ -162,7 +232,7 @@
                     "to": [
                         {
                             "set_variable": {
-                                "name": "native_ctrl",
+                                "name": "native_control",
                                 "value": 1
                             }
                         },
@@ -173,7 +243,7 @@
                     "to_after_key_up": [
                         {
                             "set_variable": {
-                                "name": "native_ctrl",
+                                "name": "native_control",
                                 "value": 0
                             }
                         }
@@ -276,7 +346,7 @@
                     "to": [
                         {
                             "set_variable": {
-                                "name": "native_ctrl",
+                                "name": "native_control",
                                 "value": 1
                             }
                         },
@@ -287,7 +357,7 @@
                     "to_after_key_up": [
                         {
                             "set_variable": {
-                                "name": "native_ctrl",
+                                "name": "native_control",
                                 "value": 0
                             }
                         }
@@ -367,7 +437,7 @@
                         },
                         {
                             "type": "variable_if",
-                            "name": "native_ctrl",
+                            "name": "native_control",
                             "value": 1
                         }
                     ]
