@@ -1,0 +1,12 @@
+[
+    {
+        "caption": "File",
+        "id": "file",
+        "children": [
+            {
+                "caption": "New view into file",
+                "command": "clone_file"
+            }
+        ]
+    }
+]
