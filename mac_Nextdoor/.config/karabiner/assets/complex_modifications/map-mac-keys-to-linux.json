@@ -652,7 +652,12 @@
                 {
                     "type": "basic",
                     "from": {
-                        "key_code": "delete_or_backspace"
+                        "key_code": "up_arrow",
+                        "modifiers": {
+                            "mandatory": [
+                                "control"
+                            ]
+                        }
                     },
                     "to": [
                         {
