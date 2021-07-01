@@ -1516,6 +1516,39 @@
                     ]
                 }
             ]
+        },
+
+        {
+            "description": "Super+L to lock screen",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "l",
+                        "modifiers": {
+                            "mandatory": [
+                                "option"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "q",
+                            "modifiers": [
+                                "control",
+                                "command"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "variable_if",
+                            "name": "native_option",
+                            "value": 1
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
