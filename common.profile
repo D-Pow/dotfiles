@@ -92,6 +92,9 @@ gril() {
 # -i (show internet addresses, can be -i4/-i6 for IPv4/6, or -i:PORT for showing specific port)
 alias listopenports='sudo lsof -Pn -i'
 
+# `type` should be used instead; this is mostly meant as a reminder that it exists
+alias define-func='type'
+
 
 thisFile="$BASH_SOURCE"
 thisDir="$(realpath "`dirname $thisFile`")"
