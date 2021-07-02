@@ -96,7 +96,7 @@ thisFile="$BASH_SOURCE"
 thisDir="$(realpath "`dirname $thisFile`")"
 
 
-reposDir="`realpath "$thisDir/.."`"
+reposDir="`realpath "$dotfilesDir/.."`"
 repos() {
     # Path is relative to repositories directory.
     # Read all args via `$@` instead of `$1` in case spaces aren't escaped.
