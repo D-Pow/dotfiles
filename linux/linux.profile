@@ -21,6 +21,45 @@ alias egrep='grep -P --exclude-dir={node_modules,.git,.idea,lcov-report} --color
 
 alias listupdate='sudo apt update && sudo apt list --upgradable'
 
+is-installed() {
+    local packages="$@"
+    # local packagesArray=($packages)
+    local installedPackages=()
+
+    if [[ -z "$packages" ]]; then
+        echo 'Please specify a package/command'
+        return
+    fi
+
+    local isInstalledByApt="`apt list --installed $packages 2>/dev/null | grep 'installed'`"
+
+    if ! [[ -z "$isInstalledByApt" ]]; then
+        installedPackages+=('Installed by apt:')
+        installedPackages+=("`echo "$isInstalledByApt" | egrep -o '^[^/]*'`")
+    fi
+
+    local commandsExist="`command -v $packages`"
+
+    if ! [[ -z "$commandsExist" ]]; then
+        # Add extra line between apt-installed packages and CLI commands
+        [[ ${#installedPackages[@]} -ne 0 ]] && installedPackages+=('')
+        installedPackages+=('CLI commands:')
+        installedPackages+=("`echo "$commandsExist"`")
+    fi
+
+    if [[ ${#installedPackages[@]} -ne 0 ]]; then
+        # `echo -e` only works if the string following it has `\n` in it, but it doesn't work
+        # when concatenating strings through an array.
+        # `printf` has more reliable behavior across platforms and usages, so use it instead.
+        # For arrays, it applies the specified pattern to each entry, effectively functioning as
+        # the equivalent of `myArray.join('delimiter')`
+        printf '%s\n' "${installedPackages[@]}"
+        return
+    fi
+
+    echo "$packages not installed"
+}
+
 # systemctl commands:
 #   status              =  shows service status
 #   start               =  start a service
