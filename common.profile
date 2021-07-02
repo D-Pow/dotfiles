@@ -111,7 +111,7 @@ repos() {
     # backslashes (spaces don't need escaping in strings).
     local absPath="$reposDir/$nestedPath"
 
-    cd $absPath
+    cd "$absPath"
 }
 _autocompleteRepos() {
     local requestedRelativePath="${COMP_WORDS[@]:1}"
