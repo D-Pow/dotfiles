@@ -591,6 +591,15 @@ alias gaufo='subl $(gauf | cut -f 2 -d " ")'
 
 alias  gcmd="cat '$thisFile' | egrep -i '(alias *g|^\w*Git\w*\(\))' | grep -v 'grep=' | sed -E 's/ \{$//'"
 
+# To use bash autocompletion for multi-word commands,
+# you'd need to add a wrapper function, e.g.
+# _git_wrapper() {
+#     gitCommand="$1"
+#     shift
+#     git $gitCommand $@
+# }
+# But aliases are easier since you don't alter the original function's autocompletion.
+#
 # Add bash autocompletion for `git checkout`
 # Docs: https://www.gnu.org/software/bash/manual/html_node/Programmable-Completion-Builtins.html
 # Example: https://tldp.org/LDP/abs/html/tabexpansion.html
@@ -635,12 +644,19 @@ _autocompleteWithAllGitBranches() {
     gitBranches="`echo "$gitBranches" | grep -v 'HEAD' | sed -E 's$^(\*| )*$$; s$^[^/]*/$$'`"
 
     # Filter out non-matching branch names.
-    # Replace \n with ' ' so the autocomplete system can format them with its internal logic.
-    #   Note: Has to be done with `tr` b/c `sed` works one line at a time.
+    # Theoretically, we'd have to replace \n with ' ' so the autocomplete suggestions
+    # wouldn't include them, but luckily, the internal system does that automatically
+    # ASSUMING, of course, that we don't have spaces in the names. If we did, we'd
+    # have to change `IFS=$'\n'`.
+    # One nice way to replace newlines with spaces would be with `tr '\n' ' '`
+    # because `sed` only works one line at a time, so it can't parse '\n'.
     gitBranches="`echo "$gitBranches" | egrep "^$lastArg"`"
 
     COMPREPLY=($(compgen -W "$gitBranches"))
 
     return 0
 }
+# Activate function `_autocompleteWithAllGitBranches` for bash shell entry `gck`.
+# If we're done with suggestions, default to whatever bash would auto-suggest
+# via `-o default`.
 complete -F _autocompleteWithAllGitBranches -o default "gck"
