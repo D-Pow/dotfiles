@@ -1,12 +1,5 @@
-export dotfilesDir="/Users/dpowell1/repositories/dotfiles"
-export commonProfile="$dotfilesDir/common.profile"
-export macProfile="$dotfilesDir/mac_Nextdoor/mac.profile"
+dotfilesDir='/Users/dpowell1/repositories/dotfiles'
+platform='mac_Nextdoor'
 
-source "$commonProfile"
-source "$macProfile"
+source "$dotfilesDir/.profile" "$dotfilesDir" "$platform"
 
-# Overwritten profile content based on relevant paths
-alias editprofile="subl -n -w '$macProfile' && source ~/.profile"
-alias editcommon="subl -n -w '$commonProfile' && source ~/.profile"
-
-export PATH="$dotfilesDir/linux/bin:$dotfilesDir/mac_E-Trade/bin:$PATH"

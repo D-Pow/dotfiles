@@ -1,9 +1,5 @@
 # Useful special bash keywords: https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
 
-PATH="$HOME/bin:$PATH"
-export PATH
-
-
 ### .bash_history improvements ###
 # Variables below can be found in keywords link above.
 # History commands: https://www.gnu.org/software/bash/manual/html_node/Bash-History-Builtins.html

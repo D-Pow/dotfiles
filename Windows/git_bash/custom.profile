@@ -1,16 +1,6 @@
-export dotfilesDir="/d/Documents/Repositories/dotfiles"
-export commonProfile="$dotfilesDir/common.profile"
-export subsystemProfile="$dotfilesDir/Windows/bash_subsystem/subsystem.profile"
+export subsystemProfile="$dotfilesDir/Windows/bash_subsystem/custom.profile"
 
-source "$commonProfile"
 # source "$subsystemProfile"
-
-# Overwritten profile content based on relevant paths
-alias editprofile="subl -n -w ~/.profile && source ~/.profile"
-alias editcommon="subl -n -w '$commonProfile' && source ~/.profile"
-
-alias ls='ls --color -Fh'
-alias lah='ls --color -Flah'
 
 # alias subl='/c/Program\ Files/Sublime\ Text\ 3/subl'
 

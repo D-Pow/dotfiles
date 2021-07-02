@@ -1,3 +1,4 @@
-export dotfilesDir="/d/Documents/Repositories/dotfiles"
+dotfilesDir='/d/Documents/Repositories/dotfiles'
+platform='Windows/git_bash'
 
-source "$dotfilesDir/Windows/git_bash/gitbash.profile"
+source "$dotfilesDir/.profile" "$dotfilesDir" "$platform"
