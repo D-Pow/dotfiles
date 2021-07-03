@@ -1,4 +1,6 @@
 dotfilesDir='/home/dpow/Documents/Repositories/dotfiles'
 platform='linux'
 
-source "$dotfilesDir/.profile" "$dotfilesDir" "$platform"
+if [[ -d '/home/dpow/Documents/Repositories/dotfiles' ]]; then
+    source "$dotfilesDir/.profile" "$dotfilesDir" "$platform"
+fi
