@@ -18,11 +18,18 @@ fi
 
 if [[ -z "$1" ]] || [[ -z "$2" ]]; then
     echo 'Error: Please specify the dotfiles directory and platform when sourcing.
-    Usage: `source "path/to/dotfiles/.profile" "path/to/dotfiles" "platform_OS_name"`
+    Usage:
+        source "path/to/dotfiles/.profile" "path/to/dotfiles" "platform_or/nested/dir"
 
-    Example: `source "~/repositories/dotfiles/.profile" "~/repositories/dotfiles" "linux"`
+    Note: Do not append "/" to the end of directories.
 
-    Note: Do not append "/" to the end of directories.'
+    Example:
+        # Must be absolute path; you cannot `source` relative paths, including `~`
+        dotfilesDir="/home/repositories/dotfiles"
+        platform="linux"
+
+        source "$dotfilesDir/.profile" "$dotfilesDir" "$platform"
+    '
 
     return 1
 fi
