@@ -10,11 +10,11 @@ export MAVEN_HOME=/Applications/apache-maven-3.6.3/bin
 export GRADLE_4_HOME=/opt/gradle/gradle-4.5.1/bin
 export GRADLE_HOME=/opt/gradle/gradle-6.0.1/bin
 export SUBLIME_HOME=/Applications/Sublime\ Text.app/Contents/SharedSupport/bin
-export SUBLIME_DIR=/Users/dpowell1/Library/Application\ Support/Sublime\ Text\ 3/Packages/User/
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Home/
+export SUBLIME_DIR=/Users/dpowell1/Library/Application\ Support/Sublime\ Text/Packages/User/
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_291.jdk/Contents/Home/
 export BOOST_HOME=/usr/local/boost_1_67_0
-export PIP3_HOME=/usr/local/opt/python\@3.7/bin/
-export PIP2_HOME=/Users/dpowell1/Library/Python/2.7/bin
+# export PIP3_HOME=/usr/local/opt/python\@3.7/bin/
+# export PIP2_HOME=/Users/dpowell1/Library/Python/2.7/bin
 export PATH=$BREW_GNU_UTILS_HOME:$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$MAVEN_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$SUBLIME_HOME:$BOOST_HOME:/usr/local/bin:/Users/dpowell1/bin:$PATH
 
 # Colored terminal
