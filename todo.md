@@ -31,3 +31,14 @@
     - https://unix.stackexchange.com/questions/227662/how-to-rename-multiple-files-using-find
     - [slicing](https://stackoverflow.com/questions/1335815/how-to-slice-an-array-in-bash)
 * Once done, remove `/linux/Bash notes.txt`
+
+# New - Change mac address
+
+* Mac: https://eshop.macsales.com/blog/43777-tech-101-spoofing-a-mac-address-in-macos-high-sierra/?utm_source=affiliate&utm_campaign=cj&cjevent=974ffbd5dc1a11eb817702230a1c0e13
+    - Get all mac addresses on network: `arp -a`
+    - Get your mac address: `ifconfig [en0|network-device] ether`
+    - Change it: `sudo ifconfig <device> ether XXX`
+        + Might have to run the command [multiple times](https://www.reddit.com/r/mac/comments/jzjzoc/changing_mac_address_on_2020_mbp_w_macos_big_sur/)
+        + Or, maybe shutting it down/turning it back on would do the trick (see Linux below)
+* Linux: https://www.linuxquestions.org/questions/linux-networking-3/ubuntu-how-to-change-mac-address-with-ifconfig-647323/
+* Storing previous mac address for resetting back to normal: https://stackoverflow.com/questions/9904980/variable-in-bash-script-that-keeps-it-value-from-the-last-time-running
