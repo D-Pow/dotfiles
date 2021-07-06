@@ -30,6 +30,7 @@ alias python2='/usr/bin/python'
 alias devcurl="curl --noproxy '*'"
 alias gradle4="$GRADLE_4_HOME/gradle"
 
+
 if [[ -z `command -v tree` ]]; then
     # `tree` isn't defined, so define it here
     tree() {
@@ -62,6 +63,7 @@ if [[ -z `command -v tree` ]]; then
 fi
 
 
+alias todo="subl '~/Desktop/ToDo.md'"
 
 alias nxtdr='cd ~/repositories/nextdoor.com/apps/nextdoor/frontend'
 
