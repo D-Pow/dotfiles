@@ -5,6 +5,7 @@ alias thisDir='echo "$(realpath "`dirname "$(thisFile)"`")"'
 
 source "$(thisDir)/bash-command-enhancements.profile"
 source "$(thisDir)/bash-history.profile"
+source "$(thisDir)/bash-arrays.profile"
 source "$(thisDir)/os-utils.profile"
 source "$(thisDir)/git.profile"
 source "$(thisDir)/programs.profile"
