@@ -65,7 +65,7 @@ fi
 
 alias todo="subl '~/Desktop/ToDo.md'"
 
-alias nxtdr='cd ~/repositories/nextdoor.com/apps/nextdoor/frontend'
+alias nxtdr='cd ~/src/nextdoor.com/apps/nextdoor/frontend'
 
 alias db-start-server='nd dev getdb'
 alias db-login='psql nextdoor django1'
