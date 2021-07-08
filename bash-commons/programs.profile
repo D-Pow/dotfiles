@@ -14,3 +14,20 @@ export NVM_DIR="$HOME/.nvm"
 # Load nvm bash_completion
 [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
 export NVM_SYMLINK_CURRENT=true # Makes a symlink at ~/.nvm/current/bin/node so you don't have to chage IDEs' configurations when changing node versions
+
+
+
+### Docker ###
+dockerFindByName() {
+    local imageName="$1"
+
+    shift
+
+    echo "`docker ps -a "$@" --filter "name=$imageName"`"
+}
+
+dockerIsContainerRunning() {
+    local imageId="`dockerFindByName "$1" -q`"
+
+    docker inspect --format '{{json .State.Running}}' "$imageId"
+}
