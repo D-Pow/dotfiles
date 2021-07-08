@@ -1,3 +1,5 @@
+# TODO: Review diff between $* and $@ (applies to arrays): https://stackoverflow.com/questions/12314451/accessing-bash-command-line-args-vs
+
 arrLength() {
     # TODO use arrValuesFromName
     # since `-n` isn't supported on Bash < 4 (i.e. Mac without Brew's Bash)
