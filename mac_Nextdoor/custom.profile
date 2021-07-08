@@ -6,13 +6,9 @@
 BREW_GNU_UTILS_HOME=/usr/local/opt/grep/libexec/gnubin # Run: brew install bash coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep
                                                        # Then, add `/usr/local/bin/bash` to `/etc/shells`
                                                        # Then, set default bash for all users (including root): sudo chsh -s /usr/local/bin/bash
-export MAVEN_HOME=/Applications/apache-maven-3.6.3/bin
-export GRADLE_4_HOME=/opt/gradle/gradle-4.5.1/bin
-export GRADLE_HOME=/opt/gradle/gradle-6.0.1/bin
 export SUBLIME_HOME=/Applications/Sublime\ Text.app/Contents/SharedSupport/bin
 export SUBLIME_DIR=/Users/dpowell1/Library/Application\ Support/Sublime\ Text/Packages/User/
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_291.jdk/Contents/Home/
-export BOOST_HOME=/usr/local/boost_1_67_0
 # export PIP3_HOME=/usr/local/opt/python\@3.7/bin/
 # export PIP2_HOME=/Users/dpowell1/Library/Python/2.7/bin
 export PATH=$BREW_GNU_UTILS_HOME:$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$MAVEN_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$SUBLIME_HOME:$BOOST_HOME:/usr/local/bin:/Users/dpowell1/bin:$PATH
@@ -75,6 +71,11 @@ alias db-login='psql nextdoor django1'
 copy() {
     echo -n "$1" | pbcopy
 }
+
+cf() {
+    touch "$1" && chmod a+x "$1"
+}
+
 
 
 # alias getAllApps=`mdfind "kMDItemKind == 'Application'"`
@@ -173,39 +174,6 @@ resetJetbrains() {
 }
 
 
-mvntestfileinsubmodule() {
-    mvn test -Dtest=$1
-}
-
-alias rmpom='find . -name "pom.xml" -type f -delete'
-alias pomgen='mvn pomgenerator:generate'
-alias mvnsetup='rmpom && pomgen'
-alias mvninstall='mvn clean install -Dmaven.javadoc.skip=true -DskipTests' #Add -U to force download from nexus
-alias mvntest='mvn clean install -Dmaven.javadoc.skip=true'
-alias mvntestsubmodule='mvn test -pl'
-
-
-cf() {
-    touch "$1" && chmod a+x "$1"
-}
-
-
-alias  gaud='git update-index --assume-unchanged src/data/mocks/DefaultPageConfig.js'
-alias gnaud='git update-index --no-assume-unchanged src/data/mocks/DefaultPageConfig.js'
-
-gckb() {
-    repoName="$(getGitRepoName)"
-
-    if [ "$repoName" == "react-mutualfundsandetf" ]; then
-        git checkout feature/baseline-income-portfolio
-    elif [ "$repoName" == "react-aip" ]; then
-        git checkout feature/baseline-etf-aip
-    elif [ "$repoName" == "mutual_fund_etf" ]; then
-        git checkout feature/baseline-etf-aip-mvp-2
-    elif [ "$repoName" == "aip_java8" ]; then
-        git checkout feature/baseline-aipetf-mvp
-    fi
-}
 
 # Make bash autocomplete when tabbing after "git commit" alias like gc or gac
 _autocompleteWithJiraTicket() {
