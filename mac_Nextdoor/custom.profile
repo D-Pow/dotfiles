@@ -59,6 +59,10 @@ if [[ -z `command -v tree` ]]; then
 fi
 
 
+# Add --no-verify for git pushes since it takes forever and often dies half-way through
+alias gp='git push --no-verify'
+alias gpu='git push -u origin $(getGitBranch) --no-verify'
+
 alias todo="subl '~/Desktop/ToDo.md'"
 
 alias nxtdr='cd ~/src/nextdoor.com/apps/nextdoor/frontend'
