@@ -74,6 +74,7 @@ arrMergeArrays() {
 }
 
 
+# Manually gets array contents by name (for Bash < 4)
 arrValuesFromName() {
     # Tried with all of the following, but they all ruined array entries containing spaces
     # local arr=(`arrValuesFromName $1`)
@@ -81,7 +82,7 @@ arrValuesFromName() {
     # local arr=($(arrValuesFromName $1))
     # local arr=("$(arrValuesFromName $1)")
 
-    # Could alternatively be done via `local -n arr=$1` because `-n` does the
+    # Could alternatively be done via `[declare|local] -n arr=$1` because `-n` does the
     # indirection/name-ref for us
     local arrName="$1"
     local arrValuesCmd="$1[@]"
@@ -102,16 +103,49 @@ arrValuesFromName() {
     #
     # Exception: `${!name[@]}` expands the keys in an array, int (normal) or string (associative).
     local arrValues=("${!arrValuesCmd}")
+    # TODO The below doesn't work b/c `arrName != actualName`
+    # local arrKeys=("${!arrName[@]}")
+    #
+    # for i in "${!arrName[@]}"; do
+    #     echo "i: $i"
+    # done
+    # echo "${arrKeys[@]}"
 
     # Attempts with all of the above "Tried" usages:
     # echo "${arrValues[@]}"
     # echo "${#arrValues[@]}"
     # echo ${arrValues[*]}
+    # echo "${arrValues[*]}"
     # printf "'%s' " "${arrValues[@]}"
     # echo $(printf "'%s' " "${arrValues[@]}")
-    for val in "${arrValues[@]}"; do
-        echo "$val"
-    done
+    # for val in "${arrKeys[@]}"; do
+    #     echo "$val"
+    # done
+
+
+    ## Requires the calling parent to know if it should use `declare -a` vs `declare -A`
+    ## since `local var="$(arrValuesFromName myArr)"` doesn't work.
+    ##
+    # `declare -p` gets all the data about a variable as if it were created using the current
+    # content it contains, regardless of what type it is.
+    #
+    # e.g.
+    # declare -a array=('a' 'b')
+    # declare -A map=([x]='a b' [y]='c d')
+    # array+=('c')
+    # map[z]='e f'
+    #
+    # declare -p array  # outputs: declare -a array=("a" "b")
+    # declare -p map    # outputs: declare -A map=([x]="a b" [y]="c d" [z]="e f")
+    local arrDeclarationCmd="`declare -p $arrName`"
+    # Strip out the leading content before "=" so that only the variable contents
+    # are returned.
+    # This way, we can call `declare -[aA] var="$(arrValuesFromName myArr)"`
+    # to read arrays from input by name.
+    local arrDeclarationOnlyArrayContents="${arrDeclarationCmd#*=}" # string substitution - replace /^.*=/ with ''
+
+    # echo "$arrDeclarationCmd" # Returns entire string, which can't be called by `eval` or similar
+    echo "$arrDeclarationOnlyArrayContents" # Requires calling parent to know the variable type and to use `declare -[aA]` accordingly
 }
 
 
