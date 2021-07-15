@@ -3,14 +3,14 @@
 arrLength() {
     # TODO use arrValuesFromName
     # since `-n` isn't supported on Bash < 4 (i.e. Mac without Brew's Bash)
-    local -n arr=$1
+    local -n arr="$1"
 
     echo ${#arr[@]}
 }
 
 
 arrEmpty() {
-    local -n arr=$1
+    local -n arr="$1"
     local length=`arrLength $1`
 
     # Want to be able to use this like `if arrEmpty myArr; then ...`
@@ -34,7 +34,7 @@ arrEmpty() {
 
 arrContains() {
     local query="$1"
-    local -n arr=$2
+    local -n arr="$2"
 
     # As mentioned above, `echo true/false` would work for if-statements.
     # However, if one-lining the function call within a line, then true/false will be echoed to
