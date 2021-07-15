@@ -1,4 +1,6 @@
-# Useful special bash keywords: https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
+### Bash docs ###
+# Special keywords: https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
+# String manipulation: https://tldp.org/LDP/abs/html/string-manipulation.html
 
 alias thisFile='echo "$BASH_SOURCE"'
 alias thisDir='echo "$(realpath "`dirname "$(thisFile)"`")"'
