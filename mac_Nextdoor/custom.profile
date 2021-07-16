@@ -70,6 +70,37 @@ alias nxtdr='cd ~/src/nextdoor.com/apps/nextdoor/frontend'
 alias db-start-server='nd dev getdb'
 alias db-login='psql nextdoor django1'
 
+alias fix-sockets='nd dev update unix_socket_bridge'
+alias fix-aws='aws_eng_login'
+
+fe-start() {
+    nxtdr
+
+    local devProxyIsRunning="`dockerIsContainerRunning 'dev-local-proxy'`"
+
+    if [[ $devProxyIsRunning != 'true' ]]; then
+        nd dev portal
+    fi
+
+    yarn build --watch
+}
+fe-stop() {
+    docker stop nextdoorcom_dev-local-proxy_1 nextdoorcom_dev-portal_1 nextdoorcom_static_1
+}
+
+be-start() {
+    if ! aws sts get-caller-identity > /dev/null 2>&1; then
+        fix-aws
+        fix-sockets
+    fi
+
+    if ! curl https://static.localhost.com/ 2>/dev/null; then
+        STATIC_CONTENT_HOST=https://static.localhost.com:443 NEXTDOOR_PORT=443 nd dev runserver
+    fi
+}
+be-stop() {
+    echo 'TODO'
+}
 
 
 copy() {
