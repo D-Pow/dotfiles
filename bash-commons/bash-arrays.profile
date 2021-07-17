@@ -51,24 +51,29 @@ array.contains() {
 
 
 array.slice() {
+    local isLength
+    local OPTIND=1
+
+    # See os-utils.profile for more info on flag parsing
+    while getopts "l" opt; do
+        case "$opt" in
+            l)
+                isLength=true
+                ;;
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+
     # Can't use the same variable name, `arr`, multiple times
     # so call `array.length $1` instead of `array.length arr`
     local arrLength="`array.length $1`"
     local -n arr="$1"
     local start="$2"
     local end="$3"
-    local lengthLimit="$4"
 
     local newArr=()
-    local newArrLength="$lengthLimit"
-
-    if ! [[ -z "$end" ]]; then
-        # Custom slicing based on range [start, end): length == end - start
-        newArrLength="$(( end - start ))"
-    elif [[ -z "$end" ]] && [[ -z "$lengthLimit" ]]; then
-        # If neither end nor length are specified, default to the rest of the array
-        newArrLength="$arrLength"
-    fi
+    local newArrLength
 
     # Bash native slicing:
     #   Positive index values: ${array:start:length}
@@ -76,6 +81,18 @@ array.slice() {
     # To use negative values, a space is required between `:` and the variable
     #   because `${var:-3}` actually represents a default value,
     #   e.g. `myVar=${otherVal:-7}` represents (pseudo-code) `myVar=otherVal || myVar=7`
+    if [[ -z "$end" ]]; then
+        # If no end is specified (regardless of `-l`/length or index), default to the rest of the array
+        newArrLength="$arrLength"
+    elif [[ -n "$isLength" ]]; then
+        # If specifying length instead of end-index, use native bash array slicing
+        newArrLength="$(( end ))"
+    else
+        # If specifying end-index, use custom slicing based on a range of [start, end):
+        #   length == end - start
+        newArrLength="$(( end - start ))"
+    fi
+
     newArr=("${arr[@]: start: newArrLength}")
 
     # TODO return
