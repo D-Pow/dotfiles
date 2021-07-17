@@ -52,13 +52,17 @@ array.contains() {
 
 array.slice() {
     local isLength
+    local retArrName
     local OPTIND=1
 
     # See os-utils.profile for more info on flag parsing
-    while getopts "l" opt; do
+    while getopts "lr:" opt; do
         case "$opt" in
             l)
                 isLength=true
+                ;;
+            r)
+                retArrName="$OPTARG"
                 ;;
         esac
     done
@@ -95,8 +99,12 @@ array.slice() {
 
     newArr=("${arr[@]: start: newArrLength}")
 
-    # TODO return
-    echo "${newArr[@]}"
+    if [[ -n "$retArrName" ]]; then
+        local -n retArr="$retArrName"
+        retArr=("${newArr[@]}")
+    else
+        echo "${newArr[@]}"
+    fi
 }
 
 
