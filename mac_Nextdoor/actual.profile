@@ -1,4 +1,1 @@
-dotfilesDir='/Users/dpowell/src/dotfile'
-platform='mac_Nextdoor'
-
-source "$dotfilesDir/.profile" "$dotfilesDir" "$platform"
+source /Users/dpowell/src/dotfile/.profile 'mac_Nextdoor'

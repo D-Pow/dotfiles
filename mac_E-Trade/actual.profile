@@ -1,4 +1,1 @@
-dotfilesDir='/Users/dpowell1/repositories/dotfiles'
-platform='mac_E-Trade'
-
-source "$dotfilesDir/.profile" "$dotfilesDir" "$platform"
+source /Users/dpowell1/repositories/dotfiles/.profile 'mac_E-Trade'

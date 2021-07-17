@@ -16,27 +16,28 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
-if [[ -z "$1" ]] || [[ -z "$2" ]]; then
-    echo 'Error: Please specify the dotfiles directory and platform when sourcing.
+if [[ -z "$1" ]]; then
+    echo 'Error: Please specify the dotfiles platform when sourcing.
     Usage:
-        source "path/to/dotfiles/.profile" "path/to/dotfiles" "platform_or/nested/dir"
+        source path/to/dotfiles/.profile "platform_or/nested/dir"
 
     Note: Do not append "/" to the end of directories.
 
     Example:
-        # Must be absolute path; you cannot `source` relative paths, including `~`
-        dotfilesDir="/home/repositories/dotfiles"
-        platform="linux"
-
-        source "$dotfilesDir/.profile" "$dotfilesDir" "$platform"
+        source /home/repositories/dotfiles/.profile "linux"
     '
 
     return 1
 fi
 
-export dotfilesDir="$1"
 
-platform="$2"
+alias thisFile='echo "$BASH_SOURCE"'
+alias thisDir='echo "$(realpath "`dirname "$(thisFile)"`")"'
+
+
+export dotfilesDir="`thisDir`"
+
+platform="$1"
 platformDir="$dotfilesDir/$platform"
 commonsDir="$dotfilesDir/bash-commons"
 

@@ -2,9 +2,6 @@
 # Special keywords: https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
 # String manipulation: https://tldp.org/LDP/abs/html/string-manipulation.html
 
-alias thisFile='echo "$BASH_SOURCE"'
-alias thisDir='echo "$(realpath "`dirname "$(thisFile)"`")"'
-
 source "$(thisDir)/bash-command-enhancements.profile"
 source "$(thisDir)/bash-history.profile"
 source "$(thisDir)/bash-arrays.profile"
