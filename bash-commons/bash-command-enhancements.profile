@@ -1,8 +1,10 @@
 alias ls='ls -Fh'
 alias lah='ls -Flah'
 
+
 alias grep='grep --exclude-dir={node_modules,.git,.idea,lcov-report} --color=auto'
-alias egrep='grep -E --exclude-dir={node_modules,.git,.idea,lcov-report} --color=auto'
+alias egrep='grep -E'
+
 gril() {
     local query="$1"
 

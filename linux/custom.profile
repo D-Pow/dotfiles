@@ -17,7 +17,7 @@ export PS1="\[\033[01;32m\]\u\[\033[00m\]:\[\033[00m\]\[\033[01;34m\]\w\[\033[00
 alias ls='ls -Fh --color'
 alias lah='ls -Flah --color'
 
-alias egrep='grep -P --exclude-dir={node_modules,.git,.idea,lcov-report} --color=auto'
+alias egrep='grep -P'
 
 alias listupdate='sudo apt update && sudo apt list --upgradable'
 
