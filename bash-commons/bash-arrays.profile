@@ -1,7 +1,7 @@
 # TODO: Review diff between $* and $@ (applies to arrays): https://stackoverflow.com/questions/12314451/accessing-bash-command-line-args-vs
 
-arrLength() {
-    # TODO use arrValuesFromName
+array.length() {
+    # TODO use array.values-from-name
     # since `-n` isn't supported on Bash < 4 (i.e. Mac without Brew's Bash)
     local -n arr="$1"
 
@@ -9,11 +9,10 @@ arrLength() {
 }
 
 
-arrEmpty() {
-    local -n arr="$1"
-    local length=`arrLength $1`
+array.empty() {
+    local length=`array.length $1`
 
-    # Want to be able to use this like `if arrEmpty myArr; then ...`
+    # Want to be able to use this like `if array.empty myArr; then ...`
     # Options on how to do this:
     #
     # Manually echo true/false. echo is required to return value from a function if in one-liner,
@@ -32,14 +31,14 @@ arrEmpty() {
 }
 
 
-arrContains() {
+array.contains() {
     local -n arr="$1"
     local query="$2"
 
     # As mentioned above, `echo true/false` would work for if-statements.
     # However, if one-lining the function call within a line, then true/false will be echoed to
     # the console. For example, the line below would print 'true/false' unexpectedly:
-    # `arrContains myArr 'hello' && cd dir1 || cd dir2`
+    # `array.contains myArr 'hello' && cd dir1 || cd dir2`
     # Thus, rely on the standard `return 0/1` for true/false instead of echoing it.
     for entry in "${arr[@]}"; do
         if [[ "$entry" = "$query" ]]; then
@@ -51,8 +50,8 @@ arrContains() {
 }
 
 
-arrMergeArrays() {
-    # TODO use arrGenerateMatrixFromArrays
+array.merge() {
+    # TODO use array.gen-matrix
 
     local allArrayNames=("$@")
     local allArrayValues=()
@@ -75,12 +74,12 @@ arrMergeArrays() {
 
 
 # Manually gets array contents by name (for Bash < 4)
-arrValuesFromName() {
+array.values-from-name() {
     # Tried with all of the following, but they all ruined array entries containing spaces
-    # local arr=(`arrValuesFromName $1`)
-    # local arr=("`arrValuesFromName $1`")
-    # local arr=($(arrValuesFromName $1))
-    # local arr=("$(arrValuesFromName $1)")
+    # local arr=(`array.values-from-name $1`)
+    # local arr=("`array.values-from-name $1`")
+    # local arr=($(array.values-from-name $1))
+    # local arr=("$(array.values-from-name $1)")
 
     # Could alternatively be done via `[declare|local] -n arr=$1` because `-n` does the
     # indirection/name-ref for us
@@ -124,7 +123,7 @@ arrValuesFromName() {
 
 
     ## Requires the calling parent to know if it should use `declare -a` vs `declare -A`
-    ## since `local var="$(arrValuesFromName myArr)"` doesn't work.
+    ## since `local var="$(array.values-from-name myArr)"` doesn't work.
     ##
     # `declare -p` gets all the data about a variable as if it were created using the current
     # content it contains, regardless of what type it is.
@@ -140,7 +139,7 @@ arrValuesFromName() {
     local arrDeclarationCmd="`declare -p $arrName`"
     # Strip out the leading content before "=" so that only the variable contents
     # are returned.
-    # This way, we can call `declare -[aA] var="$(arrValuesFromName myArr)"`
+    # This way, we can call `declare -[aA] var="$(array.values-from-name myArr)"`
     # to read arrays from input by name.
     local arrDeclarationOnlyArrayContents="${arrDeclarationCmd#*=}" # string substitution - replace /^.*=/ with ''
 
@@ -149,7 +148,7 @@ arrValuesFromName() {
 }
 
 
-arrGenerateMatrixFromArrays() {
+array.gen-matrix() {
     local allArrayNames=("$@")
     # `declare -A myAssociativeArray` doesn't work on all systems.
     # However, it's simply meant to declare the type, read/write restrictions, etc.
