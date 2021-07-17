@@ -50,6 +50,39 @@ array.contains() {
 }
 
 
+array.slice() {
+    # Can't use the same variable name, `arr`, multiple times
+    # so call `array.length $1` instead of `array.length arr`
+    local arrLength="`array.length $1`"
+    local -n arr="$1"
+    local start="$2"
+    local end="$3"
+    local lengthLimit="$4"
+
+    local newArr=()
+    local newArrLength="$lengthLimit"
+
+    if ! [[ -z "$end" ]]; then
+        # Custom slicing based on range [start, end): length == end - start
+        newArrLength="$(( end - start ))"
+    elif [[ -z "$end" ]] && [[ -z "$lengthLimit" ]]; then
+        # If neither end nor length are specified, default to the rest of the array
+        newArrLength="$arrLength"
+    fi
+
+    # Bash native slicing:
+    #   Positive index values: ${array:start:length}
+    #   Negative index values: ${array: start: length}
+    # To use negative values, a space is required between `:` and the variable
+    #   because `${var:-3}` actually represents a default value,
+    #   e.g. `myVar=${otherVal:-7}` represents (pseudo-code) `myVar=otherVal || myVar=7`
+    newArr=("${arr[@]: start: newArrLength}")
+
+    # TODO return
+    echo "${newArr[@]}"
+}
+
+
 array.merge() {
     # TODO use array.gen-matrix
 
