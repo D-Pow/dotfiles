@@ -33,13 +33,13 @@ arrEmpty() {
 
 
 arrContains() {
-    local query="$1"
-    local -n arr="$2"
+    local -n arr="$1"
+    local query="$2"
 
     # As mentioned above, `echo true/false` would work for if-statements.
     # However, if one-lining the function call within a line, then true/false will be echoed to
     # the console. For example, the line below would print 'true/false' unexpectedly:
-    # `arrContains 'hello' myArr && cd dir1 || cd dir2`
+    # `arrContains myArr 'hello' && cd dir1 || cd dir2`
     # Thus, rely on the standard `return 0/1` for true/false instead of echoing it.
     for entry in "${arr[@]}"; do
         if [[ "$entry" = "$query" ]]; then
