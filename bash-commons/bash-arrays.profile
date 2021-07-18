@@ -1,4 +1,11 @@
 # TODO: Review diff between $* and $@ (applies to arrays): https://stackoverflow.com/questions/12314451/accessing-bash-command-line-args-vs
+# TODO:
+#   Add error handling, e.g.
+#       echo "${$1:?'Error message to print'}"
+#   And/or default values, e.g.
+#       # test first b/c Idk if you can assign arrays or if it has to be strings
+#       # Alternatively, maybe use some sort of default return instead, ${2:-whatGoesHere}
+#       declare -n retArr="${2:=()}"
 
 array.length() {
     # TODO use array.values-from-name
