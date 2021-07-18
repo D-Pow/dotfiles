@@ -6,10 +6,10 @@
 #       # test first b/c Idk if you can assign arrays or if it has to be strings
 #       # Alternatively, maybe use some sort of default return instead, ${2:-whatGoesHere}
 #       declare -n retArr="${2:=()}"
+#   array.values-from-name: Bash < 4.3 (which doesn't support `declare -n nameRef`) can be supported via:
+#       eval $retArrName='("${newArr[@]}")'
 
 array.length() {
-    # TODO use array.values-from-name
-    # since `-n` isn't supported on Bash < 4 (i.e. Mac without Brew's Bash)
     local -n arr="$1"
 
     echo ${#arr[@]}
