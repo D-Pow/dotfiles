@@ -259,3 +259,32 @@ array.gen-matrix() {
 
     # TODO return
 }
+
+
+
+### Tests and examples ###
+
+# _testSlice() {
+#     myArray=(x y 'a b c' z 5 14)   # length=6
+
+#     array.slice myArray 2 4
+#     # > a b c z
+
+#     array.slice -l myArray 3 2
+#     # > z 5
+
+#     # Note: Output was manually quoted to show the result more clearly.
+#     # Actual stdout content won't contain those quotes, which is
+#     #   why the `-r returnArray` option was added.
+#     array.slice -r slicedArray myArray -5 -3   # equivalent of [2, 4)
+#     # > (null)
+#     echo -e "myArray (length=${#myArray[@]}): ${myArray[@]} \nslicedArray (length=${#slicedArray[@]}): ${slicedArray[@]}"
+#     # > myArray (length=6): x y 'a b c' z 5 14
+#     # > slicedArray (length=2): 'a b c' z
+
+#     array.slice -lr slicedArray myArray -5 3   # length instead of index, equivalent of [2, 5)
+#     # > (null)
+#     echo -e "myArray (length=${#myArray[@]}): ${myArray[@]} \nslicedArray (length=${#slicedArray[@]}): ${slicedArray[@]}"
+#     # > myArray (length=6): x y 'a b c' z 5 14
+#     # > slicedArray (length=3): 'a b c' z 5
+# } && _testSlice
