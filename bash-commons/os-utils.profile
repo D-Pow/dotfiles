@@ -43,6 +43,19 @@ dirsize() {
     # "abc" == flags without an input following them, e.g. `-h` for --help
     # "a:"  == flags with an input following them, e.g. `-d 5`
     # ":ab" == leading colon activates silent mode, e.g. don't print `illegal option -- x`
+    # TODO add way to parse `--long-arg[= ](value)?`
+    #   Starter: https://stackoverflow.com/a/12523979/5771107
+    #   Alternative:
+    #       while [[ -n "$1" ]]; do <-- Don't use getopts since it doesn't support long args
+    #           case "$1" in # <-- Read arg directly
+    #               d | --depth) ... ;;
+    #           esac
+    #           shift # <-- Manually shift by one arg
+    #       ...
+    # TODO move to common function for use in all my functions, e.g.
+    #   `local parsedArgs="`parseArgs "$@"`"`
+    #   Will require calling `shift` to modify *parent*
+    #       Or, could we just return "$@" from child? Not sure if it will maintain quotes or not
     while getopts "d:fh" opt; do
         case "$opt" in # OPTARG is the variable containing the arg value
             d)
