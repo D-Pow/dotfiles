@@ -1,6 +1,13 @@
 ### Bash docs ###
-# Special keywords: https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html
+#
+# All docs: https://www.gnu.org/software/bash/manual/bash.html
+#
+# Output redirection: https://www.gnu.org/software/bash/manual/bash.html#Redirections
+#
+# Special keywords: https://www.gnu.org/software/bash/manual/bash.html#Bash-Variables
+#
 # String manipulation: https://tldp.org/LDP/abs/html/string-manipulation.html
+#
 # Variable manipulation: https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion
 #   Includes stuff like slicing, string replacement, substitutions, etc.
 #   Can be applied to all variables: arrays, strings, files, etc.
