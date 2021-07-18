@@ -2,7 +2,42 @@
 #
 # All docs: https://www.gnu.org/software/bash/manual/bash.html
 #
-# Output redirection: https://www.gnu.org/software/bash/manual/bash.html#Redirections
+# IO/redirection: https://www.gnu.org/software/bash/manual/bash.html#Redirections
+#   Great explanation: https://unix.stackexchange.com/questions/159513/what-are-the-shells-control-and-redirection-operators/159514#159514
+#   0 = stdin
+#   1 = stdout
+#   2 = stderr
+#   (src) > (dest) = Output redirect (overwrites anything in dest). Use `>>` to append.
+#   (dest) < (src) = Input redirect.
+#   & = File descriptor.
+#       A reference to a file/location (by the number it's assigned to) for reading/writing.
+#       Most commonly used to redirect std(in|out|err).
+#       Can also be used to create new in-/output addresses for ease of access (see `<>` below).
+#   (src) >&(destFD) = Output `src` to the `destFD` file descriptor.
+#   (dest) <&(srcFD) = Use `srcFD` as input to the `dest` command.
+#   Note: `>(&FD | filename)` defaults left-hand to 1. `<(&FD | filename)` defaults left-hand to 0.
+#   Note: Redirections are executed in order. e.g. `cmd >&2 2>err.log` doesn't send stdout to err.log, but `cmd 2>err.log >&2` does.
+#       e.g.
+#       cmd 2>&1  # output stderr to stdout (useful for e.g. printing errors to the console instead of a log file when running an application)
+#       cat err.log >&2  # output the contents of err.log to stderr
+#       cmd &>/dev/null  # output all FDs (e.g. both stdout and stderr) to /dev/null
+#   (FD)<> (srcAndDest) = Use `srcAndDest` for reading and writing instead of only one.
+#       Assigns `srcAndDest` to new `FD` file descriptor for use in other scripts.
+#       `FD` number must be > 2 since 0-2 are defined above.
+#       Creates new `srcAndDest` file if it doesn't already exist (everything is a file in Unix!!).
+#   >&- = Close file descriptor.
+#   Note: You cannot append to FD when using read+write mode, `<>`.
+#       But you can instead open the file in append-only mode: `exec (newFD)>>my.file`
+#   Good examples of these can be found at: https://tldp.org/LDP/abs/html/io-redirection.html
+#   e.g. Let's implement the append operator, `echo 'some text' >> my.file`:
+#       # `eval`: Output 'stdoutText' to FD 1 (stdout) and 'stderrText' to FD 2 (stderr)
+#       # Entire `eval` content is redirected: stdout goes to stderr (printed to the console), stderr is saved to err.log
+#       eval 'echo stdoutText; echo stderrText >&2' >&2 2>err.log
+#       exec 5<> err.log    # Assign err.log to FD address number 5
+#       cat <&5 >/dev/null  # Forwards err.log content to `cat` but doesn't print to the console (FD 1 redirected to /dev/null so output is silenced).
+#                           # In our case, it's used to skip to the end of the file so new content is appended to the end.
+#       echo '# High priority error' >&5   # Add custom note that the last error in err.log is of high priority.
+#       exec 5>&-   # Close err.log (FD 5) to prevent further reading/writing
 #
 # Special keywords: https://www.gnu.org/software/bash/manual/bash.html#Bash-Variables
 #
