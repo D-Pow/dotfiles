@@ -63,6 +63,42 @@ array.empty() {
 }
 
 
+array.join() {
+    local _stripTrailingDelimiter
+    local OPTIND=1
+
+    while getopts "s" opt; do
+        case "$opt" in
+            s)
+                _stripTrailingDelimiter=true
+                ;;
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+
+
+    declare -n _arrJoin="$1"
+    declare _joinDelim="$2"
+
+    # Append $_joinDelim at the end of every entry in the array
+    declare _joinOutput="`printf "%s$_joinDelim" "${_arrJoin[@]}"`"
+
+    if [[ -n "$_stripTrailingDelimiter" ]]; then
+        # Remove final $_joinDelim from last array entry in the generated string,
+        # i.e. "array,entries,joined,"  -->  "[...],joined"
+        #
+        # Must be done in separate call b/c substring removal only works with variables, not with
+        # strings themselves, due to the required `${}` portion. So you can't nest other calls in it, e.g.
+        # ${"`command`"/%stringToReplace}
+        # `${str/%remove}` picks the shortest matching string from the end of the array (see String Manipulation docs).
+        _joinOutput="${_joinOutput/%$_joinDelim}"
+    fi
+
+    echo "$_joinOutput"
+}
+
+
 array.slice() {
     local isLength
     local retArrName
@@ -164,9 +200,7 @@ array.filter() {
         #             fi
         #         fi
         #     done
-        newArr+=($(printf '%s\n' "${arr[@]}" | egrep "$filterQuery"))
-        # TODO make `array.join myArray delimiter` function:
-        #   array.join() { printf "$delimiter" "${arr[@]}" }
+        newArr+=($(array.join arr '%s\n' | egrep "$filterQuery"))
     else
         # Call using, e.g. `array.filter myArray '[[ "$entry" =~ [a-z] ]]'`
         for entry in "${arr[@]}"; do

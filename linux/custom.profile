@@ -53,8 +53,7 @@ is-installed() {
         # `printf` has more reliable behavior across platforms and usages, so use it instead.
         # For arrays, it applies the specified pattern to each entry, effectively functioning as
         # the equivalent of `myArray.join('delimiter')`
-        # TODO use `array.join myArray delimiter`
-        printf '%s\n' "${installedPackages[@]}"
+        echo "`array.join installedPackages '%s\n'`"
         return
     fi
 
