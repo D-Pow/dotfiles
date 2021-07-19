@@ -34,7 +34,7 @@ getGitBothModified() {
 
 
 getGitModifiedContaining() {
-    git status | grep 'modified:' | sed -E 's|modified:||; s|^\s*||' | grep "$1"
+    git status | grep 'modified:' | sed -E 's|modified:||; s|^\s*||' | egrep "$1"
 }
 
 
