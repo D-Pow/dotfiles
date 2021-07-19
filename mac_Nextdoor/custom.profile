@@ -2,16 +2,38 @@
 # IntelliJ license link: https://account.jetbrains.com/a/a1fwiqa3
 # WebStorm license link: https://account.jetbrains.com/a/5vmhuqob
 
-# Program paths
-BREW_GNU_UTILS_HOME=/usr/local/opt/grep/libexec/gnubin # Run: brew install bash coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep
-                                                       # Then, add `/usr/local/bin/bash` to `/etc/shells`
-                                                       # Then, set default bash for all users (including root): sudo chsh -s /usr/local/bin/bash
+### Program paths ##
+
 export SUBLIME_HOME=/Applications/Sublime\ Text.app/Contents/SharedSupport/bin
 export SUBLIME_DIR=/Users/dpowell1/Library/Application\ Support/Sublime\ Text/Packages/User/
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_291.jdk/Contents/Home/
 # export PIP3_HOME=/usr/local/opt/python\@3.7/bin/
 # export PIP2_HOME=/Users/dpowell1/Library/Python/2.7/bin
-export PATH=$BREW_GNU_UTILS_HOME:$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$MAVEN_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$SUBLIME_HOME:$BOOST_HOME:/usr/local/bin:/Users/dpowell1/bin:$PATH
+
+# Run: brew install bash coreutils gawk gnutls gnu-indent gnu-getopt gnu-sed gnu-tar grep findutils
+# Then, add `/usr/local/bin/bash` to `/etc/shells`
+# Then, set default bash for all users (including root): sudo chsh -s /usr/local/bin/bash
+_brewGnuUtils=(
+    bash
+    coreutils
+    gawk
+    gnutls
+    gnu-indent
+    gnu-getopt
+    gnu-sed
+    gnu-tar
+    grep
+    findutils
+)
+_brewGnuUtilsHomePrefix=/usr/local/opt
+_brewGnuUtilsHomeSuffix=libexec/gnubin
+for (( i=0; i < "${#_brewGnuUtils[@]}"; i++ )); do
+    _gnuApp="${_brewGnuUtils[i]}"
+    _brewGnuUtils[i]="$_brewGnuUtilsHomePrefix/$_gnuApp/$_brewGnuUtilsHomeSuffix"
+done
+BREW_GNU_UTILS_HOMES="`array.join -s _brewGnuUtils ':'`"
+
+export PATH=$BREW_GNU_UTILS_HOMES:$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$MAVEN_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$SUBLIME_HOME:$BOOST_HOME:/usr/local/bin:/Users/dpowell1/bin:$PATH
 
 # Colored terminal
 # export PS1="\[\033[36m\]\u\[\033[m\]@\[\033[32m\]\h:\[\033[33;1m\]\w\[\033[m\]\$ "
