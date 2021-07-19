@@ -33,5 +33,6 @@ gril() {
     egrep -ril "$query" $pathGlob
 }
 
+
 # `type` should be used instead; this is mostly meant as a reminder that it exists
 alias define-func='type'
