@@ -115,6 +115,71 @@ array.slice() {
 }
 
 
+array.filter() {
+    local retArrName
+    local isRegex
+    local OPTIND=1
+
+    while getopts "er:" opt; do
+        case "$opt" in
+            r)
+                retArrName="$OPTARG"
+                ;;
+            e)
+                isRegex=true
+                ;;
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+
+    declare -n arr="$1"
+    declare filterQuery="$2"
+
+    declare newArr=()
+
+
+    if [[ -n "$isRegex" ]]; then
+        # Do this outside of the loop so that a new `egrep` command isn't
+        # instantiated on every entry.
+        # Net result is to parse the entire array at once rather than one entry
+        # at a time, resulting in a significant speed boost.
+        #
+        # Slower alternative (orders of magnitude slower):
+        #     for entry in "${arr[@]}"; do
+        #         if [[ -n "$isRegex" ]]; then
+        #             if echo "$entry" | egrep "$filterQuery" &>/dev/null; then
+        #                 # echo "$entry"
+        #                 newArr+=("$entry")
+        #             fi
+        #         else
+        #             if eval "$filterQuery" 2>/dev/null; then
+        #                 newArr+=("$entry")
+        #             fi
+        #         fi
+        #     done
+        newArr+=($(printf '%s\n' "${arr[@]}" | egrep "$filterQuery"))
+        # TODO make `array.join myArray delimiter` function:
+        #   array.join() { printf "$delimiter" "${arr[@]}" }
+    else
+        # Call using, e.g. `array.filter myArray '[[ "$entry" =~ [a-z] ]]'`
+        for entry in "${arr[@]}"; do
+            if eval "$filterQuery" 2>/dev/null; then
+                newArr+=("$entry")
+            fi
+        done
+    fi
+
+
+    if [[ -n "$retArrName" ]]; then
+        local -n retArr="$retArrName"
+        retArr=("${newArr[@]}")
+    else
+        echo "${newArr[@]}"
+    fi
+}
+
+
 array.merge() {
     # TODO use array.gen-matrix
 
