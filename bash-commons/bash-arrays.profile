@@ -10,9 +10,27 @@
 #       eval $retArrName='("${newArr[@]}")'
 
 array.toString() {
+    local lengthOnly
+    local OPTIND=1
+
+    # See os-utils.profile for more info on flag parsing
+    while getopts "l" opt; do
+        case "$opt" in
+            l)
+                lengthOnly=true
+                ;;
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+
     local -n arr="$1"
 
-    echo "$1 (length=${#arr[@]}): ${arr[@]}"
+    if [[ -n "$lengthOnly" ]]; then
+        echo "$1 (length=${#arr[@]})"
+    else
+        echo "$1 (length=${#arr[@]}): ${arr[@]}"
+    fi
 }
 
 
