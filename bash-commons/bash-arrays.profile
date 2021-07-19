@@ -9,6 +9,13 @@
 #   array.values-from-name: Bash < 4.3 (which doesn't support `declare -n nameRef`) can be supported via:
 #       eval $retArrName='("${newArr[@]}")'
 
+array.toString() {
+    local -n arr="$1"
+
+    echo "$1 (length=${#arr[@]}): ${arr[@]}"
+}
+
+
 array.length() {
     local -n arr="$1"
 
