@@ -29,12 +29,12 @@ getGitRepoName() {
 
 
 getGitBothModified() {
-    git status | grep both | sed 's|both modified:||'
+    git status | grep both | sed -E 's|modified:||; s|^\s*||'
 }
 
 
 getGitModifiedContaining() {
-    git status | grep 'modified:' | sed 's|modified:||' | egrep -o '\S+' | grep "$1"
+    git status | grep 'modified:' | sed -E 's|modified:||; s|^\s*||' | grep "$1"
 }
 
 
