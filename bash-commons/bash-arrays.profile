@@ -187,6 +187,65 @@ array.filter() {
 }
 
 
+array.reverse() {
+    local retArrName
+    local inPlace
+    local OPTIND=1
+
+    while getopts "ir:" opt; do
+        case "$opt" in
+            r)
+                retArrName="$OPTARG"
+                ;;
+            i)
+                inPlace=true
+                ;;
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+
+
+    declare -n arr="$1"
+
+    if [[ -n "$inPlace" ]]; then
+        declare -n newArr=arr
+    else
+        declare newArr=()
+        for entry in "${arr[@]}"; do
+            newArr+=("$entry")
+        done
+    fi
+
+    declare left=0
+    declare right=$(( ${#newArr[@]} - 1 )) # Want index of last entry, not length
+
+
+    while [[ left -lt right ]]; do
+        # Swap left/right. Works for arrays of both odd & even lengths
+        declare leftVal="${newArr[left]}"
+
+        newArr[$left]="${newArr[right]}"
+        newArr[$right]="$leftVal"
+
+        (( left++, right-- ))
+    done
+
+
+    if [[ -n "$retArrName" ]]; then
+        local -n retArr="$retArrName"
+        retArr=("${newArr[@]}")
+    elif [[ -n "$inPlace" ]]; then
+        # Do nothing. `:` is a special keyword in Bash to 'do nothing silently'.
+        # Useful for cases like this, where we don't want to execute anything,
+        #   but DO want to capture the else-if case.
+        :
+    else
+        echo "${newArr[@]}"
+    fi
+}
+
+
 array.merge() {
     # TODO use array.gen-matrix
 
