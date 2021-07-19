@@ -502,7 +502,8 @@
                         {
                             "type": "frontmost_application_if",
                             "bundle_identifiers": [
-                                "com.google.Chrome"
+                                "com.google.Chrome",
+                                "org.mozilla.firefox"
                             ]
                         }
                     ]
@@ -524,7 +525,8 @@
                         {
                             "type": "frontmost_application_if",
                             "bundle_identifiers": [
-                                "com.google.Chrome"
+                                "com.google.Chrome",
+                                "org.mozilla.firefox"
                             ]
                         }
                     ]
@@ -553,7 +555,8 @@
                         {
                             "type": "frontmost_application_if",
                             "bundle_identifiers": [
-                                "com.google.Chrome"
+                                "com.google.Chrome",
+                                "org.mozilla.firefox"
                             ]
                         }
                     ]
