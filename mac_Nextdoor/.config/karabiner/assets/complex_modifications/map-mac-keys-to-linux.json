@@ -1,8 +1,8 @@
 {
-    "title": "Make Mac keys work like Linux/Windows",
+    "title": "Make Mac keys work like PC (Linux/Windows)",
     "rules": [
         {
-            "description": "Ctrl/Command Swap (PC: Ctrl=Ctrl, Super=Command, Alt=Option)",
+            "description": "Ctrl/Command to behave like PC (PC: Ctrl=Ctrl, Super=Command, Alt=Option)",
             "manipulators": [
                 {
                     "type": "basic",
@@ -926,7 +926,7 @@
         },
 
         {
-            "description": "Home/End to behave like Linux/Windows",
+            "description": "Home/End to behave like PC",
             "manipulators": [
                 {
                     "type": "basic",
@@ -1147,7 +1147,7 @@
         },
 
         {
-            "description": "Ctrl/Command + Arrow Keys to behave like Linux/Windows",
+            "description": "Ctrl/Command + Arrow Keys to behave like PC",
             "manipulators": [
                 {
                     "type": "basic",
@@ -1317,7 +1317,7 @@
         },
 
         {
-            "description": "Ctrl/Command + Shift + Arrow Keys to to behave like Linux/Windows",
+            "description": "Ctrl/Command + Shift + Arrow Keys to to behave like PC",
             "manipulators": [
                 {
                     "type": "basic",
@@ -1381,7 +1381,7 @@
         },
 
         {
-            "description": "Ctrl/Command + Backspace/Delete to behave like Linux/Windows",
+            "description": "Ctrl/Command + Backspace/Delete to behave like PC",
             "manipulators": [
                 {
                     "type": "basic",
