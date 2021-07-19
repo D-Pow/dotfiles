@@ -1,3 +1,9 @@
+# Make ** recursive, i.e. dir/**/*.txt will find all .txt files between
+# /dir/(0-infinity subdirs)/*.txt instead of it only searching dir/(subdir)/*.txt
+# See: https://unix.stackexchange.com/questions/49913/recursive-glob/49917#49917
+shopt -s globstar
+
+
 alias ls='ls -Fh'
 alias lah='ls -Flah'
 
