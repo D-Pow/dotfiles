@@ -633,6 +633,30 @@
                 {
                     "type": "basic",
                     "from": {
+                        "key_code": "down_arrow",
+                        "modifiers": {
+                            "mandatory": [
+                                "control"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "right_arrow"
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_if",
+                            "bundle_identifiers": [
+                                "com.apple.finder"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
                         "key_code": "left_arrow",
                         "modifiers": {
                             "mandatory": [
@@ -1081,7 +1105,8 @@
                         {
                             "type": "frontmost_application_unless",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.finder"
                             ]
                         }
                     ]
@@ -1108,7 +1133,8 @@
                         {
                             "type": "frontmost_application_unless",
                             "bundle_identifiers": [
-                                "com.jetbrains.*"
+                                "com.jetbrains.*",
+                                "com.apple.finder"
                             ]
                         }
                     ]
