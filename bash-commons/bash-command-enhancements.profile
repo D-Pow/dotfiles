@@ -20,13 +20,13 @@ gril() {
     # a glob pattern as the second arg, then using `$2` only gets the first match, regardless
     # of whether or not it's nested inside strings (e.g. `path=$2` or `path="$2"`).
     #
-    # Thus, expand it myself via "$@" (which gets all arguments passed to the function).
+    # Thus, expand any possible glob patterns via "$@" (which gets all arguments passed to the function).
     # To ensure we only include files expanded from the glob, not the search query, store the
     # query first, then shift the arguments array by 1, then get all args remaining (which would be
     # the files matched by the glob pattern which was expanded before being passed to this script).
     local pathGlob="$@"
 
-    if [ -z "$2" ]; then
+    if [[ -z "$pathGlob" ]]; then
         pathGlob=('.')
     fi
 
