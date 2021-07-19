@@ -73,7 +73,7 @@ array.contains() {
     # `array.contains myArr 'hello' && cd dir1 || cd dir2`
     # Thus, rely on the standard `return 0/1` for true/false instead of echoing it.
     for entry in "${arr[@]}"; do
-        if [[ "$entry" = "$query" ]]; then
+        if [[ "$entry" =~ "$query" ]]; then
             return 0
         fi
     done
