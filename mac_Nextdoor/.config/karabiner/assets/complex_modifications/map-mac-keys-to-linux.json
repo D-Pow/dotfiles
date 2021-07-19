@@ -70,6 +70,12 @@
                                 "value": 0
                             }
                         }
+                    ],
+                    "to_if_alone": [
+                        {
+                            "description": "Super to open app-search (choose from 'launchpad' or 'spotlight')",
+                            "apple_vendor_keyboard_key_code": "spotlight"
+                        }
                     ]
                 },
                 {
