@@ -63,25 +63,6 @@ array.empty() {
 }
 
 
-array.contains() {
-    local -n arr="$1"
-    local query="$2"
-
-    # As mentioned above, `echo true/false` would work for if-statements.
-    # However, if one-lining the function call within a line, then true/false will be echoed to
-    # the console. For example, the line below would print 'true/false' unexpectedly:
-    # `array.contains myArr 'hello' && cd dir1 || cd dir2`
-    # Thus, rely on the standard `return 0/1` for true/false instead of echoing it.
-    for entry in "${arr[@]}"; do
-        if [[ "$entry" =~ "$query" ]]; then
-            return 0
-        fi
-    done
-
-    return 1
-}
-
-
 array.slice() {
     local isLength
     local retArrName
@@ -202,6 +183,45 @@ array.filter() {
     else
         echo "${newArr[@]}"
     fi
+}
+
+
+array.contains() {
+    local isRegex
+    local OPTIND=1
+
+    while getopts "er:" opt; do
+        case "$opt" in
+            e)
+                isRegex=true
+                ;;
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+
+
+    local -n _arrContains="$1"
+    local query="$2"
+
+    # As mentioned in array.empty(), `echo true/false` would work for if-statements.
+    # However, if one-lining the function call within a line, then true/false will be echoed to
+    # the console. For example, the line below would print 'true/false' unexpectedly:
+    # `array.contains myArr 'hello' && cd dir1 || cd dir2`
+    # Thus, rely on the standard `return 0/1` for true/false instead of echoing it.
+    if [[ -n "$isRegex" ]]; then
+        array.filter -er filteredArray _arrContains "$query"
+
+        ! $(array.empty filteredArray) && return
+    else
+        for entry in "${_arrContains[@]}"; do
+            if [[ "$entry" =~ "$query" ]]; then
+                return
+            fi
+        done
+    fi
+
+    return 1
 }
 
 
