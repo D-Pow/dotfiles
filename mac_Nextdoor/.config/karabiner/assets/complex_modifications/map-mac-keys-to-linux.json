@@ -565,6 +565,63 @@
                 {
                     "type": "basic",
                     "from": {
+                        "pointing_button": "button4",
+                        "modifiers": {
+                            "optional": [
+                                "any"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "open_bracket",
+                            "modifiers": [
+                                "command"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_if",
+                            "bundle_identifiers": [
+                                "org.mozilla.firefox",
+                                "com.apple.finder"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "pointing_button": "button5",
+                        "modifiers": {
+                            "optional": [
+                                "any"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "close_bracket",
+                            "modifiers": [
+                                "command"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_if",
+                            "bundle_identifiers": [
+                                "org.mozilla.firefox",
+                                "com.apple.finder"
+                            ]
+                        }
+                    ]
+                },
+
+                {
+                    "type": "basic",
+                    "from": {
                         "key_code": "return_or_enter"
                     },
                     "to": [
