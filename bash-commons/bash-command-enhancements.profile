@@ -2,6 +2,14 @@
 # /dir/(0-infinity subdirs)/*.txt instead of it only searching dir/(subdir)/*.txt
 # See: https://unix.stackexchange.com/questions/49913/recursive-glob/49917#49917
 shopt -s globstar
+# Activate advanced glob patterns (often enabled by default but set it here just in case).
+#   ?(pattern-list) - Matches zero or one occurrence of the given patterns.
+#   *(pattern-list) - Matches zero or more occurrences of the given patterns.
+#   +(pattern-list) - Matches one or more occurrences of the given patterns.
+#   @(pattern-list) - Matches one of the given patterns.
+#   !(pattern-list) - Matches anything except one of the given patterns.
+# See: https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Pattern-Matching
+shopt -s extglob
 
 
 alias ls='ls -Fh'
