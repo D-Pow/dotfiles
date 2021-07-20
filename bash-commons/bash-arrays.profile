@@ -142,8 +142,13 @@ array.slice() {
         newArrLength="$(( end ))"
     else
         # If specifying end-index, use custom slicing based on a range of [start, end):
-        #   length == end - start
-        newArrLength="$(( end - start ))"
+        if (( start >=0 )) && (( end < 0 )); then
+            # User is slicing to an arbitrary end point in the array without knowing the length
+            newArrLength="$(( arrLength - start + end ))"
+        else
+            # Normal index selection logic
+            newArrLength="$(( end - start ))"
+        fi
     fi
 
     newArr=("${arr[@]: start: newArrLength}")
