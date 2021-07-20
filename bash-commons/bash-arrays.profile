@@ -24,42 +24,42 @@ array.toString() {
 
     shift $(( OPTIND - 1 ))
 
-    local -n arr="$1"
+    local -n _arrToString="$1"
 
     if [[ -n "$lengthOnly" ]]; then
-        echo "$1 (length=${#arr[@]})"
+        echo "$1 (length=${#_arrToString[@]})"
     else
-        echo "$1 (length=${#arr[@]}): ${arr[@]}"
+        echo "$1 (length=${#_arrToString[@]}): ${_arrToString[@]}"
     fi
 }
 
 
 array.length() {
-    local -n arr="$1"
+    local -n _arrLength="$1"
 
-    echo ${#arr[@]}
+    echo ${#_arrLength[@]}
 }
 
 
 array.empty() {
-    local length=`array.length $1`
+    local _lengthEmpty=`array.length $1`
 
     # Want to be able to use this like `if array.empty myArr; then ...`
     # Options on how to do this:
     #
     # Manually echo true/false. echo is required to return value from a function if in one-liner,
     # but isn't required if "calling" the command directly.
-    # `[[ $length -eq 0 ]] && echo true || echo false`
+    # `[[ $_lengthEmpty -eq 0 ]] && echo true || echo false`
     #
     # Replace `echo` with "calling" the command directly.
-    # if [[ $length -eq 0 ]]; then
+    # if [[ $_lengthEmpty -eq 0 ]]; then
     #     true
     # else
     #     false
     # fi
     #
     # Or, simply run the check in-place.
-    [[ $length -eq 0 ]]
+    [[ $_lengthEmpty -eq 0 ]]
 }
 
 
@@ -101,7 +101,7 @@ array.join() {
 
 array.slice() {
     local isLength
-    local retArrName
+    local _retArrNameSliced
     local OPTIND=1
 
     # See os-utils.profile for more info on flag parsing
@@ -111,22 +111,20 @@ array.slice() {
                 isLength=true
                 ;;
             r)
-                retArrName="$OPTARG"
+                _retArrNameSliced="$OPTARG"
                 ;;
         esac
     done
 
     shift $(( OPTIND - 1 ))
 
-    # Can't use the same variable name, `arr`, multiple times
-    # so call `array.length $1` instead of `array.length arr`
-    local arrLength="`array.length $1`"
-    local -n arr="$1"
-    local start="$2"
-    local end="$3"
+    local -n _arrSlice="$1"
+    local _startSlice="$2"
+    local _endSlice="$3"
 
-    local newArr=()
-    local newArrLength
+    local _arrLengthOrig="`array.length _arrSlice`"
+    local _newArrSliced=()
+    local _newArrLengthSliced
 
     # Bash native slicing:
     #   Positive index values: ${array:start:length}
@@ -134,43 +132,43 @@ array.slice() {
     # To use negative values, a space is required between `:` and the variable
     #   because `${var:-3}` actually represents a default value,
     #   e.g. `myVar=${otherVal:-7}` represents (pseudo-code) `myVar=otherVal || myVar=7`
-    if [[ -z "$end" ]]; then
+    if [[ -z "$_endSlice" ]]; then
         # If no end is specified (regardless of `-l`/length or index), default to the rest of the array
-        newArrLength="$arrLength"
+        _newArrLengthSliced="$_arrLengthOrig"
     elif [[ -n "$isLength" ]]; then
         # If specifying length instead of end-index, use native bash array slicing
-        newArrLength="$(( end ))"
+        _newArrLengthSliced="$(( _endSlice ))"
     else
         # If specifying end-index, use custom slicing based on a range of [start, end):
-        if (( start >=0 )) && (( end < 0 )); then
+        if (( _startSlice >=0 )) && (( _endSlice < 0 )); then
             # User is slicing to an arbitrary end point in the array without knowing the length
-            newArrLength="$(( arrLength - start + end ))"
+            _newArrLengthSliced="$(( _arrLengthOrig - _startSlice + _endSlice ))"
         else
             # Normal index selection logic
-            newArrLength="$(( end - start ))"
+            _newArrLengthSliced="$(( _endSlice - _startSlice ))"
         fi
     fi
 
-    newArr=("${arr[@]: start: newArrLength}")
+    _newArrSliced=("${_arrSlice[@]: _startSlice: _newArrLengthSliced}")
 
-    if [[ -n "$retArrName" ]]; then
-        local -n retArr="$retArrName"
-        retArr=("${newArr[@]}")
+    if [[ -n "$_retArrNameSliced" ]]; then
+        local -n retArr="$_retArrNameSliced"
+        retArr=("${_newArrSliced[@]}")
     else
-        echo "${newArr[@]}"
+        echo "${_newArrSliced[@]}"
     fi
 }
 
 
 array.filter() {
-    local retArrName
+    local _retArrNameFiltered
     local isRegex
     local OPTIND=1
 
     while getopts "er:" opt; do
         case "$opt" in
             r)
-                retArrName="$OPTARG"
+                _retArrNameFiltered="$OPTARG"
                 ;;
             e)
                 isRegex=true
@@ -180,10 +178,10 @@ array.filter() {
 
     shift $(( OPTIND - 1 ))
 
-    declare -n arr="$1"
+    declare -n _arrFilter="$1"
     declare filterQuery="$2"
 
-    declare newArr=()
+    declare _newArrFiltered=()
 
 
     if [[ -n "$isRegex" ]]; then
@@ -193,34 +191,34 @@ array.filter() {
         # at a time, resulting in a significant speed boost.
         #
         # Slower alternative (orders of magnitude slower):
-        #     for entry in "${arr[@]}"; do
+        #     for entry in "${_arrFilter[@]}"; do
         #         if [[ -n "$isRegex" ]]; then
         #             if echo "$entry" | egrep "$filterQuery" &>/dev/null; then
         #                 # echo "$entry"
-        #                 newArr+=("$entry")
+        #                 _newArrFiltered+=("$entry")
         #             fi
         #         else
         #             if eval "$filterQuery" 2>/dev/null; then
-        #                 newArr+=("$entry")
+        #                 _newArrFiltered+=("$entry")
         #             fi
         #         fi
         #     done
-        newArr+=($(array.join arr '%s\n' | egrep "$filterQuery"))
+        _newArrFiltered+=($(array.join _arrFilter '%s\n' | egrep "$filterQuery"))
     else
         # Call using, e.g. `array.filter myArray '[[ "$entry" =~ [a-z] ]]'`
-        for entry in "${arr[@]}"; do
+        for entry in "${_arrFilter[@]}"; do
             if eval "$filterQuery" 2>/dev/null; then
-                newArr+=("$entry")
+                _newArrFiltered+=("$entry")
             fi
         done
     fi
 
 
-    if [[ -n "$retArrName" ]]; then
-        local -n retArr="$retArrName"
-        retArr=("${newArr[@]}")
+    if [[ -n "$_retArrNameFiltered" ]]; then
+        local -n _retArrFiltered="$_retArrNameFiltered"
+        _retArrFiltered=("${_newArrFiltered[@]}")
     else
-        echo "${newArr[@]}"
+        echo "${_newArrFiltered[@]}"
     fi
 }
 
@@ -265,14 +263,14 @@ array.contains() {
 
 
 array.reverse() {
-    local retArrName
+    local _retArrNameReversed
     local inPlace
     local OPTIND=1
 
     while getopts "ir:" opt; do
         case "$opt" in
             r)
-                retArrName="$OPTARG"
+                _retArrNameReversed="$OPTARG"
                 ;;
             i)
                 inPlace=true
@@ -283,42 +281,42 @@ array.reverse() {
     shift $(( OPTIND - 1 ))
 
 
-    declare -n arr="$1"
+    declare -n _arrReverse="$1"
 
     if [[ -n "$inPlace" ]]; then
-        declare -n newArr=arr
+        declare -n _newArrReversed=_arrReverse
     else
-        declare newArr=()
-        for entry in "${arr[@]}"; do
-            newArr+=("$entry")
+        declare _newArrReversed=()
+        for entry in "${_arrReverse[@]}"; do
+            _newArrReversed+=("$entry")
         done
     fi
 
-    declare left=0
-    declare right=$(( ${#newArr[@]} - 1 )) # Want index of last entry, not length
+    declare _leftReverse=0
+    declare _rightReverse=$(( ${#_newArrReversed[@]} - 1 )) # Want index of last entry, not length
 
 
-    while [[ left -lt right ]]; do
+    while [[ _leftReverse -lt _rightReverse ]]; do
         # Swap left/right. Works for arrays of both odd & even lengths
-        declare leftVal="${newArr[left]}"
+        declare _leftValReverse="${_newArrReversed[_leftReverse]}"
 
-        newArr[$left]="${newArr[right]}"
-        newArr[$right]="$leftVal"
+        _newArrReversed[$_leftReverse]="${_newArrReversed[_rightReverse]}"
+        _newArrReversed[$_rightReverse]="$_leftValReverse"
 
-        (( left++, right-- ))
+        (( _leftReverse++, _rightReverse-- ))
     done
 
 
-    if [[ -n "$retArrName" ]]; then
-        local -n retArr="$retArrName"
-        retArr=("${newArr[@]}")
+    if [[ -n "$_retArrNameReversed" ]]; then
+        local -n _retArrReversed="$_retArrNameReversed"
+        _retArrReversed=("${_newArrReversed[@]}")
     elif [[ -n "$inPlace" ]]; then
         # Do nothing. `:` is a special keyword in Bash to 'do nothing silently'.
         # Useful for cases like this, where we don't want to execute anything,
         #   but DO want to capture the else-if case.
         :
     else
-        echo "${newArr[@]}"
+        echo "${_newArrReversed[@]}"
     fi
 }
 
