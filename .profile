@@ -35,23 +35,25 @@ alias thisFile='echo "$BASH_SOURCE"'
 alias thisDir='echo "$(realpath "`dirname "$(thisFile)"`")"'
 
 
-export dotfilesDir="`thisDir`"
+if type thisDir &>/dev/null; then
+    export dotfilesDir="`thisDir`"
 
-platform="$1"
-platformDir="$dotfilesDir/$platform"
-commonsDir="$dotfilesDir/bash-commons"
+    platform="$1"
+    platformDir="$dotfilesDir/$platform"
+    commonsDir="$dotfilesDir/bash-commons"
 
-export commonProfile="$commonsDir/common.profile"
-export customProfile="$platformDir/custom.profile"
-export actualProfile='~/.profile'
+    export commonProfile="$commonsDir/common.profile"
+    export customProfile="$platformDir/custom.profile"
+    export actualProfile='~/.profile'
 
-source "$commonProfile"
-source "$customProfile"
+    source "$commonProfile"
+    source "$customProfile"
 
-# Overwritten profile content based on relevant paths
-alias editprofile="subl -n -w '$customProfile' && source $actualProfile"
-alias editcommon="subl -n -w '$commonProfile' && source $actualProfile"
-alias editactual="subl -n -w $actualProfile && source $actualProfile"
+    # Overwritten profile content based on relevant paths
+    alias editprofile="subl -n -w '$customProfile' && source $actualProfile"
+    alias editcommon="subl -n -w '$commonProfile' && source $actualProfile"
+    alias editactual="subl -n -w $actualProfile && source $actualProfile"
 
-# Always source dotfiles/linux/bin/ since it has many useful scripts
-export PATH="$dotfilesDir/linux/bin:$platformDir/bin:$HOME/bin:$HOME/.local/bin:$PATH"
+    # Always source dotfiles/linux/bin/ since it has many useful scripts
+    export PATH="$dotfilesDir/linux/bin:$platformDir/bin:$HOME/bin:$HOME/.local/bin:$PATH"
+fi
