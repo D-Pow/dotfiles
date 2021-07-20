@@ -203,7 +203,7 @@ array.filter() {
         #             fi
         #         fi
         #     done
-        _newArrFiltered+=($(array.join _arrFilter '%s\n' | egrep "$filterQuery"))
+        _newArrFiltered+=($(printf '%s\n' "${_arrFilter[@]}" | egrep "$filterQuery"))
     else
         # Call using, e.g. `array.filter myArray '[[ "$entry" =~ [a-z] ]]'`
         for entry in "${_arrFilter[@]}"; do
