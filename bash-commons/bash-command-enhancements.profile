@@ -44,3 +44,39 @@ gril() {
 
 # `type` should be used instead; this is mostly meant as a reminder that it exists
 alias define-func='type'
+
+
+findIgnoreDirs() {
+    # Net result: find . -type d \( -name node_modules -o -name '*est*' \) -prune -false -o -name '*.js'
+    local _findIgnoreDirs=()
+    local OPTIND=1
+
+    while getopts "I:" opt; do
+        case "$opt" in
+            I)
+                _findIgnoreDirs+=("$OPTARG")
+                ;;
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+
+    local _findArgs=("$@")
+    array.slice -r _findOpts _findArgs 0 -1
+    array.slice -r _findToSearchFor _findArgs -1
+
+    local _findIgnoreDirsOptionName=' -o -name '
+    local _findIgnoreDirsOption=''
+
+    if ! array.empty _findIgnoreDirs; then
+        # Note: Add single quotes around names in case they're using globs
+        # e.g. Where injected strings are labeled with [], and array.join is labeled with ()
+        # `-name '(first['][ -o -name ][']second)'
+        _findIgnoreDirsOption="\( -name '`array.join -s _findIgnoreDirs "'$_findIgnoreDirsOptionName'"`' \)  -prune -false $_findIgnoreDirsOptionName"
+    fi
+
+    # Ignored dirs are already quoted, but still need to quote the search query
+    local _findFinalCmd="find ${_findOpts[@]} $_findIgnoreDirsOption '$_findToSearchFor'"
+
+    eval "$_findFinalCmd"
+}
