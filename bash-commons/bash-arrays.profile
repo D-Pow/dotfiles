@@ -84,6 +84,12 @@ array.join() {
     # Append $_joinDelim at the end of every entry in the array
     declare _joinOutput="`printf "%s$_joinDelim" "${_arrJoin[@]}"`"
 
+    # TODO Maybe check out this alternative (https://stackoverflow.com/a/17841619/5771107),
+    # which would help solve the array.filter() error below:
+    #
+    # Modify IFS and then just print all the args (Note: Must be "$*", cannot be "$@")
+    # array.join() { local IFS="$1"; shift; echo "$*"; } # use $_joinDelim instead of $1
+
     if [[ -n "$_stripTrailingDelimiter" ]]; then
         # Remove final $_joinDelim from last array entry in the generated string,
         # i.e. "array,entries,joined,"  -->  "[...],joined"
@@ -203,7 +209,22 @@ array.filter() {
         #             fi
         #         fi
         #     done
+
+        # TODO Will fail with array entries that contain \n
+        # TODO Will fail to maintain quoted strings
+        # Test:
+        # failingNewline=('a
+        # 10
+        # b' c d 12 f 1)  # filtered (length=5): a b c d f
+        # failingSpaces=('a 10 b' c d 12 f 1)  # filtered (length=6): a 10 b c d f
+        # source .profile mac_Nextdoor && array.filter -er filtered arr '\D' && array.toString filtered
+        #
+        # Attempt:
+        # local _ifsOrigFilter=$IFS
+        # local IFS=$'\n'
+        # printf '%s\n' "${arr1[@]}" | egrep '\D' | xargs -0 printf '%s~~'
         _newArrFiltered+=($(printf '%s\n' "${_arrFilter[@]}" | egrep "$filterQuery"))
+        # IFS=$_ifsOrigFilter
     else
         # Call using, e.g. `array.filter myArray '[[ "$entry" =~ [a-z] ]]'`
         for entry in "${_arrFilter[@]}"; do
