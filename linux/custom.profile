@@ -3,7 +3,7 @@ JAVA_HOME="/usr/java"
 GRADLE_HOME="/opt/gradle"
 export JAVA_HOME
 export GRADLE_HOME
-export PATH="$JAVA_HOME/bin:$GRADLE_HOME/bin:$HOME/.local/bin:$PATH"
+export PATH="$PATH:$JAVA_HOME/bin:$GRADLE_HOME/bin"
 
 alias python3=python3.8
 
