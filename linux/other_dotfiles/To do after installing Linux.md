@@ -16,7 +16,7 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         3. Edit fstab to mount storage NTFS partition automatically. Paste at bottom of fstab:
             ```
             # storage mount
-            UUID=[UUID_of_storage] /media/storage/    ntfs-3g        auto,dmask=022,fmask=011,uid=1000,gid=1000,rw 0 0
+            UUID=[UUID_of_storage] /media/storage/    ntfs-3g        auto,dmask=022,fmask=011,uid=1000,gid=1000,rw 0 2
             ```
         where `UUID` is the UUID of the storage partition from step (2), `/media/storage` is the new mount point, `ntfs-3g` is the driver used to read NTFS, `dmask` is directory permissions (need to be rwx for owner), `fmask` is file permissions (need to not be executable so that I can read txt files easily), `uid/gid` set owner to user (note: this may have to change depending on installation; run `id -u` to get userid and `id -g` to get groupid).
         4. Edit `~/.config/user-dirs.dirs` to point to storage partition's Documents, Picturs, Music, and Video folders.
