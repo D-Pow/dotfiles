@@ -123,7 +123,8 @@ be-start() {
     fi
 }
 be-stop() {
-    echo 'TODO'
+    # Stop all containers since FE containers won't work without them
+    docker stop $(docker container ls -q)
 }
 
 
