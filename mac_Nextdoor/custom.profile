@@ -54,6 +54,28 @@ alias gradle4="$GRADLE_4_HOME/gradle"
 if [[ -z `command -v tree` ]]; then
     # `tree` isn't defined, so define it here
     tree() {
+        local _treeIgnoreDirs=()
+        local OPTIND=1
+
+        while getopts "I:" opt; do
+            case "$opt" in
+                I)
+                    _treeIgnoreDirs+=("$OPTARG")
+                    ;;
+            esac
+        done
+
+        local _treeIgnoreDirsFindOpts=''
+
+        if ! array.empty _treeIgnoreDirs; then
+            # Add single quotes around names in case they're using globs, like `findIgnoreDirs()` does.
+            # e.g. Where injected strings are labeled with [], and array.join is labeled with ()
+            # `-i '(first['][ -i ][']second)'
+            _treeIgnoreDirsFindOpts="-i '`array.join -s _treeIgnoreDirs "' -i '"`'"
+        fi
+
+        shift $(( OPTIND - 1 ))
+
         local path="$1"
 
         if [[ -z "$path" ]]; then
@@ -64,7 +86,10 @@ if [[ -z `command -v tree` ]]; then
         #   e.g. `tree ../dir/` would result in `find ../dir/` being called and resulting file/dir entries
         #   being printed as `../dir/file.txt` --> `| ├─file.txt` instead of `├─file.txt`
         # `find` doesn't add a trailing slash on directories by default, so add them manually via `printf`
-        local allEntriesWithTrailingSlashOnDirsDirs="`(cd "$path" && find . -type d -exec sh -c 'printf "$0/\n"' {} \; -or -print)`"
+        local allEntriesWithTrailingSlashOnDirsDirs="$(
+            cd "$path"
+            findIgnoreDirs $_treeIgnoreDirsFindOpts . -type d -exec sh -c "'printf \"\$0/\n\"'" {} '\;' -or -print
+        )"
         # Remove duplicate `//` when runing `tree someDir/` (no double slashes with `tree someDir`)
         local normalizedPaths="`echo "$allEntriesWithTrailingSlashOnDirsDirs" | sed -E "s#//#/#g"`"
         # Replace preceding `path/to/` in `path/to/file.txt` with `| | ├─file.txt` to match standard `tree path/` output.
