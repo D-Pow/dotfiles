@@ -51,9 +51,9 @@ findIgnoreDirs() {
     local _findIgnoreDirs=()
     local OPTIND=1
 
-    while getopts "I:" opt; do
+    while getopts "i:" opt; do
         case "$opt" in
-            I)
+            i)
                 _findIgnoreDirs+=("$OPTARG")
                 ;;
         esac
@@ -81,11 +81,11 @@ findIgnoreDirs() {
     # e.g.
     # otherFunc() {
     #     local glob="$1"  # needs to be quoted, otherwise it will be expanded
-    #     local opts="-I '$glob'"
-    #     findIgnoreDirs -I "$1" to/search/ -name '*hello*'
+    #     local opts="-i '$glob'"
+    #     findIgnoreDirs -i "$1" to/search/ -name '*hello*'
     # }
     # otherFunc '*dir1*'
-    # > findIgnoreDirs gets `-I ''*dir1*''`
+    # > findIgnoreDirs gets `-i ''*dir1*''`
     #
     # This cannot be avoided b/c if the parent function doesn't wrap globs in quotes, then
     # it will be expanded and unusable by this function (causes duplicate quotes).
