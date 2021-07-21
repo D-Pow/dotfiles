@@ -11,14 +11,17 @@
 
 array.toString() {
     local lengthOnly
+    local _toStringDelim
     local OPTIND=1
 
     # See os-utils.profile for more info on flag parsing
-    while getopts "l" opt; do
+    while getopts "ld:" opt; do
         case "$opt" in
             l)
                 lengthOnly=true
                 ;;
+            d)
+                _toStringDelim="$OPTARG"
         esac
     done
 
@@ -28,6 +31,8 @@ array.toString() {
 
     if [[ -n "$lengthOnly" ]]; then
         echo "$1 (length=${#_arrToString[@]})"
+    elif [[ -n "$_toStringDelim" ]]; then
+        echo "$1 (length=${#_arrToString[@]}): `printf "%s$_toStringDelim" "${_arrToString[@]}"`"
     else
         echo "$1 (length=${#_arrToString[@]}): ${_arrToString[@]}"
     fi
