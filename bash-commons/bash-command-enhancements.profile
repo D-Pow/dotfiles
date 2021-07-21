@@ -47,7 +47,9 @@ alias define-func='type'
 
 
 findIgnoreDirs() {
-    # Net result: find . -type d \( -name node_modules -o -name '*est*' \) -prune -false -o -name '*.js'
+    # Net result (where [] represents what's added by the user):
+    #   `find . -type d \( -name 'node_modules' -o -name '*est*' \) -prune -false -o` [-name '*.js']
+    # See: https://stackoverflow.com/questions/4210042/how-to-exclude-a-directory-in-find-command/4210072#4210072
     local _findIgnoreDirs=()
     local OPTIND=1
 
