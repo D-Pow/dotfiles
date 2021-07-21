@@ -75,6 +75,29 @@ findIgnoreDirs() {
         _findIgnoreDirsOption="\( -name '`array.join -s _findIgnoreDirs "'$_findIgnoreDirsOptionName'"`' \)  -prune -false -o "
     fi
 
+    # If called from another function which is forwarding globs surrounded by quotes,
+    # then this function will receive duplicates of the quotes.
+    #
+    # e.g.
+    # otherFunc() {
+    #     local glob="$1"  # needs to be quoted, otherwise it will be expanded
+    #     local opts="-I '$glob'"
+    #     findIgnoreDirs -I "$1" to/search/ -name '*hello*'
+    # }
+    # otherFunc '*dir1*'
+    # > findIgnoreDirs gets `-I ''*dir1*''`
+    #
+    # This cannot be avoided b/c if the parent function doesn't wrap globs in quotes, then
+    # it will be expanded and unusable by this function (causes duplicate quotes).
+    # If args are not quoted in this function, then any user-level globs in the live shell
+    # will be expanded upon function call (i.e. no quotes are added and it's expanded).
+    # So, if we remove our quotes in this function, we'll ruin live shell usage.
+    # If we keep them, then we'll ruin usability for other functions calling this.
+    #
+    # Thus, remove all instances of duplicate quotes AFTER the array.join is called
+    # so that any duplicates from either the parent's quotes or our internal quotes are removed.
+    _findIgnoreDirsOption="$(echo "$_findIgnoreDirsOption" | sed -E "s|(['\"])\1|\1|g")"
+
     # Ignored dirs are already quoted, but still need to quote the search query
     local _findFinalCmd="find $_findToSearchIn $_findIgnoreDirsOption ${_findOpts[@]}"
 
