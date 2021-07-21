@@ -71,6 +71,8 @@ findIgnoreDirs() {
     local _findIgnoreDirsOption=''
 
     if ! array.empty _findIgnoreDirs; then
+        # TODO: Try the simpler method here: https://stackoverflow.com/questions/4210042/how-to-exclude-a-directory-in-find-command/66794381#66794381
+
         # Note: Add single quotes around names in case they're using globs
         # e.g. Where injected strings are labeled with [], and array.join is labeled with ()
         # `-name '(first['][ -o -name ][']second)'
