@@ -17,7 +17,7 @@
                     "to": [
                         {
                             "set_variable": {
-                                "name": "native_command",
+                                "name": "native_ctrl",
                                 "value": 1
                             }
                         },
@@ -28,7 +28,7 @@
                     "to_after_key_up": [
                         {
                             "set_variable": {
-                                "name": "native_command",
+                                "name": "native_ctrl",
                                 "value": 0
                             }
                         }
@@ -55,7 +55,7 @@
                     "to": [
                         {
                             "set_variable": {
-                                "name": "native_option",
+                                "name": "native_super",
                                 "value": 1
                             }
                         },
@@ -66,7 +66,7 @@
                     "to_after_key_up": [
                         {
                             "set_variable": {
-                                "name": "native_option",
+                                "name": "native_super",
                                 "value": 0
                             }
                         }
@@ -91,7 +91,7 @@
                     "to": [
                         {
                             "set_variable": {
-                                "name": "native_control",
+                                "name": "native_alt",
                                 "value": 1
                             }
                         },
@@ -102,7 +102,7 @@
                     "to_after_key_up": [
                         {
                             "set_variable": {
-                                "name": "native_control",
+                                "name": "native_alt",
                                 "value": 0
                             }
                         }
@@ -129,7 +129,7 @@
                     "to": [
                         {
                             "set_variable": {
-                                "name": "native_command",
+                                "name": "native_ctrl",
                                 "value": 1
                             }
                         },
@@ -140,7 +140,7 @@
                     "to_after_key_up": [
                         {
                             "set_variable": {
-                                "name": "native_command",
+                                "name": "native_ctrl",
                                 "value": 0
                             }
                         }
@@ -167,7 +167,7 @@
                     "to": [
                         {
                             "set_variable": {
-                                "name": "native_control",
+                                "name": "native_alt",
                                 "value": 1
                             }
                         },
@@ -178,7 +178,7 @@
                     "to_after_key_up": [
                         {
                             "set_variable": {
-                                "name": "native_control",
+                                "name": "native_alt",
                                 "value": 0
                             }
                         }
@@ -230,7 +230,7 @@
                     "to": [
                         {
                             "set_variable": {
-                                "name": "native_control",
+                                "name": "native_ctrl",
                                 "value": 1
                             }
                         },
@@ -241,7 +241,7 @@
                     "to_after_key_up": [
                         {
                             "set_variable": {
-                                "name": "native_control",
+                                "name": "native_ctrl",
                                 "value": 0
                             }
                         }
@@ -268,7 +268,7 @@
                     "to": [
                         {
                             "set_variable": {
-                                "name": "native_command",
+                                "name": "native_alt",
                                 "value": 1
                             }
                         },
@@ -279,7 +279,7 @@
                     "to_after_key_up": [
                         {
                             "set_variable": {
-                                "name": "native_command",
+                                "name": "native_alt",
                                 "value": 0
                             }
                         }
@@ -306,7 +306,7 @@
                     "to": [
                         {
                             "set_variable": {
-                                "name": "native_control",
+                                "name": "native_ctrl",
                                 "value": 1
                             }
                         },
@@ -317,7 +317,7 @@
                     "to_after_key_up": [
                         {
                             "set_variable": {
-                                "name": "native_control",
+                                "name": "native_ctrl",
                                 "value": 0
                             }
                         }
@@ -344,7 +344,7 @@
                     "to": [
                         {
                             "set_variable": {
-                                "name": "native_command",
+                                "name": "native_alt",
                                 "value": 1
                             }
                         },
@@ -355,7 +355,7 @@
                     "to_after_key_up": [
                         {
                             "set_variable": {
-                                "name": "native_command",
+                                "name": "native_alt",
                                 "value": 0
                             }
                         }
@@ -397,7 +397,7 @@
                         },
                         {
                             "type": "variable_if",
-                            "name": "native_control",
+                            "name": "native_ctrl",
                             "value": 1
                         }
                     ]
@@ -429,7 +429,7 @@
                         },
                         {
                             "type": "variable_if",
-                            "name": "native_command",
+                            "name": "native_alt",
                             "value": 1
                         }
                     ]
@@ -1589,7 +1589,7 @@
                     "conditions": [
                         {
                             "type": "variable_if",
-                            "name": "native_option",
+                            "name": "native_super",
                             "value": 1
                         }
                     ]
