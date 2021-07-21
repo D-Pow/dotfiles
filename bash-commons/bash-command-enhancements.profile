@@ -62,7 +62,8 @@ findIgnoreDirs() {
     shift $(( OPTIND - 1 ))
 
     local _findArgs=("$@")
-    array.slice -r _findOpts _findArgs 0 -1
+    local _findToSearchIn="$1"
+    array.slice -r _findOpts _findArgs 1 -1
     array.slice -r _findToSearchFor _findArgs -1
 
     local _findIgnoreDirsOptionName=' -o -name '
@@ -76,7 +77,7 @@ findIgnoreDirs() {
     fi
 
     # Ignored dirs are already quoted, but still need to quote the search query
-    local _findFinalCmd="find ${_findOpts[@]} $_findIgnoreDirsOption '$_findToSearchFor'"
+    local _findFinalCmd="find $_findToSearchIn $_findIgnoreDirsOption ${_findOpts[@]} '$_findToSearchFor'"
 
     eval "$_findFinalCmd"
 }
