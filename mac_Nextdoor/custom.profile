@@ -39,8 +39,18 @@ export PATH=$BREW_GNU_UTILS_HOMES:$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$MAVEN_HOME:$
 # export PS1="\[\033[36m\]\u\[\033[m\]@\[\033[32m\]\h:\[\033[33;1m\]\w\[\033[m\]\$ "
 export PS1="\[\033[36m\]\u\[\033[m\]:\[\033[33;1m\]\w\[\033[m\]\$ "
 export CLICOLOR=1
-export LSCOLORS=GxFxBxDxCxegedabagacad
+# Colors:
+#   a (black), b (red), c (green), d (brown), e (blue), f (magenta), g (cyan), h (grey), x (no color).
+#   Capital letter for bold, lowercase for normal.
+#   First letter = text color, Second letter = background color.
+# Order:
+#   Dir, SymLink, Socket, Pipe, Exec, BlockSpecial, CharSpecial, ExecSetuid, ExecSetGID, DirSticky, DirNoSticky.
+# Useful GUI: https://geoff.greer.fm/lscolors/
+export LSCOLORS=gxfxcxdxbxxhxhbxbxGxGx
+export LS_COLORS='di=36:ln=35:so=32:pi=33:ex=31:bd=0;47:cd=0;47:su=31:sg=31:tw=1;36:ow=1;36'
 
+alias ls='ls -Fh --color'
+alias lah='ls -Flah --color'
 alias egrep='grep -P'
 
 alias python='python3'
