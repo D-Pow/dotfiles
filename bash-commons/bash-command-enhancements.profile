@@ -63,8 +63,7 @@ findIgnoreDirs() {
 
     local _findArgs=("$@")
     local _findToSearchIn="$1"
-    array.slice -r _findOpts _findArgs 1 -1
-    array.slice -r _findToSearchFor _findArgs -1
+    array.slice -r _findOpts _findArgs 1
 
     local _findIgnoreDirsOptionName=' -o -name '
     local _findIgnoreDirsOption=''
@@ -73,11 +72,11 @@ findIgnoreDirs() {
         # Note: Add single quotes around names in case they're using globs
         # e.g. Where injected strings are labeled with [], and array.join is labeled with ()
         # `-name '(first['][ -o -name ][']second)'
-        _findIgnoreDirsOption="\( -name '`array.join -s _findIgnoreDirs "'$_findIgnoreDirsOptionName'"`' \)  -prune -false $_findIgnoreDirsOptionName"
+        _findIgnoreDirsOption="\( -name '`array.join -s _findIgnoreDirs "'$_findIgnoreDirsOptionName'"`' \)  -prune -false -o "
     fi
 
     # Ignored dirs are already quoted, but still need to quote the search query
-    local _findFinalCmd="find $_findToSearchIn $_findIgnoreDirsOption ${_findOpts[@]} '$_findToSearchFor'"
+    local _findFinalCmd="find $_findToSearchIn $_findIgnoreDirsOption ${_findOpts[@]}"
 
     eval "$_findFinalCmd"
 }
