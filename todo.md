@@ -1,3 +1,23 @@
+# General
+
+* Rename `bash-X.profile` to just `X.profile`
+* Move common.profile notes to separate `bash-notes.profile` or similar
+* Move string manipulation code to new `strings.profile` file
+    - Starter content:
+    - https://stackoverflow.com/questions/55623092/parsing-a-string-with-quotes-in-getopts
+    - This:
+
+        ```bash
+        local IFS=$'\n'
+        local res=($allEntriesWithTrailingSlashOnDirsDirs)
+        array.toString -ld '\n' res
+        ```
+
+# Mac enhancements
+
+* Allow moving windows between displays.
+    - Starter: https://apple.stackexchange.com/a/361168
+
 # `repos`
 
 * Might be able to replace manual escaping with [printf %q](https://stackoverflow.com/questions/589149/bash-script-to-cd-to-directory-with-spaces-in-pathname)
