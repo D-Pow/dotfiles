@@ -279,6 +279,7 @@ array.contains() {
         ! $(array.empty filteredArray) && return
     else
         for entry in "${_arrContains[@]}"; do
+            # TODO verify this works
             if [[ "$entry" =~ "$query" ]]; then
                 return
             fi
