@@ -22,6 +22,7 @@ array.toString() {
                 ;;
             d)
                 _toStringDelim="$OPTARG"
+                ;;
         esac
     done
 
