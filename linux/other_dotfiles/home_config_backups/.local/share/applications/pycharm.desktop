@@ -1,12 +1,13 @@
 #!/usr/bin/env xdg-open
 [Desktop Entry]
-Encoding=UTF-8
-Icon=/home/dpow/JetBrains/PyCharm/bin/pycharm.png
+Name=PyCharm
 Exec="/home/dpow/JetBrains/PyCharm/bin/pycharm.sh" %f
+Icon=/home/dpow/JetBrains/PyCharm/bin/pycharm.png
+Comment=The smartest Python IDE
 Type=Application
 Terminal=false
-Comment=PyCharm IDE for Python
-Name=PyCharm
 GenericName=pycharm
 StartupNotify=false
-Categories=Development;IDE;Python;Programming
+Categories=Development;IDE;Python;Programming;
+StartupWMClass=jetbrains-pycharm
+# StartupWMClass tells the OS to group all windows run with the script within the same app. See: https://askubuntu.com/questions/367396/what-does-the-startupwmclass-field-of-a-desktop-file-represent/367851#367851
