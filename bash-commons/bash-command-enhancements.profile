@@ -134,3 +134,47 @@ findIgnoreDirs() {
     eval "$_findFinalCmd"
     echo "$_findFinalCmd" >&2
 }
+
+
+tarremovepathprefix() {
+    # `tar` generates archive-file directory structure based on the current working directory rather
+    # than that of the directory being compressed/archived. This results in the archive files being
+    # unnecessarily nested in directories they (most of the time) shouldn't be, i.e.
+    #
+    # tree /dir/to/compress
+    #   |-- /nested/with/many/files
+    #   |-- a.file
+    #   |-- b.file
+    # cd /dir/to/output/into
+    # tar czf my-archive.tar.gz ../../compress
+    # tar -tf my-archive.tar.gz
+    #   |-- ../../compress//nested/with/many/files
+    #   |-- ../../compress/a.file
+    #   |-- ../../compress/b.file
+    #
+    # This can be fixed by using the `-C/--cd` option, which essentially runs `tar` in the specified
+    # directory rather than the cwd, essentially the equivalent of `(cd /dir/to/compress && tar [options] .)`
+
+    # Net result (where [] represents what's added by the user):
+    #   tar [-czf with-spaces.tar.gz] -C ['../../dir/with spaces/dir[/file.ext]'] '.'
+
+    local _tarArgs=("$@")
+
+    # Strip out desired dir from final `tar` command since we're `cd`ing into it (so it actually should be '.')
+    array.slice -r _tarOpts _tarArgs 0 -1
+    local _tarContainingDir="$(realpath "$(array.slice _tarArgs -1)")"  # `realpath` may or may not be necessary; goal was to remove `..` from the path passed to `tar -C [path]`
+    local _tarToArchive='.'
+
+    if [[ -f "${_tarContainingDir}" ]]; then
+        # User passed in a file instead of a directory.
+
+        # First, get the file name so we don't archive the entire directory's contents.
+        _tarToArchive="$(basename "$_tarContainingDir")"
+
+        # Second, `cd` into the dir containing the file.
+        # This removes the preceding path-to-dir prefix from the archived files' names.
+        _tarContainingDir="$(dirname "$_tarContainingDir")"
+    fi
+
+    tar "${_tarOpts[@]}" -C "$_tarContainingDir" "$_tarToArchive"
+}
