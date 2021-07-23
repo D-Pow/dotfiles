@@ -844,7 +844,7 @@
         },
 
         {
-            "description": "Ctrl/Command + Tilde Fix",
+            "description": "Ctrl/Command + Tilde Fix, Super+Tab > Show all windows",
             "manipulators": [
                 {
                     "type": "basic",
@@ -919,6 +919,31 @@
                             "bundle_identifiers": [
                                 "com.jetbrains.*"
                             ]
+                        }
+                    ]
+                },
+
+                {
+                    "description": "You can't tab through windows in mission_control, so the only choice we have is to simply display it to try to feign Linux functionality",
+                    "type": "basic",
+                    "from": {
+                        "key_code": "tab",
+                        "modifiers": {
+                            "mandatory": [
+                                "option"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "mission_control"
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "variable_if",
+                            "name": "native_super",
+                            "value": 1
                         }
                     ]
                 }
