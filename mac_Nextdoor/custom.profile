@@ -141,7 +141,7 @@ fe-start() {
         nd dev portal
     fi
 
-    yarn build --watch
+    yarn build --watch "$@"
 }
 fe-stop() {
     docker stop nextdoorcom_dev-local-proxy_1 nextdoorcom_dev-portal_1 nextdoorcom_static_1
