@@ -19,6 +19,15 @@
 * Allow moving windows between displays.
     - Starter: https://apple.stackexchange.com/a/361168
 
+# Sublime
+
+* Figure out how to make file-browser side bar show file/code structure instead.
+* js-beautify PR for:
+    - Arrays of objects - putting each object brace on new line
+    - Put array entries on new lines
+        + Optionally, by line length or number of entries
+    - Spaces between inline object/array braces
+
 # `repos`
 
 * Might be able to replace manual escaping with [printf %q](https://stackoverflow.com/questions/589149/bash-script-to-cd-to-directory-with-spaces-in-pathname)
@@ -42,8 +51,7 @@
 
 * Make new util scripts for array handling, e.g.
     - `arr-from-string $str $delimiter`
-    - `arr-to-string $arr $delimiter`
-    - `arr-length $arr`
+    - `arr-to-string` can be improved (re: why I didn't use it in `array.filter()`)
 * Starter resources:
     - https://stackoverflow.com/questions/15691942/print-array-elements-on-separate-lines-in-bash
     - https://stackoverflow.com/questions/8467424/echo-newline-in-bash-prints-literal-n
