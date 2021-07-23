@@ -16,7 +16,9 @@ alias ls='ls -Fh'
 alias lah='ls -Flah'
 
 
-alias grep='grep --exclude-dir={node_modules,.git,.idea,lcov-report} --color=auto'
+_grepIgnoredDirs=('node_modules' '.git' '.idea' 'lcov-report')
+
+alias grep="grep --exclude-dir={`array.join -s _grepIgnoredDirs ','`} --color=auto"
 alias egrep='grep -E'
 
 gril() {
@@ -38,7 +40,31 @@ gril() {
         pathGlob=('.')
     fi
 
+    # TODO `gril` fails when glob has too many files, e.g. when searching dir/**/*.js in JS project
+    # that has node_modules folder.
+    # Error: Argument list too long.
+    #
+    # local pathGlobArr=("$@")
+    # array.toString pathGlobArr
+    # echo "${@:2:1}"
+    # echo "Filter: ^(.(?!`array.join -s _grepIgnoredDirs '|'`))*$"
+    # array.filter -er filteredPathGlob pathGlobArr "^(.(?!`array.join -s _grepIgnoredDirs '|'`))*$"
+    # array.toString filteredPathGlob
+    #
+    # Problem is that both quoting and not quoting results in problems:
+    #   arr=('../dotfile/Programs/Sublime/Data/Packages/Babel Snippets/README.md' '../dotfile/Programs/Sublime/Data/Packages/Babel/README.md' '../dotfile/Programs/Sublime/Data/Packages/Babel/node_modules/get-stdin/readme.md' '../dotfile/Programs/Sublime/Data/Packages/HTML-CSS-JS Prettify/README.md')
+    #   # length == 4, filtering out node_modules should result in 3
+    #   res=($(printf '%s\n' "${arr[@]}" | egrep '^(.(?!node_modules))*$')) && array.toString res
+    #   # length == 5, not 3!
+    #   res=("$(printf '%s\n' "${arr[@]}" | egrep '^(.(?!node_modules))*$')") && array.toString res
+    #   # length == 1, not 3!
+
+    # egrep -ril "$query" "${filteredPathGlob[@]}" 2>/dev/null
     egrep -ril "$query" $pathGlob
+
+    # Tests:
+    # source ../dotfile/.profile mac_Nextdoor && gril asdfqwer ../dotfile/**/*.txt
+    # source ../dotfile/.profile mac_Nextdoor && gril mock react-app-boilerplate/**/*.js
 }
 
 
@@ -106,4 +132,5 @@ findIgnoreDirs() {
     local _findFinalCmd="find $_findToSearchIn $_findIgnoreDirsOption ${_findOpts[@]}"
 
     eval "$_findFinalCmd"
+    echo "$_findFinalCmd" >&2
 }
