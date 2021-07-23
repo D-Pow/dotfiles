@@ -147,6 +147,9 @@ fe-stop() {
     docker stop nextdoorcom_dev-local-proxy_1 nextdoorcom_dev-portal_1 nextdoorcom_static_1
 }
 
+# Required to give Docker more time to build Nextdoor's bloated containers
+export COMPOSE_HTTP_TIMEOUT=1000
+
 be-start() {
     if ! aws sts get-caller-identity > /dev/null 2>&1; then
         fix-aws
@@ -155,7 +158,14 @@ be-start() {
 
     if ! curl https://static.localhost.com/ 2>/dev/null; then
         STATIC_CONTENT_HOST=https://static.localhost.com:443 NEXTDOOR_PORT=443 nd dev runserver
+
+        if ! curl https://static.localhost.com/ 2>/dev/null; then
+            echo 'Error running `nd dev runserver`' >&2
+            return 1
+        fi
     fi
+
+    echo 'Back-end is running!'
 }
 be-stop() {
     # Stop all containers since FE containers won't work without them
