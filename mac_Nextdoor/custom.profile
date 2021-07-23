@@ -49,6 +49,8 @@ export CLICOLOR=1
 export LSCOLORS=gxfxcxdxbxxhxhbxbxGxGx
 export LS_COLORS='di=36:ln=35:so=32:pi=33:ex=31:bd=0;47:cd=0;47:su=31:sg=31:tw=1;36:ow=1;36'
 
+# See if there's a way to do this with `alias ls | sed`
+# or if there's a better way than manual parsing: https://askubuntu.com/questions/525231/how-can-i-run-original-command-that-aliased-with-same-name
 alias ls='ls -Fh --color'
 alias lah='ls -Flah --color'
 alias egrep='grep -P'
