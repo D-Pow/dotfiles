@@ -137,6 +137,10 @@ memusage() {
 
 ### Directory traversal ###
 
+# TODO
+#   Keep symlinks in resulting path, not actual location (e.g. /home/repos/ vs /mnt/partition1/repos/)
+#       https://stackoverflow.com/questions/41901885/get-full-path-without-resolving-symlinks
+#       https://stackoverflow.com/questions/2564634/convert-absolute-path-into-relative-path-given-a-current-directory-using-bash
 reposDir="`realpath "$dotfilesDir/.."`"
 repos() {
     # Path is relative to repositories directory.
