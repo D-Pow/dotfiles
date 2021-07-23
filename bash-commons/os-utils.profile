@@ -57,7 +57,10 @@ dirsize() {
     #   Will require calling `shift` to modify *parent*
     #       Or, could we just return "$@" from child? Not sure if it will maintain quotes or not
     while getopts "d:fh" opt; do
-        case "$opt" in # OPTARG is the variable containing the arg value
+        # OPTIND = Arg index (equivalent to $1, $2, etc.)
+        # OPTARG = Variable set to the flag (e.g. `-d myArgValue` makes OPTARG=myArgValue)
+        # ${!OPTIND} = Actual flag (e.g. `-d myArgValue` makes ${!OPTIND}='-d')
+        case "$opt" in
             d)
                 depth="$OPTARG"
                 ;;
