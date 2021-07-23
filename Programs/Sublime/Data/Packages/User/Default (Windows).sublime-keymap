@@ -18,6 +18,7 @@
 
 
     { "keys": ["alt+s"], "command": "toggle_side_bar" },
+    { "keys": ["ctrl+alt+f"], "command": "show_panel", "args": {"panel": "replace", "reverse": false} },
 
     { "keys": ["alt+d"], "command": "intelli_docs" },
 
