@@ -1,11 +1,9 @@
-# User stuff
 JAVA_HOME="/usr/java"
 GRADLE_HOME="/opt/gradle"
 export JAVA_HOME
 export GRADLE_HOME
 export PATH="$PATH:$JAVA_HOME/bin:$GRADLE_HOME/bin"
 
-alias python3=python3.8
 
 # Change directory colors in `ls`
 # LS_COLORS="${LS_COLORS}di=01;35"
@@ -90,3 +88,31 @@ copy() {
 workDir='/home/dpow/Documents/Google Drive/Work'
 
 alias todo="subl '$workDir/ToDo.md'"
+
+
+
+_checkPythonVersion() {
+    # To make `python3` use more recent Python version, run:
+    #   sudo rm /usr/bin/python3 && sudo ln -s /usr/bin/python3.8 /usr/bin/python3
+    # Or, you could use this command to add any number of different alternative executables
+    # for `python3`, great for defaulting to certain versions at different points in time:
+    #   sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1
+    #   (--install <symlinkPath> <symlinkName> <newExecutablePath> <priority>)
+    #   Higher number priorities are used before lower numbers.
+    #   Configure them via `sudo update-alternatives --config python3`.
+    #   Ref: https://medium.com/@jeethu.samsani/upgrade-python-3-5-to-3-7-in-ubuntu-a1d4347b6a3
+    local pythonSymlinkPath="$(which python3)"
+    local pythonExecutablePath="$(readlink -f "$pythonSymlinkPath")"
+    local executableDir="$(dirname "$pythonExecutablePath")"
+    local currentPythonVersion="$(echo "$pythonExecutablePath" | sed -E 's|.*/([^/]*)$|\1|')"
+    local allAvailableVersions="$(ls "$executableDir" | egrep -o 'python\d\.\d' | sort -ru)"
+    local allPython3Versions="$(echo "$allAvailableVersions" | grep 3)"
+    local latestVersion="$(echo "$allPython3Versions" | head -n 1)"
+    local oldestVersion="$(echo "$allPython3Versions" | tail -n 1)"
+
+    # Allow using anything newer than the oldest rather than restricting to only the newest
+    if [[ "$currentPythonVersion" == "$oldestVersion" ]]; then
+        echo 'Your python version is out of date. Please run this command:'
+        echo "    sudo rm /usr/bin/python3 && sudo ln -s $executableDir/$latestVersion /usr/bin/python3"
+    fi
+} && _checkPythonVersion
