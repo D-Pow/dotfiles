@@ -16,6 +16,13 @@ alias ls='ls -Fh'
 alias lah='ls -Flah'
 
 
+isDefined() {
+    # Determines if the function or variable is defined
+    # `type` could also work in place of `command`
+    $(command -v $1 >/dev/null) || [[ -n "${!1}" ]]
+}
+
+
 _grepIgnoredDirs=('node_modules' '.git' '.idea' 'lcov-report')
 
 alias grep="grep --exclude-dir={`array.join -s _grepIgnoredDirs ','`} --color=auto"
