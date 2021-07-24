@@ -1,4 +1,4 @@
-dotfilesDir='/home/dpow/Documents/Repositories/dotfiles'
+dotfilesDir='/home/dpow/repositories/dotfiles'
 
 if [[ -d "$dotfilesDir" ]]; then
     source "$dotfilesDir/.profile" 'linux'
