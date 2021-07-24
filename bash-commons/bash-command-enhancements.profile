@@ -16,6 +16,9 @@ alias ls='ls -Fh'
 alias lah='ls -Flah'
 
 
+alias printpath='echo $PATH | sed -E "s|:|\n|g"'
+
+
 isDefined() {
     # Determines if the function or variable is defined
     # `type` could also work in place of `command`
