@@ -23,6 +23,29 @@ isDefined() {
 }
 
 
+open() {
+    # Automatically selects the correct, user-friendly terminal command to open
+    # files/directories/URLs using the OS' default application.
+    # Will work on both Linux (theoretically any distro) and the garbage that is Mac.
+    #
+    # Also very useful to copy into standalone scripts because scripts are run in
+    # subshells, which means they may or may not `source ~/.profile`. This means
+    # that any rewrites of commands, e.g. `alias open='xdg-open'`, are not necessarily
+    # applied, so this function can be copied there for cross-platform compatibility.
+    local _openCommand
+
+    if isDefined xdg-open; then
+        _openCommand=xdg-open
+    elif isDefined gnome-open; then
+        _openCommand=gnome-open
+    else
+        _openCommand=open
+    fi
+
+    $_openCommand "$@"
+}
+
+
 _grepIgnoredDirs=('node_modules' '.git' '.idea' 'lcov-report')
 
 alias grep="grep --exclude-dir={`array.join -s _grepIgnoredDirs ','`} --color=auto"

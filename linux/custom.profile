@@ -74,8 +74,6 @@ is-installed() {
 #   docker.socket is used for listening to Docker commands (unrelated to Docker's server, so doesn't open a port itself)
 alias liststartupservices='sudo systemctl list-unit-files | grep enabled | sort'
 
-alias open='xdg-open'
-
 alias scan='savscan -all -rec -f -archive'
 alias sophosUpdate='sudo /opt/sophos-av/bin/savupdate && /opt/sophos-av/bin/savdstatus --version'
 
