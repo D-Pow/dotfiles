@@ -92,6 +92,13 @@ alias todo="subl '$workDir/ToDo.md'"
 
 
 _checkPythonVersion() {
+    # EDIT: DO NOT CHANGE THE python3 SYMLINK!!! Nor use update-alternatives
+    # Doing so will break your system, just like overwriting `python --> python3` would.
+    # Instead, just make your own symlinks and put them in a dir that's read earlier in PATH
+    # than /usr/bin/.
+    # That way, even `/usr/bin/env python3` will read the correct Python version
+    # (`env` doesn't read aliases, but it will read symlinks and anything in PATH).
+    #
     # To make `python3` use more recent Python version, run:
     #   sudo rm /usr/bin/python3 && sudo ln -s /usr/bin/python3.8 /usr/bin/python3
     # Or, you could use this command to add any number of different alternative executables
@@ -115,4 +122,4 @@ _checkPythonVersion() {
         echo 'Your python version is out of date. Please run this command:'
         echo "    sudo rm /usr/bin/python3 && sudo ln -s $executableDir/$latestVersion /usr/bin/python3"
     fi
-} && _checkPythonVersion
+}
