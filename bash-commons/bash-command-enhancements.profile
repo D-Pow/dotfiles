@@ -68,10 +68,6 @@ gril() {
 }
 
 
-# `type` should be used instead; this is mostly meant as a reminder that it exists
-alias define-func='type'
-
-
 findIgnoreDirs() {
     # Net result (where [] represents what's added by the user):
     #   `find . -type d \( -name 'node_modules' -o -name '*est*' \) -prune -false -o` [-name '*.js']
