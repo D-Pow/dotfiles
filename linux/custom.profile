@@ -90,6 +90,36 @@ workDir='/home/dpow/Documents/Google Drive/Work'
 alias todo="subl '$workDir/ToDo.md'"
 
 
+brightness() {
+    # Changes the brightness of displays 0-n, where 0 is the internal display.
+    # Only changes it through software, not through DDC, so it won't change the
+    # "actual" brightness, only the brightness of the OS' processing of display output.
+    #
+    # TODO: Use a DDC system after upgrading Linux Mint to latest
+    #   (current version + Nvidia driver doesn't currently support DDC).
+    #   Options: https://askubuntu.com/questions/894465/changing-the-screen-brightness-of-the-external-screen
+    local _display="$1"
+    local _brightness="${2:-1}" # default to resetting brightness back to 100%
+
+    local _displayOutputNames=($(xrandr -q | egrep -o '^\S+(?=.*connected)'))
+
+    if [[ -z "$_display" ]]; then
+        echo "Please specify the display for which you want to change the brightness." >&2
+        echo "Valid display values are [0$(
+            local _numDisplays=$(array.length _displayOutputNames)
+            (( _numDisplays > 1 )) && echo "-$(( _numDisplays - 1 ))"
+        )]." >&2
+        return 1;
+    fi
+
+    local _displayOutputSelected="${_displayOutputNames[_display]}"
+
+    xrandr --output "$_displayOutputSelected" --brightness "$_brightness"
+
+    echo "Set the brightness of display $_display ($_displayOutputSelected) to $_brightness/1"
+}
+
+
 
 _checkPythonVersion() {
     # EDIT: DO NOT CHANGE THE python3 SYMLINK!!! Nor use update-alternatives
