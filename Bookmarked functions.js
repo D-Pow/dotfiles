@@ -207,6 +207,28 @@ window.getDrizlyAbvAndPricesFromSearchResults = async function(minAbv = 10) {
     return aboveSpecifiedAbv;
 };
 
+/**
+ * Searches Jisho for English <--> Japanese translations.
+ *
+ * Can also use some meta characters/terms for searching, e.g.
+ *   - * (0-Infinite characters)
+ *   - ? (0-1 characters)
+ *   - tags (#verb, #adjective, #counter, #jlpt-n5, #grade3, etc.)
+ *
+ * @param {string} query - Query with which to search Jisho.
+ * @returns {Promise<Object>} - Jisho search results.
+ * @see [Jisho docs]{@link https://jisho.org/docs}
+ */
+async function translateJapanese(query) {
+    const jishoApiUrl = 'https://jisho.org/api/v1/search/words?keyword=';
+    const res = await fetch(jishoApiUrl + encodeURIComponent(query));
+    const json = await res.json();
+
+    return json;
+}
+
+window.translateJapanese = translateJapanese;
+
 class SlackInBrowserService {
     /**
      * @typedef {Object} Channel
