@@ -19,6 +19,9 @@ alias lah='ls -Flah'
 alias printpath='echo $PATH | sed -E "s|:|\n|g"'
 
 
+alias esed='sed -E'  # Note: -E is the same as -r, except undocumented since it's just for backward compatibility with BSD `sed`. Ref: https://stackoverflow.com/questions/3139126/whats-the-difference-between-sed-e-and-sed-e/3139925#3139925
+
+
 isDefined() {
     # Determines if the function or variable is defined
     # `type` could also work in place of `command`
