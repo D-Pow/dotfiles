@@ -40,6 +40,67 @@ array.toString() {
 }
 
 
+array.fromString() {
+    local _retArrFromStrName
+    local _arrFromDelim="$IFS"
+    local OPTIND=1
+
+    while getopts "d:r:" opt; do
+        case "$opt" in
+            d)
+                _arrFromDelim="$OPTARG"
+                ;;
+            r)
+                _retArrFromStrName="$OPTARG"
+                ;;
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+
+    local _arrFromStr="$1"
+
+    # Local means we don't overwrite global IFS.
+    # Still keep original IFS for the return statements.
+    local _arrFromOrigIFS="$IFS"
+    local IFS
+    # This is tricky; IFS uses ANSI-C quoting (see: https://stackoverflow.com/questions/23235651/how-can-i-do-ansi-c-quoting-of-an-existing-bash-variable)
+    #
+    # We want the *meaning* of backslash-escaped characters, not their literal
+    # characters/text, and want the util function to be used in a simple manner,
+    # e.g. `array.fromString -d '\n' 'my string'` rather than `-d $'\n'`
+    #
+    # To get the meaning in bash, you usually write `$'chars'` e.g. `$'\n'` b/c the
+    # `$` interprets escaped chars for their actual meaning.
+    # But you can't do that by using the normal `IFS=$"$var"` because nesting
+    # `$var` in quotes returns the literal characters and `$$var` actually returns
+    # `<PID>var`.
+    #
+    # Even attempts like `printf (%s|%b) $var` and `echo -ne $var` (with and without
+    # quotes around both `$var` and the whole statement) failed due to somehow interpreting
+    # them literally.
+    #
+    # Thus, the only option we have is to escape the standard chars used in IFS definitions
+    # and inject `$var` without quotes.
+    # Moral of the story: QUOTES MAINTAIN THE LITERAL CHARS
+    # unless you put them inside a LITERAL `$'$var'`
+    eval IFS=\$\'$_arrFromDelim\'
+    # Don't quote it since we've changed IFS. If we did quote it, there would be no
+    # more string-splitting b/c it'd all be one string instead of separate strings.
+    local _newArrFromStr=($_arrFromStr)
+    # Return IFS back to what it was before solely for injecting obtained values back
+    # into a separate return array and/or for printing to the console.
+    IFS="$_arrFromOrigIFS"
+
+    if [[ -n "$_retArrFromStrName" ]]; then
+        local -n _retArrFromStr="$_retArrFromStrName"
+        _retArrFromStr=("${_newArrFromStr[@]}")
+    else
+        echo "${_newArrFromStr[@]}"
+    fi
+}
+
+
 array.length() {
     local -n _arrLength="$1"
 
