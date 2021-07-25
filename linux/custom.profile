@@ -34,7 +34,7 @@ is-installed() {
     local isInstalledByApt="`apt list --installed $packages 2>/dev/null | grep 'installed'`"
 
     if ! [[ -z "$isInstalledByApt" ]]; then
-        installedPackages+=('Installed by apt:')
+        installedPackages+=('Installed by apt:' '')
         installedPackages+=("`echo "$isInstalledByApt" | egrep -o '^[^/]*'`")
     fi
 
@@ -43,7 +43,7 @@ is-installed() {
     if ! [[ -z "$commandsExist" ]]; then
         # Add extra line between apt-installed packages and CLI commands
         [[ ${#installedPackages[@]} -ne 0 ]] && installedPackages+=('')
-        installedPackages+=('CLI commands:')
+        installedPackages+=('CLI commands:' '')
         installedPackages+=("`echo "$commandsExist"`")
     fi
 
