@@ -60,6 +60,72 @@ is-installed() {
     echo "$packages not installed"
 }
 
+apt-get-repositories() {
+    # Inspired by: https://askubuntu.com/questions/148932/how-can-i-get-a-list-of-all-repositories-and-ppas-from-the-command-line-into-an/148968#148968
+    array.fromString -d '\n' -r _aptRepos "$(egrep -r "^\s*deb" /etc/apt/sources.list*)"
+
+    local _officialRepos=()
+    local _ppas=()
+    local _additionalRepos=()
+
+    local _ppaDomainBashRegex='https?://ppa.launchpad.net'
+    local _ppaUserPpaInstallRegex='([^/]*/[^/]*)'
+    local _repoDomain='(http.*)'
+
+
+    for _aptFileToRepoStr in "${_aptRepos[@]}"; do
+        # First, split by colon to separate the filename and file content.
+        # Sample output from `_aptRepos[i]`:
+        # /etc/apt/sources.list.d/git-core-ppa-xenial.list:deb http://ppa.launchpad.net/git-core/ppa/ubuntu xenial main
+        array.fromString -d ':' -r _aptRepoSplitStr "$_aptFileToRepoStr"
+        # Filename won't have colons in it, so it's safe to simply get the first array entry.
+        local _aptRepoFilePath="${_aptRepoSplitStr[0]}"
+        # File content would've had colons in them (e.g. URLs).
+        # Since they've been split by colon, take all the remaining entries (which are all
+        # part of the file content) and join them by colon to get the original file content.
+        array.slice -r _aptRepoInfoWithoutColons _aptRepoSplitStr 1
+        local _aptRepoInfo="$(array.join -s _aptRepoInfoWithoutColons ':')"
+
+
+        # Official repositories are in this file specifically.
+        if [[ "$_aptRepoFilePath" =~ "official-package-repositories.list" ]]; then
+            local _officialRepo="$(echo $_aptRepoInfo | sed -E "s|.*$_repoDomain|\1|g")"
+
+            _officialRepos+=("$_officialRepo")
+        # PPAs are all listed on ppa.launchpad.net
+        elif [[ "$_aptRepoInfo" =~ $_ppaDomainBashRegex ]]; then
+            local _ppaName="ppa:$(echo "$_aptRepoInfo" | sed -E "s|.*$_ppaDomainBashRegex/$_ppaUserPpaInstallRegex/.*|\1|g")"
+
+            _ppas+=("$_ppaName")
+        # Additional repositories are those you needed to add via URL, install.sh script, etc.
+        else
+            local _additionalRepo="$(echo $_aptRepoInfo | sed -E "s|.*$_repoDomain|\1|g")"
+
+            _additionalRepos+=("$_additionalRepo")
+        fi
+    done
+
+
+    if ! array.empty _officialRepos; then
+        echo "Official repositories:"
+        echo -e "$(array.join _officialRepos '\n')"
+        echo
+    fi
+
+    if ! array.empty _ppas; then
+        echo "Official PPAs:"
+        echo -e "$(array.join _ppas '\n')"
+        echo
+    fi
+
+    if ! array.empty _additionalRepos; then
+        echo "Additional repositories:"
+        echo -e "$(array.join _additionalRepos '\n')"
+        echo
+    fi
+}
+
+
 # systemctl commands:
 #   status              =  shows service status
 #   start               =  start a service
