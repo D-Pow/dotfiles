@@ -140,19 +140,19 @@ apt-get-repositories() {
 
     if ! array.empty _officialRepos; then
         echo "Official repositories:"
-        echo -e "$(array.join _officialRepos '\n')"
+        echo -e "$(array.join _officialRepos '\n')" | sort -u
         echo
     fi
 
     if ! array.empty _ppas; then
         echo "Official PPAs:"
-        echo -e "$(array.join _ppas '\n')"
+        echo -e "$(array.join _ppas '\n')" | sort -u
         echo
     fi
 
     if ! array.empty _additionalRepos; then
         echo "Additional repositories:"
-        echo -e "$(array.join _additionalRepos '\n')"
+        echo -e "$(array.join _additionalRepos '\n')" | sort -u
         echo
     fi
 }
