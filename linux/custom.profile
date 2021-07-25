@@ -62,7 +62,27 @@ is-installed() {
 
 apt-get-repositories() {
     # Inspired by: https://askubuntu.com/questions/148932/how-can-i-get-a-list-of-all-repositories-and-ppas-from-the-command-line-into-an/148968#148968
-    array.fromString -d '\n' -r _aptRepos "$(egrep -r "^\s*deb" /etc/apt/sources.list*)"
+    local _showDisabled
+    local OPTIND=1
+
+    while getopts "d" opt; do
+        case "$opt" in
+            d)
+                _showDisabled='^\s*#\s*'
+                ;;
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+
+    local _aptRepoEnabledSearchRegex='^\s*'
+    local _aptRepoSearchRegex="$(
+        [[ -n "$_showDisabled" ]] \
+        && echo "($_showDisabled|$_aptRepoEnabledSearchRegex)" \
+        || echo "$_aptRepoEnabledSearchRegex"
+    )"
+
+    array.fromString -d '\n' -r _aptRepos "$(egrep -r "${_aptRepoSearchRegex}deb" /etc/apt/sources.list*)"
 
     local _officialRepos=()
     local _ppas=()
@@ -91,15 +111,27 @@ apt-get-repositories() {
         if [[ "$_aptRepoFilePath" =~ "official-package-repositories.list" ]]; then
             local _officialRepo="$(echo $_aptRepoInfo | sed -E "s|.*$_repoDomain|\1|g")"
 
+            if [[ "$_aptRepoInfo" =~ $_showDisabled ]]; then
+                _officialRepo="# $_officialRepo"
+            fi
+
             _officialRepos+=("$_officialRepo")
         # PPAs are all listed on ppa.launchpad.net
         elif [[ "$_aptRepoInfo" =~ $_ppaDomainBashRegex ]]; then
             local _ppaName="ppa:$(echo "$_aptRepoInfo" | sed -E "s|.*$_ppaDomainBashRegex/$_ppaUserPpaInstallRegex/.*|\1|g")"
 
+            if [[ "$_aptRepoInfo" =~ $_showDisabled ]]; then
+                _ppaName="# $_ppaName"
+            fi
+
             _ppas+=("$_ppaName")
         # Additional repositories are those you needed to add via URL, install.sh script, etc.
         else
             local _additionalRepo="$(echo $_aptRepoInfo | sed -E "s|.*$_repoDomain|\1|g")"
+
+            if [[ "$_aptRepoInfo" =~ $_showDisabled ]]; then
+                _additionalRepo="# $_additionalRepo"
+            fi
 
             _additionalRepos+=("$_additionalRepo")
         fi
