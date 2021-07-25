@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# TODO change to use xrandr to maintain brightness settings for different monitors
+
 printUsage () {
     usage="Usage: nightscreen [OPTION]\n
         -x | Turn off night screen\n
