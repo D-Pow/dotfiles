@@ -19,6 +19,8 @@ alias egrep='grep -P'
 
 alias listupdate='sudo apt update && sudo apt list --upgradable'
 
+alias systeminfo='inxi -SMCGx'
+
 is-installed() {
     local packages="$@"
     # local packagesArray=($packages)
