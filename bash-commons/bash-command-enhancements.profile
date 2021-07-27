@@ -15,6 +15,13 @@ shopt -s extglob
 # This allows `(fg|bg) $jobId`, etc. job-related commands to work.`
 # See: https://stackoverflow.com/questions/11821378/what-does-bashno-job-control-in-this-shell-mean/46829294#46829294
 set -m
+# Set SHELL environment to user's default shell.
+# It doesn't always update even after calling `chsh -s /my/new/shell` so update it here.
+# See: https://www.gnu.org/software/bash/manual/bash.html#index-SHELL
+#
+# Alternative: `ps -p $$ -o comm=`
+# ProcessStatus -pID $thisShellPid -onlyKey comm[and]=[remove key prefix]
+SHELL="$(which "$(echo "$0" | sed -E 's|^-||')")"
 
 
 alias ls='ls -Fh'
