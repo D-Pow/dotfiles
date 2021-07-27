@@ -207,6 +207,29 @@ window.getDrizlyAbvAndPricesFromSearchResults = async function(minAbv = 10) {
     return aboveSpecifiedAbv;
 };
 
+
+window.getAmazonChatLog = function getAmazonChatLog(copyToClipboard = true) {
+    const chatLogParentDiv = document.querySelector('.ChatRoller__liveTranscriptWrapper___JJkDd');
+    const chatLogEntries = [...chatLogParentDiv.children];
+
+    const amazonChatLog= chatLogEntries.reduce((chatLogs, childElem) => {
+        const text = childElem.querySelector('[class*=messageBody]')?.innerText;
+        const timeStamp = childElem.querySelector('[class*=timeStamp]')?.innerText;
+        const isAgentMessage = childElem.className.includes('agentVariant');
+
+        chatLogs.push({ agent: isAgentMessage, text, timeStamp });
+
+        return chatLogs;
+    }, []);
+
+    if (copyToClipboard) {
+        copy(amazonChatLog);
+    }
+
+    return amazonChatLog;
+};
+
+
 /**
  * Searches Jisho for English <--> Japanese translations.
  *
