@@ -30,7 +30,16 @@ alias esed='sed -E'  # Note: -E is the same as -r, except undocumented since it'
 isDefined() {
     # Determines if the function or variable is defined
     # `type` could also work in place of `command`
-    $(command -v $1 >/dev/null) || [[ -n "${!1}" ]]
+    ( command -v "$1" || [[ -n "${!1}" ]] ) &>/dev/null
+
+    # The existence-check must run in a subshell because if the variable has never been
+    # declared, then bash will throw an `invalid variable name` error when it tries to access
+    # the value of the variable. Throwing that error will cancel the calling parent's
+    # execution. However, running it in a subshell means that only that subshell will exit,
+    # allowing this/the calling parent functions to continue.
+    # Thus, capture the exit code of the above subshell and return it.
+    # 0 = true (defined), 1 = false (undefined)
+    return "$?"
 }
 
 
