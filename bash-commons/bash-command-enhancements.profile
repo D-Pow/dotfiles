@@ -169,7 +169,6 @@ findIgnoreDirs() {
     local _findFinalCmd="find $_findToSearchIn $_findIgnoreDirsOption ${_findOpts[@]}"
 
     eval "$_findFinalCmd"
-    echo "$_findFinalCmd" >&2
 }
 
 
