@@ -26,8 +26,8 @@ set -m
 SHELL="$(which "$(echo "$0" | sed -E 's|^-||')")"
 
 
-alias ls='ls -Fh'
-alias lah='ls -Flah'
+alias ls='ls -Fh --color'
+alias lah='ls -Flah --color'
 
 
 alias printpath='echo $PATH | sed -E "s|:|\n|g"'
