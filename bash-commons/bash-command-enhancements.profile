@@ -62,6 +62,8 @@ open() {
         _openCommand=open
     fi
 
+    _openCommand="$(which "$_openCommand")"
+
     $_openCommand "$@"
 }
 
