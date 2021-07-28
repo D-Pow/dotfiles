@@ -48,6 +48,26 @@ getGitIgnoredFiles() {
 }
 
 
+gitBlameParentOfCommit() {
+    local _gitBlameParentOfCommitUsage="Gets the git blame of a parent commit and previous file name/path.
+    Very useful for when files were renamed or bulk syntax formatting was done, hiding the blame you're looking for.
+
+    Usage:
+        ${FUNCNAME[0]} <commit-hash> <file(s)>
+
+    Executes:
+        git blame 'af87d2^' -- file.txt
+    "
+
+    if [[ -z "$1" ]] || [[ -z "$2" ]]; then
+        echo "$_gitBlameParentOfCommitUsage" >&2
+        return 1
+    fi
+
+    git blame "$1^" "${@:2}"
+}
+
+
 getGitParent() {
     # git doesn't track what a branch's parent is, so we have to guess from the git log output.
     # Hence, here we guess based off git log's default branch output first and output from merges second.
