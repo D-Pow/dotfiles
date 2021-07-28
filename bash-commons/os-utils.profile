@@ -26,7 +26,12 @@ listopenports() {
         # Since the `-i` arg format is very specific, just search manually for the user's
         # input to make the function more user-friendly (so they aren't forced to know
         # the `-i` arg format).
-        _listopenportsCmd+=("|" "egrep" "'$1'")
+        #
+        # Also, keep the header showing what each column represents by also capturing
+        # keywords in the `lsof` output header.
+        # Use a lookahead so that the header capture isn't colorized, otherwise both
+        # the header and the search query would be colorized.
+        _listopenportsCmd+=("|" "egrep" "'(?=PID.*NAME)|$1'")
     fi
 
     # Use `eval` instead of just `${cmd[@]}` because pipes (`|`) are really difficult to
