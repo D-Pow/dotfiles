@@ -1,7 +1,39 @@
-# -P (show full port numbers)
-# -n (show full IPs)
-# -i (show internet addresses, can be -i4/-i6 for IPv4/6, or -i:PORT for showing specific port)
-alias listopenports='sudo lsof -Pn -i'
+listopenports() {
+    local _listopenportsCmd=()
+    local OPTIND=1
+
+    while getopts "s" opt; do
+        case "$opt" in
+            s)
+                _listopenportsCmd+=('sudo')
+                ;;
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+
+    # -P - Show full port numbers (`:8080` instead of `:http-alt`)
+    # -n - Show full IPs (`127.0.0.1:46012` instead of `ip6-localhost:46012`)
+    # -i - Show ONLY internet addresses (default `lsof` shows all open files, including processes)
+    #      `-i` arg follows the format:
+    #          [46][protocol][@hostname|hostaddr][:service|port]
+    #      e.g.
+    #          `-i 4`/`-i 6` for showing IPv4/6
+    #          `-i :PORT` for showing specific port
+    _listopenportsCmd+=('lsof' '-Pn' '-i')  # `-i` doesn't have to be separate, but this clarifies that it accepts args
+
+    if [[ -n "$1" ]]; then
+        # Since the `-i` arg format is very specific, just search manually for the user's
+        # input to make the function more user-friendly (so they aren't forced to know
+        # the `-i` arg format).
+        _listopenportsCmd+=("|" "egrep" "'$1'")
+    fi
+
+    # Use `eval` instead of just `${cmd[@]}` because pipes (`|`) are really difficult to
+    # escape when trying to execute the array entries directly.
+    # At least running it as an array instead of a string means spaces are maintained
+    eval "${_listopenportsCmd[@]}"
+}
 
 
 getAllCrlfFiles() {
