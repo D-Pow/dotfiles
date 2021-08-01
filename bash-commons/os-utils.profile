@@ -177,11 +177,7 @@ memusage() {
 
 ### Directory traversal ###
 
-# TODO
-#   Keep symlinks in resulting path, not actual location (e.g. /home/repos/ vs /mnt/partition1/repos/)
-#       https://stackoverflow.com/questions/41901885/get-full-path-without-resolving-symlinks
-#       https://stackoverflow.com/questions/2564634/convert-absolute-path-into-relative-path-given-a-current-directory-using-bash
-reposDir="`realpath "$dotfilesDir/.."`"
+reposDir="`dirname "$dotfilesDir"`"  # use `dirname` instead of `realpath` to preserve symlinks/~ in path
 repos() {
     # Path is relative to repositories directory.
     # Read all args via `$@` instead of `$1` in case spaces aren't escaped.
@@ -227,7 +223,7 @@ _autocompleteRepos() {
         local resolvedAbsPath="`dirname "$requestedAbsPath"`"
     fi
 
-    local dirOptions="`find "$resolvedAbsPath" -maxdepth 1 -type d`"
+    local dirOptions="`find -L "$resolvedAbsPath" -maxdepth 1 -type d`"  # -L follows symlinks. Necessary b/c we're searching `/repo/dir` and not `/repo/dir/`
 
     # Filter resulting directory options to include suggestions for only dirs that include the
     # string the user searched for.
