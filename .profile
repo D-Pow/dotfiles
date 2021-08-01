@@ -36,7 +36,7 @@ alias thisDir='echo "$(realpath "`dirname "$(thisFile)"`")"'
 
 
 if type thisDir &>/dev/null; then
-    export dotfilesDir="`thisDir`"
+    export dotfilesDir="`dirname "$(thisFile)"`" # don't use `thisDir` to preserve symlinks/`~` in resulting path (e.g. if ~/repositories is a symlink to external mounted partition)
 
     platform="$1"
     platformDir="$dotfilesDir/$platform"
