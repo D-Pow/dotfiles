@@ -39,8 +39,14 @@
     { "keys": ["ctrl+tab"], "command": "next_view" },
     { "keys": ["ctrl+shift+tab"], "command": "prev_view" },
     { "keys": ["ctrl+shift+o"], "command": "prompt_add_folder"},
-    { "keys": ["ctrl+shift+b"], "command": "cancel_build" },
-    { "keys": ["ctrl+shift+c"], "command": "exec", "args": {"kill": true} },
+
+    /* Build/run/execution */
+    { "keys": ["ctrl+r"], "command": "build" },
+    { "keys": ["ctrl+shift+c"], "command": "chain", "args": { "commands": [
+        [ "exec", { "kill": true }],
+        [ "cancel_build" ],
+    ]}},
+
 
     /* Tab selection */
     { "keys": ["ctrl+1"], "command": "select_by_index", "args": { "index": 0 } },
