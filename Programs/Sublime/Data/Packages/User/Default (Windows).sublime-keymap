@@ -47,6 +47,21 @@
         [ "cancel_build" ],
     ]}},
 
+    /* GoTo remappings - High-level key combos, searches all files in project.
+     * @ = Definition.
+     * : = Line number.
+     * # = Type (const, function, class, etc.)
+     */
+    { "keys": ["ctrl+g"], "command": "show_overlay", "args": {"overlay": "goto", "text": "@"} },
+    { "keys": ["ctrl+l"], "command": "show_overlay", "args": {"overlay": "goto", "text": ":"} },
+    { "keys": ["ctrl+t"], "command": "show_overlay", "args": {"overlay": "goto", "text": "#"} },
+    /* GoTo remappings - Low-level key combos, for searching from a given function/variable declaration */
+    { "keys": ["ctrl+shift+d"], "command": "goto_definition" },
+    { "keys": ["ctrl+shift+alt+d"], "command": "goto_definition", "args": {"side_by_side": true, "clear_to_right": true} },
+    { "keys": ["ctrl+shift+r"], "command": "goto_reference" },
+    { "keys": ["ctrl+shift+alt+r"], "command": "goto_reference", "args": {"side_by_side": true, "clear_to_right": true} },
+    { "keys": ["ctrl+shift+a"], "command": "goto_symbol_in_project" },
+
 
     /* Tab selection */
     { "keys": ["ctrl+1"], "command": "select_by_index", "args": { "index": 0 } },
