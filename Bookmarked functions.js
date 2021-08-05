@@ -12,11 +12,19 @@ window.sortObjectByKeys = function(obj) {
     }, {});
 };
 
-window.getCookie = function(cookie = document.cookie) {
+window.getCookie = function getCookie({ cookie = document.cookie, decodeBase64 = true } = {}) {
     return cookie.split('; ').reduce((cookieObj, entry) => {
         const keyVal = entry.split('=');
-        const key = keyVal[0];
-        let value = keyVal.slice(1).join('=');
+        const key = decodeURIComponent(keyVal[0]);
+        let value = decodeURIComponent(keyVal.slice(1).join('='));
+
+        if (decodeBase64) {
+            try {
+                value = atob(value);
+            } catch (e) {
+                // Not a Base64-encoded string
+            }
+        }
 
         cookieObj[key] = value;
 
