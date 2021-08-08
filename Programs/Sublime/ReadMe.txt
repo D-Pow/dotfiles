@@ -22,7 +22,7 @@ Folders:
         Same as above, with files, except the command needs to be changed from "%1" to "%V"
 
 Linux:
-    Put the sublime.nemo_action file in the location specified within the action file to add it to right click menu
+    Put the sublime.(desktop|nemo_action) files in the locations specified in the `linux/.local/` sub-directory of this repository.
 
 Part B - Install helpful things and change settings manually
  a) Install PackageControl, then PackageResourceViewer (ctrl+shift+p -> install package).
