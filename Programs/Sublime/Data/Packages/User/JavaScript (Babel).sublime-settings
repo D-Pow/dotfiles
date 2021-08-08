@@ -1,9 +1,12 @@
 {
     "extensions": [
         "js",
+        "jsx",
         "ts",
+        "tsx",
         "mjs",
         "cjs",
+        "ejs",
         "pac"
     ]
 }
