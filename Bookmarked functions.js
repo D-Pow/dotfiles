@@ -166,6 +166,41 @@ window.fetchCors = function(url, options) {
     );
 };
 
+window.compareEscapingFunctions = function() {
+    /* TL;DR Don't use escape(), use encode() or custom/third-party
+     * See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent#description
+     */
+    const encodedCharsByFunc = Array.from({ length: 256 })
+        .reduce((charsThatWillBeEncoded, nil, i) => {
+            const asciiChar = String.fromCharCode(i);
+            const charEncodes = {
+                char: asciiChar
+            };
+
+            if (asciiChar !== encodeURI(asciiChar)) {
+                charEncodes.encodeURI = encodeURI(asciiChar);
+            }
+
+            if (asciiChar !== encodeURIComponent(asciiChar)) {
+                charEncodes.encodeURIComponent = encodeURIComponent(asciiChar);
+            }
+
+            if (asciiChar !== escape(asciiChar)) {
+                charEncodes.escape = escape(asciiChar);
+            }
+
+            if (Object.keys(charEncodes).length > 1) {
+                charsThatWillBeEncoded.push(charEncodes);
+            }
+
+            return charsThatWillBeEncoded;
+        }, []);
+
+    console.table(encodedCharsByFunc);
+
+    return encodedCharsByFunc;
+};
+
 
 /************************************
  ********    Website utils    *******
