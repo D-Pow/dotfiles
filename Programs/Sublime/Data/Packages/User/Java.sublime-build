@@ -1,0 +1,17 @@
+{
+    "shell_cmd": "javac \"$file\" && java \"$file_base_name\"",
+    "file_regex": "^(...*?):([0-9]*):?([0-9]*)", // for error output
+    "selector": "source.java", // file-selector by syntax (instead of filename or other criteria)
+    "variants": [
+        {
+            "name": "JavaDoc",
+            "shell_cmd": "mkdir $file_base_name-documentation && javadoc -d $file_base_name-documentation *.java",
+            "shell": true,
+        },
+        {
+            "name": "JAR",
+            "shell_cmd": "javac '$realpath$file' && echo \"Main-Class: $file_base_name\" > Manifest.txt && jar -cfm $file_base_name.jar Manifest.txt *.class && rm Manifest.txt *.class && java -jar $file_base_name.jar",
+            "shell": true,
+        },
+    ]
+}
