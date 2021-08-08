@@ -261,28 +261,6 @@ async function translateJapanese(query) {
 window.translateJapanese = translateJapanese;
 
 
-function extractAmazonChatLogs() {
-    /* Amazon doesn't let you get a transcript of chats, so do it manually */
-    const chatsParentSelector = '.ChatRoller__liveTranscriptWrapper___JJkDd';
-    const chatElems = [...document.querySelector(chatsParentSelector).children];
-
-    return chatElems.reduce((acc, childElem) => {
-        const text = childElem.querySelector('[class*=messageBody]')?.innerText;
-        const timeStamp = childElem.querySelector('[class*=timeStamp]')?.innerText
-
-        if (childElem.className.includes('agentVariant')) {
-            acc.push({ agent: true, text, timeStamp });
-        } else {
-            acc.push({ agent: false, text, timeStamp });
-        }
-
-        return acc;
-    }, []);
-}
-
-window.extractAmazonChatLogs = extractAmazonChatLogs;
-
-
 class SlackInBrowserService {
     /**
      * @typedef {Object} Channel
