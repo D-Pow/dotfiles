@@ -177,10 +177,6 @@ be-stop() {
 }
 
 
-copy() {
-    echo -n "$1" | pbcopy
-}
-
 cf() {
     touch "$1" && chmod a+x "$1"
 }

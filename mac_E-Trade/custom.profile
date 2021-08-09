@@ -38,11 +38,6 @@ alias gradle4="$GRADLE_4_HOME/gradle"
 alias enpm='npm --registry="https://repo.etrade.com/registry/npm/npm-all/" --sass-binary-site="https://artifactory.etrade.com/artifactory/github/sass/node-sass/releases/download"'
 
 
-copy() {
-    echo -n "$1" | pbcopy
-}
-
-
 getAppBinaryPath() {
     # lsappinfo - gets all info for a *running* app
     # It's more robust than other solutions for getting the absolute path to the MyApp.app's binary file

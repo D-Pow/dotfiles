@@ -60,6 +60,87 @@ getCommandsMatching() {
 }
 
 
+
+_copyCommand=
+_pasteCommand=
+
+copy() {
+    # Create new `copy` command for writing content to the clipboard.
+    # Can be used with both piping `echo "hi" | copy` and with args `copy "hi"`.
+    #
+    #
+    # Input from `&0` and/or `/dev/stdin` can be piped directly to another command,
+    # e.g. what is done in most of the `git.profile` functions.
+    #
+    # However, to handle entries individually, like how `find` outputs each discovered
+    # match one-by-one to `&1`, then a `read` call must be made.
+    #
+    # This can be done by either:
+    # 1) "Parallel"/piping output as it's processed, per-entry, in a loop:
+    #       while read inputLine; do
+    #           echo "$inputLine"
+    #       done
+    # 2) "Sequential"/non-piping to collect all input before doing anything:
+    #       `readarray -t inputArray`
+    #     Where `readarray` == `mapfile`, both of which are array-friendly versions of `read`
+    #
+    # Both use IFS to determine distinct entries, so something
+    # like `echo 'a b' c | myFunc` will read `a b c` as one entry.
+    #
+    # Note that `stdin=("$(cat -)")` doesn't work b/c it calls `cat` in a subshell,
+    # so all IFS-separated entries are now combined into one.
+    # We could do something like `eval 'stdin=("$(cat -)")'` to execute the logic in
+    # this current shell, but then we run into issues with spaces, newlines, etc.
+    # Alternatively, we could use `<<<&0` or something, but that gets even more complicated.
+    # Avoid that mess by just using the built-in, more user-friendly, `readX` functions.
+    local stdin
+    readarray -t stdin
+
+    local args=("$@")
+
+    echo -n "${stdin[@]}" "${args[@]}" | $_copyCommand
+}
+
+paste() {
+    $_pasteCommand
+}
+
+_setClipboardCopyAndPasteCommands() {
+    local _copyPasteError="Error: Cannot find native CLI copy/paste commands for platform [$OSTYPE].
+    In order to copy/paste from the clipboard, \`xclip\` or \`xsel\` are required.
+    Please run next command:
+        sudo apt-get install xclip"
+    local _printCopyPasteError='echo -e "$_copyPasteError" >&2'
+
+    # Linux OS
+    if [[ -n "$(os-version | grep -i 'linux')" ]]; then
+        # `paste` is actually a handy tool to merge different files line-by-line
+        # where resulting lines are the files' lines joined by <Tab>.
+        # First, alias that to a more helpful name so it's not lost, then alias copy/paste.
+        alias mergefiles='paste'
+
+        # Try to use one of the third-party utils, or error if not installed.
+        if isDefined 'xclip' &>/dev/null; then
+            _copyCommand='xclip -sel clipboard'
+            _pasteCommand='xclip -sel clipboard -o'
+        elif isDefined 'xsel' &>/dev/null; then
+            _copyCommand='xsel --clipboard -i'
+            _pasteCommand='xsel --clipboard -0'
+        else
+            eval "$_printCopyPasteError"
+        fi
+    # Mac OS
+    elif [[ -n "$(os-version | egrep -i '(darwin|mac|osx)')" ]]; then
+        # Use built-in `pb` commands.
+        _copyCommand='pbcopy'
+        _pasteCommand='pbpaste'
+    else
+        eval "$_printCopyPasteError"
+    fi
+} && _setClipboardCopyAndPasteCommands
+
+
+
 dirsize() {
     # ${FUNCNAME[0]} gets the name of this function, regardless of where it was called/defined
     usage="Displays total disk usages of all directories within the given path.

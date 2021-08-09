@@ -180,14 +180,8 @@ alias apachestart='systemctl start apache2'
 alias apachestop='systemctl stop apache2'
 alias apachestatus='systemctl status apache2'
 
-copy() {
-    # Linux: xclip (will need install)
-    # Mac:   pbcopy
-    echo -n "$1" | pbcopy
-}
 
 workDir='/home/dpow/Documents/Google Drive/Work'
-
 alias todo="subl '$workDir/ToDo.md'"
 
 
