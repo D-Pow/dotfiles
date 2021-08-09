@@ -42,6 +42,9 @@ if type thisDir &>/dev/null; then
     platformDir="$dotfilesDir/$platform"
     commonsDir="$dotfilesDir/bash-commons"
 
+    # Always source dotfiles/linux/bin/ since it has many useful scripts
+    export PATH="$dotfilesDir/linux/bin:$platformDir/bin:$HOME/bin:$HOME/.local/bin:$PATH"
+
     export commonProfile="$commonsDir/common.profile"
     export customProfile="$platformDir/custom.profile"
     export actualProfile='~/.profile'
@@ -53,7 +56,4 @@ if type thisDir &>/dev/null; then
     alias editprofile="subl -n -w '$customProfile' && source $actualProfile"
     alias editcommon="subl -n -w '$commonProfile' && source $actualProfile"
     alias editactual="subl -n -w $actualProfile && source $actualProfile"
-
-    # Always source dotfiles/linux/bin/ since it has many useful scripts
-    export PATH="$dotfilesDir/linux/bin:$platformDir/bin:$HOME/bin:$HOME/.local/bin:$PATH"
 fi
