@@ -93,12 +93,14 @@ copy() {
     # this current shell, but then we run into issues with spaces, newlines, etc.
     # Alternatively, we could use `<<<&0` or something, but that gets even more complicated.
     # Avoid that mess by just using the built-in, more user-friendly, `readX` functions.
-    local stdin
-    readarray -t stdin
+    local _toCopyArgs=("$@")
+    local _toCopyStdin=()
 
-    local args=("$@")
+    if array.empty _toCopyArgs; then
+        readarray -t _toCopyStdin
+    fi
 
-    echo -n "${stdin[@]}" "${args[@]}" | $_copyCommand
+    echo -n "${_toCopyStdin[@]}" "${_toCopyArgs[@]}" | $_copyCommand
 }
 
 paste() {
