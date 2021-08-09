@@ -412,6 +412,7 @@ array.reverse() {
 
 array.merge() {
     # TODO use array.gen-matrix
+    # TODO see if `readarray` would work: https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#index-mapfile
 
     local allArrayNames=("$@")
     local allArrayValues=()

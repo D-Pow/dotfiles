@@ -77,6 +77,13 @@ open() {
 }
 
 
+if ! isDefined readarray; then
+    # `readarray == mapfile` but `readarray` wasn't introduced until Bash v4,
+    # so define it here
+    alias readarray='mapfile'
+fi
+
+
 _grepIgnoredDirs=('node_modules' '.git' '.idea' 'lcov-report')
 
 alias grep="grep --exclude-dir={`array.join -s _grepIgnoredDirs ','`} --color=auto"
