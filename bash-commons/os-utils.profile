@@ -93,6 +93,8 @@ copy() {
     # this current shell, but then we run into issues with spaces, newlines, etc.
     # Alternatively, we could use `<<<&0` or something, but that gets even more complicated.
     # Avoid that mess by just using the built-in, more user-friendly, `readX` functions.
+    #
+    # Ref: https://stackoverflow.com/questions/5130968/how-can-i-copy-the-output-of-a-command-directly-into-my-clipboard/62517779#62517779
     local _toCopyArgs=("$@")
     local _toCopyStdin=()
 
