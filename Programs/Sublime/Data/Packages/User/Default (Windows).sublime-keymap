@@ -39,6 +39,8 @@
     { "keys": ["ctrl+tab"], "command": "next_view" },
     { "keys": ["ctrl+shift+tab"], "command": "prev_view" },
     { "keys": ["ctrl+shift+o"], "command": "prompt_add_folder"},
+    { "keys": ["ctrl+t"], "command": "new_file" },
+    { "keys": ["ctrl+n"], "command": "new_window" },
 
     /* Build/run/execution */
     { "keys": ["ctrl+r"], "command": "build" },
@@ -54,9 +56,9 @@
      * : = Line number.
      * # = Type (const, function, class, etc.)
      */
-    { "keys": ["ctrl+g"], "command": "show_overlay", "args": {"overlay": "goto", "text": "@"} },
-    { "keys": ["ctrl+l"], "command": "show_overlay", "args": {"overlay": "goto", "text": ":"} },
-    { "keys": ["ctrl+t"], "command": "show_overlay", "args": {"overlay": "goto", "text": "#"} },
+    { "keys": ["alt+g"], "command": "show_overlay", "args": {"overlay": "goto", "text": "@"} },
+    { "keys": ["alt+l"], "command": "show_overlay", "args": {"overlay": "goto", "text": ":"} },
+    { "keys": ["alt+t"], "command": "show_overlay", "args": {"overlay": "goto", "text": "#"} },
     /* GoTo remappings - Low-level key combos, for searching from a given function/variable declaration */
     { "keys": ["alt+d"], "command": "goto_definition" },
     { "keys": ["alt+shift+d"], "command": "goto_definition", "args": {"side_by_side": true, "clear_to_right": true} },
