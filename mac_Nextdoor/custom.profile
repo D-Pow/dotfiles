@@ -148,7 +148,21 @@ fe-start() {
     yarn build --watch "$@"
 }
 fe-stop() {
-    docker stop nextdoorcom_dev-local-proxy_1 nextdoorcom_dev-portal_1 nextdoorcom_static_1
+    # Unique substrings for front-end Docker containers currently used to proxy API
+    # calls and .html rendering for webpack output.
+    # Names might change over time to add IDs at the start/end of the actual name,
+    # so use these string identifiers to find the actual name to pass to `docker stop`.
+    local feProxyDockerContainers=(
+        dev-local-proxy
+        dev-portal
+        static_1
+    )
+
+    for feProxyDockerContainer in "${feProxyDockerContainers[@]}"; do
+        local actualContainerName="$(dockerFindByName --format '{{.Names}}' "$feProxyDockerContainer")"
+
+        docker stop "$actualContainerName"
+    done
 }
 
 # Required to give Docker more time to build Nextdoor's bloated containers
