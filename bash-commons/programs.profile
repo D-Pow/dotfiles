@@ -26,7 +26,7 @@ dockerFindByName() {
 
     shift
 
-    echo "`docker ps -a "$@" --filter "name=$imageName"`"
+    docker ps -a "$@" --filter "name=$imageName"
 }
 
 dockerIsContainerRunning() {
