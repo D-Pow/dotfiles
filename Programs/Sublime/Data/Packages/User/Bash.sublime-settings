@@ -2,6 +2,7 @@
     "extensions":
     [
         "profile",
-        "conf"
+        "conf",
+        "Dockerfile",
     ]
 }
