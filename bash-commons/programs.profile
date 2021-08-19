@@ -22,11 +22,14 @@ export PATH="$NVM_CURRENT_HOME/bin:$PATH"
 ### Docker ###
 
 dockerFindByName() {
-    local imageName="$1"
+    local _dockerPsArgs=("$@")
 
-    shift
+    # All args before the last one
+    array.slice -r _dockerPsOpts _dockerPsArgs 0 -1
+    # Last arg is image name query string
+    array.slice -r _dockerPsImageNameArray _dockerPsArgs -1
 
-    docker ps -a "$@" --filter "name=$imageName"
+    docker ps -a "${_dockerPsOpts[@]}" --filter "name=${_dockerPsImageNameArray[0]}"
 }
 
 dockerIsContainerRunning() {
