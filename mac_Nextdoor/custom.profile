@@ -9,6 +9,7 @@ export SUBLIME_DIR=/Users/dpowell1/Library/Application\ Support/Sublime\ Text/Pa
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_291.jdk/Contents/Home/
 # export PIP3_HOME=/usr/local/opt/python\@3.7/bin/
 # export PIP2_HOME=/Users/dpowell1/Library/Python/2.7/bin
+export TEXMFHOME=/Users/dpowell/texlive/2021/bin/universal-darwin
 
 # Run: brew install bash coreutils gawk gnutls gnu-indent gnu-getopt gnu-sed gnu-tar grep findutils
 # Then, add `/usr/local/bin/bash` to `/etc/shells`
@@ -33,7 +34,7 @@ for (( i=0; i < "${#_brewGnuUtils[@]}"; i++ )); do
 done
 BREW_GNU_UTILS_HOMES="`array.join -s _brewGnuUtils ':'`"
 
-export PATH=$BREW_GNU_UTILS_HOMES:$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$MAVEN_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$SUBLIME_HOME:$BOOST_HOME:/usr/local/bin:/Users/dpowell1/bin:$PATH
+export PATH=$BREW_GNU_UTILS_HOMES:$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$MAVEN_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$SUBLIME_HOME:$BOOST_HOME:$TEXMFHOME:/usr/local/bin:/Users/dpowell1/bin:$PATH
 
 # Colored terminal
 # export PS1="\[\033[36m\]\u\[\033[m\]@\[\033[32m\]\h:\[\033[33;1m\]\w\[\033[m\]\$ "
