@@ -495,7 +495,7 @@
     "viewer_settings": {
         // Platform-specific settings:
         "osx" : {
-            // See README or third-party documentation
+            "view_command": "open "
         },
 
         "windows" : {
@@ -503,7 +503,7 @@
         },
 
         "linux" : {
-            // See README or third-party documentation
+            "view_command": "xdg-open "
         }
     },
 
