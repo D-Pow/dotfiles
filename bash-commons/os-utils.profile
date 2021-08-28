@@ -41,6 +41,31 @@ listopenports() {
 }
 
 
+read-env-file() {
+    # Reads a .env, .properties, etc. file containing `key=value` entries
+    # on separate lines.
+    # Sets the keys as variables in the current shell.
+    local _envFile="$1"
+
+    # Cannot use `cat file | while read` because pipes create subshells,
+    # meaning that writing to a variable stays only in that subshell, not the
+    # parent (this script's) shell.
+    # Thus, use the file as redirected input instead.
+    #
+    # Also, use `read -r` to maintain backslashes as-is rather than parse them.
+    while IFS='=' read -r key value; do
+        case "$key" in
+            '#'*)
+                # Ignore comments
+                ;;
+            *)
+                eval "$key=$value"
+                ;;
+        esac
+    done < "$_envFile"
+}
+
+
 getAllCrlfFiles() {
     # find [args] -exec [command] "output from find" "necessary `-exec` terminator to show end of command"
     find . -not -type d -exec file "{}" ";" | grep CRLF
