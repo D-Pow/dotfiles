@@ -4,8 +4,8 @@ Conversion	Backspace	Cancel
 Precomposition	Backspace	Revert
 Composition	Ctrl `	InputModeHiragana
 DirectInput	Ctrl `	InputModeHiragana
-Composition	Ctrl 1	InputModeFullKatakana
-DirectInput	Ctrl 1	InputModeFullKatakana
+Composition	Ctrl Shift ~	InputModeFullKatakana
+DirectInput	Ctrl Shift ~	InputModeFullKatakana
 Composition	Ctrl a	MoveCursorToBeginning
 Conversion	Ctrl a	SegmentFocusFirst
 Composition	Ctrl Backspace	Backspace
@@ -141,7 +141,7 @@ Composition	Tab	PredictAndConvert
 Conversion	Tab	PredictAndConvert
 Conversion	Up	ConvertPrev
 Precomposition	Ctrl `	InputModeHiragana
-Precomposition	Ctrl 1	InputModeFullKatakana
+Precomposition	Ctrl Shift ~	InputModeFullKatakana
 Composition	ASCII	InsertCharacter
 Composition	Kanji	IMEOff
 Composition	OFF	IMEOff
