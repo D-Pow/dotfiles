@@ -8,12 +8,38 @@ if [[ "$allSysInfo" != *"Linux"* ]]; then
     fi
 fi
 
-os="$(cat /etc/issue.net)"
+osSimpleNameFile=/etc/issue.net
+# Following files follow the same format as .env/.properties files,
+# i.e. each line is `key=value`
+allOsInfoFile=/etc/os-release
+allBranchedFromOsInfoFile=/etc/upstream-release/lsb-release
 
-echo "OS: $os"
+osSimpleName="$(cat $osSimpleNameFile)"
 
+echo "OS: $osSimpleName"
+
+# TODO fix this since the format has changed
 if [[ "$allSysInfo" == *"~"* ]]; then
-    osBranchedFromOs="$(echo $allSysInfo | grep -P -o '(?<=~)[\S]+')"
+    osBranchedFrom="$(echo $allSysInfo | grep -P -o '(?<=~)[\S]+')"
 
-    echo "Branched from: $osBranchedFromOs"
+    echo "Branched from: $osBranchedFrom"
+elif [[ -f "$allBranchedFromOsInfoFile" ]]; then
+    osBranchedFrom=''
+
+    # Cannot use `cat file | while read` because pipes create subshells,
+    # meaning that writing to a variable stays only in that subshell, not the
+    # parent (this script's) shell.
+    # Thus, use the file as redirected input instead.
+    while IFS='=' read key value; do
+        case "$key" in
+            DISTRIB_ID|DISTRIB_RELEASE|DISTRIB_CODENAME)
+                osBranchedFrom+="$value "
+                ;;
+            DISTRIB_DESCRIPTION|*)
+                # Long code name, ignore
+                ;;
+        esac
+    done < $allBranchedFromOsInfoFile
+
+    echo "Branched from: $osBranchedFrom"
 fi
