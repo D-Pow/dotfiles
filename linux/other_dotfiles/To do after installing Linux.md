@@ -46,6 +46,7 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
     nvidia-drm
     nvidia-modeset
     ```
+    - For multi-monitor setups, everything should run smoothly automatically. If you experience many issues, you could make two separate X screen servers rather than allowing one server to handle multiple screens, though this isn't recommended b/c it breaks some features (e.g. dragging windows between screens, hardware acceleration between both screens, etc.). To do so, see: https://download.nvidia.com/XFree86/Linux-x86_64/384.98/README/configmultxscreens.html
 
 
 * Install updates.
