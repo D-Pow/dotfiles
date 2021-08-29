@@ -9,6 +9,40 @@
 #   array.values-from-name: Bash < 4.3 (which doesn't support `declare -n nameRef`) can be supported via:
 #       eval $retArrName='("${newArr[@]}")'
 
+array.length() {
+    local -n _arrLengthArr="$1"
+    local _arrLength=${#_arrLengthArr[@]}
+
+    if (( _arrLength == 1 )) && [[ "${_arrLengthArr[@]}" == '' ]]; then
+        echo 0
+    else
+        echo $_arrLength
+    fi
+}
+
+
+array.empty() {
+    local _lengthEmpty=`array.length $1`
+
+    # Want to be able to use this like `if array.empty myArr; then ...`
+    # Options on how to do this:
+    #
+    # Manually echo true/false. echo is required to return value from a function if in one-liner,
+    # but isn't required if "calling" the command directly.
+    # `[[ $_lengthEmpty -eq 0 ]] && echo true || echo false`
+    #
+    # Replace `echo` with "calling" the command directly.
+    # if [[ $_lengthEmpty -eq 0 ]]; then
+    #     true
+    # else
+    #     false
+    # fi
+    #
+    # Or, simply run the check in-place.
+    [[ $_lengthEmpty -eq 0 ]]
+}
+
+
 array.toString() {
     local lengthOnly
     local _toStringDelim
@@ -29,13 +63,14 @@ array.toString() {
     shift $(( OPTIND - 1 ))
 
     local -n _arrToString="$1"
+    local _arrToStringLength="$(array.length _arrToString)"
 
     if [[ -n "$lengthOnly" ]]; then
-        echo "$1 (length=${#_arrToString[@]})"
+        echo "$1 (length=$_arrToStringLength)"
     elif [[ -n "$_toStringDelim" ]]; then
-        echo "$1 (length=${#_arrToString[@]}): `printf "%s$_toStringDelim" "${_arrToString[@]}"`"
+        echo "$1 (length=$_arrToStringLength): `printf "%s$_toStringDelim" "${_arrToString[@]}"`"
     else
-        echo "$1 (length=${#_arrToString[@]}): ${_arrToString[@]}"
+        echo "$1 (length=$_arrToStringLength): ${_arrToString[@]}"
     fi
 }
 
@@ -98,40 +133,6 @@ array.fromString() {
     else
         echo "${_newArrFromStr[@]}"
     fi
-}
-
-
-array.length() {
-    local -n _arrLengthArr="$1"
-    local _arrLength=${#_arrLengthArr[@]}
-
-    if (( _arrLength == 1 )) && [[ "${_arrLengthArr[@]}" == '' ]]; then
-        echo 0
-    else
-        echo $_arrLength
-    fi
-}
-
-
-array.empty() {
-    local _lengthEmpty=`array.length $1`
-
-    # Want to be able to use this like `if array.empty myArr; then ...`
-    # Options on how to do this:
-    #
-    # Manually echo true/false. echo is required to return value from a function if in one-liner,
-    # but isn't required if "calling" the command directly.
-    # `[[ $_lengthEmpty -eq 0 ]] && echo true || echo false`
-    #
-    # Replace `echo` with "calling" the command directly.
-    # if [[ $_lengthEmpty -eq 0 ]]; then
-    #     true
-    # else
-    #     false
-    # fi
-    #
-    # Or, simply run the check in-place.
-    [[ $_lengthEmpty -eq 0 ]]
 }
 
 
@@ -387,7 +388,7 @@ array.reverse() {
     fi
 
     declare _leftReverse=0
-    declare _rightReverse=$(( ${#_newArrReversed[@]} - 1 )) # Want index of last entry, not length
+    declare _rightReverse=$(( $(array.length _newArrReversed) - 1 )) # Want index of last entry, not length
 
 
     while [[ _leftReverse -lt _rightReverse ]]; do
@@ -429,9 +430,9 @@ array.merge() {
         allArrayValues+=("${arrValues[@]}")
     done
 
-    echo "All vals (length=${#allArrayValues[@]}): ${allArrayValues[@]}"
+    echo "All vals: $(array.toString allArrayValues)"
 
-    if [[ ${#allArrayNames[@]} -eq 1 ]]; then
+    if (( $(array.length arr) == 1 )); then
         echo "${allArrayValues[1][@]}"
     fi
 
@@ -522,8 +523,8 @@ array.gen-matrix() {
     local allArrayValues
 
     # for arrName in ${allArrayNames[@]}; do
-    # for i in `seq 0 $((${#allArrayNames[@]} - 1))`; do
-    for ((i = 0; i < ${#allArrayNames[@]}; i++)); do
+    # for i in `seq 0 $(( $(array.length allArrayNames) - 1 ))`; do
+    for ((i = 0; i < $(array.length allArrayNames); i++)); do
         local arrName="${allArrayNames[$i]}"
         # echo "arrName (index=$i): $arrName"
         local arrNameToAccessAllValues="$arrName[@]"
@@ -535,10 +536,10 @@ array.gen-matrix() {
         allArrayValues[$i]=${!arrNameToAccessAllValues}
     done
 
-    echo "All vals (length=${#allArrayValues[@]}): ${allArrayValues[@]}"
+    echo "All vals: $(array.toString allArrayValues)"
     echo "All keys: ${!allArrayValues[@]}"
 
-    # if [[ ${#allArrayNames[@]} -eq 1 ]]; then
+    # if [[ $(array.length allArrayNames) -eq 1 ]]; then
         # echo "${allArrayValues[1][@]}" # doesn't work b/c can't nest arrays in arrays
     # fi
 
