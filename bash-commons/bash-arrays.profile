@@ -102,9 +102,14 @@ array.fromString() {
 
 
 array.length() {
-    local -n _arrLength="$1"
+    local -n _arrLengthArr="$1"
+    local _arrLength=${#_arrLengthArr[@]}
 
-    echo ${#_arrLength[@]}
+    if (( _arrLength == 1 )) && [[ "${_arrLengthArr[@]}" == '' ]]; then
+        echo 0
+    else
+        echo $_arrLength
+    fi
 }
 
 
