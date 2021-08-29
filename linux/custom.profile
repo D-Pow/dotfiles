@@ -215,6 +215,184 @@ brightness() {
 }
 
 
+window() {
+    # TODO look into xdotool
+    # It seems wmctrl was installed natively in Linux Mint 20 but xdotool was not.
+    # Maybe try a mix of both depending on the user's environment, e.g.
+    #   if is-installed xdotool; then ...;
+    #   elif is-installed wmctrl; then ...;
+    #   else throw error
+
+    # Refs:
+    # Max/Min-imizing windows
+    #   https://askubuntu.com/questions/703628/how-to-close-minimize-and-maximize-a-specified-window-from-terminal
+    # Getting active window
+    #   `:ACTIVE:` pseudo-identifier - https://unix.stackexchange.com/questions/526503/how-to-resize-and-move-a-window-by-its-pid-using-wmctrl
+    #   Manual method - https://superuser.com/questions/382616/detecting-currently-active-window
+    # (Desktop == Workspace) != Screen
+    #   Multi-monitor setups using X11/Xorg usually use a single screen that's the size of all monitor screens
+    #   combined. This is intentional as it allows for dragging windows from one screen to another and reduces
+    #   processing overhead.
+    #   But it means we have to do screen math ourselves manually.
+
+    USAGE=$(echo "${FUNCNAME[0]} [OPTIONS]
+    Maximizes, minimizes, moves, and otherwise changes the display of windows from the terminal.
+    Created since Linux Mint 20 botched the de-tiling of windows.\n
+
+    Usage:
+        -l \t\t| Lists all windows and desktops (workspaces).
+        -w <ID|Name> \t| Target window to interact with (defaults to active window).
+        -m <s,x,y,w,h> \t| Move window to screen,x,y,w,h (Note: Screen != desktop/workspace).
+        -s <max|min> \t| Resize window to maximize/minimize.
+        -u \t\t| Undoes the \`-s\` command.
+    " | column -t -s$'\t') #
+
+    declare _window=':ACTIVE:'
+    declare _windowSelectorFlag=
+    declare _resizeCmd=
+    declare _resizeDirection=add
+    declare _moveCmd=
+    declare OPTIND=1
+
+    while getopts "lw:m:r:uh" opt; do
+        case "$opt" in
+            l)
+                # wmctrl doesn't include headers, so add them manually.
+                # TODO Header spacing is manually set so won't work for all screen
+                # resolutions, but low priority so fix later.
+                echo -e "WinID Desktop x    y \tw    h    user WinName"
+                wmctrl -lG
+                return
+                ;;
+            w)
+                _window="$OPTARG"
+
+                declare _windowManualSelectPattern='(s|S|select|SELECT)'
+
+                if [[ "$_window" =~ $_windowManualSelectPattern ]]; then
+                    _window=':SELECT:'
+                elif [[ "$_window" =~ [0-9]x ]]; then
+                    # Window ID
+                    _windowSelectorFlag='-i'
+                else
+                    # Window name, except force exact match rather than sloppy match
+                    _windowSelectorFlag='-F'
+                fi
+                ;;
+            r)
+                case "$OPTARG" in
+                    max)
+                        _resizeCmd="maximized_vert,maximized_horz"
+                        ;;
+                    min)
+                        _resizeCmd=
+                        echo "Minimize has not been implemented yet. Install xdotool."
+                        return
+                        ;;
+                    *)
+                        echo "Invalid option for -s" >&2
+                        echo -e "$USAGE"
+                        return
+                        ;;
+                esac
+                ;;
+            u)
+                # Undoes the maximize/minimize
+                _resizeDirection=remove
+                ;;
+            m)
+                array.fromString -d , -r _moveCmd "$OPTARG"
+                ;;
+            *)
+                echo -e "$USAGE"
+                return
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+
+    # Format:
+    # array[screenIndex]=(width height x-offset y-offset)
+    # where offset is what pixel that screen's x/y begins.
+    # i.e. For default multi-monitor setups using X11/Xorg, there is only 1 "desktop"
+    # even if it has multiple screens.
+    # This means that `wmctrl` and `xprop` only see one giant screen, and the offset is how
+    # they determine where each screen starts/ends.
+    # e.g. screen 1 = 1000x2000, screen 2 = 3000x4000, then
+    # arr=(
+    #   1000 2000 0 0
+    #   3000 4000 1000 2000
+    # )
+    # Also, add a space before 'connected' to exclude 'disconnected'
+    declare _screensAndDimensionsArray=($(xrandr | grep ' connected' | egrep -o '\d+x\d+\+\d+\+\d+'))
+    declare -A _screensAndDimensionsMatrix=()
+    declare _numScreens="${#_screensAndDimensionsArray[@]}"
+
+    for i in "${!_screensAndDimensionsArray[@]}"; do
+        declare _dimsWithSeparators="${_screensAndDimensionsArray[i]}"
+        declare _dimsSeparated=($(echo "$_dimsWithSeparators" | sed -E 's|[^0-9.]| |g'))
+
+        _screensAndDimensionsArray["$i"]="${_dimsSeparated[@]}"
+        _screensAndDimensionsMatrix["$i,w"]="${_dimsSeparated[0]}"
+        _screensAndDimensionsMatrix["$i,h"]="${_dimsSeparated[1]}"
+        _screensAndDimensionsMatrix["$i,x"]="${_dimsSeparated[2]}"
+        _screensAndDimensionsMatrix["$i,y"]="${_dimsSeparated[3]}"
+    done
+
+    # If wanting to get a window other than the active one, these will be handy
+    declare _activeWindowId="$(xprop -root 32x '\t$0' _NET_ACTIVE_WINDOW | cut -f 2)"
+    declare _activeWindowName="$(xprop -id $_activeWindowId _NET_WM_NAME)"
+
+
+    # Could use:
+    # * `-i` to select window by windowId, e.g. `wmctrl -ir $_activeWindowId`.
+    # * `:ACTIVE:` to select the active/focused window.
+    # * `:SELECT:` to make the user click on the window they want to modify.
+
+    declare _windowCmdPrefix="wmctrl $_windowSelectorFlag -r $_window"
+
+    if ! array.empty _moveCmd; then
+        declare _toScreen="${_moveCmd[0]}"
+        declare _toX="${_moveCmd[1]}"
+        declare _toY="${_moveCmd[2]}"
+        declare _toWidth="${_moveCmd[3]}"
+        declare _toHeight="${_moveCmd[4]}"
+
+        if (( _toScreen >= _numScreens )); then
+            echo "Selected screen index ($_toScreen) too high. Please choose between [0,$(( _numScreens - 1 ))]." >&2
+            return 1
+        fi
+
+        # If x,y,width,height are empty or 0, set to -1
+        # `wmctrl` interprets -1 as "maintain current value"
+        if [[ -z "$_toX" ]] || (( _toX <= 0 )); then
+            _toX='-1'
+        fi
+        if [[ -z "$_toY" ]] || (( _toY <= 0 )); then
+            _toY='-1'
+        fi
+        if [[ -z "$_toWidth" ]] || (( _toWidth <= 0 )); then
+            _toWidth='-1'
+        fi
+        if [[ -z "$_toHeight" ]] || (( _toHeight <= 0 )); then
+            _toHeight='-1'
+        fi
+
+        declare _toScreenOffsetX=${_screensAndDimensionsMatrix[$_toScreen,x]}
+        declare _toScreenOffsetY=${_screensAndDimensionsMatrix[$_toScreen,y]}
+
+        declare _correctX=$(( _toX + _toScreenOffsetX ))
+        declare _correctY=$(( _toY + _toScreenOffsetY ))
+
+        $_windowCmdPrefix -e "0,$_correctX,$_correctY,$_toWidth,$_toHeight"
+    fi
+
+    if [[ -n "$_resizeCmd" ]]; then
+        $_windowCmdPrefix -b "${_resizeDirection},${_resizeCmd}"
+    fi
+}
+
+
 
 _checkPythonVersion() {
     # EDIT: DO NOT CHANGE THE python3 SYMLINK!!! Nor use update-alternatives
