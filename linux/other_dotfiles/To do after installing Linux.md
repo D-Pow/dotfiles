@@ -22,7 +22,30 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         4. Edit `~/.config/user-dirs.dirs` to point to storage partition's Documents, Picturs, Music, and Video folders.
 
 
-* Install correct drivers (super important!!). Will need `quiet splash nomodeset` along with the drivers in "Nvidia installations.txt" or similar (there might be some that are more up-to-date). See my reddit post here (https://www.reddit.com/r/linuxquestions/comments/eqdugr/any_way_to_diable_my_gpu_before_boot/fet00g0?utm_source=share&utm_medium=web2x).
+* Install correct drivers (super important!!). Will need `quiet splash nomodeset` along with the drivers below (there might be some that are more up-to-date or that are/n't needed anymore from newer upgrades).
+    - Best way: Go to `Settings --> Administration --> Driver Manager` and click the latest proprietary Nvidia drivers.
+    - Drivers may include:
+    ```
+    nvidia-prime
+    nvidia-prime-applet
+    nvidia-settings
+    nvidia-123
+    nvidia-compute-utils-123
+    nvidia-dkms-123
+    nvidia-driver-123
+    nvidia-kernel-common-123
+    nvidia-kernel-source-123
+    nvidia-utils-123
+    nvidia-opencl-icd-123
+    ```
+    - See more info in my reddit post here (https://www.reddit.com/r/linuxquestions/comments/eqdugr/any_way_to_diable_my_gpu_before_boot/fet00g0?utm_source=share&utm_medium=web2x).
+    - If you're still running into issues (e.g. booting shows "No hardware acceleration"), then load the Nvidia kernel modules earlier in the boot process:
+    ```
+    # /etc/modules - Add these lines
+    nvidia
+    nvidia-drm
+    nvidia-modeset
+    ```
 
 
 * Install updates.
