@@ -66,6 +66,7 @@
 #       ${var:-word} - Result is 'word' if `var` is (unset|null), otherwise it's `${var}`
 #       ${var+word} - Result is nothing if `var` is (unset), otherwise `word`
 
+source "$(thisDir)/arg-parse.profile"
 source "$(thisDir)/bash-history.profile"
 source "$(thisDir)/bash-arrays.profile"
 source "$(thisDir)/bash-command-enhancements.profile"
