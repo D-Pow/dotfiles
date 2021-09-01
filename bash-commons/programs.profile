@@ -3,9 +3,54 @@ npms() {
     regex '"scripts": [^\}]*\}' ./package.json
 }
 
-alias npmr='npm run'
 alias npmrtf="npm run test 2>&1 | egrep -o '^FAIL.*'" # only print filenames of suites that failed
 alias npmPackagesWithVulns="npm audit | grep 'Dependency of' | sort -u | egrep -o '\S+(?=\s\[\w+\])'"
+npmr() {
+    npm run "$@"
+}
+_autocompleteNpmr() {
+    # `_get_comp_words_by_ref` is a function to customize the `COMP_WORDS` and `COMP_CWORD`
+    # generation. Specifically, it can let you change the delimiter between command word (`COMP_WORDS`)
+    # entries, get the current word directly without using array index reading, and auto-fill the
+    # `COMPREPLY` array.
+    #
+    # For our purposes, many npm scripts use colons in them, and colons are included in `COMP_WORDBREAKS`
+    # so it counts as its own, new word.
+    # e.g. `npmr build:prod` --> `('npmr' 'build' ':' 'prod')`
+    # Thus, cancel that out to keep colons in a single `COMP_WORDS` entry.
+    #
+    # It generates new variables, so use them instead of the original `COMP_WORDS`, `COMP_CWORD`, etc.
+    # It also requires
+    #
+    # Docs: https://github.com/scop/bash-completion/blob/master/bash_completion#L369
+    _get_comp_words_by_ref -n : -w commandWords -c currentWord -i commandWordIndex
+
+    # Don't show suggestions if the first arg has already been autocompleted.
+    if (( $commandWordIndex > 1 )); then
+        return 0
+    fi
+
+    # `npm run` will display something akin to the format below,
+    # so select only lines starting with two spaces, remove blank lines, and then remove preceding spaces.
+    #
+    # Life-cycle scripts included in my-app@1.2.3:
+    #   start
+    #     webpack serve --config ./config/webpack.config.mjs
+    # available via `npm run-script`:
+    #   build
+    #     cross-env NODE_ENV=production webpack --mode production --config ./config/webpack.config.mjs
+    local availableCommands="$(npm run | egrep -o '^  \S*' | egrep -v '^\s*$' | sed -E 's|\s||g')"
+    local commandsMatchingUserInput="$(echo "$availableCommands" | egrep "^$currentWord")"
+
+    COMPREPLY=($(compgen -W "$commandsMatchingUserInput" -- "$currentWord"))
+
+    # Trims off the portion of the currentWord left of the colon from all `COMPREPLY` entries.
+    # Required to use in conjunction with `_get_comp_words_by_ref` b/c otherwise, the `currentWord:`
+    # will be appended on top of `$currentWord` in the suggestions, breaking the whole system.
+    __ltrim_colon_completions "$currentWord"
+
+    return 0
+} && complete -F _autocompleteNpmr -o default "npmr" # default shell autocomplete for dirs/files via `-o default`.
 
 
 export NVM_DIR="$HOME/.nvm"
