@@ -383,6 +383,10 @@ _autocompleteRepos() {
 
     return 0
 }
+# TODO Look up `-X filterpat` for filename expansion
+#   https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Programmable-Completion-Builtins
+# `compopt` might help for removing nested directory prefixes
+
 # Don't split options by space; split by newline instead b/c paths could include spaces in them.
 # The easiest way to handle this would have been `-o filenames`, except that caused the issues above
 # where the last word in a directory with spaces would be swapped out unexpectedly.
