@@ -35,64 +35,65 @@ COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
 
 
 
-# Before if-statement before case-statement
-# ./test.sh -ab -c=V -x=HI --f=y --gd --alpha=bravo=charlie hello
-# a - NAME=a - OPTIND(1)=-ab - OPTARG=
-# b - NAME=b - OPTIND(2)=-c=V - OPTARG=
-# c - NAME=c - OPTIND(3)=-x=HI - OPTARG==V
-# \* - NAME=? - OPTIND(3)=-x=HI - OPTARG=x
-# \* - NAME=? - OPTIND(3)=-x=HI - OPTARG==
-# \* - NAME=? - OPTIND(3)=-x=HI - OPTARG=H
-# \* - NAME=? - OPTIND(4)=--f=y - OPTARG=I
-# '-' - NAME=- - OPTIND(5)=--gd - OPTARG=f=y
-# '-' - NAME=- - OPTIND(6)=--alpha=bravo=charlie - OPTARG=gd
-# '-' - NAME=- - OPTIND(7)=hello - OPTARG=alpha=bravo=charlie
-# Rest: hello
-
-
-# Example:
-#
-# declare -A config=(
-#     ['a|alpha:']='First arg'
-#     ['b']='Second arg'
-#     ['c:']='Third arg'
-#     ['f:']='F arg'
-#     ['x:']='My x'
-#     ['|gd']='Only long'
-# )
-# parseArgs config "$@"
-
 parseArgs() {
-    declare -n argConfig="$1"
-
+    declare -n _parentOptionConfig="$1"
     shift
 
+    declare -A getoptsParsingConfig=()
     declare getoptsStr=''
 
-    if [[ -n "${argConfig[':']+true}" ]]; then
+    if [[ -n "${_parentOptionConfig[':']+true}" ]]; then
         # Append colon to beginning if specified, silencing
         # all unrecognized flags and flags lacking args which require them.
         getoptsStr=':'
 
         # Remove from map since we want to iterate over it later
-        unset argConfig[':']
+        unset _parentOptionConfig[':']
     fi
 
-    getoptsStr+=':-:'
+    for optConfigKey in "${!_parentOptionConfig[@]}"; do
+        # Extract single-letter option name
+        declare getoptsShort="$(echo "$optConfigKey" | sed -E 's/:?([^|:,]*).*/\1/')"
+        # Extract multi-letter option name
+        declare getoptsLong="$(echo "$optConfigKey" | sed -E 's/:?[^|:,]*\|?([^:,]*).*/\1/')"
+        # Extract single-letter option name with surrounding left/right colon(s)
+        declare getoptsEntry="$(echo "$optConfigKey" | sed -E 's/([^|,]*)\|?[^,:]*(:)?(,.*)/\1\2/')"
+        # Extract variable name
+        declare getoptsVariableName="$(echo "$optConfigKey" | sed -E 's/[^,]*,(.+)/\1/')"
 
-    for argKey in "${!argConfig[@]}"; do
-        getoptsStr+="$(echo "$argKey" | sed -E 's/\|[^:]+//g')"
+        if [[ -n "$getoptsShort" ]]; then
+            # Only add single-letter option name to the string passed to `getopts`
+            getoptsStr+="$getoptsEntry"
+        fi
+
+        # Store short/long option matchers as keys in a map, and the variable as its value
+        declare getoptsParsingConfigKey=
+
+        if [[ -n "$getoptsShort" ]] && [[ -n "$getoptsLong" ]]; then
+            getoptsParsingConfigKey="$getoptsShort|$getoptsLong"
+        elif [[ -n "$getoptsShort" ]]; then
+            getoptsParsingConfigKey="$getoptsShort"
+        else
+            getoptsParsingConfigKey="$getoptsLong"
+        fi
+
+        getoptsParsingConfig["$getoptsParsingConfigKey"]="$getoptsVariableName"
     done
 
-    # echo "$getoptsStr"
-    # return
+    # Add ability to parse long options, which use `--optName`
+    getoptsStr+='-:'
+
 
     declare OPTIND=1
 
     while getopts "$getoptsStr" opt; do
         if [[ "$opt" == "-" ]]; then
-            # Handle long options:
-            # `--alpha bravo | --alpha=bravo` --> OPT='alpha', OPTARG='bravo'
+            # Handle long options with equal signs:
+            # `--long-opt=MyValue`
+            # From:
+            #   $opt='-', $OPTARG='long-opt=MyValue'
+            # To:
+            #   $opt='long-opt', OPTARG='MyValue'
             #
             # Alternative would be to use '-' as an $opt switch-case entry, and
             # then parse the key/value there.
@@ -108,6 +109,23 @@ parseArgs() {
             declare _longOptionKey="${_longOptionArray[0]}"
             declare _longOptionVal="$(array.join -s _longOptionValArray '=')"
 
+            if [[ -z "$_longOptionVal" ]]; then
+                # Handle long options with spaces:
+                # `--long-opt MyValue` instead of `--long-opt=MyValue`
+                # If `$_longOptionVal` is empty, then the long option as a ' ' rather than a '=' in it.
+                # Thus, check if option config wants an argument for this; if so, manually add it.
+                declare _parentOptionConfigKeys="${!_parentOptionConfig[@]}"
+
+                if array.contains -e _parentOptionConfigKeys "$_longOptionKey:"; then
+                    _longOptionVal="${!OPTIND}"
+                    # Since this is a makeshift opt/arg reader, we have to manually shift over
+                    # by one to get rid of the next option entry.
+                    # i.e. `OPTIND == nextIndex+1`, so read that first, then get rid of the entry
+                    # completely by calling `shift`
+                    shift
+                fi
+            fi
+
             opt="$_longOptionKey"
             OPTARG="$_longOptionVal"
         fi
@@ -120,49 +138,30 @@ parseArgs() {
             OPTARG="${OPTARG:1}"
         fi
 
-        # TODO how to split keys into case entries
-        case "$opt" in
-            a|alpha)
-                echo "a - NAME=$opt - OPTIND($OPTIND)=${!OPTIND} - OPTARG=$OPTARG"
-                ;;
-            b)
-                echo "b - NAME=$opt - OPTIND($OPTIND)=${!OPTIND} - OPTARG=$OPTARG"
-                ;;
-            c)
-                echo "c - NAME=$opt - OPTIND($OPTIND)=${!OPTIND} - OPTARG=$OPTARG"
-                ;;
-            d)
-                echo "d - NAME=$opt - OPTIND($OPTIND)=${!OPTIND} - OPTARG=$OPTARG"
-                ;;
-            e)
-                echo "e - NAME=$opt - OPTIND($OPTIND)=${!OPTIND} - OPTARG=$OPTARG"
-                ;;
-            :)
-                # Special key for capturing flags that should have arguments but don't
-                echo "':' - NAME=$opt - OPTIND($OPTIND)=${!OPTIND} - OPTARG=$OPTARG"
-                echo "Missing argument for $OPTARG" >&2
-                ;;
-            -)
-                # Manual capturing of long flags, e.g. `--flag`
-                # Must be used with `getopts '-:'` so the `-flag` after the first `-`
-                # is treated as the argument to `-`.
-                # Also need to manually handle `--flag arg` vs `--flag=arg`
-                echo "'-' - NAME=$opt - OPTIND($OPTIND)=${!OPTIND} - OPTARG=$OPTARG"
-                ;;
-            *)
-                # Both `\?` and `*` mean the same thing: invalid option.
-                # Regardless of which is used, `$opt` will be set to `'?'`.
-                #
-                # If getopts string is preceded by a colon - `getopts ':...'`
-                # then built-in errors will be silenced, including
-                # "Invalid option" and "Missing argument for option"
-                echo "\* - NAME=$opt - OPTIND($OPTIND)=${!OPTIND} - OPTARG=$OPTARG"
-                ;;
-        esac
+
+        for optKey in "${!getoptsParsingConfig[@]}"; do
+            if [[ "$optKey" =~ "$opt" ]]; then
+                declare -n getoptsVariable="${getoptsParsingConfig["$optKey"]}"
+
+                if [[ -z "$getoptsVariable" ]]; then
+                    if [[ -z "$OPTARG" ]]; then
+                        # Option without argument
+                        getoptsVariable=true
+                    else
+                        # Option with argument
+                        getoptsVariable="$OPTARG"
+                    fi
+                else
+                    # Multiple arguments for the same option have been supplied
+                    # so convert/add to an array instead of string
+                    getoptsVariable+=("$OPTARG")
+                fi
+            fi
+        done
     done
 
     shift "$((OPTIND - 1))"
 
-    echo "Rest: $@"
+    declare -n remainingArgs="argsArray"
+    remainingArgs=("$@")
 }
-
