@@ -1,3 +1,40 @@
+# When using Bash autocompletion (https://github.com/scop/bash-completion/blob/master/bash_completion)
+# `COMP_WORDBREAKS` determines what delimiter separates "completion words" (i.e. `COMP_WORDS`, `COMP_CWORD`, etc.).
+# By default, it includes colons, which is really inconvenient b/c colons aren't actually separating words!
+# (This should be obvious b/c colons aren't included in `IFS`.)
+# Thus, remove them here by changing the global variable, `COMP_WORDBREAKS`.
+#
+# Without changing this, autocompletion functions would require using a combination of both
+# `_get_comp_words_by_ref` and `__ltrim_colon_completions`.
+#
+# e.g.
+#
+#   # `_get_comp_words_by_ref` is a function to customize the `COMP_WORDS` and `COMP_CWORD`
+#   # generation. Specifically, it can let you change the delimiter between command word (`COMP_WORDS`)
+#   # entries, get the current word directly without using array index reading, and auto-fill the
+#   # `COMPREPLY` array.
+#   #
+#   # It is common to have colons be part of the command word
+#   # e.g. `npmr build:prod` --> `('npmr' 'build' ':' 'prod')`
+#   # So we want to cancel that out to keep colons in a single `COMP_WORDS` entry.
+#   #
+#   # It generates new variables, so use them instead of the original `COMP_WORDS`, `COMP_CWORD`, etc.
+#   #
+#   # Docs: https://github.com/scop/bash-completion/blob/master/bash_completion#L369
+#   _get_comp_words_by_ref -n : -w commandWords -c currentWord -i commandWordIndex
+#   declare commandsMatchingUserInput="$(echo "$availableCommands" | egrep "^$currentWord")"
+#   COMPREPLY=($(compgen -W "$commandsMatchingUserInput" -- "$currentWord"))
+#   # Trims off the portion of the currentWord left of the colon from all `COMPREPLY` entries.
+#   # Required to use in conjunction with `_get_comp_words_by_ref` b/c otherwise, the `currentWord:`
+#   # will be appended on top of `$currentWord` in the suggestions, breaking the whole system.
+#   __ltrim_colon_completions "$currentWord"
+#   return 0
+#
+# Note: `${variable//substring/replacement}` replaces all instances of `substring`.
+COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
+
+
+
 # Before if-statement before case-statement
 # ./test.sh -ab -c=V -x=HI --f=y --gd --alpha=bravo=charlie hello
 # a - NAME=a - OPTIND(1)=-ab - OPTARG=
