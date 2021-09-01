@@ -36,8 +36,47 @@ COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
 
 
 parseArgs() {
-    declare -n _parentOptionConfig="$1"
+    USAGE="parseArgs optionConfig \"\$@\"
+    \`optionConfig\` is a specially-formatted associative array of options-to-variable names.
+
+    optionConfig
+    where shortOption=singleLetterOption, longOption=multiLetterOption
+    and singleLetterOption entries use a single hyphen, multiLetterOption entries use two hyphens
+    :
+        declare -A config=(
+            ['shortOption|longOption,varToStoreValueIn']='Description of the option'
+            ['shortOptionWithArg|longOptionWithArg:,varToStoreValueIn']='I require an argument, by space or = sign.'
+            [':shortOptionIgnoreFailures|longOptionIgnoreFailures,varToStoreValueIn']='Eh, if they don't pass it or error otherwise, don't care'
+        )
+
+    Usage:
+        parseArgs config \"\$@\"
+
+    Returns:
+        0/1 on success/failure.
+
+    Sets:
+        Variables as described by \`config\` (e.g. \`varToStoreValueIn\`).
+        \`argsArray\`=(\"\$@\")
+
+    Thus, specify the variables as you wish, and use \`argsArray\` to read all other arguments.
+
+    Note:
+        If an option has multiple entries (e.g. \`parseArgs config -a 'val1' --alpha 'val2'\`) then the args will
+        be added to an array.
+        Thus, \`config=(['a|alpha,arr'])\` will result in \`arr=('val1' 'val2')\`
+    "
+
+    declare -n _parentOptionConfig="$1" 2>/dev/null
+
+    if array.empty _parentOptionConfig || [[ -z "$_parentOptionConfig" ]]; then
+        echo -e "$USAGE"
+
+        return 1
+    fi
+
     shift
+
 
     declare -A getoptsParsingConfig=()
     declare getoptsStr=''
