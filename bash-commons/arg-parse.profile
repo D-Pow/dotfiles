@@ -69,7 +69,7 @@ parseArgs() {
 
     declare -n _parentOptionConfig="$1" 2>/dev/null
 
-    if array.empty _parentOptionConfig || [[ -z "$_parentOptionConfig" ]]; then
+    if array.empty _parentOptionConfig || [[ -z "$1" ]]; then
         echo -e "$USAGE"
 
         return 1
