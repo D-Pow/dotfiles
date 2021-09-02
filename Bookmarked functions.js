@@ -22,7 +22,7 @@ window.getCookie = function getCookie({ cookie = document.cookie, decodeBase64 =
             try {
                 value = atob(value);
             } catch (e) {
-                // Not a Base64-encoded string
+                /* Not a Base64-encoded string */
             }
         }
 
