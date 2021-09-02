@@ -42,7 +42,7 @@ parseArgs() {
     optionConfig
     where shortOption=singleLetterOption, longOption=multiLetterOption
     and singleLetterOption entries use a single hyphen, multiLetterOption entries use two hyphens
-    :
+    e.g.
         declare -A config=(
             ['shortOption|longOption,varToStoreValueIn']='Description of the option'
             ['shortOptionWithArg|longOptionWithArg:,varToStoreValueIn']='I require an argument, by space or = sign.'
