@@ -373,6 +373,53 @@ array.contains() {
 }
 
 
+array.map() {
+    declare -A optsConfig=(
+        ['r:,_arrMapRetArrName']='Array in which to store resulting transformed entries'
+    )
+
+    parseArgs optsConfig "$@"
+
+    declare -n _arrMapArrOrig="${argsArray[0]}"
+    declare _arrMapCmd="${argsArray[1]}"
+
+    # If return array name passed, then add `-n` nameref option.
+    # Otherwise, leave it blank to avoid "Error: '' not a valid variable name."
+    # Note: Cannot wrap it in quotes because then it's read as an argument instead of an option.
+    # Simpler than having two separate arrays (one for internal usage and one
+    # nested in an if-statement at the end of the function to declare a nameref
+    # variable for the returned array).
+    declare ${_arrMapRetArrName:+-n} _arrMapRetArr="$_arrMapRetArrName"
+
+    if array.empty _arrMapRetArr || ! array.isArray _arrMapRetArr; then
+        _arrMapRetArr=()
+    fi
+
+    if [[ -z "$_arrMapCmd" ]]; then
+        # If no command string given through args, then read it from stdin (`read` automatically chooses stdin).
+        # `-r` = Read string values as-is (e.g. backslash doesn't escape characters).
+        # `-d ''` = Set delimiter to empty (null) string so newlines can be accepted.
+        #
+        # e.g.
+        #   array.map arr <<-'EOF'
+        #       entryLength=${#entry}
+        #       echo $(( entryLength + 100 ))
+        #   EOF
+        read -r -d '' _arrMapCmd
+    fi
+
+
+    for entry in "${_arrMapArrOrig[@]}"; do
+        _arrMapRetArr+=("$(eval "$_arrMapCmd")")
+    done
+
+
+    if [[ -z "$_arrMapRetArrName" ]]; then
+        echo "${_arrMapRetArr[@]}"
+    fi
+}
+
+
 array.reverse() {
     local _retArrNameReversed
     local inPlace
