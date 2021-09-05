@@ -46,11 +46,11 @@ array.empty() {
 array.toString() {
     local lengthOnly
     local _toStringDelim
-    local _toStringQuotes=true
+    local _toStringQuotes=\"
     local OPTIND=1
 
     # See os-utils.profile for more info on flag parsing
-    while getopts "lqd:" opt; do
+    while getopts "ld:q:" opt; do
         case "$opt" in
             l)
                 lengthOnly=true
@@ -59,7 +59,7 @@ array.toString() {
                 _toStringDelim="$OPTARG"
                 ;;
             q)
-                _toStringQuotes=
+                _toStringQuotes="$OPTARG"
                 ;;
         esac
     done
@@ -68,7 +68,7 @@ array.toString() {
 
     local -n _arrToString="$1"
     local _arrToStringLength="$(array.length _arrToString)"
-    local _arrToStringQuotes="${_toStringQuotes:+\"}"
+    local _arrToStringQuotes="$_toStringQuotes"
     local _arrToStringCmd='printf "${_arrToStringQuotes}%s${_toStringDelim:-}${_arrToStringQuotes} " "${_arrToString[@]}"'
 
     if [[ -n "$lengthOnly" ]]; then
