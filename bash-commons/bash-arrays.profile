@@ -9,6 +9,18 @@
 #   array.values-from-name: Bash < 4.3 (which doesn't support `declare -n nameRef`) can be supported via:
 #       eval $retArrName='("${newArr[@]}")'
 
+array.isArray() {
+    # Don't need nameref since we need to use `declare -p origName`
+    # Otherwise, we'd have to use dereferencing `declare -p "${!_isArrayArr}`
+    declare _isArrayArr="$1"
+
+    # `grep -c` = Count number of matching lines
+    # `declare -a` = Arrays, `declare -A` = Associative arrays
+    # We can still send `declare -p` errors to null b/c grep count will be 0
+    (( $(declare -p "$1" 2>/dev/null | grep -ic "declare \-a") >= 1 ))
+}
+
+
 array.length() {
     local -n _arrLengthArr="$1"
     local _arrLength=${#_arrLengthArr[@]}
