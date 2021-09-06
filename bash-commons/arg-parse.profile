@@ -65,6 +65,9 @@ parseArgs() {
             ['shortOption|longOption,var1']='Description of the option'
             ['shortOptionWithArg|longOptionWithArg:,var2']='I require an argument, by space or = sign.'
             [':shortOptionIgnoreFailures|longOptionIgnoreFailures,var3']='Eh, if they don't pass it or error otherwise, don't care'
+            [':']= # Flag to set colon at beginning of getopts string, i.e. \`getopts ':abc'\`
+            ['?']='String to pass to eval() upon unknown flag discovery. Defaults to \`echo -e \$USAGE; return 1;\`'
+            ['USAGE']='Usage string without option descriptions (parseArgs will add those automatically)'
         )
         parseArgs optionConfig \"\$@\"
 
@@ -110,6 +113,18 @@ parseArgs() {
         unset _parentOptionConfig[':']
     fi
 
+    # Extract custom unknown-option and USAGE entries from parent config
+    # so they aren't parsed into `getoptsParsingConfig`
+    declare unknownFlagHandler="${_parentOptionConfig['?']}"
+    unset _parentOptionConfig['?']
+    declare parentUsageStr="${_parentOptionConfig['USAGE']}"
+    unset _parentOptionConfig['USAGE']
+    # Create new option-usage map for easier parent-usage printing.
+    # Allows us to avoid nested for-loops later to match parsed-config keys to
+    # parent-config descriptions.
+    declare -A parentUsageOptions=()
+
+
     for optConfigKey in "${!_parentOptionConfig[@]}"; do
         # Extract single-letter option name
         declare getoptsShort="$(echo "$optConfigKey" | sed -E 's/:?([^|:,]*).*/\1/')"
@@ -127,20 +142,45 @@ parseArgs() {
 
         # Store short/long option matchers as keys in a map, and the variable as its value
         declare getoptsParsingConfigKey=
+        # Same logic for option-usage map, except with added hyphens.
+        declare parentUsageOptionKey=
 
         if [[ -n "$getoptsShort" ]] && [[ -n "$getoptsLong" ]]; then
             getoptsParsingConfigKey="$getoptsShort|$getoptsLong"
+            parentUsageOptionKey="-$getoptsShort|--$getoptsLong"
         elif [[ -n "$getoptsShort" ]]; then
             getoptsParsingConfigKey="$getoptsShort"
+            parentUsageOptionKey="-$getoptsShort"
         else
             getoptsParsingConfigKey="$getoptsLong"
+            parentUsageOptionKey="--$getoptsLong"
         fi
 
+        # Store variable in internal config map to access when reading options
         getoptsParsingConfig["$getoptsParsingConfigKey"]="$getoptsVariableName"
+        # Store description string in usage-config to access when printing parent's USAGE
+        parentUsageOptions["$parentUsageOptionKey"]="${_parentOptionConfig["$optConfigKey"]}"
     done
 
     # Add ability to parse long options, which use `--optName`
     getoptsStr+='-:'
+
+    # Add short/long options and their descriptions to parent's USAGE string
+    # only if it's present.
+    # Use keys from `getoptsParsingConfig` since it already parsed long/short
+    # options, then get the description from the original parent config.
+    if [[ -n "$parentUsageStr" ]]; then
+        parentUsageStr+="\n\n    Options:\n"
+        declare indentationAmount="        "
+
+        for optionUsageKey in "${!parentUsageOptions[@]}"; do
+            declare optionUsageDesc="${parentUsageOptions["$optionUsageKey"]}"
+            # Use tab to separate key-value string for later `column` usage for auto-spacing columns
+            declare optionUsageEntry="$indentationAmount$optionUsageKey\t| $optionUsageDesc\n"
+
+            parentUsageStr+="$optionUsageEntry"
+        done
+    fi
 
 
     declare OPTIND=1
@@ -198,8 +238,11 @@ parseArgs() {
         fi
 
 
+        declare optHandled=
+
         for optKey in "${!getoptsParsingConfig[@]}"; do
             if [[ "$optKey" =~ "$opt" ]]; then
+                optHandled=true
                 declare -n getoptsVariable="${getoptsParsingConfig["$optKey"]}"
 
                 if [[ -z "$getoptsVariable" ]]; then
@@ -217,6 +260,23 @@ parseArgs() {
                 fi
             fi
         done
+
+        if [[ -z "$optHandled" ]]; then
+            if [[ -n "$unknownFlagHandler" ]]; then
+                eval "$unknownFlagHandler"
+            else
+                # `column` converts strings into tables.
+                # For our usage, this makes the space between option keys and
+                # descriptions evenly spaced so that all descriptions line up.
+                # `-t` = Convert to table (i.e. make it evenly spaced)
+                # `-c N` = Make N columns.
+                # `-s delim` = Use specified string as a delimiter rather than all whitespace.
+                #   Specify tab since spaces are used in description strings.
+                echo -e "$parentUsageStr" | column -t -c 2 -s $'\t'
+
+                return 1
+            fi
+        fi
     done
 
     shift "$((OPTIND - 1))"
