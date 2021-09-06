@@ -39,25 +39,33 @@ parseArgs() {
     USAGE="parseArgs optionConfig \"\$@\"
     \`optionConfig\` is a specially-formatted associative array of options-to-variable names.
 
-    optionConfig
-    where shortOption=singleLetterOption, longOption=multiLetterOption
-    and singleLetterOption entries use a single hyphen, multiLetterOption entries use two hyphens
-    e.g.
-        declare -A config=(
-            ['shortOption|longOption,varToStoreValueIn']='Description of the option'
-            ['shortOptionWithArg|longOptionWithArg:,varToStoreValueIn']='I require an argument, by space or = sign.'
-            [':shortOptionIgnoreFailures|longOptionIgnoreFailures,varToStoreValueIn']='Eh, if they don't pass it or error otherwise, don't care'
-        )
+    \`optionConfig\` format:
+        ([:singleLetterOption|multiLetterOption:,variableName]='Usage description')
+        where each of the colons and option-entries are optional and multiLetterOption
+        uses two hyphens.
+        Colons function the same as the \`getopts\` string, i.e. \`getopts 'ab::c:'\`.
 
-    Usage:
-        parseArgs config \"\$@\"
+    Example:
+        declare var1
+        declare var2
+        declare var3
+        declare -A optionConfig=(
+            ['shortOption|longOption,var1']='Description of the option'
+            ['shortOptionWithArg|longOptionWithArg:,var2']='I require an argument, by space or = sign.'
+            [':shortOptionIgnoreFailures|longOptionIgnoreFailures,var3']='Eh, if they don't pass it or error otherwise, don't care'
+        )
+        parseArgs optionConfig \"\$@\"
 
     Returns:
         0/1 on success/failure.
 
     Sets:
-        Variables as described by \`config\` (e.g. \`varToStoreValueIn\`).
+        Variables as described by \`config\` (e.g. \`var1\`).
         \`argsArray\`=(\"\$@\")
+
+    Important:
+        Declare your variables *BEFORE* calling parseArgs to ensure they're local to your
+        calling function. Otherwise, variable values will persist between myFunc() calls.
 
     Thus, specify the variables as you wish, and use \`argsArray\` to read all other arguments.
 
