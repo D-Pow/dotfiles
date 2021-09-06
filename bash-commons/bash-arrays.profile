@@ -14,10 +14,17 @@ array.isArray() {
     # Otherwise, we'd have to use dereferencing `declare -p "${!_isArrayArr}`
     declare _isArrayArr="$1"
 
+    # If arg is a nameref, we need to check the value of the arg pointer, not the arg itself
+    if (( $(declare -p "$_isArrayArr" 2>/dev/null | grep -c "declare \-n") >= 1)); then
+        declare -n _isArrayArrRef="$_isArrayArr"
+
+        _isArrayArr="${!_isArrayArrRef}"  # returns the name of the nameref
+    fi
+
     # `grep -c` = Count number of matching lines
     # `declare -a` = Arrays, `declare -A` = Associative arrays
     # We can still send `declare -p` errors to null b/c grep count will be 0
-    (( $(declare -p "$1" 2>/dev/null | grep -ic "declare \-a") >= 1 ))
+    (( $(declare -p "$_isArrayArr" 2>/dev/null | grep -ic "declare \-a") >= 1 ))
 }
 
 
