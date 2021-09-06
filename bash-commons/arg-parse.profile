@@ -35,6 +35,18 @@ COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
 
 
 
+# STDIN Notes:
+#
+# To simultaneously read from stdin/output to stdout as lines come in (e.g. grep):
+#   while read stdinLine; do
+#       doWork stdinLine
+#   done >&1
+#
+# To wait for them all to come in, and then read them all into an array:
+#   readarray -t stdin
+
+
+
 parseArgs() {
     USAGE="parseArgs optionConfig \"\$@\"
     \`optionConfig\` is a specially-formatted associative array of options-to-variable names.
