@@ -1,5 +1,5 @@
 openGitMergeConflictFilesWithSublime() {
-    subl $(getGitBothModified)
+    subl -n $(getGitBothModified)
 }
 
 
