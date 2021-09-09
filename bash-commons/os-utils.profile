@@ -85,6 +85,49 @@ getCommandsMatching() {
 }
 
 
+makeTempPipe() {
+    # Refs:
+    # https://stackoverflow.com/questions/8297415/in-bash-how-to-find-the-lowest-numbered-unused-file-descriptor/17030546#17030546
+    # https://superuser.com/questions/184307/bash-create-anonymous-fifo/633185#633185
+
+    # `mktemp` - Create a temp file
+    declare _tmpPipeFile="$(mktemp)"
+    echo $_tmpPipeFile
+    # Putting a string in `exec {var}` sets the lowest available file descriptor to that variable
+    exec {FD}<>"$_tmpPipeFile"
+
+    # Calling parent could use `$FD` or they could use `declare myPipe="$(makeTempPipe)"`
+    # Used in the same way normal FD's are, just add a $ in front of them
+    # e.g.
+    #   echo hello >&$FD
+    #   cat <&$FD
+    #   exec $FD>&-
+    echo "$FD"
+}
+
+
+getFileFromDescriptor() {
+    declare _fdToSearch="$1"
+    declare _lsofOutputHeaders=(COMMAND PID USER FD TYPE DEVICE SIZE_OFF NODE NAME)
+
+    # Allows selecting an `lsof` header by index.
+    # array.map/str.repeat combo results in e.g. "^\S+\s+" for "COMMAND" and "^\S+\s+\S+\s+" for "PID"
+    declare _lsofOutputMatchers=()
+    array.map -r _lsofOutputMatchers _lsofOutputHeaders "echo \"^\$(str.repeat '\S+\s+' \$(( key + 1 )) )\""
+
+    # Match "\S+\s+{n}(searchQuery)"
+    # Thus, index must be "searchItem - 1"
+    declare _fdMatchRegex="${_lsofOutputMatchers[2]}$_fdToSearch"
+    declare _fdFileMatchRegex="${_lsofOutputMatchers[7]}(.*)"
+    declare _fdSearchingParentPid="$$"
+
+    lsof -p $_fdSearchingParentPid -d $_fdToSearch \
+        | grep $_fdSearchingParentPid \
+        | egrep "$_fdMatchRegex" \
+        | esed "s|$_fdFileMatchRegex|\1|"
+}
+
+
 
 _copyCommand=
 _pasteCommand=
