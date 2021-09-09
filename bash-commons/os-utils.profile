@@ -41,7 +41,7 @@ listopenports() {
 }
 
 
-read-env-file() {
+readEnvFile() {
     # Reads a .env, .properties, etc. file containing `key=value` entries
     # on separate lines.
     # Sets the keys as variables in the current shell.
