@@ -75,6 +75,20 @@ gitGetPrimaryBranch() {
 }
 
 
+gitGetFilesChangedFromRebase() {
+    # Allow only showing certain files in diff output
+    local _diffFileFilter="${1:-.}"
+
+    # `git diff --stat` only shows "filename  |  numLines +-" rather than full file diffs
+    # Thus, strip out the trailing numLines (note: don't blindly use `(\S+)` b/c file renames use spaces, e.g. "old => new")
+    local _diffOnlyFileSedRegex='s/^\s*([^|]*)\|.*/\1/; s|\s+$||'
+    local _diffFromPrimaryToHead="$(git diff --stat origin/$(gitGetPrimaryBranch)..HEAD | egrep "$_diffFileFilter" | esed "$_diffOnlyFileSedRegex")"
+    local _diffFromRemoteToHead="$(git diff --stat origin/$(getGitBranch)..HEAD | egrep "$_diffFileFilter" | esed "$_diffOnlyFileSedRegex")"
+
+    echo -e "$_diffFromPrimaryToHead\n$_diffFromRemoteToHead" | sort | uniq -d
+}
+
+
 getGitParent() {
     # git doesn't track what a branch's parent is, so we have to guess from the git log output.
     # Hence, here we guess based off git log's default branch output first and output from merges second.
