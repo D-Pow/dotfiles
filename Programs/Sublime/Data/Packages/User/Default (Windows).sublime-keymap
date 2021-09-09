@@ -9,6 +9,7 @@
     // { "keys": ["command+shift+down"], "command": "swap_line_down" },
     // { "keys": ["ctrl+command+up"], "command": "select_lines", "args": {"forward": false} },
     // { "keys": ["ctrl+command+down"], "command": "select_lines", "args": {"forward": true} },
+    // { "keys": ["alt+backquote"], "command": "show_panel", "args": {"panel": "console", "toggle": true} },
     // /* Setting column layout */
     // { "keys": ["ctrl+shift+1"], "command": "set_layout", "args": { "cols": [0.0, 1.0], "rows": [0.0, 1.0], "cells": [[0, 0, 1, 1]] } },
     // { "keys": ["ctrl+shift+2"], "command": "set_layout", "args": { "cols": [0.0, 0.5, 1.0], "rows": [0.0, 1.0], "cells": [[0, 0, 1, 1], [1, 0, 2, 1]] } },
