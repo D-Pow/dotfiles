@@ -68,6 +68,13 @@ gitBlameParentOfCommit() {
 }
 
 
+gitGetPrimaryBranch() {
+    local _gitPrimaryBranchRemoteName="${1:-origin}"
+
+    git remote show "$_gitPrimaryBranchRemoteName" | grep HEAD | esed 's|.*\s(\S*)$|\1|'
+}
+
+
 getGitParent() {
     # git doesn't track what a branch's parent is, so we have to guess from the git log output.
     # Hence, here we guess based off git log's default branch output first and output from merges second.
