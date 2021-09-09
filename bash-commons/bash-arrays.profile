@@ -410,14 +410,15 @@ array.map() {
         #
         # e.g.
         #   array.map arr <<-'EOF'
-        #       entryLength=${#entry}
-        #       echo $(( entryLength + 100 ))
+        #       entryLength=${#value}
+        #       echo "Cost of key: $key = $(( entryLength + 100 ))"
         #   EOF
         read -r -d '' _arrMapCmd
     fi
 
 
-    for entry in "${_arrMapArrOrig[@]}"; do
+    for key in "${!_arrMapArrOrig[@]}"; do
+        declare value="${_arrMapArrOrig[$key]}"
         _arrMapRetArr+=("$(eval "$_arrMapCmd")")
     done
 
