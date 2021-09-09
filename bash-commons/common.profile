@@ -68,6 +68,7 @@
 
 source "$(thisDir)/arg-parse.profile"
 source "$(thisDir)/bash-history.profile"
+source "$(thisDir)/strings.profile"
 source "$(thisDir)/bash-arrays.profile"
 source "$(thisDir)/bash-command-enhancements.profile"
 source "$(thisDir)/os-utils.profile"
