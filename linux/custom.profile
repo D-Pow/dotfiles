@@ -186,28 +186,99 @@ alias todo="subl '$workDir/ToDo.md'"
 
 
 brightness() {
-    # Changes the brightness of displays 0-n, where 0 is the internal display.
-    # Only changes it through software, not through DDC, so it won't change the
-    # "actual" brightness, only the brightness of the OS' processing of display output.
-    #
-    # TODO: Use a DDC system after upgrading Linux Mint to latest
-    #   (current version + Nvidia driver doesn't currently support DDC).
-    #   Options: https://askubuntu.com/questions/894465/changing-the-screen-brightness-of-the-external-screen
-    local _display="$1"
-    local _brightness="${2:-1}" # default to resetting brightness back to 100%
+    declare USAGE="${FUNCNAME[0]} [-r|--reset] [-d|--display DISPLAY_NUM] [brightnessValue]
+    Changes the brightness of a display of NUM [0-n], where 0 is the internal display.
+    Attempt changing brightness through DDC (via \`ddcutil\`) first, falling back to \`xrandr\` only if DDC isn't setup for Linux.
 
-    local _displayOutputNames=($(xrandr -q | egrep -o '^\S+(?=.*connected)'))
+    If \`brightness\` isn't specified, it reads the current value.
+    "
+
+    declare _display=
+    declare _resetValue=
+    declare argsArray=
+    declare -A optsConfig=(
+        ['d|display:,_display']='Display whose brightness to change (default = external monitor 1). 0 = internal display, 1-n = external monitors.'
+        ['r|reset,_resetValue']='Resets brightness setting back to 100% (only for `xrandr`)'
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs optsConfig "$@"
+
+    declare _parseArgsRetVal="$?"
+
+    if (( _parseArgsRetVal >= 1 )); then
+        return 1
+    fi
+
+    # Default to first external monitor if display not specified
+    # TODO Is the first display number still 1 if it's a tower without internal display?
+    _display="${_display:-1}"
+    declare _brightness="${argsArray[0]}"
+
+
+    if isDefined ddcutil; then
+        # `ddcutil` docs:
+        #   http://www.ddcutil.com/
+        # All VCP codes can be found with:
+        #   ddcutil getvcp known
+        #
+        # ddcutil creates a new `i2c` group to handle all `/dev/i2c-n` devices.
+        # To run the command without requiring `sudo`, you need to add yourself
+        # as member of the group and then logout.
+        # Steps:
+        #   # Add yourself to the group
+        #   sudo usermod your-user-name -aG i2c
+        #   # Create the group if it doesn't already exist
+        #   sudo groupadd --system i2c
+        #   # Logout
+        #   # If issues still persist, copy the sample `udev` file provided to
+        #   sudo cp /usr/share/ddcutil/data/45-ddcutil-i2c.rules /etc/udev/rules.d/
+        #   # If necessary, reload all `udev` rules
+        #   sudo udevadm trigger
+        # Refs:
+        #   Docs: http://www.ddcutil.com/i2c_permissions/
+        #   Blog: https://blog.tcharles.fr/ddc-ci-screen-control-on-linux/
+        declare _brightnessVcpCode=10
+
+        if [[ -n "$_brightness" ]]; then
+            ddcutil --display "$_display" setvcp "$_brightnessVcpCode" "$_brightness"
+        else
+            ddcutil --display "$_display" getvcp "$_brightnessVcpCode"
+        fi
+
+        return 0
+    fi
+
+
+    # `xrandr` only changes display configs through software, not hardware like DDC
+    # does, so it won't change the "actual" brightness of the monitor, only the
+    # brightness of the OS' processing of display output.
+    # Ref: https://askubuntu.com/questions/894465/changing-the-screen-brightness-of-the-external-screen
+    if [[ -z "$_resetValue" ]] && [[ -z "$_brightness" ]]; then
+        # If not resetting the value and no new value defined, then return current brightness level
+        declare _displayBrightnesses=($(xrandr --verbose | grep -i brightness | egrep -o '\S*$'))
+
+        echo "${_displayBrightnesses[_display]}"
+
+        return 0
+    fi
+
+    if [[ -n "$_resetValue" ]]; then
+        _brightness="1"  # Reset brightness back to 100% through '-1'
+    fi
+
+    declare _displayOutputNames=($(xrandr -q | egrep -o '^\S+(?=.*connected)'))
 
     if [[ -z "$_display" ]]; then
         echo "Please specify the display for which you want to change the brightness." >&2
         echo "Valid display values are [0$(
-            local _numDisplays=$(array.length _displayOutputNames)
+            declare _numDisplays=$(array.length _displayOutputNames)
             (( _numDisplays > 1 )) && echo "-$(( _numDisplays - 1 ))"
         )]." >&2
         return 1;
     fi
 
-    local _displayOutputSelected="${_displayOutputNames[_display]}"
+    declare _displayOutputSelected="${_displayOutputNames[_display]}"
 
     xrandr --output "$_displayOutputSelected" --brightness "$_brightness"
 
