@@ -48,7 +48,7 @@ COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
 
 
 parseArgs() {
-    USAGE="parseArgs optionConfig \"\$@\"
+    USAGE="${FUNCNAME[0]} optionConfig \"\$@\"
     \`optionConfig\` is a specially-formatted associative array of options-to-variable names.
 
     \`optionConfig\` format:
