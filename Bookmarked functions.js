@@ -238,6 +238,12 @@ window.toggleAllGithubSnapshotsViewedStatus = function() {
     });
 };
 
+window.toggleAllCircleCiSnapshotTestsExpansion = function() {
+    [...document.querySelectorAll('li[id*=failed-test-] [role=button]')]
+        .filter(btn => btn.textContent.includes('MatchSnapshot'))
+        .forEach(btn => btn.click());
+};
+
 window.sumCitiChargesForPreviousStatements = function() {
     /* Helpful when "running balance" column doesn't exist */
     [...document.querySelectorAll('.cA-ada-TRANSACTION_AMT_Column.cA-ada-ls-hide')]
