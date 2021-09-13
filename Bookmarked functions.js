@@ -211,6 +211,32 @@ window.toggleAllGithubFilesChangedOpenStatus = function() {
     [...document.querySelectorAll(fileCollapseButtonSelector)]
         .forEach(elem => elem.click());
 };
+window.getAllGithubFilesChangedNames = function(includeFileOptionsParentElement = true) {
+    const filenameLinkSelector = '.file-info a[title]';
+
+    /* Use `title` attribute b/c it has the full filename instead of a truncated filename (...partialDirName/myFile.txt) */
+    return [...document.querySelectorAll(filenameLinkSelector)].map(anchor => {
+        if (includeFileOptionsParentElement) {
+            return {
+                fileName: anchor.title,
+                fileElement: anchor.parentElement.parentElement,
+            };
+        }
+
+        return anchor.title;
+    });
+};
+window.toggleAllGithubSnapshotsViewedStatus = function() {
+    const snapshotExtensionRegex = /\.(snap|storyshot)$/;
+    const viewedToggleButtonElementSelector = '.file-actions .js-replace-file-header-review label';
+    const allFilesChanged = getAllGithubFilesChangedNames();
+    const allSnapshotsChanged = allFilesChanged
+        .filter(({ fileName }) => fileName.match(snapshotExtensionRegex));
+
+    allSnapshotsChanged.forEach(({ fileElement }) => {
+        fileElement.querySelector(viewedToggleButtonElementSelector).click();
+    });
+};
 
 window.sumCitiChargesForPreviousStatements = function() {
     /* Helpful when "running balance" column doesn't exist */
