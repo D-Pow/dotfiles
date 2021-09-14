@@ -61,9 +61,9 @@ dockerFindByName() {
 }
 
 dockerIsContainerRunning() {
-    local imageId="`dockerFindByName "$1" -q`"
+    local imageId="`dockerFindByName -q "$1"`"
 
-    docker inspect --format '{{json .State.Running}}' "$imageId"
+    docker inspect --format '{{json .State.Running}}' "$imageId" 2>/dev/null
 }
 
 dockerGetLogs() {
@@ -108,7 +108,7 @@ dockerGetLogs() {
         exec 2>&1
     fi
 
-    for containerName in $(dockerFindByName "$_dockerContainerName" --format '{{.Names}}'); do
+    for containerName in $(dockerFindByName --format '{{.Names}}' "$_dockerContainerName"); do
         echo "Container: $containerName"
         docker logs "$@" "$containerName" >&1
         echo -e '\n\n----------------------------------------------------\n\n'
