@@ -144,26 +144,50 @@ window.setDocumentReferer = function(url = null, useOrigin = false) {
  *     'Upgrade-Insecure-Requests': '1',
  *     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
  * }
+ *
+ * @param {string} url - URL for network request.
+ * @param {RequestInit} options - Options for `fetch()`.
+ * @param {boolean} [useCorsAnywhereApp=false] - Use https://cors-anywhere.herokuapp.com/ (restricted and close to deprecation) instead of Anime Atsume.
  */
-window.fetchCors = function(url, options) {
-    const corsAnywhereRequiredHeaders = {
-        'X-Requested-With': 'XMLHttpRequest'
-    };
-    const fetchOptions = options
-        ? {
-            ...options,
-            headers: {
-                ...options.headers,
-                ...corsAnywhereRequiredHeaders
-            }
-        } : {
-            headers: corsAnywhereRequiredHeaders
+window.fetchCors = function(url, options, useCorsAnywhereApp = false) {
+    if (useCorsAnywhereApp) {
+        const corsAnywhereRequiredHeaders = {
+            'X-Requested-With': 'XMLHttpRequest'
         };
+        const fetchOptions = options
+            ? {
+                ...options,
+                headers: {
+                    ...options?.headers,
+                    ...corsAnywhereRequiredHeaders
+                }
+            } : {
+                headers: corsAnywhereRequiredHeaders
+            };
 
-    return fetch(
-        'https://cors-anywhere.herokuapp.com/' + url,
-        {...fetchOptions}
-    );
+        return fetch(
+            'https://cors-anywhere.herokuapp.com/' + url,
+            {...fetchOptions}
+        );
+    }
+
+    const animeAtsumeCorsUrl = 'https://anime-atsume.herokuapp.com/corsProxy?url=';
+    const defaultAnimeAtsumeCorsOptions = {
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    };
+    const requestOptions = {
+        ...options,
+        headers: {
+            ...defaultAnimeAtsumeCorsOptions.headers,
+            ...options?.headers,
+        },
+    };
+    const encodedUrl = animeAtsumeCorsUrl + encodeURIComponent(url);
+
+    return fetch(encodedUrl, requestOptions);
 };
 
 window.compareEscapingFunctions = function() {
