@@ -343,10 +343,26 @@ window.getAmazonChatLog = function getAmazonChatLog(copyToClipboard = true) {
  */
 async function translateJapanese(query) {
     const jishoApiUrl = 'https://jisho.org/api/v1/search/words?keyword=';
-    const res = await fetch(jishoApiUrl + encodeURIComponent(query));
-    const json = await res.json();
+    const fetchUrl = jishoApiUrl + encodeURIComponent(query);
 
-    return json;
+    const jishoFetch = async (useCorsProxy = false) => {
+        const res = useCorsProxy
+            ? await fetchCors(fetchUrl)
+            : await fetch(fetchUrl);
+        const json = await res.json();
+
+        return json;
+    };
+
+    try {
+        return await jishoFetch();
+    } catch (errorProbablyCors) {
+        try {
+            return await jishoFetch(true);
+        } catch (e) {
+            console.error(e);
+        }
+    }
 }
 
 window.translateJapanese = translateJapanese;
