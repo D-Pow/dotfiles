@@ -229,37 +229,55 @@ window.compareEscapingFunctions = function() {
 /************************************
  ********    Website utils    *******
  ***********************************/
-window.githubGetAllFilesChangedNames = function(onlyFileName = false) {
+window.githubGetAllFilesChangedByName = function(nameRegex = /./, onlyFileName = false) {
     const filenameLinkSelector = '.file-info a[title]';
 
     /* Use `title` attribute b/c it has the full filename instead of a truncated filename (...partialDirName/myFile.txt) */
-    return [...document.querySelectorAll(filenameLinkSelector)].map(anchor => {
-        if (onlyFileName) {
-            return anchor.title;
+    return [...document.querySelectorAll(filenameLinkSelector)]
+        .filter(anchor => anchor.title.match(nameRegex))
+        .map(anchor => {
+            if (onlyFileName) {
+                return anchor.title;
+            }
+
+            return {
+                fileName: anchor.title,
+                fileElement: anchor.parentElement.parentElement,
+            };
+        });
+};
+window.githubToggleFilesByName = function(
+    nameRegex,
+    {
+        collapsedToggle = true,
+        viewedToggle = false
+    } = {}
+) {
+    const fileCollapseButtonSelector = 'button[aria-label="Toggle diff contents"]';
+    const viewedToggleButtonElementSelector = '.file-actions .js-replace-file-header-review label';
+
+    const matchingFilesChanged = githubGetAllFilesChangedByName(nameRegex);
+
+    matchingFilesChanged.forEach(({ fileElement }) => {
+        if (collapsedToggle) {
+            fileElement.querySelector(fileCollapseButtonSelector).click();
         }
 
-        return {
-            fileName: anchor.title,
-            fileElement: anchor.parentElement.parentElement,
-        };
+        if (viewedToggle) {
+            fileElement.querySelector(viewedToggleButtonElementSelector).click();
+        }
     });
 };
-window.githubToggleAllFilesChangedOpenStatus = function() {
-    const fileCollapseButtonSelector = 'button[aria-label="Toggle diff contents"]';
-
-    [...document.querySelectorAll(fileCollapseButtonSelector)]
-        .forEach(elem => elem.click());
+window.githubToggleAllFilesChangedCollapsedStatus = function() {
+    githubToggleFilesByName();
+};
+window.githubToggleAllTestsCollapsedStatus = function() {
+    const testAndSnapshotRegex = /((test|spec)\.[jt]sx?)|(\.(snap|storyshot))$/i;
+    githubToggleFilesByName(testAndSnapshotRegex);
 };
 window.githubToggleAllSnapshotsViewedStatus = function() {
-    const snapshotExtensionRegex = /\.(snap|storyshot)$/;
-    const viewedToggleButtonElementSelector = '.file-actions .js-replace-file-header-review label';
-    const allFilesChanged = githubGetAllFilesChangedNames();
-    const allSnapshotsChanged = allFilesChanged
-        .filter(({ fileName }) => fileName.match(snapshotExtensionRegex));
-
-    allSnapshotsChanged.forEach(({ fileElement }) => {
-        fileElement.querySelector(viewedToggleButtonElementSelector).click();
-    });
+    const snapshotExtensionRegex = /\.(snap|storyshot)$/i;
+    githubToggleFilesByName(snapshotExtensionRegex, { collapsedToggle: false, viewedToggle: true });
 };
 
 window.circleCiToggleAllSnapshotTestsExpansion = function() {
@@ -890,7 +908,10 @@ setInnerHtmlToVideoWithSrc();  /* Set document to <video /> */
 goToNextKissanimeEpisode();  /* Next Kissanime */
 
 /*
-githubToggleAllFilesChangedOpenStatus();  /* toggle "Files changed" tab so they can be viewed easier */
-
+githubToggleAllFilesChangedCollapsedStatus();  /* toggle "Files changed" tab so they can be viewed easier */
+/*
+githubToggleAllTestsCollapsedStatus(); /* toggle all tests/snapshots */
+/*
+githubToggleAllSnapshotsViewedStatus(); /* toggle only snapshots */
 
 })();
