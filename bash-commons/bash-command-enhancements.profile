@@ -87,7 +87,18 @@ fi
 _grepIgnoredDirs=('node_modules' '.git' '.idea' 'lcov-report')
 
 alias grep="grep --exclude-dir={`array.join -s _grepIgnoredDirs ','`} --color=auto"
-alias egrep='grep -P'
+
+_egrepCommand=
+_setEgrepCommand() {
+    declare perlRegexSupported="$(echo 'true' | grep -P 'u' 2>/dev/null)"
+
+    if [[ -n "$perlRegexSupported" ]]; then
+        _egrepCommand='grep -P'
+    else
+        _egrepCommand='grep -E'
+    fi
+} && _setEgrepCommand
+alias egrep=$_egrepCommand
 
 gril() {
     local query="$1"
