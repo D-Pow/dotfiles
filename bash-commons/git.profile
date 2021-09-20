@@ -237,6 +237,9 @@ gitExportStashes() {
 
     local stashPatchFileGlob='stash*.patch'
     local outputFileName='stashes.tar.gz'
+    local outputStashMessagesFileName='stash-messages.log'
+
+    git stash list > "$outputStashMessagesFileName"
 
     # `-` passes the output of the previous command to the piped command as input.
     # See: https://askubuntu.com/questions/1074067/what-does-the-syntax-of-pipe-and-ending-dash-mean/1074072#1074072
@@ -246,9 +249,9 @@ gitExportStashes() {
     # `cat output.txt | myCommand -` is equivalent to `myCommand < output.txt`
     # but `cat output.txt | xargs myCommand` is equivalent to `myCommand output-line-1 output-line-2 ...`
     # See: https://askubuntu.com/questions/703397/what-does-the-in-bash-mean/703434#703434
-    find . -maxdepth 1 -type f -name "$stashPatchFileGlob" | tar -czf $outputFileName -T -
+    find . -maxdepth 1 -type f \( -name "$stashPatchFileGlob" \) -o \( -name "$outputStashMessagesFileName" \) | tar -czf $outputFileName -T -
 
-    rm $stashPatchFileGlob
+    rm $stashPatchFileGlob "$outputStashMessagesFileName"
 
     local outputFilePath="$(pwd)/$outputFileName"
 
@@ -262,7 +265,7 @@ gitExportStashes() {
     # https://stackoverflow.com/questions/20586009/how-to-recover-from-git-stash-save-all/20589663#20589663
     # https://stackoverflow.com/questions/1105253/how-would-i-extract-a-single-file-or-changes-to-a-file-from-a-git-stash
 
-    echo "Stashes zipped to '$outputFilePath'
+    echo "Stashes zipped to '$outputFilePath' along with stash messages.
     * View zipped contents via 'tar -tf $outputFileName'
     * Unzip via 'tar -xzf $outputFileName'
     * Apply via 'git apply stash@{i}.patch'"
