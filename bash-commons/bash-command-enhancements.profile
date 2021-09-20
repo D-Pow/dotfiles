@@ -87,7 +87,7 @@ fi
 _grepIgnoredDirs=('node_modules' '.git' '.idea' 'lcov-report')
 
 alias grep="grep --exclude-dir={`array.join -s _grepIgnoredDirs ','`} --color=auto"
-alias egrep='grep -E'
+alias egrep='grep -P'
 
 gril() {
     local query="$1"

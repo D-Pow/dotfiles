@@ -56,8 +56,6 @@ export LS_COLORS='di=36:ln=35:so=32:pi=33:ex=31:bd=0;47:cd=0;47:su=31:sg=31:tw=1
 # alias ls='ls -Fh --color'
 # alias lah='ls -Flah --color'
 
-alias egrep='grep -P'
-
 alias python='python3'
 alias python2='/usr/bin/python'
 # export PIP_INDEX_URL='https://artifactory.etrade.com/artifactory/api/pypi/pypi/simple'
