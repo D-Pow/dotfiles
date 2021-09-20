@@ -1,3 +1,20 @@
+listprocesses() {
+    if (( $# > 0 )); then
+        # Include header info for what each column means
+        ps aux | head -n 1
+
+        # Print info for the desired search query.
+        # Filter out the `grep` command that searches for said query
+        # since it's just noise.
+        # Note: grep flags can still be passed by using this method.
+        ps aux | grep -v grep | egrep "$@"
+    else
+        # Otherwise, standard command output includes headers,
+        # so no manual interaction needed.
+        ps aux
+    fi
+}
+
 listopenports() {
     local _listopenportsCmd=()
     local OPTIND=1
