@@ -144,7 +144,10 @@ fe-start() {
         nd dev portal
     fi
 
-    yarn build --watch "$@"
+    # Allow only starting the Docker containers without running the build
+    if [[ "$1" != "-" ]]; then
+        yarn build --watch "$@"
+    fi
 }
 fe-stop() {
     # Unique substrings for front-end Docker containers currently used to proxy API
