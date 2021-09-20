@@ -229,13 +229,13 @@ window.compareEscapingFunctions = function() {
 /************************************
  ********    Website utils    *******
  ***********************************/
-window.toggleAllGithubFilesChangedOpenStatus = function() {
+window.githubToggleAllFilesChangedOpenStatus = function() {
     const fileCollapseButtonSelector = 'button[aria-label="Toggle diff contents"]';
 
     [...document.querySelectorAll(fileCollapseButtonSelector)]
         .forEach(elem => elem.click());
 };
-window.getAllGithubFilesChangedNames = function(includeFileOptionsParentElement = true) {
+window.githubGetAllFilesChangedNames = function(includeFileOptionsParentElement = true) {
     const filenameLinkSelector = '.file-info a[title]';
 
     /* Use `title` attribute b/c it has the full filename instead of a truncated filename (...partialDirName/myFile.txt) */
@@ -250,10 +250,10 @@ window.getAllGithubFilesChangedNames = function(includeFileOptionsParentElement 
         return anchor.title;
     });
 };
-window.toggleAllGithubSnapshotsViewedStatus = function() {
+window.githubToggleAllSnapshotsViewedStatus = function() {
     const snapshotExtensionRegex = /\.(snap|storyshot)$/;
     const viewedToggleButtonElementSelector = '.file-actions .js-replace-file-header-review label';
-    const allFilesChanged = getAllGithubFilesChangedNames();
+    const allFilesChanged = githubGetAllFilesChangedNames();
     const allSnapshotsChanged = allFilesChanged
         .filter(({ fileName }) => fileName.match(snapshotExtensionRegex));
 
@@ -262,13 +262,13 @@ window.toggleAllGithubSnapshotsViewedStatus = function() {
     });
 };
 
-window.toggleAllCircleCiSnapshotTestsExpansion = function() {
+window.circleCiToggleAllSnapshotTestsExpansion = function() {
     [...document.querySelectorAll('li[id*=failed-test-] [role=button]')]
         .filter(btn => btn.textContent.includes('MatchSnapshot'))
         .forEach(btn => btn.click());
 };
 
-window.sumCitiChargesForPreviousStatements = function() {
+window.citiSumChargesForPreviousStatements = function() {
     /* Helpful when "running balance" column doesn't exist */
     [...document.querySelectorAll('.cA-ada-TRANSACTION_AMT_Column.cA-ada-ls-hide')]
         .map(elem => elem.textContent
@@ -278,7 +278,7 @@ window.sumCitiChargesForPreviousStatements = function() {
         ).reduce((sum, numStr) => sum + Number(numStr), 0);
 };
 
-window.getDrizlyAbvAndPricesFromSearchResults = async function(minAbv = 10) {
+window.drizlyGetAbvAndPricesFromSearchResults = async function(minAbv = 10) {
     const searchResultElems = [...document.querySelectorAll('.section-body.list-view li')];
     const searchResultInfoPromises = searchResultElems.map(async elem => {
         try {
@@ -307,7 +307,7 @@ window.getDrizlyAbvAndPricesFromSearchResults = async function(minAbv = 10) {
 };
 
 
-window.getAmazonChatLog = function getAmazonChatLog(copyToClipboard = true) {
+window.amazonGetChatLog = function amazonGetChatLog(copyToClipboard = true) {
     const chatLogParentDiv = document.querySelector('.ChatRoller__liveTranscriptWrapper___JJkDd');
     const chatLogEntries = [...chatLogParentDiv.children];
 
@@ -890,7 +890,7 @@ setInnerHtmlToVideoWithSrc();  /* Set document to <video /> */
 goToNextKissanimeEpisode();  /* Next Kissanime */
 
 /*
-toggleAllGithubFilesChangedOpenStatus();  /* toggle "Files changed" tab so they can be viewed easier */
+githubToggleAllFilesChangedOpenStatus();  /* toggle "Files changed" tab so they can be viewed easier */
 
 
 })();
