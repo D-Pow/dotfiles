@@ -229,26 +229,26 @@ window.compareEscapingFunctions = function() {
 /************************************
  ********    Website utils    *******
  ***********************************/
+window.githubGetAllFilesChangedNames = function(onlyFileName = false) {
+    const filenameLinkSelector = '.file-info a[title]';
+
+    /* Use `title` attribute b/c it has the full filename instead of a truncated filename (...partialDirName/myFile.txt) */
+    return [...document.querySelectorAll(filenameLinkSelector)].map(anchor => {
+        if (onlyFileName) {
+            return anchor.title;
+        }
+
+        return {
+            fileName: anchor.title,
+            fileElement: anchor.parentElement.parentElement,
+        };
+    });
+};
 window.githubToggleAllFilesChangedOpenStatus = function() {
     const fileCollapseButtonSelector = 'button[aria-label="Toggle diff contents"]';
 
     [...document.querySelectorAll(fileCollapseButtonSelector)]
         .forEach(elem => elem.click());
-};
-window.githubGetAllFilesChangedNames = function(includeFileOptionsParentElement = true) {
-    const filenameLinkSelector = '.file-info a[title]';
-
-    /* Use `title` attribute b/c it has the full filename instead of a truncated filename (...partialDirName/myFile.txt) */
-    return [...document.querySelectorAll(filenameLinkSelector)].map(anchor => {
-        if (includeFileOptionsParentElement) {
-            return {
-                fileName: anchor.title,
-                fileElement: anchor.parentElement.parentElement,
-            };
-        }
-
-        return anchor.title;
-    });
 };
 window.githubToggleAllSnapshotsViewedStatus = function() {
     const snapshotExtensionRegex = /\.(snap|storyshot)$/;
