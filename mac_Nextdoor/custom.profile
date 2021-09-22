@@ -135,6 +135,13 @@ alias db-login='psql nextdoor django1'
 alias fix-sockets='nd dev update unix_socket_bridge'
 alias fix-aws='aws_eng_login'
 
+fix-creds() {
+    if ! aws sts get-caller-identity > /dev/null 2>&1; then
+        fix-aws
+        fix-sockets
+    fi
+}
+
 fe-start() {
     nxtdr
 
@@ -171,10 +178,7 @@ fe-stop() {
 export COMPOSE_HTTP_TIMEOUT=1000
 
 be-start() {
-    if ! aws sts get-caller-identity > /dev/null 2>&1; then
-        fix-aws
-        fix-sockets
-    fi
+    fix-creds
 
     if ! curl https://static.localhost.com/ 2>/dev/null; then
         STATIC_CONTENT_HOST=https://static.localhost.com:443 NEXTDOOR_PORT=443 nd dev runserver
