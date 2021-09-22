@@ -50,6 +50,9 @@ export PATH="$NVM_CURRENT_HOME/bin:$PATH"
 ### Docker ###
 
 dockerFindByName() {
+    # Enhanced `docker ps` that filters by any field instead of only by name, ID, image, etc.
+    # and allows regex queries.
+    # Docs: https://docs.docker.com/engine/reference/commandline/ps
     local _dockerPsArgs=("$@")
     local _dockerPsOpts
     local _dockerPsImageNameArray
@@ -59,7 +62,30 @@ dockerFindByName() {
     # Last arg is image name query string
     array.slice -r _dockerPsImageNameArray _dockerPsArgs -1
 
-    docker ps -a "${_dockerPsOpts[@]}" --filter "name=${_dockerPsImageNameArray[0]}"
+    # First, get matching results based on any search query (container ID, image, container name, etc.).
+    # Then, apply the user's search criteria to the matches afterwards.
+    # This is required first because:
+    #   Calling `grep` after the user's `ps` options might result in 0 results (e.g. `docker ps -q` removes filtering based on image).
+    #   Calling `grep` before `ps` options means we have to parse out the options manually (e.g. `docker ps -q` means we'd have to use `cut` to get only the first column).
+    # Also, calling `docker ps` a second time with the user's `ps` options means we can let docker
+    # handle the header output itself, too.
+    # To call it a second time, remove the headers from this initial filter call so it doesn't
+    # interfere with the second call.
+    local _dockerPsMatches="$(docker ps -a | egrep -iv 'CONTAINER\s*ID\s*IMAGE' | egrep -i "${_dockerPsImageNameArray[0]}")"
+
+    if [[ -z "$_dockerPsMatches" ]]; then
+        return 1
+    fi
+
+    # Get only the container IDs so we can add our own custom `--filter` query to the `ps` options.
+    # Works with any other option, including other `--filter` entries, `-q`, etc.
+    local _dockerPsMatchesContainerIds=($(echo "$_dockerPsMatches" | cut -d ' ' -f 1))
+
+    for _containerId in "${_dockerPsMatchesContainerIds[@]}"; do
+        _dockerPsOpts+=('--filter' "id=$_containerId")
+    done
+
+    docker ps -a "${_dockerPsOpts[@]}"
 }
 
 dockerIsContainerRunning() {
