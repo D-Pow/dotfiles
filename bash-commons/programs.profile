@@ -66,6 +66,31 @@ dockerIsContainerRunning() {
     docker inspect --format '{{json .State.Running}}' "$imageId" 2>/dev/null
 }
 
+dockerStartContainer() {
+    declare _dockerStartContainerArgs=("$@")
+    declare _dockerStartContainerOpts
+    declare _dockerStartContainerNameArr
+
+    # All args before the last one
+    array.slice -r _dockerStartContainerOpts _dockerStartContainerArgs 0 -1
+    # Last arg is image name query string
+    array.slice -r _dockerStartContainerNameArr _dockerStartContainerArgs -1
+
+    declare _dockerStartContainerName="${_dockerStartContainerNameArr[0]}"
+
+    if [[ -z "$_dockerStartContainerName" ]]; then
+        echo 'Please specify a container. Add `-ai` to make container interactive.'
+        return 1
+    fi
+
+    declare _containerIdIfArgId="$(docker ps -aq | grep "$_dockerStartContainerName")"
+    declare _containerIdIfArgName="$(dockerFindByName -q "$_dockerStartContainerName")"
+
+    declare _dockerStartContainerId="${_containerIdIfArgId:-$_containerIdIfArgName}"
+
+    docker start "${_dockerStartContainerOpts}" "$_dockerStartContainerId"
+}
+
 dockerGetLogs() {
     local _dockerLogOutputFile
     local _dockerContainerName
