@@ -49,7 +49,7 @@ export PATH="$NVM_CURRENT_HOME/bin:$PATH"
 
 ### Docker ###
 
-dockerFindByName() {
+dockerFindContainer() {
     # Enhanced `docker ps` that filters by any field instead of only by name, ID, image, etc.
     # and allows regex queries.
     # Docs: https://docs.docker.com/engine/reference/commandline/ps
@@ -89,7 +89,7 @@ dockerFindByName() {
 }
 
 dockerIsContainerRunning() {
-    local imageId="`dockerFindByName -q "$1"`"
+    local imageId="`dockerFindContainer -q "$1"`"
 
     docker inspect --format '{{json .State.Running}}' "$imageId" 2>/dev/null
 }
@@ -112,7 +112,7 @@ dockerStartContainer() {
     fi
 
     declare _containerIdIfArgId="$(docker ps -aq | grep "$_dockerStartContainerName")"
-    declare _containerIdIfArgName="$(dockerFindByName -q "$_dockerStartContainerName")"
+    declare _containerIdIfArgName="$(dockerFindContainer -q "$_dockerStartContainerName")"
 
     declare _dockerStartContainerId="${_containerIdIfArgId:-$_containerIdIfArgName}"
 
@@ -161,7 +161,7 @@ dockerGetLogs() {
         exec 2>&1
     fi
 
-    for containerName in $(dockerFindByName --format '{{.Names}}' "$_dockerContainerName"); do
+    for containerName in $(dockerFindContainer --format '{{.Names}}' "$_dockerContainerName"); do
         echo "Container: $containerName"
         docker logs "$@" "$containerName" >&1
         echo -e '\n\n----------------------------------------------------\n\n'

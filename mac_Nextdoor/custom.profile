@@ -168,7 +168,7 @@ fe-stop() {
     )
 
     for feProxyDockerContainer in "${feProxyDockerContainers[@]}"; do
-        local actualContainerName="$(dockerFindByName --format '{{.Names}}' "$feProxyDockerContainer")"
+        local actualContainerName="$(dockerFindContainer --format '{{.Names}}' "$feProxyDockerContainer")"
 
         docker stop "$actualContainerName"
     done
