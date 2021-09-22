@@ -51,6 +51,8 @@ export PATH="$NVM_CURRENT_HOME/bin:$PATH"
 
 dockerFindByName() {
     local _dockerPsArgs=("$@")
+    local _dockerPsOpts
+    local _dockerPsImageNameArray
 
     # All args before the last one
     array.slice -r _dockerPsOpts _dockerPsArgs 0 -1

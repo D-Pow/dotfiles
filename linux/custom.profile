@@ -80,6 +80,7 @@ apt-get-repositories() {
         && echo "($_showDisabled|$_aptRepoEnabledSearchRegex)" \
         || echo "$_aptRepoEnabledSearchRegex"
     )"
+    local _aptRepos
 
     array.fromString -d '\n' -r _aptRepos "$(egrep -r "${_aptRepoSearchRegex}deb" /etc/apt/sources.list*)"
 
@@ -96,12 +97,14 @@ apt-get-repositories() {
         # First, split by colon to separate the filename and file content.
         # Sample output from `_aptRepos[i]`:
         # /etc/apt/sources.list.d/git-core-ppa-xenial.list:deb http://ppa.launchpad.net/git-core/ppa/ubuntu xenial main
+        local _aptRepoSplitStr
         array.fromString -d ':' -r _aptRepoSplitStr "$_aptFileToRepoStr"
         # Filename won't have colons in it, so it's safe to simply get the first array entry.
         local _aptRepoFilePath="${_aptRepoSplitStr[0]}"
         # File content would've had colons in them (e.g. URLs).
         # Since they've been split by colon, take all the remaining entries (which are all
         # part of the file content) and join them by colon to get the original file content.
+        local _aptRepoInfoWithoutColons
         array.slice -r _aptRepoInfoWithoutColons _aptRepoSplitStr 1
         local _aptRepoInfo="$(array.join -s _aptRepoInfoWithoutColons ':')"
 

@@ -385,6 +385,7 @@ array.map() {
     declare -A optsConfig=(
         ['r:,_arrMapRetArrName']='Array in which to store resulting transformed entries'
     )
+    declare argsArray
 
     parseArgs optsConfig "$@"
 

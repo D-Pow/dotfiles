@@ -58,6 +58,7 @@ parseArgs() {
         Colons function the same as the \`getopts\` string, i.e. \`getopts 'ab::c:'\`.
 
     Example:
+        # Ensure all variables are declared as local variables to avoid them being made global
         declare var1
         declare var2
         declare var3
@@ -69,6 +70,7 @@ parseArgs() {
             ['?']='String to pass to eval() upon unknown flag discovery. Defaults to \`echo -e \$USAGE; return 1;\`'
             ['USAGE']='Usage string without option descriptions (parseArgs will add those automatically)'
         )
+        declare argsArray
         parseArgs optionConfig \"\$@\"
 
     Returns:
@@ -202,6 +204,8 @@ parseArgs() {
             #
             # Both require adding '-' in `getopts` string, e.g. `'-:'` if long option
             # accepts arguments.
+            declare _longOptionArray
+            declare _longOptionValArray
             array.fromString -d '=' -r _longOptionArray "$OPTARG"
             array.slice -r _longOptionValArray _longOptionArray 1
 

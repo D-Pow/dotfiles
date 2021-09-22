@@ -166,6 +166,7 @@ findIgnoreDirs() {
 
     local _findArgs=("$@")
     local _findToSearchIn="$1"
+    local _findOpts
     array.slice -r _findOpts _findArgs 1
 
     local _findIgnoreDirsOptionName=' -o -name '
@@ -233,6 +234,7 @@ tarremovepathprefix() {
     #   tar [-czf with-spaces.tar.gz] -C ['../../dir/with spaces/dir[/file.ext]'] '.'
 
     local _tarArgs=("$@")
+    local _tarOpts
 
     # Strip out desired dir from final `tar` command since we're `cd`ing into it (so it actually should be '.')
     array.slice -r _tarOpts _tarArgs 0 -1
