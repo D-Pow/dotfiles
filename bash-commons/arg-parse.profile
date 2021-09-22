@@ -78,7 +78,7 @@ parseArgs() {
 
     Sets:
         Variables as described by \`config\` (e.g. \`var1\`).
-        \`argsArray\`=(\"\$@\")
+        An array of the remaining args in the form of \`argsArray\`=(\"\$@\")
 
     Important:
         Declare your variables *BEFORE* calling parseArgs to ensure they're local to your
