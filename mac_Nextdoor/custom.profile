@@ -129,6 +129,15 @@ alias todo="subl '~/Desktop/ToDo.md'"
 
 alias nxtdr='cd ~/src/nextdoor.com/apps/nextdoor/frontend'
 
+testUserLogins=(
+    iceweasel@example.com
+    edith@example.com
+    jackdohn@example.com
+    mieshareed@example.com
+    terrancejean@example.com
+)
+testUserPassword="abcdef"
+
 alias db-start-server='nd dev getdb'
 alias db-login='psql nextdoor django1'
 
