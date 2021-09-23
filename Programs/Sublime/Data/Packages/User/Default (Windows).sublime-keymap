@@ -64,10 +64,10 @@
     { "keys": ["alt+shift+d"], "command": "goto_definition", "args": {"side_by_side": true, "clear_to_right": true} },
     { "keys": ["alt+r"], "command": "goto_reference" },
     { "keys": ["alt+shift+r"], "command": "goto_reference", "args": {"side_by_side": true, "clear_to_right": true} },
-    /* go to anything in file */
+    /* go to any file */
     { "keys": ["ctrl+g"], "command": "show_overlay", "args": {"overlay": "goto", "show_files": true} },
     /* go to anything everywhere */
-    { "keys": ["ctrl+shift+g"], "command": "goto_symbol_in_project" },
+    { "keys": ["alt+shift+g"], "command": "goto_symbol_in_project" },
 
 
     /* Ctrl+D selects next instance of a string.
