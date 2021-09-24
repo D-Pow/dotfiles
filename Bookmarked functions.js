@@ -288,7 +288,7 @@ window.circleCiToggleAllSnapshotTestsExpansion = function() {
 
 window.citiSumChargesForPreviousStatements = function() {
     /* Helpful when "running balance" column doesn't exist */
-    [...document.querySelectorAll('.cA-ada-TRANSACTION_AMT_Column.cA-ada-ls-hide')]
+    return [...document.querySelectorAll('.cA-ada-TRANSACTION_AMT_Column.cA-ada-ls-hide')]
         .map(elem => elem.textContent
             .replace(/[\$,]/g, '')
             .replace('−', '-')
