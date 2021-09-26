@@ -119,7 +119,7 @@ getGitParent() {
 }
 
 
-getAllGitReposInDir() {
+gitGetAllReposInDir() {
     local parentDir='.'
     local gitDirs=()
 
@@ -130,6 +130,7 @@ getAllGitReposInDir() {
     parentDir="$(cd "$parentDir" && pwd)"
 
     local parentDirContents=$parentDir/*
+    local file=
 
     for file in $parentDirContents; do
         if [ -d "$file" ]; then # -d = isDirectory
@@ -143,7 +144,7 @@ getAllGitReposInDir() {
 }
 
 
-updateAllGitRepos() {
+gitUpdateRepos() {
     usage="Updates all git repositories with 'git pull' at the given parent path.
 
     Usage: ${FUNCNAME[0]} [-s] [path=./]
@@ -169,7 +170,8 @@ updateAllGitRepos() {
 
     shift "$((OPTIND - 1))"
 
-    local gitDirs=$(getAllGitReposInDir $1)
+    local gitDirs=$(gitGetAllReposInDir $1)
+    local dir=
 
     for dir in $gitDirs; do
         echo "Updating $dir..."
