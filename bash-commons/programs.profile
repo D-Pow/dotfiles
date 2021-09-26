@@ -47,6 +47,39 @@ export PATH="$NVM_CURRENT_HOME/bin:$PATH"
 
 
 
+pipsearch() {
+    if [[ -z "$1" ]]; then
+        declare USAGE="Searches pypi.org for packages matching the search query (only the first page).
+    Created due to \`pip search\` being deprecated.
+    \`pip_search\` is a better tool for the job, this is only a quick hack.
+
+    Usage: ${FUNCNAME[0]} packageName"
+
+        echo "$USAGE"
+        return 1
+    fi
+
+    declare query="$1"
+    # -print == -eval 'console.log($command)'
+    declare urlQueryParam="$(node -p "encodeURIComponent('$query')")"
+    # -silent to hide progress, -Showerrors to show errors even in silent mode
+    declare searchHtml="$(curl -sS "https://pypi.org/search/?q=$urlQueryParam")"
+
+    declare packageNamesAndVersions=($(echo "$searchHtml" | egrep -o '(?<=package-snippet__name">|package-snippet__version">).*(?=</span>)'))
+    declare searchResult=
+
+    for searchResult in "${!packageNamesAndVersions[@]}"; do
+        if (( searchResult % 2 == 0 )); then
+            declare packageName="${packageNamesAndVersions[searchResult]}"
+            declare packageVersion="${packageNamesAndVersions[(( $searchResult+1 ))]}"
+
+            echo "$packageName@$packageVersion"
+        fi
+    done
+}
+
+
+
 ### Docker ###
 
 dockerFindContainer() {
