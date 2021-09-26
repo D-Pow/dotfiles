@@ -119,7 +119,7 @@ getGitParent() {
 }
 
 
-gitGetAllReposInDir() {
+gitGetReposInDir() {
     local parentDir='.'
     local gitDirs=()
 
@@ -140,6 +140,10 @@ gitGetAllReposInDir() {
         fi
     done
 
+    if [ -d "$parentDir/.git" ]; then # if $parentDir itself contains .git/
+        gitDirs+=("$parentDir")
+    fi
+
     echo ${gitDirs[@]}
 }
 
@@ -147,7 +151,7 @@ gitGetAllReposInDir() {
 gitUpdateRepos() {
     usage="Updates all git repositories with 'git pull' at the given parent path.
 
-    Usage: ${FUNCNAME[0]} [-s] [path=./]
+    Usage: ${FUNCNAME[0]} [-s] [paths=./]
 
     Options:
         -s | Run 'git status' after 'git pull'."
@@ -170,10 +174,20 @@ gitUpdateRepos() {
 
     shift "$((OPTIND - 1))"
 
-    local gitDirs=$(gitGetAllReposInDir $1)
+    local pathsToSearch=('.')
+    local gitDirs=()
+
+    if [[ -n "$@" ]]; then
+        pathsToSearch=("$@")
+    fi
+
     local dir=
 
-    for dir in $gitDirs; do
+    for dir in ${pathsToSearch[@]}; do
+        gitDirs+=($(gitGetReposInDir "$dir"))
+    done
+
+    for dir in "${gitDirs[@]}"; do
         echo "Updating $dir..."
         (cd "$dir" && git pull && [ "$getStatus" = true ] && git status)
         echo -e "\n\n---------------------\n\n"
