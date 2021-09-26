@@ -27,7 +27,7 @@ SHELL="$(which "$(echo "$0" | sed -E 's|^-||')")"
 
 
 alias ls='ls -Fh --color'
-alias lah='ls -Flah --color'
+alias lah='ls -FlAh --color' # A removes ./ and ../
 
 
 alias printpath='echo $PATH | sed -E "s|:|\n|g"'
