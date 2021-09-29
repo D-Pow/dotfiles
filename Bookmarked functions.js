@@ -229,7 +229,10 @@ window.compareEscapingFunctions = function() {
 /************************************
  ********    Website utils    *******
  ***********************************/
-window.githubGetAllFilesChangedByName = function(nameRegex = /./, onlyFileName = false) {
+window.githubGetAllFilesChangedByName = function({
+    nameRegex = /./,
+    onlyFileName = false,
+} = {}) {
     const filenameLinkSelector = '.file-info a[title]';
 
     /* Use `title` attribute b/c it has the full filename instead of a truncated filename (...partialDirName/myFile.txt) */
@@ -250,13 +253,13 @@ window.githubToggleFilesByName = function(
     nameRegex,
     {
         collapsedToggle = true,
-        viewedToggle = false
+        viewedToggle = false,
     } = {}
 ) {
     const fileCollapseButtonSelector = 'button[aria-label="Toggle diff contents"]';
     const viewedToggleButtonElementSelector = '.file-actions .js-replace-file-header-review label';
 
-    const matchingFilesChanged = githubGetAllFilesChangedByName(nameRegex);
+    const matchingFilesChanged = githubGetAllFilesChangedByName({ nameRegex });
 
     matchingFilesChanged.forEach(({ fileElement }) => {
         if (collapsedToggle) {
