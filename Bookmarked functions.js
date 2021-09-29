@@ -284,6 +284,36 @@ window.githubToggleAllSnapshotsViewedStatus = function() {
 };
 
 
+window.circleCiGetAllFailedTests = function({
+    nameRegex = /./,
+    onlyFileName = false,
+    testNameRegex,
+} = {}) {
+    const allFailedTestExpandCollapseElems = [...document.querySelectorAll('li[id*=failed-test-]')];
+    const allMatchingTestElems = allFailedTestExpandCollapseElems
+        .map(elem => {
+            const testAndFileNameStr = elem.querySelector('header h4').textContent;
+            const separator = ' - ';
+            const testAndFileNamesSplit = testAndFileNameStr.split(separator);
+            const testName = testAndFileNamesSplit.slice(0, -1).join(separator);
+            const fileName = testAndFileNamesSplit[testAndFileNamesSplit.length - 1];
+
+            return {
+                testName,
+                fileName,
+                elem,
+            };
+        })
+        .filter(({ fileName, testName }) => {
+            return nameRegex.test(fileName) || testNameRegex?.test(testName);
+        });
+
+    if (onlyFileName) {
+        return allMatchingTestElems.map(({ fileName }) => fileName);
+    }
+
+    return allMatchingTestElems;
+};
 window.circleCiToggleAllSnapshotTestsExpansion = function() {
     [...document.querySelectorAll('li[id*=failed-test-] [role=button]')]
         .filter(btn => btn.textContent.includes('MatchSnapshot'))
