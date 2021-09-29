@@ -152,6 +152,10 @@ dockerStartContainer() {
     docker start "${_dockerStartContainerOpts}" "$_dockerStartContainerId"
 }
 
+dockerKillAll() {
+    docker stop $(docker container ls -q)
+}
+
 dockerGetLogs() {
     local _dockerLogOutputFile
     local _dockerContainerName

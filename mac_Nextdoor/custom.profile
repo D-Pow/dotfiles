@@ -201,8 +201,8 @@ be-start() {
     echo 'Back-end is running!'
 }
 be-stop() {
-    # Stop all containers since FE containers won't work without them
-    docker stop $(docker container ls -q)
+    # Stop all containers. If wanting to run FE, then you'll have to restart them
+    dockerKillAll
 }
 
 
