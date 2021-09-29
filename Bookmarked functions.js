@@ -280,11 +280,13 @@ window.githubToggleAllSnapshotsViewedStatus = function() {
     githubToggleFilesByName(snapshotExtensionRegex, { collapsedToggle: false, viewedToggle: true });
 };
 
+
 window.circleCiToggleAllSnapshotTestsExpansion = function() {
     [...document.querySelectorAll('li[id*=failed-test-] [role=button]')]
         .filter(btn => btn.textContent.includes('MatchSnapshot'))
         .forEach(btn => btn.click());
 };
+
 
 window.citiSumChargesForPreviousStatements = function() {
     /* Helpful when "running balance" column doesn't exist */
@@ -295,6 +297,7 @@ window.citiSumChargesForPreviousStatements = function() {
             .trim()
         ).reduce((sum, numStr) => sum + Number(numStr), 0);
 };
+
 
 window.drizlyGetAbvAndPricesFromSearchResults = async function(minAbv = 10) {
     const searchResultElems = [...document.querySelectorAll('.section-body.list-view li')];
@@ -567,6 +570,7 @@ class SlackInBrowserService {
 }
 
 window.SlackInBrowserService = SlackInBrowserService;
+
 
 
 /************************************************
