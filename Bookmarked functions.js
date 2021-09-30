@@ -76,6 +76,29 @@ function getQueryParams({
 
 window.getQueryParams = getQueryParams;
 
+window.getAlphabet = function getAlphabet({
+    lowercase = true,
+    uppercase = true,
+} = {}) {
+    const getUpperOrLowerCaseAlphabetFromA = startCharCode => Array.from({ length: 26 })
+        .map((nul, index) => index + startCharCode)
+        .map(charCode => String.fromCharCode(charCode));
+    const alphabetLowercase = getUpperOrLowerCaseAlphabetFromA('a'.charCodeAt(0));
+    const alphabetUppercase = getUpperOrLowerCaseAlphabetFromA('A'.charCodeAt(0));
+
+    if (lowercase && uppercase) {
+        return [ ...alphabetLowercase, ...alphabetUppercase ];
+    }
+
+    if (lowercase) {
+        return alphabetLowercase;
+    }
+
+    if (uppercase) {
+        return alphabetUppercase;
+    }
+}
+
 window.htmlEscape = str => {
     return str
         .replace(/&/g, '&amp;')
