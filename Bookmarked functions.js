@@ -64,7 +64,7 @@ function getQueryParams({
             : '';
     }
 
-    const urlSearchQuery = fromUrl.split('?')[1];
+    const urlSearchQuery = fromUrl[0] === '?' ? fromUrl.slice(1) : fromUrl;
 
     return [...new URLSearchParams(urlSearchQuery).entries()]
         .reduce((queryParams, nextQueryParam) => {
