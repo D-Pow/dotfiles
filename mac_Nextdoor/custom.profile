@@ -159,10 +159,16 @@ fe-start() {
     fi
 
     # Allow only starting the Docker containers without running the build
-    if [[ "$1" != "-" ]]; then
+    if [[ -n "$@" ]]; then
+        local yarnBuildArgs="$@"
+
+        if (( "$#" == 1 )) && [[ "$1" == '.' ]]; then
+            yarnBuildArgs=
+        fi
+
         (
             nxtdr
-            yarn build --watch "$@"
+            yarn build --watch "$yarnBuildArgs"
         )
     fi
 }
