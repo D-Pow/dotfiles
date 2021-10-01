@@ -152,8 +152,6 @@ fix-creds() {
 }
 
 fe-start() {
-    nxtdr
-
     local devProxyIsRunning="`dockerIsContainerRunning 'dev-local-proxy'`"
 
     if [[ $devProxyIsRunning != 'true' ]]; then
@@ -162,7 +160,10 @@ fe-start() {
 
     # Allow only starting the Docker containers without running the build
     if [[ "$1" != "-" ]]; then
-        yarn build --watch "$@"
+        (
+            nxtdr
+            yarn build --watch "$@"
+        )
     fi
 }
 fe-stop() {
