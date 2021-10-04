@@ -134,21 +134,44 @@ getFileFromDescriptor() {
     declare _fdToSearch="$1"
     declare _lsofOutputHeaders=(COMMAND PID USER FD TYPE DEVICE SIZE_OFF NODE NAME)
 
-    # Allows selecting an `lsof` header by index.
-    # array.map/str.repeat combo results in e.g. "^\S+\s+" for "COMMAND" and "^\S+\s+\S+\s+" for "PID"
-    declare _lsofOutputMatchers=()
-    array.map -r _lsofOutputMatchers _lsofOutputHeaders "echo \"^\$(str.repeat '\S+\s+' \$(( key + 1 )) )\""
+    # Include this process' PID b/c it likely made the FD
+    declare _fdToSearchCurrentPid="$$"
+    # Include the parent's as well in case the FD is used in a subshell or script
+    declare _fdToSearchParentPid="$(ps -o ppid= $$)"
+    # `lsof` = LiSt Open Files
+    # `-d` = file Descriptor
+    # `-a` = And (match multiple criteria)
+    # `-p` = Process ID
+    # `| \` must be done instead of `\ [\n] |` since comments exist between the lines
+    lsof -d "$_fdToSearch" -a -p "$_fdToSearchParentPid,$_fdToSearchCurrentPid" | \
+        # truncate multiple spaces into one (allows avoiding the `\S+\s+` regex from below)
+        tr -s ' ' | \
+        # Get group 9 (NAME)
+        cut -d ' ' -f 9 | \
+        # Remove header
+        grep -v NAME | \
+        # Uncomment below and change `cut -f 4,9` to include both FD and file in output
+        # | sed -E 's/^([0-9]+)\w/\1/' \
+        # Remove duplicates in case multiple processes/FDs point to same file
+        sort -u
 
-    # Match "\S+\s+{n}(searchQuery)"
-    # Thus, index must be "searchItem - 1"
-    declare _fdMatchRegex="${_lsofOutputMatchers[2]}$_fdToSearch"
-    declare _fdFileMatchRegex="${_lsofOutputMatchers[7]}(.*)"
-    declare _fdSearchingParentPid="$$"
 
-    lsof -p $_fdSearchingParentPid -d $_fdToSearch \
-        | grep $_fdSearchingParentPid \
-        | egrep "$_fdMatchRegex" \
-        | esed "s|$_fdFileMatchRegex|\1|"
+    # Old way: Manually getting files via regex (just a bit more complicated than the above)
+    # # Allows selecting an `lsof` header by index.
+    # # array.map/str.repeat combo results in e.g. "^\S+\s+" for "COMMAND" and "^\S+\s+\S+\s+" for "PID"
+    # declare _lsofOutputMatchers=()
+    # array.map -r _lsofOutputMatchers _lsofOutputHeaders "echo \"^\$(str.repeat '\S+\s+' \$(( key + 1 )) )\""
+    #
+    # # Match "\S+\s+{n}(searchQuery)"
+    # # Thus, index must be "searchItem - 1"
+    # declare _fdMatchRegex="${_lsofOutputMatchers[2]}$_fdToSearch"
+    # declare _fdFileMatchRegex="${_lsofOutputMatchers[7]}(.*)"
+    # declare _fdSearchingParentPid="$$"
+    #
+    # lsof -d $_fdToSearch -p $_fdSearchingParentPid \
+    #     | grep $_fdSearchingParentPid \
+    #     | egrep "$_fdMatchRegex" \
+    #     | esed "s|$_fdFileMatchRegex|\1|"
 }
 
 
