@@ -109,12 +109,14 @@ makeTempPipe() {
 
     # `mktemp` - Create a temp file
     declare _tmpPipeFile="$(mktemp)"
-    echo $_tmpPipeFile
     # Putting a string in `exec {var}` sets the lowest available file descriptor to that variable
     exec {FD}<>"$_tmpPipeFile"
 
-    # Calling parent could use `$FD` or they could use `declare myPipe="$(makeTempPipe)"`
-    # Used in the same way normal FD's are, just add a $ in front of them
+    # TODO Find out how to get return value (the following line doesn't work).
+    #   Calling parent could use `$FD` or they could use `declare myPipe={ makeTempPipe }`
+    #   Note: Must be run in `{ cmd }` to keep FD in same shell, not in subshell, where it'll disappear
+    #
+    # FD is used in the same way normal FD's are, just add a $ in front of them
     # e.g.
     #   echo hello >&$FD
     #   cat <&$FD
