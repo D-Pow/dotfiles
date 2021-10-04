@@ -122,6 +122,11 @@ makeTempPipe() {
     #   cat <&$FD
     #   exec $FD>&-
     echo "$FD"
+
+    # `trap` will ensure the temp file is deleted upon exit.
+    # FD will automatically be closed upon exit, so no need to
+    # close it manually with `exec "$FD">&-` in this trap
+    trap 'rm -rf "$_tmpPipeFile"' EXIT
 }
 
 
