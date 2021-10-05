@@ -375,18 +375,13 @@ _autocompleteWithAllGitBranches() {
         return 0
     fi
 
-    local showRemoteBranches=yes # comment out to disable
-    local cmdOption
-
-    [[ $showRemoteBranches ]] && cmdOption='-r' || cmdOption=''
-
-    local gitBranches="`git branch $cmdOption`"
+    local gitBranches="$(git branch -a)"
 
     # Maintain newlines by quoting `$gitBranches` so they're easier to read/modify.
     # Filter out HEAD since it just points to a branch that is defined later in the list.
     # Remove out leading */spaces from output.
     # Remove remote name from branch names.
-    gitBranches="`echo "$gitBranches" | grep -v 'HEAD' | sed -E 's$^(\*| )*$$; s$^[^/]*/$$'`"
+    gitBranches="`echo "$gitBranches" | grep -v 'HEAD' | sed -E 's~^(\*| )*~~; s~^(remotes(/origin)?)*/~~'`"
 
     # Filter out non-matching branch names.
     # Theoretically, we'd have to replace \n with ' ' so the autocomplete suggestions
