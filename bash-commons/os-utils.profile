@@ -140,12 +140,25 @@ getFileFromDescriptor() {
     declare _fdToSearchCurrentPid="${BASHPID:-$$}"
     # Include the parent's as well in case the FD is used in a subshell or script
     declare _fdToSearchParentPid="$(ps -o ppid= "$_fdToSearchCurrentPid")"
+
+    # Get FD info by FD numbers and PIDs
     # `lsof` = LiSt Open Files
     # `-d` = file Descriptor
     # `-a` = And (match multiple criteria)
     # `-p` = Process ID
+    #
+    # Attempt searching both parent and self PIDs
+    declare _fdsOfParentAndSelf="$(lsof -d "$_fdToSearch" -a -p "$_fdToSearchParentPid,$_fdToSearchCurrentPid" 2>/dev/null)"
+
+    if [[ -z "$_fdsOfParentAndSelf" ]]; then
+        # Fallback to only self PID if can't search parent (e.g. running this inside a separate script file)
+        declare _fdsOfSelf="$(lsof -d "$_fdToSearch" -a -p "$_fdToSearchCurrentPid")"
+    fi
+
+    declare _fdsFound="${_fdsOfParentAndSelf:-$_fdsOfSelf}"
+
     # `| \` must be done instead of `\ [\n] |` since comments exist between the lines
-    lsof -d "$_fdToSearch" -a -p "$_fdToSearchParentPid,$_fdToSearchCurrentPid" | \
+    echo "$_fdsFound" | \
         # truncate multiple spaces into one (allows avoiding the `\S+\s+` regex from below)
         tr -s ' ' | \
         # Get group 9 (NAME)
