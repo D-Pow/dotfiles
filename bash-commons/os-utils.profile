@@ -177,6 +177,35 @@ getFileFromDescriptor() {
 }
 
 
+getBgCmdPid() {
+    # Returns the PID for the given job ID
+    #
+    # Default to last background process
+    declare _bgCmdPid="$!"
+
+    if [[ -n "$1" ]]; then
+        # Option to get job PID from job ID
+        _bgCmdPid="$(jobs -l | egrep "^\[$1\]" | cut -d ' ' -f 2)"
+    fi
+
+    echo "$_bgCmdPid"
+}
+
+getBgCmdJobId() {
+    # Returns the job ID for `fg`/`bg` usage
+    #
+    # Default to the last background process
+    # `jobs` args definitions: https://stackoverflow.com/questions/35026395/bash-what-is-a-jobspec/35026498#35026498
+    declare _bgCmdPid="$(jobs -p %+)"
+
+    if [[ -n "$1" ]]; then
+        _bgCmdPid="$1"
+    fi
+
+    jobs -l | grep "$_bgCmdPid" | cut -d ' ' -f 1 | sed -E 's/[^0-9]//g'
+}
+
+
 
 _copyCommand=
 _pasteCommand=
