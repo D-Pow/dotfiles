@@ -102,6 +102,35 @@ getCommandsMatching() {
 }
 
 
+trapAdd() {
+    declare _trapAddHandler="$1"
+    shift
+    declare _trapAddSignals=("$@")
+
+    declare _trapSignal=
+
+    for _trapSignal in "${_trapAddSignals[@]}"; do
+        declare _trapPreviousInfo="$(trap -p "$_trapSignal")"
+
+        # `trap -p` outputs the format:
+        #   trap -- 'someHandler' SIG
+        # To get only the handler without losing any of the contained info:
+        #   Remove only the first instance of `trap -- ` in case there are others within the handler
+        #   Remove only the very last instance of SIG
+        #       Requires capturing any letters before the specified `_trapSignal` since e.g. `INT` becomes `SIGINT`
+        #   Unescape strings since `trap -p` always wraps them in single quotes (e.g. `trap "echo 'hi'" EXIT` --> `trap -- 'echo '\''yo'\''' EXIT`)
+        declare _trapPreviousHandlers="$(
+            echo "${_trapPreviousInfo/trap -- /}" \
+            | sed -E "s/\s+\S*$_trapSignal$//" \
+            | sed -E "s/('|\")\\\\\1\1/\1/g"
+        )"
+
+        # Add new `trap` handler after the others, injecting a `; ` in between them if previous handlers exist
+        trap "${_trapPreviousHandlers:+$_trapPreviousHandlers; }$_trapAddHandler" "$_trapSignal"
+    done
+}
+
+
 makeTempPipe() {
     # Refs:
     # https://stackoverflow.com/questions/8297415/in-bash-how-to-find-the-lowest-numbered-unused-file-descriptor/17030546#17030546
