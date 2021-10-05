@@ -134,9 +134,12 @@ getFileFromDescriptor() {
     declare _lsofOutputHeaders=(COMMAND PID USER FD TYPE DEVICE SIZE_OFF NODE NAME)
 
     # Include this process' PID b/c it likely made the FD
-    declare _fdToSearchCurrentPid="$$"
+    # Note: `$$` within `( someCommand )` actually usually resolves to the parent PID
+    # So account for this via `BASHPID` (only supported in Bash@>=4).
+    # See: https://stackoverflow.com/questions/21063765/why-is-returning-the-same-id-as-the-parent-process/21063837#21063837
+    declare _fdToSearchCurrentPid="${BASHPID:-$$}"
     # Include the parent's as well in case the FD is used in a subshell or script
-    declare _fdToSearchParentPid="$(ps -o ppid= $$)"
+    declare _fdToSearchParentPid="$(ps -o ppid= "$_fdToSearchCurrentPid")"
     # `lsof` = LiSt Open Files
     # `-d` = file Descriptor
     # `-a` = And (match multiple criteria)
