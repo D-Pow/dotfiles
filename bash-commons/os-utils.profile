@@ -153,9 +153,14 @@ makeTempPipe() {
     # echo "$FD"
 
     # `trap` will ensure the temp file is deleted upon exit.
+    #
     # FD will automatically be closed upon exit, so no need to
-    # close it manually with `exec "$FD">&-` in this trap
-    trap 'rm -rf "$_tmpPipeFile"' EXIT QUIT INT TERM
+    # close it manually with `exec "$FD">&-` in this trap.
+    #
+    # Preserve previous traps so they aren't overwritten, but also ensure this call's
+    # `_tmpPipeFile` isn't overwritten by another call to `makeTempPipe` by adding the
+    # filename directly into the call rather than the variable name.
+    trapAdd "rm -rf \"$_tmpPipeFile\"" EXIT QUIT INT TERM
 }
 
 getFileFromDescriptor() {
