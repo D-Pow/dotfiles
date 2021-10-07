@@ -3,6 +3,10 @@ npms() {
     regex '"scripts": [^\}]*\}' ./package.json
 }
 
+# By default, allow ES modules, importing JSON, top-level await, and other relevant/useful features
+# See: https://nodejs.org/api/cli.html#cli_node_options_options
+NODE_OPTIONS='--experimental-modules --experimental-json-modules --experimental-top-level-await --experimental-import-meta-resolve'
+
 alias npmrtf="npm run test 2>&1 | egrep -o '^FAIL.*'" # only print filenames of suites that failed
 alias npmPackagesWithVulns="npm audit | grep 'Dependency of' | sort -u | egrep -o '\S+(?=\s\[\w+\])'"
 npmr() {
