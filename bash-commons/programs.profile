@@ -92,12 +92,14 @@ dockerFindContainer() {
     # Docs: https://docs.docker.com/engine/reference/commandline/ps
     local _dockerPsArgs=("$@")
     local _dockerPsOpts
-    local _dockerPsImageNameArray
+    local _dockerPsQueryArray
 
     # All args before the last one
     array.slice -r _dockerPsOpts _dockerPsArgs 0 -1
     # Last arg is image name query string
-    array.slice -r _dockerPsImageNameArray _dockerPsArgs -1
+    array.slice -r _dockerPsQueryArray _dockerPsArgs -1
+
+    local _dockerPsQuery="${_dockerPsQueryArray[0]}"
 
     # First, get matching results based on any search query (container ID, image, container name, etc.).
     # Then, apply the user's search criteria to the matches afterwards.
@@ -108,7 +110,7 @@ dockerFindContainer() {
     # handle the header output itself, too.
     # To call it a second time, remove the headers from this initial filter call so it doesn't
     # interfere with the second call.
-    local _dockerPsMatches="$(docker ps -a | egrep -iv 'CONTAINER\s*ID\s*IMAGE' | egrep -i "${_dockerPsImageNameArray[0]}")"
+    local _dockerPsMatches="$(docker ps -a | egrep -iv 'CONTAINER\s*ID\s*IMAGE' | egrep -i "$_dockerPsQuery")"
 
     if [[ -z "$_dockerPsMatches" ]]; then
         return 1
