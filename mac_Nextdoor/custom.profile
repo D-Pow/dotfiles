@@ -34,7 +34,9 @@ for (( i=0; i < "${#_brewGnuUtils[@]}"; i++ )); do
 done
 BREW_GNU_UTILS_HOMES="`array.join -s _brewGnuUtils ':'`"
 
-export PATH=$BREW_GNU_UTILS_HOMES:$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$MAVEN_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$SUBLIME_HOME:$BOOST_HOME:$TEXMFHOME:/usr/local/bin:/Users/dpowell1/bin:$PATH
+_brewPathEntries="$(echo "$BREW_PATHS" | sed -E 's/\s+/:/g')" # /usr/local/sbin and some others
+
+export PATH=$BREW_GNU_UTILS_HOMES:$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$MAVEN_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$SUBLIME_HOME:$BOOST_HOME:$TEXMFHOME:/usr/local/bin:/Users/dpowell1/bin:$_brewPathEntries:$PATH
 
 # Colored terminal
 # export PS1="\[\033[36m\]\u\[\033[m\]@\[\033[32m\]\h:\[\033[33;1m\]\w\[\033[m\]\$ "
