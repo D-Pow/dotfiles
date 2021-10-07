@@ -133,6 +133,11 @@ NEXTDOOR_ROOT="${NEXTDOOR_ROOT:-$HOME/src/nextdoor.com}"
 
 alias nxtdr="cd $NEXTDOOR_ROOT/apps/nextdoor/frontend"
 
+dockerNextdoorStartAll() (
+    cd "$NEXTDOOR_ROOT"
+    docker-compose up -d
+)
+
 export testUserLogins=(
     iceweasel@example.com
     edith@example.com
