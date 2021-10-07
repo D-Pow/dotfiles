@@ -58,6 +58,51 @@ listopenports() {
 }
 
 
+getip() {
+    # Must get default interface (`en0`, `en1`, etc.)
+    # See: https://superuser.com/questions/89994/how-can-i-tell-which-network-interface-my-computer-is-using/627581#627581
+    declare _ipDefaultNetworkInterface=
+
+    # Linux
+    if [[ -f /proc/net/route ]]; then
+        _ipDefaultNetworkInterface="$(awk '$2 == 00000000 {print $1}' /proc/net/route)"
+    # Mac
+    elif isDefined route; then
+        _ipDefaultNetworkInterface="$(route -n get default | awk '/interface/ {print $2}')"
+    fi
+
+
+    declare _ipAllAddressesIpv4=($(ifconfig | egrep -o "([0-9]{1,3}\.){3}[0-9]{1,3}"))
+
+    echo "All IPs:"
+    for i in "${_ipAllAddressesIpv4[@]}"; do
+        echo "$i"
+    done
+
+
+    declare _ipLocalDefault=
+
+    if isDefined ipconfig; then
+        # Get IP using built-in tool
+        _ipLocalDefault="$(ipconfig getifaddr "$_ipDefaultNetworkInterface" 2>/dev/null)"
+    fi
+
+    if [[ -z "$_ipLocalDefault" ]]; then
+        # Get IP manually
+        # `inet` entry shows IPv4, `inet6` shows IPv6
+        _ipLocalDefault="$(ifconfig "$_ipDefaultNetworkInterface" | awk '/inet / {print $2}')"
+    fi
+
+    echo -e "\nYour local IP (default network interface = $_ipDefaultNetworkInterface):"
+    echo "$_ipLocalDefault"
+
+
+    declare _ipPublic="$(curl -sS ifconfig.me)" # --silent hides download progress details, --show-error for use with --silent
+    echo -e "\nPublic IP:"
+    echo "$_ipPublic"
+}
+
+
 readEnvFile() {
     # Reads a .env, .properties, etc. file containing `key=value` entries
     # on separate lines.
