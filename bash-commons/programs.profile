@@ -162,6 +162,12 @@ dockerKillAll() {
     docker stop $(docker container ls -q)
 }
 
+dockerContainerStatus() {
+    declare _dockerContainerStatusQuery="${1:-.}"
+
+    dockerFindContainer --format '{{.State}} - {{.Names}}' "$_dockerContainerStatusQuery"
+}
+
 dockerGetLogs() {
     local _dockerLogOutputFile
     local _dockerContainerName
