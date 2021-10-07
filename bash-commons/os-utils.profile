@@ -119,10 +119,12 @@ trapAdd() {
         #   Remove only the very last instance of SIG
         #       Requires capturing any letters before the specified `_trapSignal` since e.g. `INT` becomes `SIGINT`
         #   Unescape strings since `trap -p` always wraps them in single quotes (e.g. `trap "echo 'hi'" EXIT` --> `trap -- 'echo '\''yo'\''' EXIT`)
+        #   Remove superfluous starting/ending `'` from previous `trap` calls
         declare _trapPreviousHandlers="$(
             echo "${_trapPreviousInfo/trap -- /}" \
             | sed -E "s/\s+\S*$_trapSignal$//" \
-            | sed -E "s/('|\")\\\\\1\1/\1/g"
+            | sed -E "s/('|\")\\\\\1\1/\1/g" \
+            | sed -E "s/(^')|('$)//g"
         )"
 
         # Add new `trap` handler after the others, injecting a `; ` in between them if previous handlers exist
