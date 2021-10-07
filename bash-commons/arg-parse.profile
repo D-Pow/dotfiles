@@ -249,7 +249,12 @@ parseArgs() {
         declare optKey
 
         for optKey in "${!getoptsParsingConfig[@]}"; do
-            if [[ "$optKey" =~ "$opt" ]]; then
+            # `optKey` is what's defined in the config matrix, e.g. `s|some-arg`
+            # `opt` is what the user actually passed in, e.g. either `s` or `some-arg`
+            # For the regex match to work using `=~`, we must use:
+            #   "string" =~ pattern
+            # and `pattern` must not be quoted, otherwise it will be parsed as literal chars, not regex
+            if [[ "$opt" =~ $optKey ]]; then
                 optHandled=true
                 declare -n getoptsVariable="${getoptsParsingConfig["$optKey"]}"
 
