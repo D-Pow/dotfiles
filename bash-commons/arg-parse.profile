@@ -48,7 +48,7 @@ COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
 
 
 parseArgs() {
-    USAGE="${FUNCNAME[0]} optionConfig \"\$@\"
+    declare USAGE="${FUNCNAME[0]} optionConfig \"\$@\"
     \`optionConfig\` is a specially-formatted associative array of options-to-variable names.
 
     \`optionConfig\` format:
@@ -126,6 +126,7 @@ parseArgs() {
     # parent-config descriptions.
     declare -A parentUsageOptions=()
 
+    declare optConfigKey
 
     for optConfigKey in "${!_parentOptionConfig[@]}"; do
         # Extract single-letter option name
@@ -174,6 +175,7 @@ parseArgs() {
     if [[ -n "$parentUsageStr" ]]; then
         parentUsageStr+="\n\n    Options:\n"
         declare indentationAmount="        "
+        declare optionUsageKey
 
         for optionUsageKey in "${!parentUsageOptions[@]}"; do
             declare optionUsageDesc="${parentUsageOptions["$optionUsageKey"]}"
@@ -186,6 +188,7 @@ parseArgs() {
 
 
     declare OPTIND=1
+    declare opt
 
     while getopts "$getoptsStr" opt; do
         if [[ "$opt" == "-" ]]; then
@@ -243,6 +246,7 @@ parseArgs() {
 
 
         declare optHandled=
+        declare optKey
 
         for optKey in "${!getoptsParsingConfig[@]}"; do
             if [[ "$optKey" =~ "$opt" ]]; then
