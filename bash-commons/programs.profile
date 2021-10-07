@@ -165,7 +165,7 @@ dockerKillAll() {
 dockerContainerStatus() {
     declare _dockerContainerStatusQuery="${1:-.}"
 
-    dockerFindContainer --format '{{.State}} - {{.Names}}' "$_dockerContainerStatusQuery"
+    dockerFindContainer --format '{{.State}} - {{.Names}}' "$_dockerContainerStatusQuery" | sort
 }
 
 dockerGetLogs() {
