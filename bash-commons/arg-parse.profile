@@ -62,6 +62,7 @@ parseArgs() {
         declare var1
         declare var2
         declare var3
+        declare argsArray
         declare -A optionConfig=(
             ['shortOption|longOption,var1']='Description of the option'
             ['shortOptionWithArg|longOptionWithArg:,var2']='I require an argument, by space or = sign.'
@@ -70,7 +71,6 @@ parseArgs() {
             ['?']='String to pass to eval() upon unknown flag discovery. Defaults to \`echo -e \$USAGE; return 1;\`'
             ['USAGE']='Usage string without option descriptions (parseArgs will add those automatically)'
         )
-        declare argsArray
         parseArgs optionConfig \"\$@\"
 
     Returns:
