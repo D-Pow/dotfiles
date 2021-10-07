@@ -127,7 +127,9 @@ alias gpu='git push -u origin $(getGitBranch) --no-verify'
 
 alias todo="subl '~/Desktop/ToDo.md'"
 
-alias nxtdr='cd ~/src/nextdoor.com/apps/nextdoor/frontend'
+NEXTDOOR_ROOT="${NEXTDOOR_ROOT:-$HOME/src/nextdoor.com}"
+
+alias nxtdr="cd $NEXTDOOR_ROOT/apps/nextdoor/frontend"
 
 export testUserLogins=(
     iceweasel@example.com
