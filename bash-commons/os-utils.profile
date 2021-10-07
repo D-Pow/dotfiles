@@ -138,6 +138,29 @@ makeTempPipe() {
     # https://stackoverflow.com/questions/8297415/in-bash-how-to-find-the-lowest-numbered-unused-file-descriptor/17030546#17030546
     # https://superuser.com/questions/184307/bash-create-anonymous-fifo/633185#633185
 
+    declare USAGE="${FUNCNAME[0]} [-s|--signal <SIGNAL>] [-t|--no-append-traps]
+    Makes a temporary file for IO, and sets its file descriptor into \`\$FD\` for IO redirection.
+    Since outputting to a file descriptor auto-seeks it to the end, it cannot be read from directly;
+    to read from it, use \`getFileFromDescriptor \$FD\` to get the temp file's path.
+    "
+
+    declare _tmpPipeSignals=()
+    declare _tmpPipeNoAppendTraps=
+    declare argsArray=
+    declare -A _tmpPipeOptions=(
+        ['s|signal:,_tmpPipeSignals']="Signals to use for \`trap\` call (defaults to: EXIT QUIT INT TERM)."
+        ['t|no-append-traps,_tmpPipeNoAppendTraps']="Prevents preservation of calling parent's trap signals."
+        [':']=
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _tmpPipeOptions "$@"
+
+    if array.empty _tmpPipeSignals; then
+        _tmpPipeSignals+=(EXIT QUIT INT TERM)
+    fi
+
+
     # `mktemp` - Create a temp file
     declare _tmpPipeFile="$(mktemp)"
     # Putting a string in `exec {var}` sets the lowest available file descriptor to that variable
@@ -159,10 +182,17 @@ makeTempPipe() {
     # FD will automatically be closed upon exit, so no need to
     # close it manually with `exec "$FD">&-` in this trap.
     #
-    # Preserve previous traps so they aren't overwritten, but also ensure this call's
-    # `_tmpPipeFile` isn't overwritten by another call to `makeTempPipe` by adding the
-    # filename directly into the call rather than the variable name.
-    trapAdd "rm -rf \"$_tmpPipeFile\"" EXIT QUIT INT TERM
+    # Default to adding new command to existing `trap` calls, but optionally disable it.
+    declare _tmpPipeTrapCmd='trapAdd'
+
+    if [[ -n "$_tmpPipeNoAppendTraps" ]]; then
+        _tmpPipeTrapCmd='trap'
+    fi
+
+    # Ensure this call's `_tmpPipeFile` isn't overwritten by another call to
+    # `makeTempPipe` by adding the filename directly into the call rather than
+    # the variable name.
+    "$_tmpPipeTrapCmd" "rm -rf \"$_tmpPipeFile\"" "${_tmpPipeSignals[@]}"
 }
 
 getFileFromDescriptor() {
