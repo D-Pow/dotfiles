@@ -318,7 +318,8 @@ alias    gb='git branch'
 alias   gbb='getGitBranch'
 alias   gbd='git branch -d $(git branch | grep -v "*")'
 alias   gck='git checkout'
-alias    gl='git log --stat --graph --follow' # STAT = show changed files w/ num lines added/removed. GRAPH = show ASCII art for branch relationships. FOLLOW = follow file history beyond renames instead of stopping at them (also removes noisy "-100 lines here, +100 lines there").
+alias    gl='git log --stat --graph' # STAT = show changed files w/ num lines added/removed. GRAPH = show ASCII art for branch relationships.
+alias   glf='gl --follow' # (Requires only one file to be specified, or `.`) FOLLOW = follow file history beyond renames instead of stopping at them (also removes noisy "-100 lines here, +100 lines there").
 alias   gld='gl -p' # show diff in git log (i.e. detailed `git blame`). Choose single file with `gld -- <file>`
 alias   glo='gl --oneline'
 alias   gla='gl --oneline --all'
