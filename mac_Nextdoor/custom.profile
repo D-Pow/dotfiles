@@ -139,6 +139,15 @@ dockerNextdoorStartAll() (
     docker-compose up -d
 )
 
+dockerNextdoorStopAll() (
+    cd "$_nextdoorRoot"
+    # Since containers are started with `docker-compose`, killing them off one-by-one
+    # via `dockerKillAll` could cause some of them to get stuck, e.g. if containers have
+    # dependencies on other containers.
+    # Avoid that by using the same start/stop commands.
+    docker-compose stop
+)
+
 export testUserLogins=(
     iceweasel@example.com
     edith@example.com
@@ -219,7 +228,7 @@ be-start() {
 }
 be-stop() {
     # Stop all containers. If wanting to run FE, then you'll have to restart them
-    dockerKillAll
+    dockerNextdoorStopAll
 }
 
 
