@@ -129,12 +129,13 @@ alias gpu='git push -u origin $(getGitBranch) --no-verify'
 
 alias todo="subl '~/Desktop/ToDo.md'"
 
-NEXTDOOR_ROOT="${NEXTDOOR_ROOT:-$HOME/src/nextdoor.com}"
 
-alias nxtdr="cd $NEXTDOOR_ROOT/apps/nextdoor/frontend"
+_nextdoorRoot="${NEXTDOOR_ROOT:-$HOME/src/nextdoor.com}"
+
+alias fe="cd $_nextdoorRoot/apps/nextdoor/frontend"
 
 dockerNextdoorStartAll() (
-    cd "$NEXTDOOR_ROOT"
+    cd "$_nextdoorRoot"
     docker-compose up -d
 )
 
