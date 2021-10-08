@@ -187,6 +187,27 @@ workDir='/home/dpow/Documents/Google Drive/Work'
 alias todo="subl '$workDir/ToDo.md'"
 
 
+
+_notifyOfUninstalledPackages() {
+    declare -A _pkgsToInstall=(
+        ['simplescreenrecorder']="Recording your screen."
+        ['trash-cli']="For making \`rm\` go to trash instead of deleting immediately"  # See: https://github.com/andreafrancia/trash-cli#readme
+    )
+
+    declare _pkgName=
+
+    for _pkgName in "${!_pkgsToInstall[@]}"; do
+        declare _pkgPurpose="${_pkgsToInstall[$_pkgName]}"
+
+        if ! is-installed "$_pkgName" &>/dev/null; then
+            echo "Please install \`$_pkgName\` for the following purpose:"
+            echo -e "\t$_pkgPurpose"
+        fi
+    done
+} && _notifyOfUninstalledPackages
+
+
+
 brightness() {
     declare USAGE="${FUNCNAME[0]} [-r|--reset] [-d|--display DISPLAY_NUM] [brightnessValue]
     Changes the brightness of a display of NUM [0-n], where 0 is the internal display.
