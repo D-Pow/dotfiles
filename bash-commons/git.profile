@@ -16,6 +16,7 @@ ignoreFileInGitDiffCached() {
 getGitBranch() {
     # get the current branch (one that starts with '* ')
     # replace '* ' with ''
+    # Alternative: git rev-parse --abbrev-ref HEAD
     git branch | grep '*' | sed -E 's|(^\* )||'
 }
 
@@ -71,7 +72,12 @@ gitBlameParentOfCommit() {
 gitGetPrimaryBranch() {
     local _gitPrimaryBranchRemoteName="${1:-origin}"
 
-    git remote show "$_gitPrimaryBranchRemoteName" | grep HEAD | sed -E 's/.*branch: (.*)/\1/'
+    # http://git-scm.com/docs/git-rev-parse
+    # `basename` gets the last entry after all slashes in a path (as opposed to `dirname` which gets everything before the last slash)
+    basename $(git rev-parse --symbolic-full-name "refs/remotes/$_gitPrimaryBranchRemoteName/HEAD")
+
+    # Old way: Works fast with repositories with few branches, but slows down to >= 1 second with many branches
+    # git remote show "$_gitPrimaryBranchRemoteName" | grep HEAD | sed -E 's/.*branch: (.*)/\1/'
 }
 
 
