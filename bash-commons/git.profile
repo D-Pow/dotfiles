@@ -95,6 +95,12 @@ gitGetFilesChangedFromRebase() {
 }
 
 
+gitGetLastCommitHash() {
+    # https://git-scm.com/docs/git-show#_pretty_formats
+    git show -s --format='%h'
+}
+
+
 getGitParent() {
     # git doesn't track what a branch's parent is, so we have to guess from the git log output.
     # Hence, here we guess based off git log's default branch output first and output from merges second.
