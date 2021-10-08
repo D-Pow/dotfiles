@@ -26,20 +26,20 @@ is-installed() {
     local installedPackages=()
 
     if [[ -z "$packages" ]]; then
-        echo 'Please specify a package/command'
-        return
+        echo 'Please specify a package/command' >&2
+        return 1
     fi
 
     local isInstalledByApt="`apt list --installed $packages 2>/dev/null | grep 'installed'`"
 
-    if ! [[ -z "$isInstalledByApt" ]]; then
+    if [[ -n "$isInstalledByApt" ]]; then
         installedPackages+=('Installed by apt:' '')
         installedPackages+=("`echo "$isInstalledByApt" | egrep -o '^[^/]*'`")
     fi
 
     local commandsExist="`command -v $packages`"
 
-    if ! [[ -z "$commandsExist" ]]; then
+    if [[ -n "$commandsExist" ]]; then
         # Add extra line between apt-installed packages and CLI commands
         [[ ${#installedPackages[@]} -ne 0 ]] && installedPackages+=('')
         installedPackages+=('CLI commands:' '')
@@ -53,10 +53,11 @@ is-installed() {
         # For arrays, it applies the specified pattern to each entry, effectively functioning as
         # the equivalent of `myArray.join('delimiter')`
         echo "`array.join installedPackages '%s\n'`"
-        return
+        return 0
     fi
 
-    echo "$packages not installed"
+    echo "$packages not installed" >&2
+    return 1
 }
 
 apt-get-repositories() {
