@@ -134,12 +134,12 @@ _nextdoorRoot="${NEXTDOOR_ROOT:-$HOME/src/nextdoor.com}"
 
 alias fe="cd $_nextdoorRoot/apps/nextdoor/frontend"
 
-dockerNextdoorStartAll() (
+startAllNextdoorDockerContainers() (
     cd "$_nextdoorRoot"
     docker-compose up -d
 )
 
-dockerNextdoorStopAll() (
+stopAllNextdoorDockerContainers() (
     cd "$_nextdoorRoot"
     # Since containers are started with `docker-compose`, killing them off one-by-one
     # via `dockerKillAll` could cause some of them to get stuck, e.g. if containers have
@@ -186,7 +186,7 @@ fe-start() {
         fi
 
         (
-            nxtdr
+            fe
             yarn build --watch "$yarnBuildArgs"
         )
     fi
@@ -228,7 +228,7 @@ be-start() {
 }
 be-stop() {
     # Stop all containers. If wanting to run FE, then you'll have to restart them
-    dockerNextdoorStopAll
+    stopAllNextdoorDockerContainers
 }
 
 
