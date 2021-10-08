@@ -71,7 +71,7 @@ gitBlameParentOfCommit() {
 gitGetPrimaryBranch() {
     local _gitPrimaryBranchRemoteName="${1:-origin}"
 
-    git remote show "$_gitPrimaryBranchRemoteName" | grep HEAD | esed 's|.*\s(\S*)$|\1|'
+    git remote show "$_gitPrimaryBranchRemoteName" | grep HEAD | sed -E 's/.*branch: (.*)/\1/'
 }
 
 
