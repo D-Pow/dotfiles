@@ -72,7 +72,20 @@ getip() {
     fi
 
 
-    declare _ipAllAddressesIpv4=($(ifconfig | egrep -o "([0-9]{1,3}\.){3}[0-9]{1,3}"))
+    declare _ipAllAddressesIpv4=()  # =($(ifconfig | egrep -o "([0-9]{1,3}\.){3}[0-9]{1,3}"))
+    declare _networkInterface
+
+    for _networkInterface in $(ifconfig -lu); do
+        declare _interfaceInfo="$(ifconfig "$_networkInterface")";
+
+        if echo "$_interfaceInfo" | grep -q 'status: active'; then
+            declare _interfaceIpv4="$(echo "$_interfaceInfo" | awk '/inet / {print $2}')"
+
+            if [[ -n "$_interfaceIpv4" ]]; then
+                _ipAllAddressesIpv4+=("$_networkInterface: $_interfaceIpv4")
+            fi
+        fi
+    done
 
     echo "All IPs:"
     for i in "${_ipAllAddressesIpv4[@]}"; do
