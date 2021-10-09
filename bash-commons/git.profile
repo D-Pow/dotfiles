@@ -300,6 +300,30 @@ gitExportStashes() {
 }
 
 
+gitLogIgnoreFileRenames() {
+    # Allows `git log --follow` to work if no file/path provided.
+    # `--stat` = Show changed files and their respective number of lines added/removed.
+    # `--graph` = Show ASCII art for branch relationships (merges, base branches, etc.).
+    # `--follow` = Follow file history beyond renames instead of stopping at them (removing noisy "-100 lines here, +100 lines there" in the process).
+    #   Requires only one file (or path without globs) to be specified.
+    #   But, that file/path doesn't have to be *right after* `--follow` and/or could be after `--` e.g. `git log -- path/file.txt`
+    #       so we can use that to auto-inject `.` if `git log --follow` fails.
+    declare _gitLogCmd="git log --stat --graph --follow"
+
+    # `-n <number>` = max number of commits to display.
+    # Use to make `git log` command check quick (i.e. don't actually try to load up the entire git history).
+    #
+    # Allows us to check whether or not the command works, e.g.
+    #   `git log --follow [-n 0]`  =>  Error, requires exactly one path-spec (thus, add `.`)
+    #   `git log --follow [-n 0] file.txt`  =>  (Success! Has no output)
+    if eval "$_gitLogCmd -n 0 $@" &>/dev/null; then
+        eval "$_gitLogCmd $@"
+    else
+        eval "$_gitLogCmd $@ ."
+    fi
+}
+
+
 alias     g='git'
 alias    gs='git status'
 alias   gsi='getGitIgnoredFiles'
@@ -318,8 +342,7 @@ alias    gb='git branch'
 alias   gbb='getGitBranch'
 alias   gbd='git branch -d $(git branch | grep -v "*")'
 alias   gck='git checkout'
-alias    gl='git log --stat --graph' # STAT = show changed files w/ num lines added/removed. GRAPH = show ASCII art for branch relationships.
-alias   glf='gl --follow' # (Requires only one file to be specified, or `.`) FOLLOW = follow file history beyond renames instead of stopping at them (also removes noisy "-100 lines here, +100 lines there").
+alias    gl='gitLogIgnoreFileRenames'
 alias   gld='gl -p' # show diff in git log (i.e. detailed `git blame`). Choose single file with `gld -- <file>`
 alias   glo='gl --oneline'
 alias   gla='gl --oneline --all'
