@@ -30,7 +30,7 @@ is-installed() {
         return 1
     fi
 
-    local isInstalledByApt="`apt list --installed $packages 2>/dev/null | grep 'installed'`"
+    local isInstalledByApt="`apt list --installed "*$packages*" 2>/dev/null | grep 'installed'`"
 
     if [[ -n "$isInstalledByApt" ]]; then
         installedPackages+=('Installed by apt:' '')
