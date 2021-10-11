@@ -193,6 +193,10 @@ parseArgs() {
         # `-c N` = Make N columns.
         # `-s delim` = Use specified string as a delimiter rather than all whitespace.
         #   Specify tab since spaces are used in description strings.
+        #
+        # TODO maybe just `printf` would do better by making wrapping of long description
+        # strings remain flush with the description-start column.
+        # See: https://www.linuxjournal.com/content/bashs-built-printf-function
         parentUsageStr+="$(echo -e "$optionUsageStr" | column -t -c 2 -s $'\t')"
     fi
 
