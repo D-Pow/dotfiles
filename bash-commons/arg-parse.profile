@@ -175,6 +175,7 @@ parseArgs() {
     if [[ -n "$parentUsageStr" ]]; then
         parentUsageStr+="\n\n    Options:\n"
         declare indentationAmount="        "
+        declare optionUsageStr=''
         declare optionUsageKey
 
         for optionUsageKey in "${!parentUsageOptions[@]}"; do
@@ -182,8 +183,17 @@ parseArgs() {
             # Use tab to separate key-value string for later `column` usage for auto-spacing columns
             declare optionUsageEntry="$indentationAmount$optionUsageKey\t| $optionUsageDesc\n"
 
-            parentUsageStr+="$optionUsageEntry"
+            optionUsageStr+="$optionUsageEntry"
         done
+
+        # `column` converts strings into tables.
+        # For our usage, this makes the space between option keys and
+        # descriptions evenly spaced so that all descriptions line up.
+        # `-t` = Convert to table (i.e. make it evenly spaced)
+        # `-c N` = Make N columns.
+        # `-s delim` = Use specified string as a delimiter rather than all whitespace.
+        #   Specify tab since spaces are used in description strings.
+        parentUsageStr+="$(echo -e "$optionUsageStr" | column -t -c 2 -s $'\t')"
     fi
 
 
@@ -278,14 +288,7 @@ parseArgs() {
             if [[ -n "$unknownFlagHandler" ]]; then
                 eval "$unknownFlagHandler"
             else
-                # `column` converts strings into tables.
-                # For our usage, this makes the space between option keys and
-                # descriptions evenly spaced so that all descriptions line up.
-                # `-t` = Convert to table (i.e. make it evenly spaced)
-                # `-c N` = Make N columns.
-                # `-s delim` = Use specified string as a delimiter rather than all whitespace.
-                #   Specify tab since spaces are used in description strings.
-                echo -e "$parentUsageStr" | column -t -c 2 -s $'\t'
+                echo -e "$parentUsageStr"
 
                 return 1
             fi
