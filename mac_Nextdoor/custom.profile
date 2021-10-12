@@ -166,6 +166,9 @@ alias fix-aws='aws_eng_login'
 fixcreds() {
     if ! aws sts get-caller-identity > /dev/null 2>&1; then
         fix-aws
+    fi
+
+    if ! ( $NEXTDOOR_ROOT/scripts/check_unix_bridge.sh ) &>/dev/null; then
         fix-sockets
     fi
 }
