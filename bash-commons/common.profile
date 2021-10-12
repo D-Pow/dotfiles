@@ -67,10 +67,10 @@
 #       ${var+word} - Result is nothing if `var` is (unset), otherwise `word`
 
 source "$(thisDir)/parse-args.profile"
-source "$(thisDir)/bash-history.profile"
+source "$(thisDir)/history.profile"
 source "$(thisDir)/strings.profile"
-source "$(thisDir)/bash-arrays.profile"
-source "$(thisDir)/bash-command-enhancements.profile"
+source "$(thisDir)/arrays.profile"
+source "$(thisDir)/command-enhancements.profile"
 source "$(thisDir)/os-utils.profile"
 source "$(thisDir)/git.profile"
 source "$(thisDir)/programs.profile"
