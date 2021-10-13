@@ -97,7 +97,7 @@ window.getAlphabet = function getAlphabet({
     if (uppercase) {
         return alphabetUppercase;
     }
-}
+};
 
 window.htmlEscape = str => {
     return str
