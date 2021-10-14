@@ -125,7 +125,7 @@ fi
 
 # Add --no-verify for git pushes since it takes forever and often dies half-way through
 alias gp='git push --no-verify'
-alias gpu='git push -u origin $(getGitBranch) --no-verify'
+alias gpu='git push -u origin $(gitGetBranch) --no-verify'
 
 alias todo="subl '~/Desktop/ToDo.md'"
 
@@ -341,7 +341,7 @@ resetJetbrains() {
 # Make bash autocomplete when tabbing after "git commit" alias like gc or gac
 _autocompleteWithJiraTicket() {
     # sed -rEgex 'substitute|pattern|\1 = show-only-match|'
-    branch=$(getGitBranch | sed -E 's|.*/([A-Z]+-[0-9]+).*|\1|')
+    branch=$(gitGetBranch | sed -E 's|.*/([A-Z]+-[0-9]+).*|\1|')
     COMPREPLY=$branch
     return 0
 }

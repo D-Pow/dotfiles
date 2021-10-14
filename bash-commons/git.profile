@@ -1,5 +1,5 @@
 openGitMergeConflictFilesWithSublime() {
-    subl -n $(getGitBothModified)
+    subl -n $(gitGetBothModified)
 }
 
 
@@ -13,7 +13,7 @@ ignoreFileInGitDiffCached() {
 }
 
 
-getGitBranch() {
+gitGetBranch() {
     # get the current branch (one that starts with '* ')
     # replace '* ' with ''
     # Alternative: git rev-parse --abbrev-ref HEAD
@@ -21,7 +21,7 @@ getGitBranch() {
 }
 
 
-getGitRepoName() {
+gitGetRepoName() {
     # get remote URL for 'origin'
     # | filter out '/repo-name.git' -o-onlyReturnMatch -m-getNmatches
     # | sed -rEgex substitute~(/|.git)~['']~globally (apply to all matches, not just 1)
@@ -29,22 +29,22 @@ getGitRepoName() {
 }
 
 
-getGitBothModified() {
+gitGetBothModified() {
     git status | grep both | sed -E 's|.*modified:||; s|^\s*||'
 }
 
 
-getGitModifiedContaining() {
+gitGetModifiedContaining() {
     git status | grep 'modified:' | sed -E 's|modified:||; s|^\s*||' | egrep "$1"
 }
 
 
-getGitDiffOfFilesContaining() {
-    git diff $(getGitModifiedContaining "$1")
+gitGetDiffOfFilesContaining() {
+    git diff $(gitGetModifiedContaining "$1")
 }
 
 
-getGitIgnoredFiles() {
+gitGetIgnoredFiles() {
     git status --ignored
 }
 
@@ -89,7 +89,7 @@ gitGetFilesChangedFromRebase() {
     # Thus, strip out the trailing numLines (note: don't blindly use `(\S+)` b/c file renames use spaces, e.g. "old => new")
     local _diffOnlyFileSedRegex='s/^\s*([^|]*)\|.*/\1/; s|\s+$||'
     local _diffFromPrimaryToHead="$(git diff --stat origin/$(gitGetPrimaryBranch)..HEAD | egrep "$_diffFileFilter" | esed "$_diffOnlyFileSedRegex")"
-    local _diffFromRemoteToHead="$(git diff --stat origin/$(getGitBranch)..HEAD | egrep "$_diffFileFilter" | esed "$_diffOnlyFileSedRegex")"
+    local _diffFromRemoteToHead="$(git diff --stat origin/$(gitGetBranch)..HEAD | egrep "$_diffFileFilter" | esed "$_diffOnlyFileSedRegex")"
 
     echo -e "$_diffFromPrimaryToHead\n$_diffFromRemoteToHead" | sort | uniq -d
 }
@@ -101,7 +101,7 @@ gitGetLastCommitHash() {
 }
 
 
-getGitParent() {
+gitGetParent() {
     # git doesn't track what a branch's parent is, so we have to guess from the git log output.
     # Hence, here we guess based off git log's default branch output first and output from merges second.
     # ref: https://github.community/t/is-there-a-way-to-find-the-parent-branch-from-which-branch-head-is-detached-for-detached-head/825
@@ -113,18 +113,18 @@ getGitParent() {
 
     echo -e 'Possible parents (with respective commits for manual `git log`ing):\n'
 
-    echo "Ancestor branches before $(getGitBranch):"
+    echo "Ancestor branches before $(gitGetBranch):"
     # git log requires --decorate, otherwise the branch names are stripped from the output
     # when piped to other programs, like grep.
     # Find $numLinesToShow entries of commits that were on different branches within the git
     # log of only this branch's history.
     glb --decorate | egrep '\* commit [a-z0-9]+ \(' | head -n $numLinesToShow
 
-    echo -e "\nMerges to $(getGitBranch)"
+    echo -e "\nMerges to $(gitGetBranch)"
     # git log only this branch's history
     # filter to display only 5 lines before anything that was merged to this branch
     # get the commit hash of only the last entry (since this hash was the very first merge to the current branch)
-    local commitsMergingToCurrentBranch=$(glb | grep -B 5 "to $(getGitBranch)" | grep "commit" | awk '{print $3}' | tail -1)
+    local commitsMergingToCurrentBranch=$(glb | grep -B 5 "to $(gitGetBranch)" | grep "commit" | awk '{print $3}' | tail -1)
     # again, decorate git log, and print out only the latest few logs for the above first merge to the current branch,
     # in the hopes that one of those latest logs would be where the current branch was created out of
     git log --decorate $commitsMergingToCurrentBranch | egrep '^commit [a-z0-9]+ \(' | awk '{print "* "$0}' | head -n $numLinesToShow
@@ -326,9 +326,9 @@ gitLogIgnoreFileRenames() {
 
 alias     g='git'
 alias    gs='git status'
-alias   gsi='getGitIgnoredFiles'
+alias   gsi='gitGetIgnoredFiles'
 alias    gd='git diff'
-alias   gds='getGitDiffOfFilesContaining'
+alias   gds='gitGetDiffOfFilesContaining'
 alias   gdc='git diff --cached'
 alias   gdl='git diff -R'  # show line endings - CRLF or CR; any CR removed will be a red `^M` in green lines
 alias   gdi='ignoreFileInGitDiff'
@@ -339,18 +339,18 @@ alias    gc='git commit -m'
 alias   gca='git commit --amend'
 alias   gac='git commit -am'
 alias    gb='git branch'
-alias   gbb='getGitBranch'
+alias   gbb='gitGetBranch'
 alias   gbd='git branch -d $(git branch | grep -v "*")'
 alias   gck='git checkout'
 alias    gl='gitLogIgnoreFileRenames'
 alias   gld='gl -p' # show diff in git log (i.e. detailed `git blame`). Choose single file with `gld -- <file>`
 alias   glo='gl --oneline'
 alias   gla='gl --oneline --all'
-alias   glb='gl --first-parent $(getGitBranch)' # only show this branch's commits
+alias   glb='gl --first-parent $(gitGetBranch)' # only show this branch's commits
 alias   gls='gl --grep'
 alias  glsd='gld --grep'
 alias    gp='git push'
-alias   gpu='git push -u origin $(getGitBranch)'
+alias   gpu='git push -u origin $(gitGetBranch)'
 alias    gr='git reset'
 alias   grH='git reset HEAD'
 alias   grh='git reset --hard'

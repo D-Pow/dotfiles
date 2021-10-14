@@ -260,7 +260,7 @@ alias  gaud='git update-index --assume-unchanged src/data/mocks/DefaultPageConfi
 alias gnaud='git update-index --no-assume-unchanged src/data/mocks/DefaultPageConfig.js'
 
 gckb() {
-    repoName="$(getGitRepoName)"
+    repoName="$(gitGetRepoName)"
 
     if [ "$repoName" == "react-mutualfundsandetf" ]; then
         git checkout feature/baseline-income-portfolio
@@ -276,7 +276,7 @@ gckb() {
 # Make bash autocomplete when tabbing after "git commit" alias like gc or gac
 autocompleteWithJiraTicket() {
     # sed -rEgex 'substitute|pattern|\1 = show-only-match|'
-    branch=$(getGitBranch | sed -E 's|.*/([A-Z]+-[0-9]+).*|\1|')
+    branch=$(gitGetBranch | sed -E 's|.*/([A-Z]+-[0-9]+).*|\1|')
     COMPREPLY=$branch
     return 0
 }
