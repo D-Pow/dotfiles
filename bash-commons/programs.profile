@@ -7,6 +7,18 @@ npms() {
 # See: https://nodejs.org/api/cli.html#cli_node_options_options
 NODE_OPTIONS='--experimental-modules --experimental-json-modules --experimental-top-level-await --experimental-import-meta-resolve'
 
+npmvalidatePackageLockResolvedUrls() {
+    declare _nonNpmRegistryPackages="$(cat package-lock.json \
+        | egrep -i '^\s*"resolved":' \
+        | grep -v 'resolved": "https://registry.npmjs.org'
+    )"
+
+    if [[ -n "$_nonNpmRegistryPackages" ]]; then
+        echo "$_nonNpmRegistryPackages"
+        return 1
+    fi
+}
+
 alias npmrtf="npm run test 2>&1 | egrep -o '^FAIL.*'" # only print filenames of suites that failed
 alias npmPackagesWithVulns="npm audit | grep 'Dependency of' | sort -u | egrep -o '\S+(?=\s\[\w+\])'"
 npmr() {
