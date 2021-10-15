@@ -223,7 +223,7 @@ gitExportStashes() {
     usage="Exports all git stashes to a single zip file.
     Usage: ${FUNCNAME[0]} [path=./]"
 
-    local OPTIND=1
+    declare OPTIND=1
 
     while getopts ":h" opt; do
         case "$opt" in
@@ -234,14 +234,14 @@ gitExportStashes() {
         esac
     done
 
-    local path='.'
+    declare path='.'
 
-    if ! [[ -z "$1" ]]; then
+    if [[ -n "$1" ]]; then
         path="$1"
     fi
 
-    local currDir="$(pwd)"
-    local stashList=$(gitGetStashNames "$path")
+    declare currDir="$(pwd)"
+    declare stashList=$(gitGetStashNames "$path")
 
     if [[ -z "$stashList" ]]; then
         echo "No stashes to export"
@@ -252,20 +252,26 @@ gitExportStashes() {
 
     for stashName in $stashList; do
         # `--binary` flag shows the actual diff between two binary files
-        # rather than only "Binary files X and Y differ", so it can be used to actually
-        # save the diff for storage/usage on a different device.
+        # rather than only "Binary files X and Y differ", so it can be used to
+        # save their diffs for later restoration.
         # See: https://git-scm.com/docs/git-diff/2.8.6#Documentation/git-diff.txt---binary
+        #
+        # Note:
+        # * If using a custom pager (e.g. `so-fancy/diff-so-fancy` or `dandavison/delta`),
+        #   then it needs to be disabled with `--no-pager`.
+        #   See: https://gist.github.com/alexeds/3641372#gistcomment-3236251
+        # * While not usually the case, there is a chance color information could be written to
+        #   the file as well (like how `jest` output includes color info), so it needs to
+        #   be disabled as well with `--no-color`.
+        #   See: (comment above the one linked above about the custom pager)
         git stash show -p --binary "$stashName" > "$stashName.patch"
-        # Note: If you have a custom pager (e.g. so-fancy/diff-so-fancy or dandavison/delta)
-        # then disabling the pager might help.
-        # See: https://gist.github.com/alexeds/3641372#gistcomment-3236251
     done
 
     # TODO add option to create an entry for untracked files as well
 
-    local stashPatchFileGlob='stash*.patch'
-    local outputFileName='stashes.tar.gz'
-    local outputStashMessagesFileName='stash-messages.log'
+    declare stashPatchFileGlob='stash*.patch'
+    declare outputFileName='stashes.tar.gz'
+    declare outputStashMessagesFileName='stash-messages.log'
 
     git stash list > "$outputStashMessagesFileName"
 
@@ -273,15 +279,22 @@ gitExportStashes() {
     # See: https://askubuntu.com/questions/1074067/what-does-the-syntax-of-pipe-and-ending-dash-mean/1074072#1074072
     #
     # It's like `xargs` except that `xargs` passes the piped fields as CLI arguments
-    # whereas `-` passes it as input. For example:
+    # whereas `-` passes it to stdin. For example:
     # `cat output.txt | myCommand -` is equivalent to `myCommand < output.txt`
     # but `cat output.txt | xargs myCommand` is equivalent to `myCommand output-line-1 output-line-2 ...`
     # See: https://askubuntu.com/questions/703397/what-does-the-in-bash-mean/703434#703434
-    find . -maxdepth 1 -type f \( -name "$stashPatchFileGlob" \) -o \( -name "$outputStashMessagesFileName" \) | tar -czf $outputFileName -T -
+    #
+    # `tar -T` gets names to be added/extracted in the same way CLI args are parsed:
+    #   with quote removal, word splitting, and treating everything beginning with `-` option flags
+    find . -maxdepth 1 -type f \
+        \( -name "$stashPatchFileGlob" \) \
+        -o \
+        \( -name "$outputStashMessagesFileName" \) \
+        | tar -czf $outputFileName -T -
 
     rm $stashPatchFileGlob "$outputStashMessagesFileName"
 
-    local outputFilePath="$(pwd)/$outputFileName"
+    declare outputFilePath="$(pwd)/$outputFileName"
 
     cd "$currDir"
 
