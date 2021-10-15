@@ -264,7 +264,7 @@ gitExportStashes() {
         #   the file as well (like how `jest` output includes color info), so it needs to
         #   be disabled as well with `--no-color`.
         #   See: (comment above the one linked above about the custom pager)
-        git stash show -p --binary "$stashName" > "$stashName.patch"
+        git --no-pager stash show --no-color -p --binary "$stashName" > "$stashName.patch"
     done
 
     # TODO add option to create an entry for untracked files as well
