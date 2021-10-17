@@ -27,6 +27,13 @@
             * Clock display, keyboard layout flags, etc.
         + Keyboard
             * Shortcuts: `/keybindings/`
+                - For sound/media keys:
+                    + [Setting for Spotify only](https://askubuntu.com/questions/1105363/spotify-keyboard-controls-not-working)
+                    + (Not working) [terminal command to control audio](https://askubuntu.com/questions/235126/simulate-media-keys-in-terminal/235181#235181), [only play](https://askubuntu.com/questions/389438/trigger-play-pause-event/389452#389452)
+                    + [All XF86 keyboard symbols](https://wiki.linuxquestions.org/wiki/XF86_keyboard_symbols)
+                    + [All xdotool key codes](https://gitlab.com/cunidev/gestures/-/wikis/xdotool-list-of-key-codes)
+                    + [All `dbus-send` services](https://unix.stackexchange.com/questions/46301/a-list-of-available-d-bus-services)
+                    + [Maybe try `pactl`](https://forums.linuxmint.com/viewtopic.php?t=247650) or [`pulseaudio`](https://forums.linuxmint.com/viewtopic.php?t=345838)
             * Layouts: `/a11y/keyboard/`
         + Mouse: `/a11y/mouse/`
         + Workspaces: `/wm/preferences/`
