@@ -207,6 +207,33 @@ gitUpdateRepos() {
 }
 
 
+gitStashDiffPaths() {
+    # Uses `git diff` to show the diff of a stash while allowing paths to be specified.
+    # Since `git diff HEAD~n` shows the diff of _n_ commits before HEAD, and it allows paths to be specified
+    # with `--`, we can use this to show the diff of a stash for specific files.
+    #
+    # Note that the parent commit of a stash is the commit made right before the stash was created, which
+    # means the diff between `stash@{n}~` and `stash@{n}` is only the stash's content.
+    #
+    # Ref: https://stackoverflow.com/questions/1105253/how-would-i-extract-a-single-file-or-changes-to-a-file-from-a-git-stash/1105666#1105666
+    declare USAGE="${FUNCNAME[0]} <stashId> <...paths>
+    Displays the diff of a git stash for the specified path(s).
+    Useful to see what the stash contains while focusing only on the files you care to see without the extra noise for the others.
+"
+
+    if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+        echo -e "$USAGE"
+        return 1
+    fi
+
+    declare stashIdToDiff="${1:-0}"
+
+    shift
+
+    git diff "stash@{$stashIdToDiff}^1" "stash@{$stashIdToDiff}" -- "${@:-.}"
+}
+
+
 gitGetStashNames() {
     local path='.'
 
@@ -375,6 +402,7 @@ alias  gsta='git stash apply'
 alias  gsts='git stash push -m'
 alias  gstp='git stash push'
 alias  gstd='git stash show -p'
+alias gstdf='gitStashDiffPaths'
 alias  gcon='openGitMergeConflictFilesWithSublime'
 alias   gau='git update-index --assume-unchanged'
 alias  gnau='git update-index --no-assume-unchanged'
