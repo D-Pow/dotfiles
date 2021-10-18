@@ -364,6 +364,11 @@ gitLogIgnoreFileRenames() {
 }
 
 
+gitRebaseNCommitsBeforeHead() {
+    git rebase -i "HEAD~$1"
+}
+
+
 alias     g='git'
 alias    gs='git status'
 alias   gsi='gitGetIgnoredFiles'
@@ -403,6 +408,10 @@ alias  gsts='git stash push -m'
 alias  gstp='git stash push'
 alias  gstd='git stash show -p'
 alias gstdf='gitStashDiffPaths'
+alias  grbs='git rebase'
+alias grbsi='gitRebaseNCommitsBeforeHead'
+alias grbsc='git rebase --continue'
+alias grbsa='git rebase --abort'
 alias  gcon='openGitMergeConflictFilesWithSublime'
 alias   gau='git update-index --assume-unchanged'
 alias  gnau='git update-index --no-assume-unchanged'
