@@ -65,7 +65,22 @@ getip() {
 
     # Linux
     if [[ -f /proc/net/route ]]; then
-        _ipDefaultNetworkInterface="$(awk '$2 == 00000000 {print $1}' /proc/net/route)"
+        # Column 7 = Metric - How good the interface is (delay, throughput, hop count, reliability).
+        #   Lower number is better. See: https://superuser.com/questions/1167244/interpreting-the-metric-column-in-routing-table/1167248#1167248
+        # Column 1 = Interface name.
+        # Column 2 = Destination - Not exactly sure, but some sort of IP address mapping. I'm guessing `00000000 == 0.0.0.0`.
+        #
+        # Thus:
+        #   - Get columns 1 and 7 if column 2 is localhost.
+        #   - Sort by column 7 in ascending order, so the best network interface is listed first.
+        #   - Get only the output line associated with the first (best) interface.
+        #   - Only print the interface name.
+        _ipDefaultNetworkInterface="$(
+            awk '$2 == 00000000 {print $7,$1}' /proc/net/route \
+                | sort \
+                | head -n 1 \
+                | awk '{print $2}'
+        )"
     # Mac
     elif isDefined route; then
         _ipDefaultNetworkInterface="$(route -n get default | awk '/interface/ {print $2}')"
@@ -73,12 +88,19 @@ getip() {
 
 
     declare _ipAllAddressesIpv4=()  # =($(ifconfig | egrep -o "([0-9]{1,3}\.){3}[0-9]{1,3}"))
+    declare _allNetworkInterfaces=($(ifconfig -lu 2>/dev/null))
     declare _networkInterface
 
-    for _networkInterface in $(ifconfig -lu); do
+    if array.empty _allNetworkInterfaces; then
+        # `-lu` is for -List -Up
+        # If those options aren't supported, then fallback to manual string parsing
+        _allNetworkInterfaces=($(ifconfig | egrep -o '^[^\s:]+'))
+    fi
+
+    for _networkInterface in "${_allNetworkInterfaces[@]}"; do
         declare _interfaceInfo="$(ifconfig "$_networkInterface")";
 
-        if echo "$_interfaceInfo" | grep -q 'status: active'; then
+        if echo "$_interfaceInfo" | egrep -q '(status: active)|(flags.*UP.*RUNNING)'; then
             declare _interfaceIpv4="$(echo "$_interfaceInfo" | awk '/inet / {print $2}')"
 
             if [[ -n "$_interfaceIpv4" ]]; then
@@ -88,8 +110,9 @@ getip() {
     done
 
     echo "All IPs:"
-    for i in "${_ipAllAddressesIpv4[@]}"; do
-        echo "$i"
+    declare _interfaceToIpv4
+    for _interfaceToIpv4 in "${_ipAllAddressesIpv4[@]}"; do
+        echo "$_interfaceToIpv4"
     done
 
 
