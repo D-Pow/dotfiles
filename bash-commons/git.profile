@@ -369,6 +369,70 @@ gitRebaseNCommitsBeforeHead() {
 }
 
 
+gitChangeEmail() {
+    declare USAGE="${FUNCNAME[0]} [-f|--force] [newEmail = '\`git config user.name\`@users.noreply.github.com']
+    Rewrites all local branches' author/committer emails to use the new email.
+    Preserves commit date, messages, and all other info except the commit hash.
+    \`-f\` forces overwriting previous
+"
+
+    if [[ "$1" =~ ^-h|--help$ ]]; then
+        echo -e "$USAGE"
+        return 1
+    fi
+
+    declare _gitNewEmailForce=
+
+    if [[ "$1" =~ ^-f|--force$ ]]; then
+        _gitNewEmailForce=true
+        shift
+    fi
+
+    declare _gitNewEmail="$1"
+
+    if [[ -z "$_gitNewEmail" ]]; then
+        _gitNewEmail="$(git config user.name)@users.noreply.github.com"
+    fi
+
+    echo "Changing git author/committer emails to: $_gitNewEmail"
+    echo
+
+    # Refs:
+    #   Changing custom git fields, leaving the rest intact:
+    #       Answer:
+    #           https://stackoverflow.com/questions/41301627/how-to-update-git-commit-author-but-keep-original-date-when-amending/41303384#41303384
+    #       Alternative:
+    #           https://stackoverflow.com/questions/750172/how-to-change-the-author-and-committer-name-and-e-mail-of-multiple-commits-in-gi
+    #       Rebase without changing date:
+    #           https://stackoverflow.com/questions/2973996/git-rebase-without-changing-commit-timestamps
+    #       Rebase timestamp flag descriptions:
+    #           https://stackoverflow.com/questions/1579643/change-timestamps-while-rebasing-git-branch/63751470#63751470
+    #   Git docs
+    #       FilterBranch: https://git-scm.com/docs/git-filter-branch
+    #           Keywords available: https://git-scm.com/docs/git-commit-tree
+    #       Rebase: https://git-scm.com/docs/git-rebase
+    #       Format: https://git-scm.com/docs/pretty-formats
+    #
+    # `--env-filter` takes a string of commands in Bash syntax and exports anything you want to change.
+    # `--branches/tags` rewrites info on all branches/tags present locally (NOT on remote).
+    git filter-branch ${_gitNewEmailForce:+-f} --env-filter "
+    if [[ \"\$GIT_COMMITTER_EMAIL\" != \"$_gitNewEmail\" ]] || [[ \"\$GIT_AUTHOR_EMAIL\" != \"$_gitNewEmail\" ]]; then
+        export GIT_COMMITTER_EMAIL='$_gitNewEmail'
+        export GIT_AUTHOR_EMAIL='$_gitNewEmail'
+    fi
+    " --tag-name-filter cat -- --branches --tags
+
+    echo 'Done!'
+
+    echo "Verify with commands like:
+    * git diff \"origin/$(gitGetBranch)..HEAD\"
+    * Re-clone repo elsewhere and diff git logs via:
+        git log --stat --graph > new.log
+        diff old.log new.log | egrep -v '(commit)|(Author)|(---)|([0-9]+,[a-zA-Z0-9]+,[0-9]+)'
+"
+}
+
+
 alias     g='git'
 alias    gs='git status'
 alias   gsi='gitGetIgnoredFiles'
