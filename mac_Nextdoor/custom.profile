@@ -72,13 +72,21 @@ if [[ -z `command -v tree` ]]; then
         local _treeIgnoreDirs=()
         local OPTIND=1
 
-        while getopts "I:" opt; do
+        while getopts "i:" opt; do
             case "$opt" in
-                I)
+                i)
                     _treeIgnoreDirs+=("$OPTARG")
                     ;;
             esac
         done
+
+        shift $(( OPTIND - 1 ))
+
+        local path="$1"
+
+        if [[ -z "$path" ]]; then
+            path='.'
+        fi
 
         local _treeIgnoreDirsFindOpts=''
 
@@ -87,14 +95,6 @@ if [[ -z `command -v tree` ]]; then
             # e.g. Where injected strings are labeled with [], and array.join is labeled with ()
             # `-i '(first['][ -i ][']second)'
             _treeIgnoreDirsFindOpts="-i '`array.join -s _treeIgnoreDirs "' -i '"`'"
-        fi
-
-        shift $(( OPTIND - 1 ))
-
-        local path="$1"
-
-        if [[ -z "$path" ]]; then
-            path='.'
         fi
 
         # `cd` into the directory to avoid extra slashes/nested `| ` text from appearing
