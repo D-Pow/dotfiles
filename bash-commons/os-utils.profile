@@ -274,6 +274,8 @@ makeTempPipe() {
     # `makeTempPipe` by adding the filename directly into the call rather than
     # the variable name.
     "$_tmpPipeTrapCmd" "rm -rf \"$_tmpPipeFile\"" "${_tmpPipeSignals[@]}"
+
+    echo "$_tmpPipeFile"
 }
 
 getFileFromDescriptor() {
