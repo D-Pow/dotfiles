@@ -3,6 +3,32 @@ openGitMergeConflictFilesWithSublime() {
 }
 
 
+ignoreFileInGit() {
+    # Git offers a glossary of terms to modify how commands work,
+    # e.g. only showing some files, excluding others, etc.
+    # Kind of like `git diff -- src/dir/` except supporting more
+    # complex queries.
+    # Docs: https://git-scm.com/docs/gitglossary
+    #
+    # For ignoring files:
+    #   `:(top)` = git root (shorthand: `.` but only if in root dir)
+    #   `:(exclude)myPath` = path to exclude (shorthand: `:!myPath`)
+    # Ref: https://stackoverflow.com/a/39937070/5771107
+    declare _gitIgnoreArgs=("$@")
+    declare _gitIgnorePaths
+    array.map -r _gitIgnorePaths _gitIgnoreArgs "echo \"':(exclude)\$value'\""
+
+    if [[ -z "$_gitIgnorePaths" ]] || array.empty _gitIgnorePaths; then
+        return
+    fi
+
+    # TODO Will likely require `eval $cmd -- <text below>` because
+    # it doesn't currently work with ANY combination of quotes above, below,
+    # in between, or a removal of `-r retArray` in the above `array.map` call.
+    echo "':(top)'" ${_gitIgnorePaths[@]}
+}
+
+
 ignoreFileInGitDiff() {
     git diff -- . ":!$1"
 }
