@@ -134,19 +134,17 @@ _nextdoorRoot="${NEXTDOOR_ROOT:-$HOME/src/nextdoor.com}"
 
 alias fe="cd $_nextdoorRoot/apps/nextdoor/frontend"
 
-startAllNextdoorDockerContainers() (
-    cd "$_nextdoorRoot"
-    docker-compose up -d
-)
+startAllNextdoorDockerContainers() {
+    docker-compose -f "${NEXTDOOR_ROOT}/docker-compose.yml" up -d
+}
 
-stopAllNextdoorDockerContainers() (
-    cd "$_nextdoorRoot"
+stopAllNextdoorDockerContainers() {
     # Since containers are started with `docker-compose`, killing them off one-by-one
     # via `dockerKillAll` could cause some of them to get stuck, e.g. if containers have
     # dependencies on other containers.
     # Avoid that by using the same start/stop commands.
-    docker-compose stop
-)
+    docker-compose -f "${NEXTDOOR_ROOT}/docker-compose.yml" stop
+}
 
 export testUserLogins=(
     iceweasel@example.com
