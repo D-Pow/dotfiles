@@ -49,7 +49,9 @@ _autocompleteNpmr() {
     COMPREPLY=($(compgen -W "$commandsMatchingUserInput"))
 
     return 0
-} && complete -F _autocompleteNpmr -o default "npmr" # default shell autocomplete for dirs/files via `-o default`.
+}
+complete -F _autocompleteNpmr -o default "npmr" # default shell autocomplete for dirs/files via `-o default`.
+complete -F _autocompleteNpmr -o default "yarn"
 
 
 export NVM_DIR="$HOME/.nvm"
