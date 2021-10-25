@@ -135,7 +135,7 @@ _nextdoorRoot="${NEXTDOOR_ROOT:-$HOME/src/nextdoor.com}"
 alias fe="cd $_nextdoorRoot/apps/nextdoor/frontend"
 
 startAllNextdoorDockerContainers() {
-    docker-compose -f "${NEXTDOOR_ROOT}/docker-compose.yml" up -d
+    docker-compose -f "${_nextdoorRoot}/docker-compose.yml" up -d
 }
 
 stopAllNextdoorDockerContainers() {
@@ -143,7 +143,7 @@ stopAllNextdoorDockerContainers() {
     # via `dockerKillAll` could cause some of them to get stuck, e.g. if containers have
     # dependencies on other containers.
     # Avoid that by using the same start/stop commands.
-    docker-compose -f "${NEXTDOOR_ROOT}/docker-compose.yml" stop
+    docker-compose -f "${_nextdoorRoot}/docker-compose.yml" stop
 }
 
 export testUserLogins=(
@@ -166,7 +166,7 @@ fixcreds() {
         fix-aws
     fi
 
-    if ! ( $NEXTDOOR_ROOT/scripts/check_unix_bridge.sh ) &>/dev/null; then
+    if ! ( ${_nextdoorRoot}/scripts/check_unix_bridge.sh ) &>/dev/null; then
         fix-sockets
     fi
 }
