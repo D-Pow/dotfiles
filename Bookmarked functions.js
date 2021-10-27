@@ -43,35 +43,76 @@ window.resetCookie = function() {
  * Defaults to getting the query parameters from the current page's URL as an object.
  * If `fromObj` is specified, then `fromUrl` will be ignored and a string will be returned instead.
  *
- * @param {Object} input
- * @param {string} [input.fromUrl=window.location.search] - URL to get query parameters from; defaults to current page's URL.
- * @param {Object} [input.fromObj] - Object to convert to query parameter string.
- * @returns {Object} - All query param key-value pairs.
+ * @param {(string|Object)} [input=location.search+location.hash] - URL search/hash string to convert to an object, or
+ *                                                                  an object to convert to a search+hash string.
+ * @returns {(Object|string)} - All query param and hash key-value pairs (if input is a string) or URL search+hash string (if input is an object).
  */
-function getQueryParams({
-    fromUrl = window.location.search,
-    fromObj,
-} = {}) {
-    if (fromObj) {
-        const queryParamEntries = Object.entries(fromObj);
+function getQueryParams(input = self.location.search + self.location.hash) {
+    let fromUrl;
+    let fromObj;
 
-        return queryParamEntries.length > 0
+    if (typeof input === typeof '') {
+        fromUrl = input;
+    } else if (typeof input === typeof {}) {
+        fromObj = input;
+    } else {
+        throw new TypeError(`Type "${typeof input}" is not supported. Please use a string or object.`);
+    }
+
+    if (fromObj) {
+        fromObj = { ...fromObj };
+
+        const hash = fromObj['#'] || '';
+
+        delete fromObj['#'];
+
+        const getEncodedKeyValStr = (key, val) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`;
+
+        const queryParamEntries = Object.entries(fromObj);
+        const queryString = queryParamEntries.length > 0
             ? `?${
                 queryParamEntries
-                    .map(([ queryKey, queryValue ]) => `${encodeURIComponent(queryKey)}=${encodeURIComponent(queryValue)}`)
+                    .map(([ queryKey, queryValue ]) => {
+                        if (Array.isArray(queryValue)) {
+                            return queryValue
+                                .map(val => getEncodedKeyValStr(queryKey, val))
+                                .join('&');
+                        }
+
+                        return getEncodedKeyValStr(queryKey, queryValue);
+                    })
                     .join('&')
             }`
             : '';
+
+        return queryString + (hash ? `#${hash}` : '');
     }
 
-    const urlSearchQuery = fromUrl[0] === '?' ? fromUrl.slice(1) : fromUrl;
+    const queryParamHashString = fromUrl.replace(/^\?/, '');
+    const [ urlSearchQuery, hash ] = queryParamHashString.split('#');
 
-    return [...new URLSearchParams(urlSearchQuery).entries()]
+    const queryParamsObj = {};
+
+    if (hash) {
+        queryParamsObj['#'] = hash;
+    }
+
+    return [ ...new URLSearchParams(urlSearchQuery).entries() ]
         .reduce((queryParams, nextQueryParam) => {
             const [ key, value ] = nextQueryParam;
-            queryParams[key] = value;
+
+            if (key in queryParams) {
+                if (Array.isArray(queryParams[key])) {
+                    queryParams[key].push(value);
+                } else {
+                    queryParams[key] = [ queryParams[key], value ];
+                }
+            } else {
+                queryParams[key] = value;
+            }
+
             return queryParams;
-        }, {});
+        }, queryParamsObj);
 }
 
 window.getQueryParams = getQueryParams;
@@ -491,43 +532,89 @@ class SlackInBrowserService {
      * Defaults to getting the query parameters from the current page's URL as an object.
      * If `fromObj` is specified, then `fromUrl` will be ignored and a string will be returned instead.
      *
-     * @param {Object} input
-     * @param {string} [input.fromUrl=window.location.search] - URL to get query parameters from; defaults to current page's URL.
-     * @param {Object} [input.fromObj] - Object to convert to query parameter string.
-     * @returns {Object} - All query param key-value pairs.
+     * @param {(string|Object)} [input=location.search+location.hash] - URL search/hash string to convert to an object, or
+     *                                                                  an object to convert to a search+hash string.
+     * @returns {(Object|string)} - All query param and hash key-value pairs (if input is a string) or URL search+hash string (if input is an object).
      */
-    static getQueryParams({
-        fromUrl = window.location.search,
-        fromObj,
-    } = {}) {
-        if (fromObj) {
-            const queryParamEntries = Object.entries(fromObj);
+    static getQueryParams(input = self.location.search + self.location.hash) {
+        let fromUrl;
+        let fromObj;
 
-            return queryParamEntries.length > 0
+        if (typeof input === typeof '') {
+            fromUrl = input;
+        } else if (typeof input === typeof {}) {
+            fromObj = input;
+        } else {
+            throw new TypeError(`Type "${typeof input}" is not supported. Please use a string or object.`);
+        }
+
+        if (fromObj) {
+            fromObj = { ...fromObj };
+
+            const hash = fromObj['#'] || '';
+
+            delete fromObj['#'];
+
+            const getEncodedKeyValStr = (key, val) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`;
+
+            const queryParamEntries = Object.entries(fromObj);
+            const queryString = queryParamEntries.length > 0
                 ? `?${
                     queryParamEntries
-                        .map(([ queryKey, queryValue ]) => `${encodeURIComponent(queryKey)}=${encodeURIComponent(queryValue)}`)
+                        .map(([ queryKey, queryValue ]) => {
+                            if (Array.isArray(queryValue)) {
+                                return queryValue
+                                    .map(val => getEncodedKeyValStr(queryKey, val))
+                                    .join('&');
+                            }
+
+                            return getEncodedKeyValStr(queryKey, queryValue);
+                        })
                         .join('&')
                 }`
                 : '';
+
+            return queryString + (hash ? `#${hash}` : '');
         }
 
-        const urlSearchQuery = fromUrl.split('?')[1];
+        const queryParamHashString = fromUrl.replace(/^\?/, '');
+        const [ urlSearchQuery, hash ] = queryParamHashString.split('#');
 
-        return [...new URLSearchParams(urlSearchQuery).entries()]
+        const queryParamsObj = {};
+
+        if (hash) {
+            queryParamsObj['#'] = hash;
+        }
+
+        return [ ...new URLSearchParams(urlSearchQuery).entries() ]
             .reduce((queryParams, nextQueryParam) => {
                 const [ key, value ] = nextQueryParam;
-                queryParams[key] = value;
+
+                if (key in queryParams) {
+                    if (Array.isArray(queryParams[key])) {
+                        queryParams[key].push(value);
+                    } else {
+                        queryParams[key] = [ queryParams[key], value ];
+                    }
+                } else {
+                    queryParams[key] = value;
+                }
+
                 return queryParams;
-            }, {});
+            }, queryParamsObj);
     }
 
 
     static getApiUrl(api = '', queryParams = {}) {
         const { API_URL_BASE, API_QUERY_PARAMS, getQueryParams } = SlackInBrowserService;
-        const queryParamString = getQueryParams({
-            fromObj: Object.assign({}, getQueryParams(), API_QUERY_PARAMS, queryParams)
-        });
+        const queryParamString = getQueryParams(
+            Object.assign(
+                {},
+                getQueryParams(),
+                API_QUERY_PARAMS,
+                queryParams
+            )
+        );
 
         return `${API_URL_BASE}/${api}${queryParamString}`;
     }
