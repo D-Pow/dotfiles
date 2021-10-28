@@ -53,6 +53,18 @@ isDefined() {
 }
 
 
+isBeingSourced() {
+    # Determines if the file is being called via `source script.sh` or `./script.sh`
+
+    # Remove leading hyphen(s) from calling parent/this script file to account for e.g. $0 == '-bash' instead of 'bash'
+    # Use `basename` to remove discrepancies in relative vs absolute paths
+    declare callingSource="$(basename "$(echo "$0" | sed -E 's/^-*//')")"
+    declare thisSource="$(basename "$(echo "$BASH_SOURCE" | sed -E 's/^-*//')")"
+
+    [[ "$callingSource" != "$thisSource" ]]
+}
+
+
 open() {
     # Automatically selects the correct, user-friendly terminal command to open
     # files/directories/URLs using the OS' default application.
