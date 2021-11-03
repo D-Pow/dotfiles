@@ -1,3 +1,9 @@
+# Git ignore dirs
+
+* Make `ignorePathsInGit()` work.
+* This doesn't work, not sure why:
+    - `cd linux/ && gd -- ':/' ':(exclude)bash-commons/git.profile'`
+
 # General
 
 * Rename `bash-X.profile` to just `X.profile`

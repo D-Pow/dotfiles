@@ -3,7 +3,7 @@ openGitMergeConflictFilesWithSublime() {
 }
 
 
-ignoreFileInGit() {
+ignorePathsInGit() {
     # Git offers a glossary of terms to modify how commands work,
     # e.g. only showing some files, excluding others, etc.
     # Kind of like `git diff -- src/dir/` except supporting more
@@ -25,6 +25,7 @@ ignoreFileInGit() {
     # TODO Will likely require `eval $cmd -- <text below>` because
     # it doesn't currently work with ANY combination of quotes above, below,
     # in between, or a removal of `-r retArray` in the above `array.map` call.
+    # TODO `:(top)` doesn't work
     echo "':(top)'" ${_gitIgnorePaths[@]}
 }
 
