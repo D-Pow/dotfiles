@@ -7,6 +7,7 @@
         "mjs",
         "cjs",
         "ejs",
-        "pac"
-    ]
+        "pac",
+        "eslintrc",
+    ],
 }
