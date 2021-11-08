@@ -12,7 +12,7 @@ Place the below in %userprofile%/.gitconfig
     modalPrompt = true
 [user]
     name = D-Pow
-    email = djp460@nyu.edu
+    email = D-Pow@users.noreply.github.com
 [diff]
     tool = subl
 [http]
