@@ -183,6 +183,16 @@ getCommandsMatching() {
 }
 
 
+getVarsMatching() {
+    # Similar to `getCommandsMatching()` except prints all possible values for variable prefix
+    declare var
+
+    for var in $(compgen -v "$@"); do
+        echo "$var: ${!var}";
+    done
+}
+
+
 trapAdd() {
     declare _trapAddHandler="$1"
     shift
