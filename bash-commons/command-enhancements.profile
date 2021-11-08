@@ -42,9 +42,9 @@ SHELL="$(which "$(echo "$0" | sed -E 's|^-||')")"
 export LC_COLLATE='C.UTF-8'
 
 
-alias ls='ls -Fh --color'
-alias lah='ls -FlAh --color' # A removes ./ and ../
-alias lahh='ls -la' # inherits `-Fh --color` from `ls` alias
+alias ls='ls -Fh --color' # Subsequent aliases inherit the default option flags from this alias
+alias lah='ls -lA' # `-A` removes ./ and ../
+alias lahh='lah -a' # Flags added later override those added earlier from previous aliases
 
 
 alias printpath='echo $PATH | sed -E "s|:|\n|g"'
