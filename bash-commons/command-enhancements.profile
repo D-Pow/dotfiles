@@ -10,6 +10,9 @@ shopt -s globstar
 #   !(pattern-list) - Matches anything except one of the given patterns.
 # See: https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Pattern-Matching
 shopt -s extglob
+# Allow both uppercase and lowercase files/directories to be co-located together
+# i.e. [ A.md, b.md, B.txt ] will retain that order instead of [ A.md, B.txt, b.md ]
+shopt -u globasciiranges
 
 # Jobs = Executions that are sent to the background, including running and paused processes.
 # Apparently, `job` control isn't enabled by default (WTF???).
@@ -32,17 +35,30 @@ SHELL="$(which "$(echo "$0" | sed -E 's|^-||')")"
 # LC_ALL - Overrides Everything.
 #
 # Setting it to `C` means "C-style character comparison" == symbols before uppercase before lowercase.
-# This means dotfiles/directories will occur before other files/dirs.
+# This means dotfiles or those starting with symbols will come before numbers which come before letters.
 #
 # See:
+#   http://teaching.idallen.org/net2003/06w/notes/character_sets.txt
 #   https://superuser.com/questions/448291/how-can-i-make-ls-show-dotfiles-first
 #   https://unix.stackexchange.com/questions/75341/specify-the-sort-order-with-lc-collate-so-lowercase-is-before-uppercase
 #   https://stackoverflow.com/questions/30479607/explain-the-effects-of-export-lang-lc-ctype-and-lc-all
-#   http://teaching.idallen.org/net2003/06w/notes/character_sets.txt
-export LC_COLLATE='C.UTF-8'
+#   https://stackoverflow.com/questions/3222810/sorting-on-the-last-field-of-a-line/15677850#15677850
+export LC_CTYPE='en_US.UTF-8' # Allow characters with diacritics to group with normal/non-diacritic chars
+export LC_COLLATE='C.UTF-8' # Make symbols come before numbers before letters.
 
 
-alias ls='ls -Fh --color' # Subsequent aliases inherit the default option flags from this alias
+# TODO Increase the spacing between `lah` columns:
+#   lah | egrep '^'
+#   https://unix.stackexchange.com/questions/403099/formatting-ls-l-output-into-pipe-delimited-file
+#   https://askubuntu.com/questions/272623/can-ls-l-be-made-to-separate-fields-with-tabs-rather-than-spaces-to-make-the-ou
+#
+# -N | --literal = Don't add quotes to file/dir names
+# -F | --classify = Show symbols for directories (/), executables (*), symlinks (->), pipes (|), etc. at the ends of file/dir names
+# -h | --human-readable = Show sizes in Kilobytes, Megabytes, and Gigabytes
+# -l = long output - permission bits, user, group, size, last-modified date/time, and the file/dir name
+# -a = Show hidden files/dirs
+# -A = -a except remove ./ and ../
+alias ls='ls -NFh --color --group-directories-first' # Subsequent aliases inherit the default option flags from this alias
 alias lah='ls -lA' # `-A` removes ./ and ../
 alias lahh='lah -a' # Flags added later override those added earlier from previous aliases
 
