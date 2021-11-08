@@ -25,6 +25,22 @@ set -m
 # ProcessStatus -pID $thisShellPid -onlyKey comm[and]=[remove key prefix]
 SHELL="$(which "$(echo "$0" | sed -E 's|^-||')")"
 
+# Sort with dotfiles/directories listed before the rest.
+# LC_COLLATE - Only affects collation (grouping), e.g. sorting upper/lower-case before/after each other.
+# LANG - Language to use for output sorting, time/calendar/phone number/address formats, etc.
+# LC_CTYPE - Defines the character set to use/recognize without affecting the language.
+# LC_ALL - Overrides Everything.
+#
+# Setting it to `C` means "C-style character comparison" == symbols before uppercase before lowercase.
+# This means dotfiles/directories will occur before other files/dirs.
+#
+# See:
+#   https://superuser.com/questions/448291/how-can-i-make-ls-show-dotfiles-first
+#   https://unix.stackexchange.com/questions/75341/specify-the-sort-order-with-lc-collate-so-lowercase-is-before-uppercase
+#   https://stackoverflow.com/questions/30479607/explain-the-effects-of-export-lang-lc-ctype-and-lc-all
+#   http://teaching.idallen.org/net2003/06w/notes/character_sets.txt
+export LC_COLLATE='C.UTF-8'
+
 
 alias ls='ls -Fh --color'
 alias lah='ls -FlAh --color' # A removes ./ and ../
