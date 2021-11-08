@@ -44,7 +44,7 @@ SHELL="$(which "$(echo "$0" | sed -E 's|^-||')")"
 #   https://stackoverflow.com/questions/30479607/explain-the-effects-of-export-lang-lc-ctype-and-lc-all
 #   https://stackoverflow.com/questions/3222810/sorting-on-the-last-field-of-a-line/15677850#15677850
 export LC_CTYPE='en_US.UTF-8' # Allow characters with diacritics to group with normal/non-diacritic chars
-export LC_COLLATE='C.UTF-8' # Make symbols come before numbers before letters.
+export LC_COLLATE='C' # Make symbols come before numbers before letters.
 
 
 # TODO Increase the spacing between `lah` columns:
