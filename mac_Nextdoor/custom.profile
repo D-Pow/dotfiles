@@ -130,6 +130,19 @@ alias gpu='git push -u origin $(gitGetBranch) --no-verify'
 alias todo="subl '~/Desktop/ToDo.md'"
 
 
+_personalReposGitConfig="$(realpath "$dotfilesDir/../me/.gitconfig")"
+
+if ! [[ -f "$_personalReposGitConfig" ]]; then
+    # Allows overriding global .gitconfig by specifying the dirs where a different .gitconfig should be included in the global config.
+    #   See: https://stackoverflow.com/questions/8337071/different-gitconfig-for-a-given-subdirectory/60344116#60344116
+    echo "Add my custom .gitconfig file to $(dirname "$_personalReposGitConfig")/ and add the lines below AT THE END of the global .gitconfig to override Git configs for every repo in that directory:"
+    echo '```
+[includeIf "gitdir:~/src/me/"]
+    path = ~/src/me/.gitconfig
+```'
+fi
+
+
 _nextdoorRoot="${NEXTDOOR_ROOT:-$HOME/src/nextdoor.com}"
 
 alias fe="cd $_nextdoorRoot/apps/nextdoor/frontend"
