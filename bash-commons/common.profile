@@ -1,6 +1,9 @@
 ### Bash docs ###
 #
 # All docs: https://www.gnu.org/software/bash/manual/bash.html
+# `complete`: https://www.gnu.org/software/bash/manual/html_node/Programmable-Completion-Builtins.html
+#             https://www.oreilly.com/library/view/bash-quick-reference/0596527764/re18.html
+# `compgen`: https://unix.stackexchange.com/questions/151118/understand-compgen-builtin-command/151120#151120
 #
 # IO/redirection: https://www.gnu.org/software/bash/manual/bash.html#Redirections
 #   Great explanation: https://unix.stackexchange.com/questions/159513/what-are-the-shells-control-and-redirection-operators/159514#159514
