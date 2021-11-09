@@ -51,6 +51,9 @@ export LC_COLLATE='C' # Make symbols come before numbers before letters.
 #   lah | egrep '^'
 #   https://unix.stackexchange.com/questions/403099/formatting-ls-l-output-into-pipe-delimited-file
 #   https://askubuntu.com/questions/272623/can-ls-l-be-made-to-separate-fields-with-tabs-rather-than-spaces-to-make-the-ou
+#   https://unix.stackexchange.com/questions/288333/how-can-i-make-ls-show-dotfiles-first-while-staying-case-insensitive/361006#361006
+#   https://unix.stackexchange.com/questions/10524/how-to-numerical-sort-by-last-column
+#   https://superuser.com/questions/109537/how-to-sort-first-directories-then-files-etc-when-using-ls-in-unix
 #
 # -N | --literal = Don't add quotes to file/dir names
 # -F | --classify = Show symbols for directories (/), executables (*), symlinks (->), pipes (|), etc. at the ends of file/dir names
