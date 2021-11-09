@@ -3,22 +3,6 @@
 * Make `ignorePathsInGit()` work.
     - This doesn't work, not sure why:
         + `cd linux/ && gd -- ':/' ':(exclude)bash-commons/git.profile'`
-* Add Linux's `.gitconfig` file. Starter:
-
-    ```gitconfig
-    [core]
-        editor = subl -n -w
-        eol = lf
-        autocrlf = false
-        ignorecase = false
-    [init]
-        defaultBranch = master
-    [pull]
-        rebase = false
-    [user]
-        name = D-Pow
-        email = D-Pow@users.noreply.github.com
-    ```
 
 # General
 

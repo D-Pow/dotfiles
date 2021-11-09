@@ -1,0 +1,17 @@
+[core]
+    editor = subl -n -w
+    eol = lf
+    autocrlf = false
+    ignorecase = false
+[init]
+    defaultBranch = master
+[pull]
+    rebase = false
+[user]
+    name = D-Pow
+    email = D-Pow@users.noreply.github.com
+[push]
+    default = simple
+[credential]
+    helper = /usr/bin/git-credential-manager-core
+    credentialStore = secretservice
