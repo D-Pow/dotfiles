@@ -118,11 +118,24 @@ alias fix-sockets='nd dev update unix_socket_bridge'
 alias fix-aws='aws_eng_login'
 
 fixcreds() {
+    declare _forceFixSockets=
+    declare OPTIND=1
+
+    while getopts "s" opt; do
+        case "$opt" in
+            s)
+                _forceFixSockets=true
+                ;;
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+
     if ! aws sts get-caller-identity > /dev/null 2>&1; then
         fix-aws
     fi
 
-    if ! ( ${_nextdoorRoot}/scripts/check_unix_bridge.sh ) &>/dev/null; then
+    if [[ -n "$_forceFixSockets" ]] || ! ( ${_nextdoorRoot}/scripts/check_unix_bridge.sh ) &>/dev/null; then
         fix-sockets
     fi
 }
