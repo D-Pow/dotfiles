@@ -66,7 +66,7 @@ alias devcurl="curl --noproxy '*'"
 alias gradle4="$GRADLE_4_HOME/gradle"
 
 
-if [[ -z `command -v tree` ]]; then
+if ! isDefined tree; then
     # `tree` isn't defined, so define it here
     tree() {
         local _treeIgnoreDirs=()
