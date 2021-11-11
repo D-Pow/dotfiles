@@ -89,6 +89,7 @@ fi
 _nextdoorRoot="${NEXTDOOR_ROOT:-$HOME/src/nextdoor.com}"
 
 alias fe="cd $_nextdoorRoot/apps/nextdoor/frontend"
+alias fenext="cd $_nextdoorRoot/apps/nextdoor/frontend-next"
 
 startAllNextdoorDockerContainers() {
     docker-compose -f "${_nextdoorRoot}/docker-compose.yml" up -d
