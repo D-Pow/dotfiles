@@ -5,12 +5,19 @@
         "apps",
         "arg",
         "args",
+        "async",
         "autocompleted",
         "autocompletion",
         "Base64",
+        "bundler",
+        "changelog",
+        "commit's",
         "Craigslist",
         "Ctrl",
+        "customizability",
         "dest",
+        "destructure",
+        "destructuring",
         "dev",
         "devs",
         "dir",
@@ -18,14 +25,20 @@
         "distro",
         "env",
         "executable's",
+        "globals",
         "html",
         "https",
         "Idk",
         "json",
+        "matcher",
+        "matchers",
         "multiplayer",
         "Nextdoor",
         "npm",
         "online",
+        "polyfill",
+        "polyfilled",
+        "polyfills",
         "Reddit",
         "refactor",
         "refactoring",
@@ -33,36 +46,47 @@
         "repo",
         "repos",
         "src",
+        "stderr",
+        "stdin",
+        "stdout",
         "subshell",
         "subshells",
         "substring",
+        "substrings",
+        "transpilation",
         "transpile",
+        "transpiled",
         "transpiler",
+        "transpilers",
+        "transpiles",
         "Trello",
         "tsx",
         "uncomment",
+        "unescape",
         "util",
+        "utils",
         "versioning",
         "webpack",
-        "www",
+        "www"
     ],
     "auto_complete_triggers": [
         {
             "characters": "<",
-            "selector": "text.html"
+            "selector": "text.html",
         },
         {
             "characters": ".",
-            "selector": "source.js"
+            "selector": "source.js",
         }
     ],
+    "theme": "auto",
     "color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme",
     "font_face": "Consolas",
     "font_face_linux": "Ubuntu Mono",
     "font_size": 11,
     "hot_exit": false,
     "ignored_packages": [
-        "Vintage"
+        "Vintage",
     ],
     "bold_folder_labels": true,
     "open_files_in_new_window": false,
@@ -130,6 +154,7 @@
             "SublimeLinter (uses ESLint)",
             "SublimeLinter-eslint (also required with SublimeLinter",
             "SublimeREPL",
+            "tern_for_sublime (after installing in sublime, `npm install` in the tern_for_sublime directory)",
         ],
         "TernJS": [
             "Put .tern-project in project root",
@@ -148,8 +173,8 @@
                     "jasmine": {},
                     "modules": {},
                     "node": {},
-                    "requirejs": {}
-                }
+                    "requirejs": {},
+                },
             }
         ],
         "ToDo": [
@@ -158,6 +183,6 @@
             "PackageResourceViewer -> open babel-snippets -> change react_component_class.sublime-snippet",
             "for default `rcc` react autocomplete"
         ],
-        "Version details": "update_check is necessary to prevent checking of updates past Build 3176"
-    }
+        "Version details": "update_check is necessary to prevent checking of updates past Build 3176",
+    },
 }
