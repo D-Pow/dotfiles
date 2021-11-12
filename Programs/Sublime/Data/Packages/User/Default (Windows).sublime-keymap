@@ -20,7 +20,7 @@
     { "keys": ["alt+s"], "command": "toggle_side_bar" },
     { "keys": ["ctrl+alt+f"], "command": "show_panel", "args": {"panel": "replace", "reverse": false} },
 
-    { "keys": ["alt+d"], "command": "intelli_docs" },
+    { "keys": ["f1"], "command": "intelli_docs" },
 
     /* For closing JSX in .js files */
     { "keys": ["/"], "command": "close_tag", "args": { "insert_slash": true }, "context":
