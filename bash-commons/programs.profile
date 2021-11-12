@@ -99,6 +99,7 @@ pipsearch() {
 
 
 ### Docker ###
+# https://docs.docker.com/engine/reference/commandline/docker/
 
 dockerFindContainer() {
     # Enhanced `docker ps` that filters by any field instead of only by name, ID, image, etc.
@@ -180,6 +181,14 @@ dockerContainerStatus() {
     declare _dockerContainerStatusQuery="${1:-.}"
 
     dockerFindContainer --format '{{.State}} - {{.Names}}' "$_dockerContainerStatusQuery" | sort
+}
+
+dockerDeleteContainer() {
+    docker rm --volumes $(dockerFindContainer -q "$@")
+}
+
+dockerPurgeAllStoppedContainersImagesAndNetworks() {
+    docker system prune -a --volumes
 }
 
 dockerGetLogs() {
