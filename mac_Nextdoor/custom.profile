@@ -119,12 +119,20 @@ alias fix-sockets='nd dev update unix_socket_bridge'
 alias fix-aws='aws_eng_login'
 
 fixcreds() {
+    declare _forceFixAws=
     declare _forceFixSockets=
     declare OPTIND=1
 
-    while getopts "s" opt; do
+    while getopts "asb" opt; do
         case "$opt" in
+            a)
+                _forceFixAws=true
+                ;;
             s)
+                _forceFixSockets=true
+                ;;
+            b)
+                _forceFixAws=true
                 _forceFixSockets=true
                 ;;
         esac
@@ -132,7 +140,7 @@ fixcreds() {
 
     shift $(( OPTIND - 1 ))
 
-    if ! aws sts get-caller-identity > /dev/null 2>&1; then
+    if [[ -n "$_forceFixAws" ]] || ! aws sts get-caller-identity > /dev/null 2>&1; then
         fix-aws
     fi
 
