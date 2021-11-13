@@ -150,16 +150,22 @@ fixcreds() {
 }
 
 
-dbReinstall() {
+dbReinstall() (
+    # fix-aws checks `git config user.name` to get who you are, so we must not be in a personal repo
+    cd "$_nextdoorRoot"
+
     fixcreds -b
     nd dev resetdb
+
     fixcreds
     nd dev createdb
+
     fixcreds
     nd dev django-command re_populate_feed_from_db
+
     fixcreds
     nd dev taskworker
-}
+)
 
 
 fe-start() {
