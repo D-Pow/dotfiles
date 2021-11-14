@@ -3,11 +3,8 @@
 # TODO change to use xrandr to maintain brightness settings for different monitors
 
 printUsage () {
-    usage="Usage: nightscreen [OPTION]\n
-        -x | Turn off night screen\n
-        -o | Turn on night screen at max\n
-        -l | Turn on night screen at a level in {xhigh, high, med, low, xlow}"
-    echo -e ${usage}
+    local USAGE="nightscreen <level = off|xlow|low|med|high|xhigh>"
+    echo -e "$USAGE"
     exit 0
 }
 
@@ -42,6 +39,9 @@ off() {
 }
 
 setScreenColor() {
+    # Reset any previous screen-color settings so they don't stack on top of each other
+    off
+
     case "$1" in
         "xhigh"|"max")
             xhigh
@@ -65,32 +65,9 @@ setScreenColor() {
 }
 
 
-
-lazy=1                     #user lazily putting "high", "med", etc. without -l flag
-
-if [[ -z "$*" ]]; then     #-z is unary operator for length == 0
+if [[ -z "$@" ]]; then
     printUsage
+    exit 1
 fi
 
-while getopts "xol:" arg; do
-    lazy=0
-    case "$arg" in
-        "x")
-            off
-            ;;
-        "o")
-            xhigh
-            ;;
-        "l")
-            setScreenColor "$2"
-            ;;
-        *)
-            #everything else
-            printUsage
-            ;;
-    esac
-done
-
-if [[ $lazy == 1 ]]; then
-    setScreenColor "$1"
-fi
+setScreenColor "$1"
