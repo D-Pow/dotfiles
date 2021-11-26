@@ -91,7 +91,7 @@ gitGetModifiedContaining() {
     declare _gitModifiedFilesPrefix="($(array.join -s _gitModifiedFilesPrefixes '|')):"
     declare _gitModifiedSearchQuery="${argsArray[@]}"
 
-    git status | egrep "$_gitModifiedFilesPrefix" | sed -E 's|.*:||; s|^\s*||' | egrep "$_gitModifiedSearchQuery"
+    git status | egrep "$_gitModifiedFilesPrefix" | sed -E 's|.*:||; s|^\s*||' | egrep --color=never "$_gitModifiedSearchQuery"
 }
 
 
