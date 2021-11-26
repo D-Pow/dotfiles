@@ -68,7 +68,30 @@ gitGetBothModified() {
 
 
 gitGetModifiedContaining() {
-    git status | grep 'modified:' | sed -E 's|modified:||; s|^\s*||' | egrep "$1"
+    declare _gitModifiedFilesPrefixes=(
+        'modified'
+    )
+    declare _includeNewFiles
+    declare argsArray
+    declare -A optionConfig=(
+        ['n|new,_includeNewFiles']='Include new files in output'
+        ['USAGE']='Get all modified files tracked by git.'
+    )
+    parseArgs optionConfig "$@"
+
+    if (( $? != 0 )); then
+        return
+    fi
+
+    if [[ -n "$_includeNewFiles" ]]; then
+        _gitModifiedFilesPrefixes+=('file')
+    fi
+
+    # All prefixes end with a colon
+    declare _gitModifiedFilesPrefix="($(array.join -s _gitModifiedFilesPrefixes '|')):"
+    declare _gitModifiedSearchQuery="${argsArray[@]}"
+
+    git status | egrep "$_gitModifiedFilesPrefix" | sed -E 's|.*:||; s|^\s*||' | egrep "$_gitModifiedSearchQuery"
 }
 
 
