@@ -7,10 +7,15 @@ i.e. hard drive's file is `funny's.jpg` and
      Drive's is `funny_s.jpg`,
      this will delete funny_s.jpg
 """
-import glob, os
+import glob, os, sys
 
-allFiles = glob.iglob(os.path.join("/media/storage/Pictures/Funny", "*"))
+if len(sys.argv) < 2:
+    raise RuntimeError('Please specify a directory')
+
+directory = sys.argv[1]
+allFiles = glob.iglob(os.path.join(directory, "*"))
 files, ufiles, afiles = [], {}, {}
+
 for file in allFiles:
     files.append(file)
 
