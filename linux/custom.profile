@@ -1,8 +1,13 @@
 JAVA_HOME="/usr/java"
 GRADLE_HOME="/opt/gradle"
+LATEX_HOME="$HOME/texlive/*/bin/*linux*/"
 export JAVA_HOME
 export GRADLE_HOME
-export PATH="$JAVA_HOME/bin:$GRADLE_HOME/bin:$PATH"
+export PATH="$JAVA_HOME/bin:$GRADLE_HOME/bin:$LATEX_HOME:$PATH"
+
+if ! [[ -f /usr/local/bin/pdflatex ]]; then
+    sudo ln -s $LATEX_HOME/* /usr/local/bin/
+fi
 
 
 # Change directory colors in `ls`
