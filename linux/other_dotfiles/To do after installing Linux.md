@@ -184,7 +184,7 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
 
 * For LaTeX (TexLive), run the following commands:
     - `tlmgr init-usertree`
-    - `sudo tlmgr update --all`
+    - `tlmgr update --self --all --reinstall-forcibly-removed`
     - If that fails, you'll have to switch to the old repo (tlmgr not supported in new one):
     ```
     tlmgr option repository ftp://tug.org/historic/systems/texlive/2015/tlnet-final
