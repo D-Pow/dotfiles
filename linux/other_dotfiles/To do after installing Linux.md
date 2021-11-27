@@ -121,7 +121,7 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
     sudo add-apt-repository ppa:deadsnakes/ppa
     sudo apt install python3.X
     ```
-    - Add to .profile
+    - If the symlinks in `linux/bin/pythonX` don't work, then add this to .profile
     ```
     alias python3=python3.X
     ```
@@ -146,7 +146,7 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
 * Copy the `home_config_backups/.local/` to `~`.
 
 
-* Import personalized settings for the following items via `dconf` in [./dconf_dumps/`](./dconf_dumps/ReadMe.md)
+* Import personalized settings for the following items via `dconf` in [./dconf_dumps/](./dconf_dumps/ReadMe.md)
     - Do this **after** installing programs and copying the `home_config_backups/.local/` dir to the home `~` dir.
 
 
