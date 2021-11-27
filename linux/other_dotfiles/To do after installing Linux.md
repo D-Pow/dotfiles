@@ -190,6 +190,14 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
     tlmgr option repository ftp://tug.org/historic/systems/texlive/2015/tlnet-final
     ```
         + Use sudo for installing things
+    - To uninstall:
+        + [Do this first](https://tex.stackexchange.com/questions/95483/how-to-remove-everything-related-to-tex-live-for-fresh-install-on-ubuntu/95502#95502)
+            * Also, `sudo apt remove --purge tex-*`
+            * Gist:
+                ```bash
+                sudo rm -rf /usr/local/tex* ~/.texmf* /usr/local/share/texmf/ rm -rf ~/texmf*
+                find -L /usr/local/bin/ -lname /usr/local/texlive/*/bin/* | sudo xargs rm -r
+                ```
 
 
 * For Heroku CLI:
