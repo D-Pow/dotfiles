@@ -28,6 +28,12 @@
         "dependency": "enable-scrolling",
         "value": false
     },
+    "left-click-minimize": {
+        "type": "switch",
+        "default": true,
+        "description": "Left click to minimize window",
+        "value": true
+    },
     "middle-click-close": {
         "type": "switch",
         "default": true,
@@ -50,5 +56,30 @@
         "description": "Show window thumbnails on hover",
         "value": true
     },
-    "__md5__": "38b6afe9c09acf6dfa31f0e238bdf09b"
+    "window-preview-show-label": {
+        "type": "switch",
+        "default": true,
+        "description": "Show title above thumbnail",
+        "dependency": "window-preview",
+        "value": true
+    },
+    "window-preview-scale": {
+        "type": "radiogroup",
+        "default": 1,
+        "description": "Thumbnail size",
+        "options": {
+            "Small": 0.75,
+            "Medium": 1,
+            "Large": 1.25,
+            "Largest": 1.5
+        },
+        "dependency": "window-preview",
+        "value": 1
+    },
+    "last-window-order": {
+        "type": "generic",
+        "default": "",
+        "value": "119537670::130023437::115343363::134217738::134226435::134230400"
+    },
+    "__md5__": "5ef6c9311df5af19c26eced1327c8c40"
 }

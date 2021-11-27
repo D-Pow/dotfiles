@@ -19,9 +19,8 @@
     },
     "custom-format": {
         "type": "entry",
-        "default": "%A %B %e, %H:%M",
+        "default": "%A, %B %e, %H:%M",
         "description": "Date format",
-        "indent": true,
         "dependency": "use-custom-format",
         "tooltip": "Set your custom format here.",
         "value": "%A %B %e, %H:%M"
@@ -29,10 +28,20 @@
     "format-button": {
         "type": "button",
         "description": "Show information on date format syntax",
-        "indent": true,
         "dependency": "use-custom-format",
         "callback": "on_custom_format_button_pressed",
         "tooltip": "Click this button to know more about the syntax for date formats."
     },
-    "__md5__": "db2204a9b8ebf8688c7d463eed4ac71c"
+    "section2": {
+        "type": "section",
+        "description": "Keyboard shortcuts"
+    },
+    "keyOpen": {
+        "type": "keybinding",
+        "description": "Show calendar",
+        "default": "<Super>c",
+        "tooltip": "Set keybinding(s) to show the calendar.",
+        "value": "::"
+    },
+    "__md5__": "b301227cc4181fa2780d4a88a4d550a0"
 }

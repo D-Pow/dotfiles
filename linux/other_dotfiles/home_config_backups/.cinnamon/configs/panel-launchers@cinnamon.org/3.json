@@ -7,15 +7,15 @@
         "type": "generic",
         "default": [
             "firefox.desktop",
-            "gnome-terminal.desktop",
+            "org.gnome.Terminal.desktop",
             "nemo.desktop"
         ],
         "value": [
+            "gnome-system-monitor.desktop",
+            "nemo.desktop",
             "google-chrome.desktop",
             "spotify.desktop",
-            "gnome-system-monitor.desktop",
             "gnome-terminal.desktop",
-            "nemo.desktop",
             "discord.desktop",
             "chrome-hpfldicfbfomlpcikngkocigghgafkph-Default.desktop"
         ]
@@ -26,5 +26,5 @@
         "description": "Allow dragging of launchers",
         "value": true
     },
-    "__md5__": "11474ba983ca660d140dedf9e087884c"
+    "__md5__": "366f8e129abf9622014c95f26ce5aa0f"
 }

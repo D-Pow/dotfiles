@@ -14,7 +14,6 @@
         "type": "switch",
         "default": false,
         "dependency": "peek-at-desktop",
-        "indent": true,
         "description": "Blur effect",
         "tooltip": "Blur windows when peeking at the desktop",
         "value": false
@@ -27,7 +26,6 @@
         "step": 50,
         "units": "milliseconds",
         "dependency": "peek-at-desktop",
-        "indent": true,
         "description": "Hover delay",
         "tooltip": "Delay before Peek shows desktop",
         "value": 400
@@ -39,10 +37,9 @@
         "max": 255,
         "step": 10,
         "dependency": "peek-at-desktop",
-        "indent": true,
         "description": "Window opacity",
         "tooltip": "Change the opacity of windows when peeking at the desktop",
         "value": 10
     },
-    "__md5__": "07f5e42ae16fd891dd4356a1e84920ca"
+    "__md5__": "b3c021266ee4c2be7c179d355dc39333"
 }
