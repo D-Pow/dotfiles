@@ -106,7 +106,6 @@
             "selector": "source.js",
         }
     ],
-    "theme": "auto",
     "color_scheme": "Packages/Color Scheme - Default/Monokai.tmTheme",
     "font_face": "Consolas",
     "font_face_linux": "Ubuntu Mono",
@@ -172,9 +171,9 @@
             "JavaScript Enhancements",
             "jQuery",
             "LaTeXTools",
-            "Markdown Extended", "Only if MarkdownEditing causes code block language syntax issues",
             "MarkdownEditing",
             "MarkdownPreview",
+            "Markdown Extended", "Only if MarkdownEditing causes code block language syntax issues",
             "MoveTab",
             "Package Control",
             "PackageResourceViewer",
