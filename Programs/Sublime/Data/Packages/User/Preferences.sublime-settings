@@ -179,6 +179,7 @@
             "Package Control",
             "PackageResourceViewer",
             "Sass",
+            "SideBarEnhancements",
             "SublimeLinter (uses ESLint)",
             "SublimeLinter-eslint (also required with SublimeLinter",
             "SublimeREPL",
