@@ -3,6 +3,7 @@
     eol = lf
     autocrlf = false
     ignorecase = false
+    symlinks = true
 [init]
     defaultBranch = master
 [pull]
