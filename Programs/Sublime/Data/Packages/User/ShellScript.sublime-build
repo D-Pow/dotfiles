@@ -1,0 +1,4 @@
+{
+    "shell_cmd": "/usr/bin/env bash \"$file\"",
+    "selector" : "source.shell"
+}
