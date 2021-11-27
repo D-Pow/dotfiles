@@ -7,6 +7,7 @@
 	[
 		"Babel",
 		"Babel Snippets",
+		"DocBlockr",
 		"Emmet",
 		"HTML-CSS-JS Prettify",
 		"IntelliDocs",
@@ -14,13 +15,17 @@
 		"JavaScript & NodeJS Snippets",
 		"JavaScript Enhancements",
 		"jQuery",
+		"LaTeXTools",
+		"MarkdownEditing",
+		"MarkdownPreview",
 		"MoveTab",
 		"Package Control",
 		"PackageResourceViewer",
+		"Sass",
+		"SideBarEnhancements",
 		"SublimeLinter",
 		"SublimeLinter-eslint",
 		"SublimeREPL",
-		"tern_for_sublime",
-		"TernJS"
+		"tern_for_sublime"
 	]
 }
