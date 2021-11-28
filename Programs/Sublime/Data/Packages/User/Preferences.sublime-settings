@@ -125,7 +125,7 @@
     "trim_trailing_white_space_on_save": true,
     "default_line_ending": "unix",
     "change_line_endings_on_save": true,
-    "update_check": false,
+    "update_check": true,
     "xxxx_Notes_xxxx": {
         "Keyboard Shortcuts": [
             "Keyboard Shortcuts",
