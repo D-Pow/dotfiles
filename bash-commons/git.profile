@@ -216,6 +216,77 @@ gitGetReposInDir() {
 }
 
 
+gitConfigWithScopes() {
+    # Show `git config` entries' scopes, files, and contents, except pretty-print
+    # them so that all configs under the same scope/file are nested together.
+    #
+    # Requires `awk` because otherwise we can't easily inject newlines between different
+    # config scopes (e.g. `sed` doesn't work across multiple lines).
+    #
+    # Note: `awk` can't accept (associative) arrays from Bash, so they must be created within `awk` itself.
+    # See: https://stackoverflow.com/questions/33105808/can-i-pass-an-array-to-awk-using-v
+    # But, `awk` can be used to create Bash arrays.
+    # See: https://stackoverflow.com/questions/48139210/awk-store-a-pattern-result-to-a-shell-array-variable
+
+    if [[ $1 == "-h" ]] || [[ $1 == "--help" ]]; then
+        echo 'Runs `git config --show-scope --show-origin "$@"` except co-locating all scope config entries together under one heading instead of on every single line.'
+        return 1
+    fi
+
+    # Scope = local/global/system/etc.
+    # Origin = file path.
+    #
+    # Awk docs: https://www.gnu.org/software/gawk/manual/gawk.html
+    # Git-config docs: https://git-scm.com/docs/git-config#FILES
+    #
+    # Newline insertion inspired by: https://bytefreaks.net/gnulinux/bash/add-a-new-line-whenever-the-first-column-changes
+    # Inserting white-space between `awk` `print` entries: https://askubuntu.com/questions/231995/how-to-separate-fields-with-space-or-tab-in-awk/231998#231998
+    git config --show-scope --show-origin "$@" | awk '
+        {
+            prevScope = scope   # Save previous git scope
+            scope = $1      # Current scope is first column
+            file = $2       # File is second column
+            $1 = ""         # Erase scope and file from output so we can print from $3 and onward
+            $2 = ""         # See: https://stackoverflow.com/questions/2961635/using-awk-to-print-all-columns-from-the-nth-to-the-last/2961994#2961994
+            output = $0     # Actual config entry (regardless of whether or not spaces exist)
+
+            # Arrays (e.g. `scopeFileMap`) do not need initialization
+
+            # ! is not a valid if-statement operator, so use empty if-statement for `if (!condition)`
+            # See: https://stackoverflow.com/questions/10923812/why-does-awk-not-in-array-work-just-like-awk-in-array
+
+            if (scope in scopeFileMap); else {
+                # If git config `scope` is not in scope-file map, then add it.
+                #
+                # Replace `file:path` with `(file: path)`
+                # `gensub(regex, replacement, mode, variableOrString)`
+                # See: https://www.gnu.org/software/gawk/manual/gawk.html#String-Functions
+                # Example: https://unix.stackexchange.com/questions/25122/how-to-use-regex-with-awk-for-string-replacement/25123#25123
+
+                scopeFileMap[scope] = "(" gensub(/(file:)(.*)/, "\\1 \"\\2\"", "g", file) ")"
+            }
+
+            if (scope != prevScope) {
+                # Add new scope/filePath header for new category of config entries
+
+                if (NR > 1) {
+                    # Only print newline if not first output line
+                    print ""
+                }
+
+                # Same as below, but shows another way to print what you want
+                #   print scope " " scopeFileMap[scope]
+                printf ("%s %s\n", scope, scopeFileMap[scope])
+            }
+
+            prevScope = scope
+
+            print output
+        }
+    '
+}
+
+
 gitUpdateRepos() {
     usage="Updates all git repositories with 'git pull' at the given parent path.
 
