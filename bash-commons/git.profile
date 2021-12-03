@@ -1,9 +1,3 @@
-gitListConfigsByScope() {
-    # Shows all `git config` entries based on inheritance from local to global scopes
-    git config --list --show-origin --show-scope
-}
-
-
 openGitMergeConflictFilesWithSublime() {
     subl -n $(gitGetBothModified)
 }
