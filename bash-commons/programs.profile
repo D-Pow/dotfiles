@@ -216,6 +216,10 @@ dockerGetVolumesForContainers() (
     fi
 )
 
+dockerShowOriginalRunCommandForContainers() {
+    docker run --rm -i -v /var/run/docker.sock:/var/run/docker.sock nexdrew/rekcod "$@"
+}
+
 dockerGetLogs() {
     local _dockerLogOutputFile
     local _dockerContainerName
