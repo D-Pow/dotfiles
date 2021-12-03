@@ -292,7 +292,7 @@ parseArgs() {
             if [[ -n "$unknownFlagHandler" ]]; then
                 eval "$unknownFlagHandler"
             else
-                echo -e "$parentUsageStr"
+                echo -e "$parentUsageStr" >&2
 
                 return 1
             fi
