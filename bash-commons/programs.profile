@@ -191,6 +191,31 @@ dockerPurgeAllStoppedContainersImagesAndNetworks() {
     docker system prune -a --volumes
 }
 
+dockerGetVolumesForContainers() (
+    declare IFS=$'\n'
+    declare allDockerDriversAndVolumes=($(docker volume ls | grep -vi driver))
+    declare dockerDriversVolumesAndContainers=()
+
+    for dockerVolume in ${allDockerDriversAndVolumes[@]}; do
+        declare volumeDriver="$(echo "$dockerVolume" | awk '{ print $1 }')"
+        declare volumeId="$(echo "$dockerVolume" | awk '{ print $2 }')"
+        declare matchingContainerName="$(dockerFindContainer --filter "volume=$volumeId" --format '{{.Names}}' "${@:-.}")"
+
+        if (( $# == 0 )); then
+            dockerDriversVolumesAndContainers+=("${matchingContainerName:-<null>}\t$volumeId\t$volumeDriver\n")
+        elif [[ -n "$matchingContainerName" ]]; then
+            dockerDriversVolumesAndContainers+=("${matchingContainerName:-<null>}\t$volumeId\t$volumeDriver\n")
+        fi
+    done
+
+    if ! array.empty dockerDriversVolumesAndContainers; then
+        # Append headers to the beginning of the output
+        dockerDriversVolumesAndContainers=("CONTAINER\tVOLUME\tDRIVER\n" ${dockerDriversVolumesAndContainers[@]})
+        # Align output results in tab-separated columns
+        echo -e "${dockerDriversVolumesAndContainers[@]}" | column -t -c 3 -s $'\t'
+    fi
+)
+
 dockerGetLogs() {
     local _dockerLogOutputFile
     local _dockerContainerName
