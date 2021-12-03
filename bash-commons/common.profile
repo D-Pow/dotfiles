@@ -10,8 +10,10 @@
 #   0 = stdin
 #   1 = stdout
 #   2 = stderr
-#   (src) > (dest) = Output redirect (overwrites anything in dest). Use `>>` to append.
-#   (dest) < (src) = Input redirect.
+#   src > dest = Output redirect (overwrites anything in dest). Use `>>` to append.
+#   dest < src = Input redirect.
+#   dest < <(command) = Input redirect + bash process substitution (run a command and use the output as input to `dest`)
+#                       See: https://stackoverflow.com/questions/6541109/send-string-to-stdin/61973974#61973974
 #   & = File descriptor.
 #       A reference to a file/location (by the number it's assigned to) for reading/writing.
 #       Most commonly used to redirect std(in|out|err).
