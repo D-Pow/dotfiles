@@ -213,6 +213,92 @@ gril() {
 }
 
 
+modifyFileLinesInPlace() {
+    declare USAGE="${FUNCNAME[0]} [-n] <sed-regex-command> <file>
+    Modifies all lines in a file according to the \`sed\` command regex string.
+
+    Options:
+        -n  |   Truncate all additional, sequential newlines into a single newline.
+        -e  |   Erase all empty lines.
+        -b  |   Erase empty lines only at the beginning of the file (implies \`-e\`).
+    "
+
+    declare _truncateNewlines=
+    declare _eraseEmptyLines=
+    declare _eraseEmptyLinesOnlyAtBeginning=
+    declare OPTIND=1
+
+    while getopts ':neb' opt; do
+        case "$opt" in
+            n)
+                _truncateNewlines=true
+                ;;
+            e)
+                _eraseEmptyLines=true
+                ;;
+            b)
+                _eraseEmptyLines=true
+                _eraseEmptyLinesOnlyAtBeginning=true
+                ;;
+            *)
+                echo -e "$USAGE" >&2
+                return 1
+                ;;
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+
+    if [[ -z "$1" ]] || [[ -z "$2" ]]; then
+        echo -e "$USAGE" >&2
+        return 1
+    fi
+
+    declare sedRegexCommand="$1"
+    declare fileToModify="$2"
+    declare fileToModifyBackupName="$fileToModify.bak"
+    declare modifiedFileContents="$(sed -E "$sedRegexCommand" "$fileToModify")"
+
+    if [[ -n "$_truncateNewlines" ]]; then
+        # `tr -s|--squeeze-repeats` = Replace duplicate occurrences of the specified character with one occurrence
+        modifiedFileContents="$(echo "$modifiedFileContents" | tr -s '\n')"
+    fi
+
+    if [[ -n "$_eraseEmptyLines" ]]; then
+        if [[ -z "$_eraseEmptyLinesOnlyAtBeginning" ]]; then
+            # Default `awk` command is `print $0` where `$0` is the whole line
+            # Print only non-empty lines
+            modifiedFileContents="$(echo -e "$modifiedFileContents" | awk '!/^$/')"
+        else
+            modifiedFileContents="$(echo -e "$modifiedFileContents" | awk '{
+                if (NR == 1) {
+                    # If the first line, set `found` to false since we have not found a non-empty line yet
+                    found = 0
+                }
+
+                if (/^$/ && !found) {
+                    # Do not print the line since it is empty
+                } else {
+                    # We found a non-empty line, so print all future empty lines
+                    found = 1
+
+                    print $0
+                }
+            }')"
+        fi
+    fi
+
+    if [[ -n "$modifiedFileContents" ]]; then
+        echo "$modifiedFileContents" > "$fileToModify"
+    else
+        # No other lines left, so just truncate the file
+        # `:` = no-op (do nothing silently)
+        # We can't use `echo` because if the resulting string is empty, then it becomes `echo '' > file` which adds a newline to the file
+        : > "$fileToModify"
+    fi
+}
+
+
 findIgnoreDirs() {
     # Net result (where [] represents what's added by the user):
     #   `find . -type d \( -name 'node_modules' -o -name '*est*' \) -prune -false -o` [-name '*.js']
