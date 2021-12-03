@@ -88,6 +88,24 @@ isDefined() {
 }
 
 
+getAllVarsFromPrefix() {
+    declare USAGE="${FUNCNAME[0]} <variable-prefix>
+    Prints out all variables matching the specified prefix as well as their values.
+    "
+
+    if [[ -z "$1" ]]; then
+        echo -e "$USAGE" >&2
+        return 1
+    fi
+
+    declare var
+
+    for var in $(compgen -v "$1"); do
+        echo "$var: ${!var}"
+    done
+}
+
+
 isBeingSourced() {
     # Determines if the file is being called via `source script.sh` or `./script.sh`
 
