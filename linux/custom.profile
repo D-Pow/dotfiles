@@ -197,6 +197,7 @@ _notifyOfUninstalledPackages() {
     declare -A _pkgsToInstall=(
         ['simplescreenrecorder']="Recording your screen."
         ['trash-cli']="For using \`trash\` instead of \`rm\` to move files to trash instead of deleting them immediately.\n\tSee: https://github.com/andreafrancia/trash-cli" # Gotten from: https://www.reddit.com/r/linuxmasterrace/comments/plift1/what_a_great_way_to_start_the_weekend_deleting/hcd70aq/
+        ['jq']="JSON parser for Bash (see: https://github.com/stedolan/jq/wiki/Cookbook)."
         ['google-chrome-stable']="Add \"deb https://dl.google.com/linux/chrome/deb/ stable main\" in \"Software Sources\" in Software Updater.
     May require \`wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -\` first.
     If installing Chrome causes conflicts between \`/etc/apt/sources.list.d/additional-repositories.list\` and \`/google-chrome.list\`, then remove Chrome from additional-repositories via the Software Updater GUI.
