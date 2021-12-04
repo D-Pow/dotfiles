@@ -73,9 +73,8 @@ gitGetModifiedContaining() {
     )
     parseArgs optionConfig "$@"
 
-    if (( $? != 0 )); then
-        return
-    fi
+    declare _parseArgsRetVal="$?"
+    (( $_parseArgsRetVal )) && return 1
 
     if [[ -n "$_includeNewFiles" ]]; then
         _gitModifiedFilesPrefixes+=('file')

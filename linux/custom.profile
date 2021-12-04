@@ -238,10 +238,7 @@ brightness() {
     parseArgs optsConfig "$@"
 
     declare _parseArgsRetVal="$?"
-
-    if (( _parseArgsRetVal >= 1 )); then
-        return 1
-    fi
+    (( $_parseArgsRetVal )) && return 1
 
     # Default to first external monitor if display not specified
     # TODO Is the first display number still 1 if it's a tower without internal display?

@@ -72,6 +72,11 @@ parseArgs() {
             ['USAGE']='Usage string without option descriptions (parseArgs will add those automatically)'
         )
         parseArgs optionConfig \"\$@\"
+        # To exit your function if \`parseArgs\` fails, add the lines below.
+        # Return value must be set in a variable because \`\$?\` doesn't cast the value to a number in boolean logic as you'd expect.
+        # True(0)/False(1) are reversed in arithmetic expressions, so use \`&&\` instead of \`||\`.
+        declare _parseArgsRetVal="\$?"
+        (( \$_parseArgsRetVal )) && return 1    # Alternatively: [[ \$_parseArgsRetVal -ne 0 ]]
 
     Returns:
         0/1 on success/failure.
