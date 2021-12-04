@@ -183,12 +183,20 @@ getCommandsMatching() {
 }
 
 
-getVarsMatching() {
-    # Similar to `getCommandsMatching()` except prints all possible values for variable prefix
+getAllVarsFromPrefix() {
+    declare USAGE="${FUNCNAME[0]} <variable-prefix>
+    Prints out all variables matching the specified prefix as well as their values.
+    "
+
+    if [[ -z "$1" ]]; then
+        echo -e "$USAGE" >&2
+        return 1
+    fi
+
     declare var
 
-    for var in $(compgen -v "$@"); do
-        echo "$var: ${!var}";
+    for var in $(compgen -v "$1"); do
+        echo "$var: ${!var}"
     done
 }
 
