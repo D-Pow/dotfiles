@@ -216,6 +216,11 @@ dockerGetVolumesForContainers() (
     fi
 )
 
+dockerShowDockerfileForImage() (
+    declare _imageId="$(docker image ls -q "$1")"
+    docker run --rm -i -v /var/run/docker.sock:/var/run/docker.sock chenzj/dfimage "$_imageId"
+)
+
 dockerShowRunCommandForContainers() (
     (( $# )) || { echo "Please specify container ID(s)/name(s)" >&2; return 1; }
 
