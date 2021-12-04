@@ -216,9 +216,28 @@ dockerGetVolumesForContainers() (
     fi
 )
 
-dockerShowOriginalRunCommandForContainers() {
-    docker run --rm -i -v /var/run/docker.sock:/var/run/docker.sock nexdrew/rekcod "$@"
-}
+dockerShowRunCommandForContainers() (
+    (( $# )) || { echo "Please specify container ID(s)/name(s)" >&2; return 1; }
+
+    declare IFS=$'\n'
+    # The output has additional newlines injected so remove duplicates with `tr` and the first one with `tail`
+    declare _allRunCommands=($(
+        docker run --rm -i -v /var/run/docker.sock:/var/run/docker.sock nexdrew/rekcod "$@" \
+            | tr -s '\n' \
+            | tail -n +2
+    ))
+
+    # Associate each run command with each requested container name/ID
+    for (( i = 0; i < $#; i++ )); do
+        declare _containerForRunCmd="${@:(( $i + 1 )):1}"
+        declare _runCmdForContainer="${_allRunCommands[i]}"
+
+        echo "\"$_containerForRunCmd\""
+        echo "$_runCmdForContainer"
+
+        (( $i < ($# - 1) )) && echo -e '\n-----\n'
+    done
+)
 
 dockerGetLogs() {
     local _dockerLogOutputFile
