@@ -183,20 +183,29 @@ getCommandsMatching() {
 }
 
 
-getAllVarsFromPrefix() {
-    declare USAGE="${FUNCNAME[0]} <variable-prefix>
-    Prints out all variables matching the specified prefix as well as their values.
-    "
+getVarsByPrefix() {
+    declare USAGE="${FUNCNAME[0]} [-r regex] <variable-prefix>
+    Prints out all variables matching the specified prefix as well as their values."
+    declare _varRegex
+    declare -A optsConfig=(
+        ['r:,_varRegex']='Regex with which to further fine-tune the match filter.'
+        [':']=
+        ['USAGE']="$USAGE"
+    )
+    declare argsArray
 
-    if [[ -z "$1" ]]; then
-        echo -e "$USAGE" >&2
-        return 1
-    fi
+    parseArgs optsConfig "$@"
+    declare _parseArgsRetVal="$?"
+    (( $_parseArgsRetVal )) && return 1
 
-    declare var
+    _varRegex="${_varRegex:-.*}" # Default to matching everything
+    declare _varPrefix="${argsArray[0]}"
 
-    for var in $(compgen -v "$1"); do
-        echo "$var: ${!var}"
+    declare _varPrefixMatch
+    for _varPrefixMatch in $(compgen -v "$_varPrefix"); do
+        if (( $(echo "$_varPrefixMatch" | egrep -ci "$_varRegex") > 0 )); then
+            echo "$_varPrefixMatch: ${!_varPrefixMatch}"
+        fi
     done
 }
 
