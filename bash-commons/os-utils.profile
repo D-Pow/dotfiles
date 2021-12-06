@@ -204,7 +204,7 @@ getVarsByPrefix() {
     declare _varPrefixMatch
     for _varPrefixMatch in $(compgen -v "$_varPrefix"); do
         if (( $(echo "$_varPrefixMatch" | egrep -ci "$_varRegex") > 0 )); then
-            echo "$_varPrefixMatch: ${!_varPrefixMatch}"
+            echo "$_varPrefixMatch=${!_varPrefixMatch}"
         fi
     done
 }
