@@ -297,3 +297,68 @@ dockerGetLogs() {
     fi
     )
 }
+
+
+
+### AWS CLI ###
+# Configuration: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html
+# Env vars: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
+# Docker image: https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html
+# Example purpose - CodeArtifact as an npm registry: https://docs.aws.amazon.com/codeartifact/latest/ug/npm-auth.html#configuring-npm-without-using-the-login-command
+
+awsCmd() {
+    # Attempt to use natively-installed `aws` command, but fallback to Docker image with all
+    # local env vars set
+    declare cmd
+
+    if isDefined aws; then
+        cmd='aws'
+    else
+        cmd="docker run --rm -it $(
+            for env in $(getVarsByPrefix AWS_); do
+                echo "$env" | awk '{ printf "-e '%s' ", $0 }'
+            done
+        ) amazon/aws-cli"
+    fi
+
+    $cmd "$@"
+}
+
+awsDescribeKey() {
+    awsCmd kms describe-key --key-id "$1" | jq --indent 4 '.KeyMetadata'
+}
+
+awsKeyPolicy() {
+    # Comes in the annoying form of an escaped JSON key
+    # e.g. `{ Policy: "{\n    \"Key1\": \"Val1\",\n ... }" }`
+    # So reformat it to a usable form:
+    #   Convert `\n` to newlines with `echo -e`
+    #   Remove superfluous escapes `\"` and `("{)|(}")`
+    # Note: `sed` doesn't have non-capture groups, but does count capture groups in the order:
+    #   1. outside-to-inside
+    #   2. left-to-right
+    # So we can write a makeshift non-capture group by capturing all first (necessary for the `|` operator)
+    # and then specifying another inner capture group which we keep in the substitution.
+    echo -e "$(
+        awsCmd kms get-key-policy --key-id "$1" --policy-name "${2:-default}"
+    )" \
+        | sed -E 's/\\"/"/g; s/("(\{))|((\})")/\2\4/g' \
+        | jq --indent 4 '.'
+}
+
+awsGetAllKeysInfo() {
+    # Not the same as "Access key"
+    declare allKeyIds=($(aws kms list-keys | jq -r '.Keys[] | .KeyId'))
+    declare allKeyInfo='[]'
+
+    declare keyId
+    for keyId in "${allKeyIds[@]}"; do
+        declare keyMetadata="$(awsDescribeKey "$keyId")"
+        declare keyPolicy="$(awsKeyPolicy "$keyId")"
+        declare keyInfo="$(echo "[ $keyMetadata , $keyPolicy ]" | jq '.[0] + .[1]')"
+
+        allKeyInfo="$(echo "$allKeyInfo" | jq ". + [ $keyInfo ]")"
+    done
+
+    echo "$allKeyInfo" | jq --indent 4 '.'
+}
