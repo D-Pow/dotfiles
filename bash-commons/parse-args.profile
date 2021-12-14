@@ -226,6 +226,17 @@ parseArgs() {
             #
             # Both require adding '-' in `getopts` string, e.g. `'-:'` if long option
             # accepts arguments.
+            # TODO maybe this would be simpler:
+            #   read key val < <(echo "${x/=/ }")
+            #       String substitution - remove first '=' but not subsequent ones
+            #       Read the resulting 'myKey myValWithAnyCharsIncluding=This' into `key` and `val` respectively
+            #       See: https://stackoverflow.com/a/12739533/5771107
+            # Also worth noting: you can set vars by name with `printf`
+            #   printf -v "$varHoldingNewVarName" '%s' "$varHoldingNewVarValue"
+            #       See: https://stackoverflow.com/a/13717788/5771107
+            # Or, set vars to positional args
+            #   set -- val1 val2 "$@"  # Puts `val1` and `val2` before the rest of the args
+            #       See: https://unix.stackexchange.com/a/308263/203387
             declare _longOptionArray
             declare _longOptionValArray
             array.fromString -d '=' -r _longOptionArray "$OPTARG"

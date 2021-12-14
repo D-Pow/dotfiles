@@ -1,5 +1,8 @@
 #!/usr/bin/env bash -e
 
+# TODO For `npm run`, use `npm_lifecycle_event` for script name and `npm_lifecycle_script` for script content+args
+
+
 getYarnArgs() {
     declare OPTIND=1
     declare keepCommandName=
