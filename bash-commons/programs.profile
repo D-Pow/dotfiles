@@ -4,7 +4,9 @@ npms() {
 }
 
 # By default, allow ES modules, importing JSON, top-level await, and other relevant/useful features
-# See: https://nodejs.org/api/cli.html#cli_node_options_options
+# See:
+#   https://github.com/D-Pow/react-app-boilerplate/blob/master/.npmrc
+#   https://nodejs.org/api/cli.html#cli_node_options_options
 NODE_OPTIONS='--experimental-modules --experimental-json-modules --experimental-top-level-await --experimental-import-meta-resolve'
 
 npmvalidatePackageLockResolvedUrls() {
@@ -21,6 +23,33 @@ npmvalidatePackageLockResolvedUrls() {
 
 alias npmrtf="npm run test 2>&1 | egrep -o '^FAIL.*'" # only print filenames of suites that failed
 alias npmPackagesWithVulns="npm audit | grep 'Dependency of' | sort -u | egrep -o '\S+(?=\s\[\w+\])'"
+
+npmGetProjectPath() {
+    npm prefix
+}
+
+npmGetProjectConfig() {
+    if [[ "$1" == "-p" ]] || [[ "$1" == "--path" ]]; then
+        echo "$(npmGetProjectPath)/.npmrc"
+    else
+        npm config --location project list
+    fi
+}
+
+npmConfigScopedPackageFormatUrl() {
+    # Strip out the protocol (usually `https:`) from the given URL to match the format
+    # required for specific packages' auth tokens and related configs.
+    # Result will be akin to:
+    #   //url.com/my-pkg:configKey=configVal
+    echo "$1" | sed -E 's|^.*?:(//)|\1|'
+}
+
+npmConfigIsRegistryAccessible() {
+    declare registryName="${1:+$1:}"
+
+    npm ping --registry $(npm config get "${registryName}registry") &>/dev/null
+}
+
 npmr() {
     npm run "$@"
 }
