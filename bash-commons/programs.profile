@@ -343,11 +343,7 @@ awsCmd() {
     if isDefined aws; then
         cmd='aws'
     else
-        cmd="docker run --rm -it $(
-            for env in $(getVarsByPrefix AWS_); do
-                echo "$env" | awk '{ printf "-e '%s' ", $0 }'
-            done
-        ) amazon/aws-cli"
+        cmd='awsCmdInDocker'
     fi
 
     $cmd "$@"
@@ -355,6 +351,10 @@ awsCmd() {
 
 awsDescribeKey() {
     awsCmd kms describe-key --key-id "$1" | jq --indent 4 '.KeyMetadata'
+}
+
+awsKeyPolicyNames() {
+    awsCmd kms list-key-policies --key-id "$1" | jq '.PolicyNames'
 }
 
 awsKeyPolicy() {
@@ -390,4 +390,72 @@ awsGetAllKeysInfo() {
     done
 
     echo "$allKeyInfo" | jq --indent 4 '.'
+}
+
+awsCmdInDocker () {
+    declare USAGE="${FUNCNAME[0]} [-e envVar=envVal] [-b] <aws-command>
+    Runs an AWS CLI command either:
+        * Locally if installed.
+        * In an ephemeral Docker container if not installed.
+
+    Passes all \`AWS_{VAR}\` environment variables to the container, but they can be overridden via \`-e AWS_VAR=value\`.
+
+    Options:
+        -e var=val  |   Equivalent of Docker's \`-e\` flag; forwarded directly to the container.
+        -b          |   Run \`bash\` instead of \`aws\`.
+    "
+
+    declare cmdToRun='aws'
+    declare envVars=()
+    declare envVar=
+
+    # Prefill `envVars` with environment variables from the system.
+    # This is okay because `docker run -e a=A -e a=B ...` will overwrite duplicate vars with the
+    # last one seen.
+    for envVar in $(compgen -v AWS_); do
+        envVars+=("$envVar=${!envVar}")
+    done
+
+    # Now, add user-specified env vars that will override system env vars
+    declare OPTIND=1
+    declare opt
+    while getopts ':e:b' opt; do
+        case "$opt" in
+            e)
+                envVars+=("$OPTARG")
+                ;;
+            b)
+                cmdToRun='bash'
+                ;;
+            *)
+                echo -e "$USAGE" >&2
+                return 1
+                ;;
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+
+    # Populates the `.aws/credentials` file with all `AWS_X` vars from the environment/user
+    declare autoGenerateAwsDirAndCredentialsCommand='
+        mkdir /root/.aws;
+        echo "[$AWS_PROFILE]" > /root/.aws/credentials;
+        (
+            unset AWS_PROFILE;
+            for envVar in $(compgen -v AWS); do
+                echo "$envVar ${!envVar}" | awk "{ printf \"%s = %s\n\", tolower(\$1), \$2 }";
+            done;
+        ) >> /root/.aws/credentials;
+        '
+    # Run the `aws` command within the Docker container after creating credentials file
+    # or `bash` if specified
+    declare runCommand="$autoGenerateAwsDirAndCredentialsCommand $cmdToRun $@"
+
+    # Override the `ENTRYPOINT` of Docker image to Bash so we don't have to mount local credentials
+    # i.e. `-v $HOME/.aws:/root/.aws`
+    docker run -it --rm --entrypoint bash $(
+        for envVar in "${envVars[@]}"; do
+            echo "-e $envVar"
+        done
+    ) amazon/aws-cli -c "$runCommand"
 }
