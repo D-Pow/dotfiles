@@ -22,11 +22,19 @@ set -m
 
 # Set SHELL environment to user's default shell.
 # It doesn't always update even after calling `chsh -s /my/new/shell` so update it here.
-# See: https://www.gnu.org/software/bash/manual/bash.html#index-SHELL
-#
-# Alternative: `ps -p $$ -o comm=`
-# ProcessStatus -pID $thisShellPid -onlyKey comm[and]=[remove key prefix]
-SHELL="$(which "$(echo "$0" | sed -E 's|^-||')")"
+#   See: https://www.gnu.org/software/bash/manual/bash.html#index-SHELL
+SHELL="$(which "$(echo "$0" | sed -E 's/^-//')")"
+
+if [[ -z "$SHELL" ]] || [[ "$SHELL" =~ ^/bin/(bash|sh) ]]; then
+    # If `$0` is empty or matches `/bin/(bash|sh)`, then get the "real" SHELL from the running process.
+    # This helps for e.g. Mac where the default shell is determined by a system setting rather than
+    # `ps -p $$ -o comm=`
+    #   ProcessStatus -Pid $$-this-shell-pid -Only-key-prefix-case-insensitive comm[and]=[remove key prefix]
+    #       See: https://unix.stackexchange.com/questions/9501/how-to-test-what-shell-i-am-using-in-a-terminal/9504#9504
+    SHELL="$(which "$(ps -p $$ -o comm= | sed -E 's/^-//')")"
+fi
+
+export SHELL
 
 # Sort with dotfiles/directories listed before the rest.
 # LC_COLLATE - Only affects collation (grouping), e.g. sorting upper/lower-case before/after each other.
