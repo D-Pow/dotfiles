@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 allSysInfo="$(uname -a)"
 
 if [[ "$allSysInfo" != *"Linux"* ]]; then

@@ -1,4 +1,5 @@
 #!/usr/bin/env xdg-open
+
 [Desktop Entry]
 Name=PyCharm
 Exec="/home/dpow/JetBrains/PyCharm/bin/pycharm.sh" %f

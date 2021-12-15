@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 class PrettifyJson:
 
     def __init__(self, filename):

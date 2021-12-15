@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 """
 Removes photos downloaded from Drive that are the
 same as the photos from the hard drive except with
@@ -7,6 +8,7 @@ i.e. hard drive's file is `funny's.jpg` and
      Drive's is `funny_s.jpg`,
      this will delete funny_s.jpg
 """
+
 import glob, os, sys
 
 if len(sys.argv) < 2:

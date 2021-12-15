@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 printUsage() {
     usage="Usage: spellchecklatex [OPTIONS] <filename>.tex\n
         Checks a LaTeX file for spelling errors\n

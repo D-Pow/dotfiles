@@ -1,4 +1,5 @@
 #!/usr/bin/env xdg-open
+
 [Desktop Entry]
 Name=WebStorm
 Exec=/bin/bash -l -i -c "/home/dpow/JetBrains/WebStorm/bin/webstorm.sh %F"

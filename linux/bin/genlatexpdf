@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 printUsage() {
     usage="Usage: genlatexpdf [OPTIONS] <filename>.tex\n
         Generates a PDF from .tex file\n

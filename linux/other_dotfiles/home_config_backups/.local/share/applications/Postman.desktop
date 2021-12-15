@@ -1,4 +1,5 @@
 #!/usr/bin/env xdg-open
+
 [Desktop Entry]
 Name=Postman
 Exec=/opt/postman/app/Postman %U

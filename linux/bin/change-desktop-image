@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 #Changes desktop background randomly
 DIR="/media/storage/Pictures/Wallpapers/**"
 PIC=$(ls $DIR/*.jpg | shuf -n1)
