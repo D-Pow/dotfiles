@@ -1,4 +1,7 @@
 {
-    "shell_cmd": "node \"$file\"",
+    "shell_cmd": "/usr/bin/env node \"$file\"",
     "selector": "source.js",
+    "env": {
+        "NODE_OPTIONS": "--experimental-top-level-await --experimental-json-modules --experimental-specifier-resolution=node --experimental-import-meta-resolve",
+    },
 }
