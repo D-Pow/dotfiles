@@ -1,31 +1,35 @@
-*For going through the proxy in the terminal/other applications:*
-1) `export http_proxy=http://user:pass@iadwg-lb.corp.etradegrp.com:9090/` and point the rest of the proxy family to it, e.g. 
+## For going through the proxy in the terminal/other applications:
+
+1. `export http_proxy=http://user:pass@iadwg-lb.corp.etradegrp.com:9090/` and point the rest of the proxy family to it, e.g.
     ```
     export http_proxy=http://user:pass@iadwg-lb.corp.etradegrp.com:9090/
     export HTTP_PROXY=$http_proxy
     export https_proxy=$http_proxy
     export HTTPS_PROXY=$http_proxy
     ```
-2) install homebrew
-3) `brew install cntlm`
-4) `cntlm -H` to get hashes
-5) Open /usr/local/etc/cntlm.conf for the changes below:
-    1) Username    <username>
-    2) Domain        corp.etradegrp.com
-    3) (comment out Password)
-    4) Paste results of cntlm -H in the PassNT and PassLM sections (***including AUTH     NTLM***)
-    5) Comment out PassNTLMv2
-    6) Proxy        iadwg-lb.corp.etradegrp.com:9090
-6) Change .profile `export http_proxy=http://localhost:3128`
-7) Run `cntlm` before doing things online. I recommend calling it in your .profile
+2. install homebrew
+3. `brew install cntlm`
+4. `cntlm -H` to get hashes
+5. Open /usr/local/etc/cntlm.conf for the changes below:
+    1. Username    <username>
+    2. Domain        corp.etradegrp.com
+    3. (comment out Password)
+    4. Paste results of cntlm -H in the PassNT and PassLM sections (***including AUTH     NTLM***)
+    5. Comment out PassNTLMv2
+    6. Proxy        iadwg-lb.corp.etradegrp.com:9090
+6. Change .profile `export http_proxy=http://localhost:3128`
+7. Run `cntlm` before doing things online. I recommend calling it in your .profile
+
 See more at https://cmdref.net/middleware/proxy/cntlm.html
 
-*Confluence docs for our team*
+## Confluence docs for our team
+
 AIP front-end: https://confluence.corp.etradegrp.com/display/INI/AIP+Redesign
 AIP back-end: https://confluence.corp.etradegrp.com/display/INI/AIP+Redesign+-+Endpoints
 All of MAS: https://confluence.corp.etradegrp.com/display/INI/MAS+-+Mutual+Fund+and+ETF+Expansion
 
-*Jenkins pipelines*
+## Jenkins pipelines
+
 Front-end:
 AIP build: https://ci.etrade.com/job/CI-Pipelines/job/webp/job/react-aip/
 Prebuilt build: https://ci.etrade.com/job/CI-Pipelines/job/webp/job/react-mutualfundsandetf/
@@ -35,7 +39,8 @@ Back-end:
 mutual_fund_etf (for AIP and Prebuilt): https://ci.etrade.com/job/CI-Pipelines/job/ris/job/mutual_fund_etf/
 spa_wm (server): https://ci.etrade.com/job/CI-Pipelines/job/neo/job/spa-wm/
 
-*Repositories*
+## Repositories
+
 AIP (ours): https://bitbucket.etrade.com/projects/WEBP/repos/react-aip/
 Prebuilt (ours): https://bitbucket.etrade.com/projects/WEBP/repos/react-mutualfundsandetf/
 spa_wm (hosts front-end code for all of E-Trade): https://bitbucket.etrade.com/projects/NEO/repos/spa-wm
@@ -44,16 +49,20 @@ S2 (hosts back-end code for all of E-Trade): https://bitbucket.etrade.com/projec
 Common repo for back-end repos to call S2 services: https://bitbucket.etrade.com/projects/RIS/repos/s2common
 
 
-*Back-end instances*
+## Back-end instances
+
+```
 # sit:wm:s2:mfetf
 'sit390w224m7'
 'sit429w86m7'
 # uat:wm:s2:mfetf
 'uat345w92m7'
 'uat370w228m7'
-
-*Building the back-end*
 ```
+
+## Building the back-end
+
+```bash
 alias rmpom='find . -name "pom.xml" -type f -delete'
 alias pomgen='mvn pomgenerator:generate'
 alias mvnsetup='chmod a+x setup.py && ./setup.py'
@@ -61,23 +70,28 @@ alias mvninstall='mvn clean install -Dmaven.javadoc.skip=true -DskipTests -U'
 alias buildMutualFundsAIP='rmpom && pomgen && mvnsetup && mvninstall'
 ```
 
-*Using npm behind the proxy*
+## Using npm behind the proxy
+
 Make a .npmrc file in your home directory with the following lines (assuming you use cntlm)
-```
+
+```bash
 registry=http://nexus.etrade.com/content/groups/npm-all/
 proxy=http://localhost:3128/
 https-proxy=http://localhost:3128/
 ```
 
-*For using node-sass in npm*
+## For using node-sass in npm
+
 If you have troubles running `npm install` for the front-end repos because of a `node-sass` post-install script, then download the binary and put the following lines in your .profile
-```
+
+```bash
 # node-sass binary (since `npm install node-sass` always fails on post-install script)
 export SASS_BINARY_PATH=/Users/dpowell1/repositories/binaries/node-sass-binary.node
 ```
 
-*Hosts*
-Modify /etc/hosts to:
+## Hosts
+
+Modify `/etc/hosts` to:
 ```
 127.0.0.1    localhost.etrade.com
 127.0.0.1    localhost
@@ -85,7 +99,9 @@ Modify /etc/hosts to:
 ::1             localhost
 ```
 
-*Session tokens for running front-end repos*
+## Session tokens for running front-end repos
+
+```
 us.sit.etrade.com (SIT) usernames
    ACTZ9600
    ACUC0200
@@ -107,11 +123,14 @@ us.uat.etrade.com (UAT) usernames
    BETX0800
    BETX1000
 All have password Test$123
+```
+
 In the browser after logging in, open the dev tools and type `copy(pageConfig.uaa_vt)`
 Paste that value in want the pageConfig['uaa_vt'] field in the repo (but don't commit it)
 
-*Other helpful .profile things*
-```
+## Other helpful .profile things
+
+```bash
 export APACHE_HOME=/Applications/apache-maven-3.2.5/bin
 export GRADLE_HOME=/opt/gradle/gradle-4.5.1/bin
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Home/
