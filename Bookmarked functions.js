@@ -486,6 +486,17 @@ async function translateJapanese(query) {
 window.translateJapanese = translateJapanese;
 
 
+/**
+ * HTTP-based JS Slack service.
+ *
+ * SDKs would be better for an actual app.
+ *
+ * @see [API docs]{@link https://api.slack.com/docs}
+ * @see [API methods search page]{@link https://api.slack.com/methods}
+ * @see [SDKs]{@link https://api.slack.com/tools}
+ * @see [New JS/TS SDK]{@link https://github.com/slackapi/bolt-js}
+ * @see [Old NodeJS SDK]{@link https://slackapi.github.io/node-slack-sdk/}
+ */
 class SlackInBrowserService {
     /**
      * @typedef {Object} Channel
@@ -512,8 +523,8 @@ class SlackInBrowserService {
         _x_gantry: true
     };
 
-    /*
-     * See: https://api.slack.com/methods
+    /**
+     * Mapping from understandable names to Slack API methods.
      */
     static Apis = {
         GetUserInfo: 'users.identity',
