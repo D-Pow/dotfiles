@@ -25,7 +25,7 @@ if [[ -z "$1" ]]; then
 
     Example:
         source /home/repositories/dotfiles/.profile "linux"
-    '
+    ' >&2
 
     return 1
 fi
