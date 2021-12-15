@@ -1,4 +1,4 @@
-export rootdir='C:/Users/djp93/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs'
+export rootdir='C:/Users/D-Pow/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs'
 export homedir="$rootdir/home/dpow"
 
 # alias sourceprofile='chmod a+rx /home/dpow/.profile && source /home/dpow/.profile'

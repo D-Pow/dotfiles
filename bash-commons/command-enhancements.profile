@@ -62,6 +62,7 @@ export LC_COLLATE='C' # Make symbols come before numbers before letters.
 #   https://unix.stackexchange.com/questions/288333/how-can-i-make-ls-show-dotfiles-first-while-staying-case-insensitive/361006#361006
 #   https://unix.stackexchange.com/questions/10524/how-to-numerical-sort-by-last-column
 #   https://superuser.com/questions/109537/how-to-sort-first-directories-then-files-etc-when-using-ls-in-unix
+#   https://askubuntu.com/questions/525231/how-can-i-run-original-command-that-aliased-with-same-name
 #
 # -N | --literal = Don't add quotes to file/dir names
 # -F | --classify = Show symbols for directories (/), executables (*), symlinks (->), pipes (|), etc. at the ends of file/dir names

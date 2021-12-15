@@ -20,8 +20,8 @@ shopt -s histappend
 ORIG_PROMPT_COMMAND="$PROMPT_COMMAND"
 bashHistoryImmediatelyAvailableAcrossShellSessions() {
     # See:
-    # https://unix.stackexchange.com/questions/1288/preserve-bash-history-in-multiple-terminal-windows
-    # https://unix.stackexchange.com/questions/18212/bash-history-ignoredups-and-erasedups-setting-conflict-with-common-history
+    #   https://unix.stackexchange.com/questions/1288/preserve-bash-history-in-multiple-terminal-windows
+    #   https://unix.stackexchange.com/questions/18212/bash-history-ignoredups-and-erasedups-setting-conflict-with-common-history
     local usage="(De-)activate .bash_history being written to immediately after running commands instead of only on shell termination.
 
     Usage: ${FUNCNAME[0]} [-a|-d]

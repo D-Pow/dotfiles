@@ -13,17 +13,14 @@ fi
 # Change directory colors in `ls`
 # LS_COLORS="${LS_COLORS}di=01;35"
 # export $LS_COLORS
-
 # [green]\username[white]:[teal]\working_directory[white]$[space]
 export PS1="\[\033[01;32m\]\u\[\033[00m\]:\[\033[00m\]\[\033[01;34m\]\w\[\033[00m\]\$ "
 
-# Handled in bash command-enhancements.profile
-# alias ls='ls -Fh --color'
-# alias lah='ls -Flah --color'
 
 alias listupdate='sudo apt update && sudo apt list --upgradable'
 
 alias systeminfo='inxi -SMCGx'
+
 
 is-installed() {
     local packages="$@"
@@ -64,6 +61,7 @@ is-installed() {
     echo "$packages not installed" >&2
     return 1
 }
+
 
 apt-get-repositories() {
     # Inspired by: https://askubuntu.com/questions/148932/how-can-i-get-a-list-of-all-repositories-and-ppas-from-the-command-line-into-an/148968#148968
@@ -180,9 +178,13 @@ apt-get-repositories() {
 #   docker.socket is used for listening to Docker commands (unrelated to Docker's server, so doesn't open a port itself)
 alias liststartupservices='sudo systemctl list-unit-files | grep enabled | sort'
 
+
+# Requires Sophos antivirus
 alias scan='savscan -all -rec -f -archive'
 alias sophosUpdate='sudo /opt/sophos-av/bin/savupdate && /opt/sophos-av/bin/savdstatus --version'
 
+
+# Shortcuts for Apache server
 alias apachestart='systemctl start apache2'
 alias apachestop='systemctl stop apache2'
 alias apachestatus='systemctl status apache2'
@@ -529,4 +531,4 @@ _checkPythonVersion() {
         echo 'Your python version is out of date. Please run this command:'
         echo "    sudo rm /usr/bin/python3 && sudo ln -s $executableDir/$latestVersion /usr/bin/python3"
     fi
-}
+} && _checkPythonVersion

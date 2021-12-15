@@ -3,8 +3,6 @@
 export SUBLIME_HOME=/Applications/Sublime\ Text.app/Contents/SharedSupport/bin
 export SUBLIME_DIR=/Users/dpowell1/Library/Application\ Support/Sublime\ Text/Packages/User/
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_291.jdk/Contents/Home/
-# export PIP3_HOME=/usr/local/opt/python\@3.7/bin/
-# export PIP2_HOME=/Users/dpowell1/Library/Python/2.7/bin
 export TEXMFHOME=/Users/dpowell/texlive/2021/bin/universal-darwin
 
 # Run: brew install bash coreutils gawk gnutls gnu-indent gnu-getopt gnu-sed gnu-tar grep findutils
@@ -34,6 +32,7 @@ _brewPathEntries="$(echo "$BREW_PATHS" | sed -E 's/\s+/:/g')" # /usr/local/sbin 
 
 export PATH=$BREW_GNU_UTILS_HOMES:$JAVA_HOME:$SUBLIME_HOME:$TEXMFHOME:/usr/local/bin:/Users/dpowell1/bin:$_brewPathEntries:$PATH
 
+
 # Colored terminal
 # export PS1="\[\033[36m\]\u\[\033[m\]@\[\033[32m\]\h:\[\033[33;1m\]\w\[\033[m\]\$ "
 export PS1="\[\033[36m\]\u\[\033[m\]:\[\033[33;1m\]\w\[\033[m\]\$ "
@@ -48,11 +47,6 @@ export CLICOLOR=1
 export LSCOLORS=gxfxcxdxbxxhxhbxbxGxGx
 export LS_COLORS='di=36:ln=35:so=32:pi=33:ex=31:bd=0;47:cd=0;47:su=31:sg=31:tw=1;36:ow=1;36'
 
-# See if there's a way to do this with `alias ls | sed`
-# or if there's a better way than manual parsing: https://askubuntu.com/questions/525231/how-can-i-run-original-command-that-aliased-with-same-name
-# OR, just default this in bash-commons/ since Mac is now using GNU utils
-# alias ls='ls -Fh --color'
-# alias lah='ls -Flah --color'
 
 alias python='python3'
 alias python2='/usr/bin/python'
@@ -230,7 +224,8 @@ cf() {
 
 
 
-# alias getAllApps=`mdfind "kMDItemKind == 'Application'"`
+alias getAllApps=`mdfind "kMDItemKind == 'Application'"`
+
 getAppInfo() {
     local app="$1"
     local property="$2"

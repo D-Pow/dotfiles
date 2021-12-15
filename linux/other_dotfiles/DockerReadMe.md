@@ -1,4 +1,4 @@
-Docker's [installation instructions](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository) are retarded and don't have hardly any accurate information.
+Docker's [installation instructions](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository) are incomplete and have outdated/inaccurate information.
 
 The correct steps are:
 

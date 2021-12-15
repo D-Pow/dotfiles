@@ -63,8 +63,7 @@ getip() {
     # See: https://superuser.com/questions/89994/how-can-i-tell-which-network-interface-my-computer-is-using/627581#627581
     declare _ipDefaultNetworkInterface=
 
-    # Linux
-    if [[ -f /proc/net/route ]]; then
+    if [[ -f /proc/net/route ]]; then  # Linux
         # Column 7 = Metric - How good the interface is (delay, throughput, hop count, reliability).
         #   Lower number is better. See: https://superuser.com/questions/1167244/interpreting-the-metric-column-in-routing-table/1167248#1167248
         # Column 1 = Interface name.
@@ -81,8 +80,7 @@ getip() {
                 | head -n 1 \
                 | awk '{print $2}'
         )"
-    # Mac
-    elif isDefined route; then
+    elif isDefined route; then  # Mac
         _ipDefaultNetworkInterface="$(route -n get default | awk '/interface/ {print $2}')"
     fi
 

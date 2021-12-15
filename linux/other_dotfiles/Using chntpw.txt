@@ -1,22 +1,13 @@
 To use chntpw:
 
-1. Mount desired windows drive.
-
-2. In file explorer, go to drive/windows/system32/config.
-
-3. Copy path.
-
-4. Open terminal.
-
-5. Type `cd <path>`
-
-6. Type `sudo chntpw SAM`
-     or `sudo chntpw -u <username> SAM`
-	SAM defaults to admin.
-
-    For reference:
-    `chntpw -h` is help
-
-7. Choose option.
-
-8. Yay!
+* Mount desired windows drive.
+* In file explorer, go to drive/windows/system32/config.
+* Copy path.
+* Open terminal.
+* Type `cd <path>`
+* Type `sudo chntpw SAM`
+     - Or `sudo chntpw -u <username> SAM`
+     - SAM defaults to admin.
+     - For reference, `chntpw -h` is help
+* Choose option.
+* Yay!
