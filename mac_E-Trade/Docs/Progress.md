@@ -2,7 +2,7 @@
 #    Summary/TL;DR    #
 #######################
 
-## Progress at E*TRADE ##
+## Progress at E\*TRADE ##
 * Escalated from junior dev to more of a lead dev in every project I've worked on
     - Premarket dashboard: Went from intro junior dev -> teaching new hires about the system -> becoming the **lead architect** of the premarket dashboard
         + In the first sprint, I finished and pulled over **3x the number of stories** and committed them before any other new hire made one
@@ -17,7 +17,7 @@
     - E-Trade had notorious issues with the network going down, both within roll periods (happened twice a week, lasted for most of the work day) and randomly throughout the week (often from problems outside the team's control, e.g. a server goes down, was poorly configured, or another team changed a config file without informing our team)
     - I solved this in my free time by writing a very small open-source library for mocking network requests in the front-end. This way, devs could continue their work even in the presence of such a wide array of network issues
     - Added to multiple apps currently in use, as well as a scaffolding app that will serve as the foundation of all new React apps within E-Trade
-* Challenge and improve the way teams at E*TRADE code
+* Challenge and improve the way teams at E-TRADE code
     - I made multiple well-constructed points in the shared code channels, resulting in a deep consideration about how to write code and **improving our coding practices**
     - Completely revamped the way the premarket team worked. **Increased productivity of the whole team** by moving them from inefficient vim usage to IDE usage. Wrote a readme and scripts to make a **seamless transition** and easy usage so that they wouldn't have to do any configuration themselves
 * Consistently improve workflow efficiency and share with others
@@ -28,8 +28,8 @@
 
 ## Salary considerations ##
 * Software engineering in financial services average salary: $126,000
-    - Entry level: ~$100,000 - $115,000
-        + Master's degree yeilds ~$10,000 more on average than bachelor's
+    - Entry level: \~$100,000 - $115,000
+        + Master's degree yeilds \~$10,000 more on average than bachelor's
         + $105,000 - $120,000
         + Below market by $15-30k
 * My entry: $90,000
