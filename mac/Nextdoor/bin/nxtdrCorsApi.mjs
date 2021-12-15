@@ -22,7 +22,7 @@ async function nextdoorComCorsRequest(url, {
             Pragma: 'no-cache',
             Origin: 'https://nextdoor.com',
             Referer: 'https://nextdoor.com',
-            'x-csrftoken': 'SVgNbAt4m6gJJKI3cgvmRwlzmd2SMs1HRMyHcI6nuj9fHo589l2R7j615Z5j2mG4',
+            // 'x-csrftoken': '',
             ...headers,
         },
         body: body && JSON.stringify(body),
@@ -75,7 +75,7 @@ async function getGroupsForUser(cookie) {
                 extensions: {
                     persistedQuery: {
                         version: 1,
-                        sha256Hash: '8584e495bdd0504c0534bd2e91389eb23b7340747b79893e0c4053bd7d698a72',
+                        sha256Hash: '',
                     },
                 },
             },

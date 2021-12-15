@@ -1,19 +1,12 @@
-# Employee ID: 147783
-# IntelliJ license link: https://account.jetbrains.com/a/a1fwiqa3
-# WebStorm license link: https://account.jetbrains.com/a/5vmhuqob
-
 # Program paths
 export MAVEN_HOME=/Applications/apache-maven-3.6.3/bin
 export GRADLE_4_HOME=/opt/gradle/gradle-4.5.1/bin
 export GRADLE_HOME=/opt/gradle/gradle-6.0.1/bin
-export SUBLIME_HOME=/Applications/Sublime\ Text.app/Contents/SharedSupport/bin
-export SUBLIME_DIR=/Users/dpowell1/Library/Application\ Support/Sublime\ Text\ 3/Packages/User/
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_192.jdk/Contents/Home/
 export BOOST_HOME=/usr/local/boost_1_67_0
 export PIP3_HOME=/usr/local/opt/python\@3.7/bin/
 export PIP2_HOME=/Users/dpowell1/Library/Python/2.7/bin
 
-export PATH=$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$MAVEN_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$SUBLIME_HOME:$BOOST_HOME:/usr/local/bin:/Users/dpowell1/bin:$PATH
+export PATH=$PIP3_HOME:$PIP2_HOME:$MAVEN_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$BOOST_HOME:$PATH
 
 
 alias python='python3'
@@ -75,9 +68,6 @@ alias mvntestsubmodule='mvn test -pl'
 alias spainstall='mvn clean install -Dmaven.javadoc.skip=true -DskipTests -Puat'
 alias buildMutualFundsAIP='mvnsetup'
 
-cf() {
-    touch "$1" && chmod a+x "$1"
-}
 
 sitMfUsernames=(
     'ACKP4100' # Owns aggressive portfolio under account 5212
@@ -214,16 +204,6 @@ gckb() {
     fi
 }
 
-# Make bash autocomplete when tabbing after "git commit" alias like gc or gac
-autocompleteWithJiraTicket() {
-    # sed -rEgex 'substitute|pattern|\1 = show-only-match|'
-    branch=$(gitGetBranch | sed -E 's|.*/([A-Z]+-[0-9]+).*|\1|')
-    COMPREPLY=$branch
-    return
-}
-# Requires alias because spaces aren't allowed
-complete -F autocompleteWithJiraTicket -P \" "gc"
-complete -F autocompleteWithJiraTicket -P \" "gac"
 
 # Make bash only display the options (not autocomplete) by using compgen
 autocompleteWithAllGitBranches() {

@@ -515,7 +515,7 @@ class SlackInBrowserService {
      */
 
     /* Get from dev tools - just watch other XHR requests and take a token from one of them */
-    static TOKEN = 'xoxc-2151647278-2165858577591-2209341454208-707234e4c1034456af547e192cc56e1335ed1d229adce81bc1cca33414d63789';
+    static TOKEN = '';
     /* Get from dev tools - api.slack.com isn't necessarily used, sometimes a company-specific URL is used instead */
     static API_URL_BASE = 'https://nextdoor.slack.com/api';
     /* not sure what this is or why it's needed, but CORS errors are thrown if it's not present (at least at Nextdoor) */
