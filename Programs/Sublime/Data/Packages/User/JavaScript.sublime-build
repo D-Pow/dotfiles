@@ -4,4 +4,11 @@
     "env": {
         "NODE_OPTIONS": "--experimental-top-level-await --experimental-json-modules --experimental-specifier-resolution=node --experimental-import-meta-resolve",
     },
+    "variants": [
+        {
+            "name": "Evaluate unsaved file contents",
+            "shell_cmd": "/usr/bin/env node -p \"'TODO'\"",
+            "shell": true,
+        },
+    ],
 }
