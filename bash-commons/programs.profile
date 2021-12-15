@@ -60,7 +60,7 @@ _autocompleteNpmr() {
 
     # Don't show suggestions if the first arg has already been autocompleted.
     if (( $lastCommandWordIndex > 1 )); then
-        return 0
+        return
     fi
 
     # `npm run` will display something akin to the format below,
@@ -77,7 +77,7 @@ _autocompleteNpmr() {
 
     COMPREPLY=($(compgen -W "$commandsMatchingUserInput"))
 
-    return 0
+    return
 }
 complete -F _autocompleteNpmr -o default "npmr" # default shell autocomplete for dirs/files via `-o default`.
 complete -F _autocompleteNpmr -o default "yarn"

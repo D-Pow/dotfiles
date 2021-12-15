@@ -28,7 +28,7 @@
 #   # Required to use in conjunction with `_get_comp_words_by_ref` b/c otherwise, the `currentWord:`
 #   # will be appended on top of `$currentWord` in the suggestions, breaking the whole system.
 #   __ltrim_colon_completions "$currentWord"
-#   return 0
+#   return
 #
 # Note: `${variable//substring/replacement}` replaces all instances of `substring`.
 COMP_WORDBREAKS=${COMP_WORDBREAKS//:}

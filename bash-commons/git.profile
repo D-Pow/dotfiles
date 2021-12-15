@@ -635,14 +635,14 @@ _autocompleteWithAllGitBranches() {
     # Don't suggest branches if first arg has already been autocompleted.
     # Leave all args past that to the default shell autocomplete via `complete -o default`.
     if [[ $COMP_CWORD -gt 1 ]]; then
-        return 0
+        return
     fi
 
     # Autocomplete `gck -` and `gck --` to `gck -- ` for automatic space injection and quicker typing.
     if [[ "$lastArg" = "-" ]] || [[ "$lastArg" = "--" ]]; then
         COMPREPLY=($(compgen -W '--'))
 
-        return 0
+        return
     fi
 
     local gitBranches="$(git branch -a)"
@@ -664,7 +664,7 @@ _autocompleteWithAllGitBranches() {
 
     COMPREPLY=($(compgen -W "$gitBranches"))
 
-    return 0
+    return
 }
 # Activate function `_autocompleteWithAllGitBranches` for bash shell entry `gck`.
 # If we're done with suggestions, default to whatever bash would auto-suggest

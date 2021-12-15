@@ -49,7 +49,7 @@ getAppBinaryPath() {
     if ! [[ -z "${binaryPath}" ]]; then
         # App is running, so we have safely found the absolute path
         echo "$binaryPath"
-        return 0
+        return
     else
         # App is not running, so we have to manually generate the absolute path
 
@@ -77,7 +77,7 @@ getAppBinaryPath() {
                 binaryPath="$appPath/$appRelativeRootDir/$appRelativeExecutableDir/$binaryName"
 
                 echo "$binaryPath"
-                return 0
+                return
             fi
         fi
     fi
@@ -278,7 +278,7 @@ autocompleteWithJiraTicket() {
     # sed -rEgex 'substitute|pattern|\1 = show-only-match|'
     branch=$(gitGetBranch | sed -E 's|.*/([A-Z]+-[0-9]+).*|\1|')
     COMPREPLY=$branch
-    return 0
+    return
 }
 # Requires alias because spaces aren't allowed
 complete -F autocompleteWithJiraTicket -P \" "gc"
@@ -287,6 +287,6 @@ complete -F autocompleteWithJiraTicket -P \" "gac"
 # Make bash only display the options (not autocomplete) by using compgen
 autocompleteWithAllGitBranches() {
     COMPREPLY=($(compgen -W '$(git branch)'))
-    return 0
+    return
 }
 #complete -F autocompleteWithAllGitBranches "gck"

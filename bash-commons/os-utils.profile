@@ -691,7 +691,7 @@ _autocompleteRepos() {
     local IFS=$'\n'
     COMPREPLY=($dirOptions)
 
-    return 0
+    return
 }
 # TODO Look up `-X filterpat` for filename expansion
 #   https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Programmable-Completion-Builtins

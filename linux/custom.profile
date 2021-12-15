@@ -58,7 +58,7 @@ is-installed() {
         # For arrays, it applies the specified pattern to each entry, effectively functioning as
         # the equivalent of `myArray.join('delimiter')`
         echo "`array.join installedPackages '%s\n'`"
-        return 0
+        return
     fi
 
     echo "$packages not installed" >&2
@@ -279,7 +279,7 @@ brightness() {
             ddcutil --display "$_display" getvcp "$_brightnessVcpCode"
         fi
 
-        return 0
+        return
     fi
 
 
@@ -293,7 +293,7 @@ brightness() {
 
         echo "${_displayBrightnesses[_display]}"
 
-        return 0
+        return
     fi
 
     if [[ -n "$_resetValue" ]]; then

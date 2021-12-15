@@ -264,7 +264,7 @@ getAppInfo() {
 
         echo "$result"
 
-        return 0
+        return
     fi
 
 
@@ -313,7 +313,7 @@ getAppInfo() {
                 echo "$allInfoWithSpacesBetweenKeyAndValAndIndent"
             fi
 
-            return 0
+            return
         fi
     fi
 
@@ -338,7 +338,7 @@ _autocompleteWithJiraTicket() {
     # sed -rEgex 'substitute|pattern|\1 = show-only-match|'
     branch=$(gitGetBranch | sed -E 's|.*/([A-Z]+-[0-9]+).*|\1|')
     COMPREPLY=$branch
-    return 0
+    return
 }
 # Requires alias because spaces aren't allowed
 complete -F _autocompleteWithJiraTicket -P \" "gc"

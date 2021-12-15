@@ -5,7 +5,7 @@ str.repeat() {
     if (( _strRepeatTimes <= 0 )); then
         echo
 
-        return 0
+        return
     fi
 
     # Similar to Java's formatting (e.g. `%.2f` prints to 2 decimal places),
