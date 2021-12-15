@@ -1,7 +1,3 @@
-# Employee ID: 147783
-# IntelliJ license link: https://account.jetbrains.com/a/a1fwiqa3
-# WebStorm license link: https://account.jetbrains.com/a/5vmhuqob
-
 ### Program paths ##
 
 export SUBLIME_HOME=/Applications/Sublime\ Text.app/Contents/SharedSupport/bin
@@ -36,7 +32,7 @@ BREW_GNU_UTILS_HOMES="`array.join -s _brewGnuUtils ':'`"
 
 _brewPathEntries="$(echo "$BREW_PATHS" | sed -E 's/\s+/:/g')" # /usr/local/sbin and some others
 
-export PATH=$BREW_GNU_UTILS_HOMES:$PIP3_HOME:$PIP2_HOME:$JAVA_HOME:$MAVEN_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$SUBLIME_HOME:$BOOST_HOME:$TEXMFHOME:/usr/local/bin:/Users/dpowell1/bin:$_brewPathEntries:$PATH
+export PATH=$BREW_GNU_UTILS_HOMES:$JAVA_HOME:$SUBLIME_HOME:$TEXMFHOME:/usr/local/bin:/Users/dpowell1/bin:$_brewPathEntries:$PATH
 
 # Colored terminal
 # export PS1="\[\033[36m\]\u\[\033[m\]@\[\033[32m\]\h:\[\033[33;1m\]\w\[\033[m\]\$ "
@@ -60,10 +56,8 @@ export LS_COLORS='di=36:ln=35:so=32:pi=33:ex=31:bd=0;47:cd=0;47:su=31:sg=31:tw=1
 
 alias python='python3'
 alias python2='/usr/bin/python'
-# export PIP_INDEX_URL='https://artifactory.etrade.com/artifactory/api/pypi/pypi/simple'
 
 alias devcurl="curl --noproxy '*'"
-alias gradle4="$GRADLE_4_HOME/gradle"
 
 
 # Add --no-verify for git pushes since it takes forever and often dies half-way through
@@ -78,7 +72,7 @@ _personalReposGitConfig="$(realpath "$dotfilesDir/../me/.gitconfig")"
 if ! [[ -f "$_personalReposGitConfig" ]]; then
     # Allows overriding global .gitconfig by specifying the dirs where a different .gitconfig should be included in the global config.
     #   See: https://stackoverflow.com/questions/8337071/different-gitconfig-for-a-given-subdirectory/60344116#60344116
-    echo "Add my custom .gitconfig file to $(dirname "$_personalReposGitConfig")/ and add the lines below AT THE END of the global .gitconfig to override Git configs for every repo in that directory:"
+    echo "Add my custom .gitconfig file to $(dirname "$_personalReposGitConfig")/ and add the lines below AT THE END of the global .gitconfig to override Git configs for every repo in that directory. Copy everything from Linux's .gitconfig other than the \`[credential]\` section."
     echo '```
 [includeIf "gitdir:~/src/me/"]
     path = ~/src/me/.gitconfig
@@ -328,7 +322,7 @@ getAppBinaryPath() {
 resetJetbrains() {
     cd ~/Library/Preferences/
     rm jetbrains.* com.jetbrains.*
-    rm -rf WebStorm2019.3/eval/ WebStorm2019.3/options/other.xml IntelliJIdea2019.3/eval/ IntelliJIdea2019.3/options/options.xml
+    rm -rf WebStorm*/eval/ WebStorm*/options/other.xml IntelliJIdea*/eval/ IntelliJIdea*/options/options.xml
 }
 
 
