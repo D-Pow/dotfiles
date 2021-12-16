@@ -1,3 +1,25 @@
+[submodule]
+    # Allow git to automatically determine the number of submodule operations it can run in parallel
+    fetchJobs = 0
+    # Enables the `--recurse-submodules` flag automatically for all commands except `clone` and `ls-files`
+    recurse = true
+
 [submodule "self"]
-	path = self
-	url = https://github.com/D-Pow/self
+    path = self
+    url = https://github.com/D-Pow/self
+    fetchRecurseSubmodules = on-demand
+    # Enables `--remote` automatically for the `update` command.
+    # This ensures submodules' file changes are pushed/pulled from their repos; i.e.
+    #   `submodule update --remote --merge` merges upstream submodule changes into the submodules
+    #   `submodule update --merge` only merges parent git-link changes into the submodules
+    #
+    # Ensures changes in `branch-a` of parent don't affect `master` in submodule.
+    #
+    # See:
+    #   https://git-scm.com/docs/gitmodules#Documentation/gitmodules.txt-submoduleltnamegtbranch
+    branch = .
+    # Makes the `update` command choose "merge" instead of "checkout" (leaves HEAD in a detached state) or "rebase" (local rebased onto remote, meaning commit hashes are lost).
+    #
+    # See:
+    #   https://git-scm.com/docs/git-submodule#Documentation/git-submodule.txt-merge
+    update = merge

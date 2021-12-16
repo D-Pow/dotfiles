@@ -6,10 +6,80 @@
     symlinks = true
 [init]
     defaultBranch = master
+[status]
+    # Shows short status diff of submodule name, oldHash..newHash, and commit messages when
+    # running `git status` in the parent repo.
+    # Default is to just show "submodDir/ has new commits" which isn't helpful at all.
+    #
+    # See:
+    #   status config: https://git-scm.com/docs/git-config#Documentation/git-config.txt-statussubmoduleSummary
+    #   summary config: https://git-scm.com/docs/git-submodule#Documentation/git-submodule.txt-summary--cached--files-n--summary-limitltngtcommit--ltpathgt82308203
+    submoduleSummary = true
+[diff]
+    # Shows submodule changes in `git diff`.
+    # `log` - Shows output like plain `git log` would (same format as `status.submoduleSummary`).
+    # `diff` - Shows output in the same way normal `git diff` does.
+    # `short` - Just says that changes were made; all but worthless, don't use.
+    #
+    # Choose `log` so the diff isn't useless (i.e. like "short" is) and add a new `gsbd` alias for `git diff --submodule=diff` to show more detailed output.
+    #
+    # See:
+    #   https://git-scm.com/docs/git-config#Documentation/git-config.txt-diffsubmodule
+    submodule = log
+[fetch]
+    # Number of `git fetch` operations that can be run in parallel.
+    # Takes effect only when fetching multiple repos or when using submodules, i.e.
+    #   `git fetch --multiple repo-1 repo-2 ...`
+    #   `git clone --recurse-submodules my-repo-with-submodules`
+    #   `git submodule update --init --recursive`
+    #
+    # > 0 limits the number of workers to that max amount.
+    # 0 lets git decide how many to use.
+    # Default is 1 (sequential).
+    #
+    # `checkout.workers` is similar but it's only good for SSDs; HDDs actually perform worse with it.
+    parallel = 0
+    # Only get updates for submodules that have been initialized instead of always (true) or never (false).
+    # Affects `git pull` as well since it calls `git fetch` under the hood.
+    # Overrides `submodule.recurse` config.
+    recurseSubmodules = on-demand
 [pull]
     rebase = false
 [push]
     default = simple
+    # Submodules work by attaching a submodule's commit hash to the parent repo.
+    # That means if the parent depends on a submodule change, you must run
+    # `git add submodDir` in order to update the parent branch's commit hash of the submodule;
+    # it's very much equivalent to how normal branches/merges are just refs to start/end commit
+    # hashes.
+    # i.e. When you make changes to both submodule and parent, and you're in the parent's dir
+    # (not within the submodule's dir) who needs to commit the new submodule's commit hash,
+    # then you'll want to add/commit/push `submodDir/` to the parent's upstream so it tracks the
+    # new submodule's commit hash when cloning/pulling elsewhere.
+    #
+    # However, you also need to ensure the submodule's commit hash is available in its upstream
+    # as well. Otherwise, you/others that pull down your new parent code will have errors that
+    # the submodule's commit hash doesn't exist.
+    #
+    # By default, git doesn't add any checks against this, letting you do as you wish, even if
+    # that would destroy your repo.
+    # So the `recurseSubmodules` option was added to fix this.
+    #
+    # - `check` doesn't allow pushing parent commits of submodule changes unless the submodules'
+    # commits are pushed first.
+    # - `on-demand` pushes all submodule commits to its upstream when pushing from the parent.
+    # If unset and `submodule.recurse = true`, then this is set to `on-demand`.
+    recurseSubmodules = on-demand
+[submodule]
+    # Like `fetch.parallel` but overrides it specifically for submodules.
+    # Default is 1 (sequential) so prevent that from overriding `fetch.parallel` by making it 0.
+    fetchJobs = 0
+    # Enables the `--recurse-submodules` flag automatically for all commands except `clone` and `ls-files`.
+    # Helpful to avoid issues when dealing with different branches or upstream differences.
+    # e.g. `git checkout` between different parent repo branches that have different submodule commit references wouldn't error on the conflicts, so switching between them doesn't throw "submodDir/ is not empty" or "Cannot reconcile differences between submodDir/a (commit-1) and submodDir/a (commit-2)" errors.
+    # By setting this option, the flag above is automatically added to avoid those problems.
+    # e.g. `git checkout branch-a` becomes `git checkout --recurse-submodules branch-a`
+    recurse = true
 [user]
     name = D-Pow
     email = D-Pow@users.noreply.github.com
