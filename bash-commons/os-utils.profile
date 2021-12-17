@@ -208,6 +208,26 @@ getVarsByPrefix() {
 }
 
 
+whereIsVarDefined() (
+    declare USAGE="${FUNCNAME[0]} [\`$(alias egrep)\` flags/args]
+    Finds where a variable in the user's Bash login shell was defined.
+    "
+    # Inspired by: https://unix.stackexchange.com/questions/813/how-to-determine-where-an-environment-variable-came-from/154971#154971
+    # Except you stay in the resulting `bash` shell session rather than returning to your own,
+    # and you can't `grep` the output.
+    # Adding `-ic 'exit'` causes the resulting shell to exit:
+    #   `-c 'exit'` to run the command.
+    #   `-i` to ensure that bash finishes loading before exit is called (without `-i`, it exits prematurely).
+
+    if [[ "$1" =~ -h|--help ]] || (( $# == 0 )); then
+        echo -e "$USAGE" >&2
+        return 1
+    fi
+
+    ( PS4='+$BASH_SOURCE> ' BASH_XTRACEFD=7 bash -xlic 'exit' 7>&2 ) 2>&1 | egrep "$@"
+)
+
+
 trapAdd() {
     declare _trapAddHandler="$1"
     shift
