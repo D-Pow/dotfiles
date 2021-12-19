@@ -1,4 +1,4 @@
-#!/usr/bin/env node --experimental-top-level-await --experimental-json-modules --experimental-specifier-resolution=node --experimental-import-meta-resolve
+#!/usr/bin/env -S node --experimental-top-level-await --experimental-json-modules --experimental-specifier-resolution=node --experimental-import-meta-resolve
 
 /**
  * Must be run as a back-end NodeJS script in order to take advantage of the CORS proxy,

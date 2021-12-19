@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env -S bash
 
 printUsage() {
     usage="Usage: genlatexpdf [OPTIONS] <filename>.tex\n

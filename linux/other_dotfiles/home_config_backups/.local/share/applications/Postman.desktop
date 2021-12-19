@@ -1,4 +1,4 @@
-#!/usr/bin/env xdg-open
+#!/usr/bin/env -S xdg-open
 
 [Desktop Entry]
 Name=Postman

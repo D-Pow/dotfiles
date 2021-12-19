@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -e
+#!/usr/bin/env -S bash -e
 
 # TODO For `npm run`, use `npm_lifecycle_event` for script name and `npm_lifecycle_script` for script content+args
 

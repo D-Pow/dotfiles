@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env -S bash
 
 # TODO change to use xrandr to maintain brightness settings for different monitors
 

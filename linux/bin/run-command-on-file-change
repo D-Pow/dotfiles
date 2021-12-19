@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env -S bash
 
 usage() {
     echo "Usage: run_command_on_file_change.sh <command> <file>"

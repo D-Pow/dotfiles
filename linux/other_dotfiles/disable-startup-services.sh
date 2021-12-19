@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env -S bash
 
 # Disables certain services that are automatically started at boot.
 # In particular, disables services that either:

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env -S bash
 
 # Remap right Ctrl to context menu (right click) only on built-in keyboard
 #

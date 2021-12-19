@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env -S bash
 
 # Runs a python file that requires the current directory
 # to be in the PYTHONPATH, i.e. those that import their own
