@@ -62,7 +62,7 @@ class FileHierarchy:
                 fileString = pre + branch + file + "\n"
                 strArr.append(fileString)
         # Case where we don't have permission to view the file
-        except (OSError, WindowsError) as e:
+        except OSError as e:
             pass
         return strArr
 
