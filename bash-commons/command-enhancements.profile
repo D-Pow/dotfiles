@@ -98,14 +98,33 @@ isDefined() {
 
 
 isBeingSourced() {
-    # Determines if the file is being called via `source script.sh` or `./script.sh`
+    # Determines if the file is being called via `source script.sh` or `./script.sh`, mimicking the
+    # behavior of `if __name__ == '__main__'` in Python.
+    # e.g.
+    #   if ! isBeingSourced "$BASH_SOURCE"; then
+    #       mainFunc "$@"
+    #   fi
+    #
+    # Note that we have to remove any leading hyphen(s) from the calling parents to account for live
+    # interactive shells, e.g. $0 == '-bash' instead of 'bash'.
+    # Also, use `basename` to remove discrepancies in relative vs absolute paths.
 
-    # Remove leading hyphen(s) from calling parent/this script file to account for e.g. $0 == '-bash' instead of 'bash'
-    # Use `basename` to remove discrepancies in relative vs absolute paths
-    declare callingSource="$(basename "$(echo "$0" | sed -E 's/^-*//')")"
-    declare thisSource="$(basename "$(echo "$BASH_SOURCE" | sed -E 's/^-*//')")"
+    # `BASH_SOURCE` is an array of the file call stack just like `FUNCNAME` is an array of
+    # the function call stack, i.e.
+    #   BASH_SOURCE[0]  ==  this file
+    #   BASH_SOURCE[length - 1]  ==  top-level *file*
+    #   $0  ==  top-level *parent* - either the shell script if it's called directly or `-shellName` if within an interactive shell
+    # Ref: https://unix.stackexchange.com/questions/4650/determining-path-to-sourced-shell-script/153061#153061
+    #
+    # Thus, compare `$0` (top-level parent, whether file or interactive shell) with either the top-level
+    # file or `$1` if specified.
+    # `$1` allows a "relative" parent to be defined so that the file calling this function can be
+    # maintain the desired behavior regardless of whether it's the top-level parent or an intermediate
+    # file being called/sourced from any number of parents.
+    declare topLevelCallingParent="$(basename "$(echo "$0" | sed -E 's/^-*//')")"
+    declare relativeCallingParent="$(basename "$(echo "${1:-${BASH_SOURCE[ ${#BASH_SOURCE[@]} - 1 ]}}" | sed -E 's/^-*//')")"
 
-    [[ "$callingSource" != "$thisSource" ]]
+    [[ "$topLevelCallingParent" != "$relativeCallingParent" ]]
 }
 
 
