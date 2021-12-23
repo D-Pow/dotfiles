@@ -28,11 +28,51 @@ npmGetProjectPath() {
     npm prefix
 }
 
-npmGetProjectConfig() {
-    if [[ "$1" == "-p" ]] || [[ "$1" == "--path" ]]; then
-        echo "$(npmGetProjectPath)/.npmrc"
+npmConfigGetFile() {
+    declare USAGE="${FUNCNAME[0]} [-u|-g] [-l|-a]
+    Gets either:
+    1. The path to the config file (Location: -u=User, -g=Global, default=project).
+    2. The config keys/values specified from all configs (-l=List), optionally including unspecified/default values (-a=All).
+    "
+    declare configLocationDefault='project'
+    declare configLocation="$configLocationDefault"
+    declare configList=
+    declare configListAll=
+    declare OPTIND=1
+    declare opt
+
+    while getopts ':ugla' opt; do
+        case "$opt" in
+            u)
+                configLocation='user'
+                ;;
+            g)
+                configLocation='global'
+                ;;
+            l)
+                configList=true
+                ;;
+            a)
+                configList=true
+                configListAll='-a'
+                ;;
+            *)
+                echo -e "$USAGE" >&2
+                return 1;
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+
+    if [[ -z "$configList" ]]; then
+        # Note: `--location` flag technically not needed when listing, but added for completeness
+        # to show how to use with `npm config (get|set)`
+        npm config --location "$configLocation" "$configListAll" list
+    elif [[ "$configLocation" != "$configLocationDefault" ]]; then
+        # `userconfig` and `globalconfig` are npm built-ins but `projectconfig` isn't
+        npm config get "${configLocation}config"
     else
-        npm config --location project list
+        echo "$(npmGetProjectPath)/.npmrc"
     fi
 }
 
