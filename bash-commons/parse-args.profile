@@ -206,8 +206,8 @@ parseArgs() {
     fi
 
 
-    declare OPTIND=1
     declare opt
+    declare OPTIND=1
 
     while getopts "$getoptsStr" opt; do
         if [[ "$opt" == "-" ]]; then

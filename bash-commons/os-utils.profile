@@ -193,8 +193,7 @@ getVarsByPrefix() {
     declare argsArray
 
     parseArgs optsConfig "$@"
-    declare _parseArgsRetVal="$?"
-    (( $_parseArgsRetVal )) && return 1
+    (( $? )) && return 1
 
     _varRegex="${_varRegex:-.*}" # Default to matching everything
     declare _varPrefix="${argsArray[0]}"

@@ -35,6 +35,7 @@ openPdf() {
 
 openPdf_flag=0
 clean_flag=0
+OPTIND=1
 
 while getopts "och" arg; do
     case "$arg" in

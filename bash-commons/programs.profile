@@ -176,6 +176,9 @@ dockerFindContainer() {
     local _dockerPsOpts
     local _dockerPsQueryArray
 
+    parseArgs _dockerFindContainerOpts "$@"
+    (( $? )) && return 1
+
     # All args before the last one
     array.slice -r _dockerPsOpts _dockerPsArgs 0 -1
     # Last arg is image name query string

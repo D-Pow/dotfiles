@@ -4,9 +4,9 @@
 
 
 getYarnArgs() {
-    declare OPTIND=1
     declare keepCommandName=
     declare onlyCommandName=
+    declare OPTIND=1
 
     while getopts 'kc' opt; do
         case "$opt" in

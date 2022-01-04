@@ -71,10 +71,9 @@ gitGetModifiedContaining() {
         ['n|new,_includeNewFiles']='Include new files in output'
         ['USAGE']='Get all modified files tracked by git.'
     )
-    parseArgs optionConfig "$@"
 
-    declare _parseArgsRetVal="$?"
-    (( $_parseArgsRetVal )) && return 1
+    parseArgs optionConfig "$@"
+    (( $? )) && return 1
 
     if [[ -n "$_includeNewFiles" ]]; then
         _gitModifiedFilesPrefixes+=('file')
@@ -289,8 +288,8 @@ gitUpdateRepos() {
         -s | Run 'git status' after 'git pull'."
 
     # local vars to avoid them being accessible outside this function
-    local OPTIND=1
     local getStatus=false
+    local OPTIND=1
 
     while getopts "sh" opt; do
         case "$opt" in
