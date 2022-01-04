@@ -69,7 +69,8 @@ parseArgs() {
             [':shortOptionIgnoreFailures|longOptionIgnoreFailures,var3']='Eh, if they don't pass it or error otherwise, don't care'
             [':']= # Flag to set colon at beginning of getopts string, i.e. \`getopts ':abc'\`
             ['?']='String to pass to \`eval\` upon unknown flag discovery.
-                   Defaults to \`echo -e \$USAGE; return 1;\`.'
+                   Defaults to \`echo -e \$USAGE; return 1;\`.
+                   Pass \`break\` to preserve unknown flags in the returned \`argsArray\`.'
             ['USAGE']='Usage string option flag descriptions.
                        \`${FUNCNAME[0]}\` will automatically append auto-spaced option flags/descriptions at the end.'
         )
@@ -311,6 +312,15 @@ parseArgs() {
 
         if [[ -z "$optHandled" ]]; then
             if [[ -n "$unknownFlagHandler" ]]; then
+                if [[ "$unknownFlagHandler" == 'break' ]]; then
+                    # If the user intentionally wants to stop execution via passing the `break` command
+                    # in the `?` option mapping, then shift backwards by 1 so that the shift below that
+                    # doesn't take away that unknown flag.
+                    # This is useful for e.g. forwarding flags to underlying scripts/functions without
+                    # duplicating all those flags in their own USAGE docs.
+                    OPTIND=$(( OPTIND - 1 ))
+                fi
+
                 eval "$unknownFlagHandler"
             else
                 echo -e "$parentUsageStr" >&2
