@@ -68,15 +68,20 @@ parseArgs() {
             ['shortOptionWithArg|longOptionWithArg:,var2']='I require an argument, by space or = sign.'
             [':shortOptionIgnoreFailures|longOptionIgnoreFailures,var3']='Eh, if they don't pass it or error otherwise, don't care'
             [':']= # Flag to set colon at beginning of getopts string, i.e. \`getopts ':abc'\`
-            ['?']='String to pass to eval() upon unknown flag discovery. Defaults to \`echo -e \$USAGE; return 1;\`'
-            ['USAGE']='Usage string without option descriptions (parseArgs will add those automatically)'
+            ['?']='String to pass to \`eval\` upon unknown flag discovery.
+                   Defaults to \`echo -e \$USAGE; return 1;\`.'
+            ['USAGE']='Usage string option flag descriptions.
+                       \`${FUNCNAME[0]}\` will automatically append auto-spaced option flags/descriptions at the end.'
         )
-        parseArgs optionConfig \"\$@\"
-        # To exit your function if \`parseArgs\` fails, add the lines below.
-        # Return value must be set in a variable because \`\$?\` doesn't cast the value to a number in boolean logic as you'd expect.
-        # True(0)/False(1) are reversed in arithmetic expressions, so use \`&&\` instead of \`||\`.
-        declare _parseArgsRetVal="\$?"
-        (( \$_parseArgsRetVal )) && return 1    # Alternatively: [[ \$_parseArgsRetVal -ne 0 ]]
+        ${FUNCNAME[0]} optionConfig \"\$@\"
+        # To exit your function if \`${FUNCNAME[0]}\` fails, add the line below (\`USAGE\` will be printed by default).
+        (( \$? )) && return 1    # Alternatively: [[ \$? -ne 0 ]]
+        # Note:
+        # True(0)/False(1) are reversed in arithmetic expressions -- (( 1 )) == True, (( 0 )) == False
+        # so use \`&&\` instead of \`||\`.
+        # Also: \`\$?\` corresponds only to the single, immediate preceding command, so it can't be accessed twice.
+        # If you need to use \`\$?\` multiple times, set it in a variable directly after calling \`${FUNCNAME[0]}\`, e.g.
+        # \`declare _parseArgsRetVal=\"\$?\"\`
 
     Returns:
         0/1 on success/failure.
@@ -86,13 +91,13 @@ parseArgs() {
         An array of the remaining args in the form of \`argsArray\`=(\"\$@\")
 
     Important:
-        Declare your variables *BEFORE* calling parseArgs to ensure they're local to your
+        Declare your variables *BEFORE* calling ${FUNCNAME[0]} to ensure they're local to your
         calling function. Otherwise, variable values will persist between myFunc() calls.
 
     Thus, specify the variables as you wish, and use \`argsArray\` to read all other arguments.
 
     Note:
-        If an option has multiple entries (e.g. \`parseArgs config -a 'val1' --alpha 'val2'\`) then the args will
+        If an option has multiple entries (e.g. \`${FUNCNAME[0]} config -a 'val1' --alpha 'val2'\`) then the args will
         be added to an array.
         Thus, \`config=(['a|alpha,arr'])\` will result in \`arr=('val1' 'val2')\`
     "
