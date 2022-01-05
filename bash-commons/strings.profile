@@ -18,3 +18,19 @@ str.repeat() {
     # Ref: https://superuser.com/questions/86340/linux-command-to-repeat-a-string-n-times/86342#86342
     printf "$_strToRepeat%.0s" $(seq 1 "$_strRepeatTimes")
 }
+
+
+str.upper() {
+    # `&` is a special character that means "all of the input that matched the pattern"
+    # It's the equivalent of capturing the entire string and then handling it via match group, e.g.
+    #   sed -E 's/(^.*$)/\U\1/g'
+    #
+    # See:
+    #   https://unix.stackexchange.com/questions/296705/using-sed-with-ampersand/296732#296732
+    echo "$@" | sed -E 's/./\U&/g'
+}
+
+
+str.lower() {
+    echo "$@" | sed -E 's/./\L&/g'
+}
