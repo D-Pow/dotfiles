@@ -16,8 +16,8 @@ listprocesses() {
 }
 
 listopenports() {
-    local _listopenportsCmd=()
-    local OPTIND=1
+    declare _listopenportsCmd=()
+    declare OPTIND=1
 
     while getopts "s" opt; do
         case "$opt" in
@@ -141,7 +141,7 @@ readEnvFile() {
     # Reads a .env, .properties, etc. file containing `key=value` entries
     # on separate lines.
     # Sets the keys as variables in the current shell.
-    local _envFile="$1"
+    declare _envFile="$1"
 
     # Cannot use `cat file | while read` because pipes create subshells,
     # meaning that writing to a variable stays only in that subshell, not the
@@ -447,8 +447,8 @@ copy() {
     # Avoid that mess by just using the built-in, more user-friendly, `readX` functions.
     #
     # Ref: https://stackoverflow.com/questions/5130968/how-can-i-copy-the-output-of-a-command-directly-into-my-clipboard/62517779#62517779
-    local _toCopyArgs=("$@")
-    local _toCopyStdin=()
+    declare _toCopyArgs=("$@")
+    declare _toCopyStdin=()
 
     if array.empty _toCopyArgs; then
         readarray -t _toCopyStdin
@@ -463,11 +463,11 @@ paste() {
 }
 
 _setClipboardCopyAndPasteCommands() {
-    local _copyPasteError="Error: Cannot find native CLI copy/paste commands for platform [$OSTYPE].
+    declare _copyPasteError="Error: Cannot find native CLI copy/paste commands for platform [$OSTYPE].
     In order to copy/paste from the clipboard, \`xclip\` or \`xsel\` are required.
     Please run next command:
         sudo apt-get install xclip"
-    local _printCopyPasteError='echo -e "$_copyPasteError" >&2'
+    declare _printCopyPasteError='echo -e "$_copyPasteError" >&2'
 
     # Linux OS
     if [[ -n "$(os-version | grep -i 'linux')" ]]; then
@@ -510,10 +510,10 @@ dirsize() {
         -f | Include files in output."
 
     # local vars to avoid them being accessible outside this function
-    local OPTIND=1 # bash is retarded and uses a *global* OPTIND, so it isn't reset on subsequent calls
-    local depth=1
-    local showFiles=false
-    local path="."
+    declare OPTIND=1 # bash is retarded and uses a *global* OPTIND, so it isn't reset on subsequent calls
+    declare depth=1
+    declare showFiles=false
+    declare path="."
 
     # "abc" == flags without an input following them, e.g. `-h` for --help
     # "a:"  == flags with an input following them, e.g. `-d 5`
@@ -621,19 +621,19 @@ repos() {
     # Read all args via `$@` instead of `$1` in case spaces aren't escaped.
     #   `"$@"` collects all args into one string, even those separated by spaces (which would usually
     #   be split into separate lines internally by bash/function arg interpretation).
-    local nestedPath="$@"
+    declare nestedPath="$@"
     # Note: Manually parsing strings via something like
     # absPath="`echo "$reposDir/$nestedPath" | tr '\n' ' ' | sed -E 's:([^\\]) (.):\1\\ \2:g'`"
     # to (1) replace newline-separated args, and (2) replace the now-one-line `my path/` with `my\ path/`
     # doesn't work/help/add anything new because bash double-quote strings automatically remove
     # backslashes (spaces don't need escaping in strings).
-    local absPath="$reposDir/$nestedPath"
+    declare absPath="$reposDir/$nestedPath"
 
     cd "$absPath"
 }
 _autocompleteRepos() {
-    local requestedRelativePath="${COMP_WORDS[@]:1}"
-    local requestedAbsPath="$reposDir/$requestedRelativePath"
+    declare requestedRelativePath="${COMP_WORDS[@]:1}"
+    declare requestedAbsPath="$reposDir/$requestedRelativePath"
 
     # Note: `sed` seems to handle backslashes differently depending on where and how it's used.
     #   If on root-level, these work:
@@ -654,14 +654,14 @@ _autocompleteRepos() {
     # a partial directory name.
     # Thus, if the dir doesn't exist, then default to searching in the parent dir.
     if [[ -d "$requestedAbsPath" ]]; then
-        local resolvedRelativePath="$requestedRelativePath"
-        local resolvedAbsPath="$requestedAbsPath"
+        declare resolvedRelativePath="$requestedRelativePath"
+        declare resolvedAbsPath="$requestedAbsPath"
     else
-        local resolvedRelativePath="`dirname "$requestedRelativePath"`"
-        local resolvedAbsPath="`dirname "$requestedAbsPath"`"
+        declare resolvedRelativePath="`dirname "$requestedRelativePath"`"
+        declare resolvedAbsPath="`dirname "$requestedAbsPath"`"
     fi
 
-    local dirOptions="`find -L "$resolvedAbsPath" -maxdepth 1 -type d`"  # -L follows symlinks. Necessary b/c we're searching `/repo/dir` and not `/repo/dir/`
+    declare dirOptions="`find -L "$resolvedAbsPath" -maxdepth 1 -type d`"  # -L follows symlinks. Necessary b/c we're searching `/repo/dir` and not `/repo/dir/`
 
     # Filter resulting directory options to include suggestions for only dirs that include the
     # string the user searched for.
@@ -705,7 +705,7 @@ _autocompleteRepos() {
     # Note: Using quotes around paths was attempted, but that failed as well (also caused a worse
     # user experience b/c spaces being autocompleted in the shell wouldn't automatically be removed
     # when trying to go into a nested directory).
-    local IFS=$'\n'
+    declare IFS=$'\n'
     COMPREPLY=($dirOptions)
 
     return

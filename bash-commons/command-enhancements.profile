@@ -137,7 +137,7 @@ open() {
     # subshells, which means they may or may not `source ~/.profile`. This means
     # that any rewrites of commands, e.g. `alias open='xdg-open'`, are not necessarily
     # applied, so this function can be copied there for cross-platform compatibility.
-    local _openCommand
+    declare _openCommand
 
     if isDefined xdg-open; then
         _openCommand=xdg-open
@@ -177,7 +177,7 @@ _setEgrepCommand() {
 alias egrep=$_egrepCommand
 
 gril() {
-    local query="$1"
+    declare query="$1"
 
     shift
 
@@ -189,7 +189,7 @@ gril() {
     # To ensure we only include files expanded from the glob, not the search query, store the
     # query first, then shift the arguments array by 1, then get all args remaining (which would be
     # the files matched by the glob pattern which was expanded before being passed to this script).
-    local pathGlob="$@"
+    declare pathGlob="$@"
 
     if [[ -z "$pathGlob" ]]; then
         pathGlob=('.')
@@ -313,8 +313,8 @@ findIgnoreDirs() {
     # Net result (where [] represents what's added by the user):
     #   `find . -type d \( -name 'node_modules' -o -name '*est*' \) -prune -false -o` [-name '*.js']
     # See: https://stackoverflow.com/questions/4210042/how-to-exclude-a-directory-in-find-command/4210072#4210072
-    local _findIgnoreDirs=()
-    local OPTIND=1
+    declare _findIgnoreDirs=()
+    declare OPTIND=1
 
     while getopts "i:" opt; do
         case "$opt" in
@@ -326,13 +326,13 @@ findIgnoreDirs() {
 
     shift $(( OPTIND - 1 ))
 
-    local _findArgs=("$@")
-    local _findToSearchIn="$1"
-    local _findOpts
+    declare _findArgs=("$@")
+    declare _findToSearchIn="$1"
+    declare _findOpts
     array.slice -r _findOpts _findArgs 1
 
-    local _findIgnoreDirsOptionName=' -o -name '
-    local _findIgnoreDirsOption=''
+    declare _findIgnoreDirsOptionName=' -o -name '
+    declare _findIgnoreDirsOption=''
 
     if ! array.empty _findIgnoreDirs; then
         # TODO: Try the simpler method here: https://stackoverflow.com/questions/4210042/how-to-exclude-a-directory-in-find-command/66794381#66794381
@@ -367,7 +367,7 @@ findIgnoreDirs() {
     _findIgnoreDirsOption="$(echo "$_findIgnoreDirsOption" | sed -E "s|(['\"])\1|\1|g")"
 
     # Ignored dirs are already quoted, but still need to quote the search query
-    local _findFinalCmd="find $_findToSearchIn $_findIgnoreDirsOption ${_findOpts[@]}"
+    declare _findFinalCmd="find $_findToSearchIn $_findIgnoreDirsOption ${_findOpts[@]}"
 
     eval "$_findFinalCmd"
 }
@@ -395,13 +395,13 @@ tarremovepathprefix() {
     # Net result (where [] represents what's added by the user):
     #   tar [-czf with-spaces.tar.gz] -C ['../../dir/with spaces/dir[/file.ext]'] '.'
 
-    local _tarArgs=("$@")
-    local _tarOpts
+    declare _tarArgs=("$@")
+    declare _tarOpts
 
     # Strip out desired dir from final `tar` command since we're `cd`ing into it (so it actually should be '.')
     array.slice -r _tarOpts _tarArgs 0 -1
-    local _tarContainingDir="$(realpath "$(array.slice _tarArgs -1)")"  # `realpath` may or may not be necessary; goal was to remove `..` from the path passed to `tar -C [path]`
-    local _tarToArchive='.'
+    declare _tarContainingDir="$(realpath "$(array.slice _tarArgs -1)")"  # `realpath` may or may not be necessary; goal was to remove `..` from the path passed to `tar -C [path]`
+    declare _tarToArchive='.'
 
     if [[ -f "${_tarContainingDir}" ]]; then
         # User passed in a file instead of a directory.
@@ -421,8 +421,8 @@ tarremovepathprefix() {
 if ! isDefined tree; then
     # `tree` isn't defined, so define it here
     tree() {
-        local _treeIgnoreDirs=()
-        local OPTIND=1
+        declare _treeIgnoreDirs=()
+        declare OPTIND=1
 
         while getopts "i:" opt; do
             case "$opt" in
@@ -434,13 +434,13 @@ if ! isDefined tree; then
 
         shift $(( OPTIND - 1 ))
 
-        local path="$1"
+        declare path="$1"
 
         if [[ -z "$path" ]]; then
             path='.'
         fi
 
-        local _treeIgnoreDirsFindOpts=''
+        declare _treeIgnoreDirsFindOpts=''
 
         if ! array.empty _treeIgnoreDirs; then
             # Add single quotes around names in case they're using globs, like `findIgnoreDirs()` does.
@@ -453,12 +453,12 @@ if ! isDefined tree; then
         #   e.g. `tree ../dir/` would result in `find ../dir/` being called and resulting file/dir entries
         #   being printed as `../dir/file.txt` --> `| ├─file.txt` instead of `├─file.txt`
         # `find` doesn't add a trailing slash on directories by default, so add them manually via `printf`
-        local allEntriesWithTrailingSlashOnDirsDirs="$(
+        declare allEntriesWithTrailingSlashOnDirsDirs="$(
             cd "$path"
             findIgnoreDirs $_treeIgnoreDirsFindOpts . -type d -exec sh -c "'printf \"\$0/\n\"'" {} '\;' -or -print
         )"
         # Remove duplicate `//` when runing `tree someDir/` (no double slashes with `tree someDir`)
-        local normalizedPaths="`echo "$allEntriesWithTrailingSlashOnDirsDirs" | sed -E "s#//#/#g"`"
+        declare normalizedPaths="`echo "$allEntriesWithTrailingSlashOnDirsDirs" | sed -E "s#//#/#g"`"
         # Replace preceding `path/to/` in `path/to/file.txt` with `| | ├─file.txt` to match standard `tree path/` output.
         # sed -rEgex 'command-1; command-2'
         # command-1: Replace `some-text/` with `| ` repeatedly for however many nested parent dirs exist for the file.
@@ -466,9 +466,9 @@ if ! isDefined tree; then
         #   However, if the line ends with `/`, then don't replace the final trailing `/` since that entry is a directory.
         # command-2: Replace the final `| ` from the previous `| | file.txt` output with `├─` to show it's a file within that directory.
         #   e.g. `| | file.txt` --> `| ├─file.txt`
-        local parentDirsReplacedWithTreeDelimiters="`echo "$normalizedPaths" | sed -E 's#[^/]*/([^/]*/$)?#| \1#g; s#\| ([^|])#├─\1#g'`"
+        declare parentDirsReplacedWithTreeDelimiters="`echo "$normalizedPaths" | sed -E 's#[^/]*/([^/]*/$)?#| \1#g; s#\| ([^|])#├─\1#g'`"
         # Replace first line of output with the user-specified path since it's erased in the sed commands above
-        local firstLineReplacedWithParentPath="`echo "$parentDirsReplacedWithTreeDelimiters" | sed -E "1 s|^.*$|$path|"`"
+        declare firstLineReplacedWithParentPath="`echo "$parentDirsReplacedWithTreeDelimiters" | sed -E "1 s|^.*$|$path|"`"
 
         echo "$firstLineReplacedWithParentPath"
     }

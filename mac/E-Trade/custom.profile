@@ -155,8 +155,8 @@ export sitdb2='sit141w86m7'
 export cbassbatch='sit108w80m7'
 
 fetchSitLog() {
-    local server="$1"
-    local outFile="$2"
+    declare server="$1"
+    declare outFile="$2"
 
     scp "dpowell1@$server.etrade.com:/etrade/sit-wm-s2-mfetf/logs/s2java-service-mutualFundEtf.log" "$outFile"
 }

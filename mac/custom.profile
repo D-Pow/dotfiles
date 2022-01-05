@@ -90,14 +90,14 @@ cf() {
 alias getAllApps=`mdfind "kMDItemKind == 'Application'"`
 
 getAppInfo() {
-    local app="$1"
-    local property="$2"
+    declare app="$1"
+    declare property="$2"
 
     # lsappinfo - gets all info for a *running* app
     # It's more robust than other solutions for getting the absolute path to the MyApp.app's binary file
     # local plistKeys=( 'binary'='CFBundleExecutable' 'binary2'='CFBundleExecutablePath' )
     # echo "${plistKeys['binary2']}"
-    local result=`lsappinfo info -app "$app"`
+    declare result=`lsappinfo info -app "$app"`
 
     if ! [[ -z "${result}" ]]; then
         # App is running, so we have safely found correct property values, e.g. absolute path to binary vs just the binary name
@@ -133,22 +133,22 @@ getAppInfo() {
     # `lsregister` - Gets even more info about an app
     #     Not on PATH, need to call directly from: /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister
     #     or `mdfind -name lsregister`
-    local appId="$(osascript -e "id of app \"$1\"")"
+    declare appId="$(osascript -e "id of app \"$app\"")"
 
     if ! [[ -z "${appId}" ]]; then
-        local appPath="$(mdfind "kMDItemCFBundleIdentifier == $appId" | head -n 1)"
+        declare appPath="$(mdfind "kMDItemCFBundleIdentifier == $appId" | head -n 1)"
 
         if ! [[ -z "${appPath}" ]]; then
             if ! [[ -z "${property}" ]]; then
-                local binaryKey='CFBundleExecutable'
+                declare binaryKey='CFBundleExecutable'
 
                 if [ "$property" = "binary" ]; then
                     property=$binaryKey
                 fi
 
-                local appRelativeRootDir='Contents'
-                local appRelativeExecutableDir='MacOS'
-                local propertyValue=`defaults read "$appPath/$appRelativeRootDir/Info" $property`
+                declare appRelativeRootDir='Contents'
+                declare appRelativeExecutableDir='MacOS'
+                declare propertyValue=`defaults read "$appPath/$appRelativeRootDir/Info" $property`
 
                 if [ "$property" = "$binaryKey" ]; then
                     propertyValue="$appPath/$appRelativeRootDir/$appRelativeExecutableDir/$propertyValue"
@@ -157,10 +157,10 @@ getAppInfo() {
                 echo $propertyValue
             else
                 # Note: Nest variables in quotes to read `\n` correctly
-                local allInfoJson=`osascript -s s -e "info for (POSIX file \"$appPath\")"`
-                local allInfoWithoutCurlyBraces=`echo "$allInfoJson" | sed -E 's|[{}]||g'`
-                local allInfoSplitIntoNewlines=`echo "$allInfoWithoutCurlyBraces" | sed -E 's|", |"\n|g'`
-                local allInfoWithSpacesBetweenKeyAndValAndIndent=`echo "$allInfoSplitIntoNewlines" | sed -E 's|^([^:]*):|    \1 = |g'`
+                declare allInfoJson=`osascript -s s -e "info for (POSIX file \"$appPath\")"`
+                declare allInfoWithoutCurlyBraces=`echo "$allInfoJson" | sed -E 's|[{}]||g'`
+                declare allInfoSplitIntoNewlines=`echo "$allInfoWithoutCurlyBraces" | sed -E 's|", |"\n|g'`
+                declare allInfoWithSpacesBetweenKeyAndValAndIndent=`echo "$allInfoSplitIntoNewlines" | sed -E 's|^([^:]*):|    \1 = |g'`
 
                 echo "$allInfoWithSpacesBetweenKeyAndValAndIndent"
             fi

@@ -81,7 +81,7 @@ dbReinstall() (
 
 
 fe-start() {
-    local devProxyIsRunning="`dockerIsContainerRunning 'dev-local-proxy'`"
+    declare devProxyIsRunning="`dockerIsContainerRunning 'dev-local-proxy'`"
 
     if [[ $devProxyIsRunning != 'true' ]]; then
         nd dev portal
@@ -89,7 +89,7 @@ fe-start() {
 
     # Allow only starting the Docker containers without running the build
     if [[ -n "$@" ]]; then
-        local yarnBuildArgs="$@"
+        declare yarnBuildArgs="$@"
 
         if (( "$#" == 1 )) && [[ "$1" == '.' ]]; then
             yarnBuildArgs=
@@ -106,14 +106,14 @@ fe-stop() {
     # calls and .html rendering for webpack output.
     # Names might change over time to add IDs at the start/end of the actual name,
     # so use these string identifiers to find the actual name to pass to `docker stop`.
-    local feProxyDockerContainers=(
+    declare feProxyDockerContainers=(
         dev-local-proxy
         dev-portal
         static_1
     )
 
     for feProxyDockerContainer in "${feProxyDockerContainers[@]}"; do
-        local actualContainerName="$(dockerFindContainer --format '{{.Names}}' "$feProxyDockerContainer")"
+        declare actualContainerName="$(dockerFindContainer --format '{{.Names}}' "$feProxyDockerContainer")"
 
         docker stop "$actualContainerName"
     done

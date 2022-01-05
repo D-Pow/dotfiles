@@ -22,7 +22,7 @@ bashHistoryImmediatelyAvailableAcrossShellSessions() {
     # See:
     #   https://unix.stackexchange.com/questions/1288/preserve-bash-history-in-multiple-terminal-windows
     #   https://unix.stackexchange.com/questions/18212/bash-history-ignoredups-and-erasedups-setting-conflict-with-common-history
-    local usage="(De-)activate .bash_history being written to immediately after running commands instead of only on shell termination.
+    declare usage="(De-)activate .bash_history being written to immediately after running commands instead of only on shell termination.
 
     Usage: ${FUNCNAME[0]} [-a|-d]
 
@@ -30,7 +30,7 @@ bashHistoryImmediatelyAvailableAcrossShellSessions() {
         -a | Activate immediate command appending.
         -d | Deactivate immediate command appending."
 
-    local activate
+    declare activate
 
     while getopts ":adh" opt; do
         case "$opt" in

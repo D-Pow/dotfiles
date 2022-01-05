@@ -23,23 +23,23 @@ alias systeminfo='inxi -SMCGx'
 
 
 is-installed() {
-    local packages="$@"
-    # local packagesArray=($packages)
-    local installedPackages=()
+    declare packages="$@"
+    # declare packagesArray=($packages)
+    declare installedPackages=()
 
     if [[ -z "$packages" ]]; then
         echo 'Please specify a package/command' >&2
         return 1
     fi
 
-    local isInstalledByApt="`apt list --installed "*$packages*" 2>/dev/null | grep 'installed'`"
+    declare isInstalledByApt="`apt list --installed "*$packages*" 2>/dev/null | grep 'installed'`"
 
     if [[ -n "$isInstalledByApt" ]]; then
         installedPackages+=('Installed by apt:' '')
         installedPackages+=("`echo "$isInstalledByApt" | egrep -o '^[^/]*'`")
     fi
 
-    local commandsExist="`command -v $packages`"
+    declare commandsExist="`command -v $packages`"
 
     if [[ -n "$commandsExist" ]]; then
         # Add extra line between apt-installed packages and CLI commands
@@ -65,8 +65,8 @@ is-installed() {
 
 apt-get-repositories() {
     # Inspired by: https://askubuntu.com/questions/148932/how-can-i-get-a-list-of-all-repositories-and-ppas-from-the-command-line-into-an/148968#148968
-    local _showDisabled
-    local OPTIND=1
+    declare _showDisabled
+    declare OPTIND=1
 
     while getopts "d" opt; do
         case "$opt" in
@@ -78,44 +78,44 @@ apt-get-repositories() {
 
     shift $(( OPTIND - 1 ))
 
-    local _aptRepoEnabledSearchRegex='^\s*'
-    local _aptRepoSearchRegex="$(
+    declare _aptRepoEnabledSearchRegex='^\s*'
+    declare _aptRepoSearchRegex="$(
         [[ -n "$_showDisabled" ]] \
         && echo "($_showDisabled|$_aptRepoEnabledSearchRegex)" \
         || echo "$_aptRepoEnabledSearchRegex"
     )"
-    local _aptRepos
+    declare _aptRepos
 
     array.fromString -d '\n' -r _aptRepos "$(egrep -r "${_aptRepoSearchRegex}deb" /etc/apt/sources.list*)"
 
-    local _officialRepos=()
-    local _ppas=()
-    local _additionalRepos=()
+    declare _officialRepos=()
+    declare _ppas=()
+    declare _additionalRepos=()
 
-    local _ppaDomainBashRegex='https?://ppa.launchpad.net'
-    local _ppaUserPpaInstallRegex='([^/]*/[^/]*)'
-    local _repoDomain='(http.*)'
+    declare _ppaDomainBashRegex='https?://ppa.launchpad.net'
+    declare _ppaUserPpaInstallRegex='([^/]*/[^/]*)'
+    declare _repoDomain='(http.*)'
 
 
     for _aptFileToRepoStr in "${_aptRepos[@]}"; do
         # First, split by colon to separate the filename and file content.
         # Sample output from `_aptRepos[i]`:
         # /etc/apt/sources.list.d/git-core-ppa-xenial.list:deb http://ppa.launchpad.net/git-core/ppa/ubuntu xenial main
-        local _aptRepoSplitStr
+        declare _aptRepoSplitStr
         array.fromString -d ':' -r _aptRepoSplitStr "$_aptFileToRepoStr"
         # Filename won't have colons in it, so it's safe to simply get the first array entry.
-        local _aptRepoFilePath="${_aptRepoSplitStr[0]}"
+        declare _aptRepoFilePath="${_aptRepoSplitStr[0]}"
         # File content would've had colons in them (e.g. URLs).
         # Since they've been split by colon, take all the remaining entries (which are all
         # part of the file content) and join them by colon to get the original file content.
-        local _aptRepoInfoWithoutColons
+        declare _aptRepoInfoWithoutColons
         array.slice -r _aptRepoInfoWithoutColons _aptRepoSplitStr 1
-        local _aptRepoInfo="$(array.join -s _aptRepoInfoWithoutColons ':')"
+        declare _aptRepoInfo="$(array.join -s _aptRepoInfoWithoutColons ':')"
 
 
         # Official repositories are in this file specifically.
         if [[ "$_aptRepoFilePath" =~ "official-package-repositories.list" ]]; then
-            local _officialRepo="$(echo $_aptRepoInfo | sed -E "s|.*$_repoDomain|\1|g")"
+            declare _officialRepo="$(echo $_aptRepoInfo | sed -E "s|.*$_repoDomain|\1|g")"
 
             if [[ "$_aptRepoInfo" =~ $_showDisabled ]]; then
                 _officialRepo="# $_officialRepo"
@@ -124,7 +124,7 @@ apt-get-repositories() {
             _officialRepos+=("$_officialRepo")
         # PPAs are all listed on ppa.launchpad.net
         elif [[ "$_aptRepoInfo" =~ $_ppaDomainBashRegex ]]; then
-            local _ppaName="ppa:$(echo "$_aptRepoInfo" | sed -E "s|.*$_ppaDomainBashRegex/$_ppaUserPpaInstallRegex/.*|\1|g")"
+            declare _ppaName="ppa:$(echo "$_aptRepoInfo" | sed -E "s|.*$_ppaDomainBashRegex/$_ppaUserPpaInstallRegex/.*|\1|g")"
 
             if [[ "$_aptRepoInfo" =~ $_showDisabled ]]; then
                 _ppaName="# $_ppaName"
@@ -133,7 +133,7 @@ apt-get-repositories() {
             _ppas+=("$_ppaName")
         # Additional repositories are those you needed to add via URL, install.sh script, etc.
         else
-            local _additionalRepo="$(echo $_aptRepoInfo | sed -E "s|.*$_repoDomain|\1|g")"
+            declare _additionalRepo="$(echo $_aptRepoInfo | sed -E "s|.*$_repoDomain|\1|g")"
 
             if [[ "$_aptRepoInfo" =~ $_showDisabled ]]; then
                 _additionalRepo="# $_additionalRepo"
@@ -515,14 +515,14 @@ _checkPythonVersion() {
     #   Higher number priorities are used before lower numbers.
     #   Configure them via `sudo update-alternatives --config python3`.
     #   Ref: https://medium.com/@jeethu.samsani/upgrade-python-3-5-to-3-7-in-ubuntu-a1d4347b6a3
-    local pythonSymlinkPath="$(which python3)"
-    local pythonExecutablePath="$(readlink -f "$pythonSymlinkPath")"
-    local executableDir="$(dirname "$pythonExecutablePath")"
-    local currentPythonVersion="$(echo "$pythonExecutablePath" | sed -E 's|.*/([^/]*)$|\1|')"
-    local allAvailableVersions="$(ls "$executableDir" | egrep -o 'python\d\.\d' | sort -ru)"
-    local allPython3Versions="$(echo "$allAvailableVersions" | grep 3)"
-    local latestVersion="$(echo "$allPython3Versions" | head -n 1)"
-    local oldestVersion="$(echo "$allPython3Versions" | tail -n 1)"
+    declare pythonSymlinkPath="$(which python3)"
+    declare pythonExecutablePath="$(readlink -f "$pythonSymlinkPath")"
+    declare executableDir="$(dirname "$pythonExecutablePath")"
+    declare currentPythonVersion="$(echo "$pythonExecutablePath" | sed -E 's|.*/([^/]*)$|\1|')"
+    declare allAvailableVersions="$(ls "$executableDir" | egrep -o 'python\d\.\d' | sort -ru)"
+    declare allPython3Versions="$(echo "$allAvailableVersions" | grep 3)"
+    declare latestVersion="$(echo "$allPython3Versions" | head -n 1)"
+    declare oldestVersion="$(echo "$allPython3Versions" | tail -n 1)"
 
     # Allow using anything newer than the oldest rather than restricting to only the newest
     if [[ "$currentPythonVersion" == "$oldestVersion" ]]; then

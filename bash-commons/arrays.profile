@@ -29,8 +29,8 @@ array.isArray() {
 
 
 array.length() {
-    local -n _arrLengthArr="$1"
-    local _arrLength=${#_arrLengthArr[@]}
+    declare -n _arrLengthArr="$1"
+    declare _arrLength=${#_arrLengthArr[@]}
 
     if (( _arrLength == 1 )) && [[ "${_arrLengthArr[@]}" == '' ]]; then
         echo 0
@@ -41,7 +41,7 @@ array.length() {
 
 
 array.empty() {
-    local _lengthEmpty=`array.length $1`
+    declare _lengthEmpty=`array.length $1`
 
     # Want to be able to use this like `if array.empty myArr; then ...`
     # Options on how to do this:
@@ -63,10 +63,10 @@ array.empty() {
 
 
 array.toString() {
-    local lengthOnly
-    local _toStringDelim
-    local _toStringQuotes=\"
-    local OPTIND=1
+    declare lengthOnly
+    declare _toStringDelim
+    declare _toStringQuotes=\"
+    declare OPTIND=1
 
     # See os-utils.profile for more info on flag parsing
     while getopts "ld:q:" opt; do
@@ -85,10 +85,10 @@ array.toString() {
 
     shift $(( OPTIND - 1 ))
 
-    local -n _arrToString="$1"
-    local _arrToStringLength="$(array.length _arrToString)"
-    local _arrToStringQuotes="$_toStringQuotes"
-    local _arrToStringCmd='printf "${_arrToStringQuotes}%s${_toStringDelim:-}${_arrToStringQuotes} " "${_arrToString[@]}"'
+    declare -n _arrToString="$1"
+    declare _arrToStringLength="$(array.length _arrToString)"
+    declare _arrToStringQuotes="$_toStringQuotes"
+    declare _arrToStringCmd='printf "${_arrToStringQuotes}%s${_toStringDelim:-}${_arrToStringQuotes} " "${_arrToString[@]}"'
 
     if [[ -n "$lengthOnly" ]]; then
         echo "$1 (length=$_arrToStringLength)"
@@ -99,9 +99,9 @@ array.toString() {
 
 
 array.fromString() {
-    local _retArrFromStrName
-    local _arrFromDelim="$IFS"
-    local OPTIND=1
+    declare _retArrFromStrName
+    declare _arrFromDelim="$IFS"
+    declare OPTIND=1
 
     while getopts "d:r:" opt; do
         case "$opt" in
@@ -116,12 +116,12 @@ array.fromString() {
 
     shift $(( OPTIND - 1 ))
 
-    local _arrFromStr="$1"
+    declare _arrFromStr="$1"
 
     # Local means we don't overwrite global IFS.
     # Still keep original IFS for the return statements.
-    local _arrFromOrigIFS="$IFS"
-    local IFS
+    declare _arrFromOrigIFS="$IFS"
+    declare IFS
     # This is tricky; IFS uses ANSI-C quoting (see: https://stackoverflow.com/questions/23235651/how-can-i-do-ansi-c-quoting-of-an-existing-bash-variable)
     #
     # We want the *meaning* of backslash-escaped characters, not their literal
@@ -145,13 +145,13 @@ array.fromString() {
     eval IFS=\$\'$_arrFromDelim\'
     # Don't quote it since we've changed IFS. If we did quote it, there would be no
     # more string-splitting b/c it'd all be one string instead of separate strings.
-    local _newArrFromStr=($_arrFromStr)
+    declare _newArrFromStr=($_arrFromStr)
     # Return IFS back to what it was before solely for injecting obtained values back
     # into a separate return array and/or for printing to the console.
     IFS="$_arrFromOrigIFS"
 
     if [[ -n "$_retArrFromStrName" ]]; then
-        local -n _retArrFromStr="$_retArrFromStrName"
+        declare -n _retArrFromStr="$_retArrFromStrName"
         _retArrFromStr=("${_newArrFromStr[@]}")
     else
         echo "${_newArrFromStr[@]}"
@@ -160,8 +160,8 @@ array.fromString() {
 
 
 array.join() {
-    local _stripTrailingDelimiter
-    local OPTIND=1
+    declare _stripTrailingDelimiter
+    declare OPTIND=1
 
     while getopts "s" opt; do
         case "$opt" in
@@ -202,9 +202,9 @@ array.join() {
 
 
 array.slice() {
-    local isLength
-    local _retArrNameSliced
-    local OPTIND=1
+    declare isLength
+    declare _retArrNameSliced
+    declare OPTIND=1
 
     # See os-utils.profile for more info on flag parsing
     while getopts "lr:" opt; do
@@ -220,13 +220,13 @@ array.slice() {
 
     shift $(( OPTIND - 1 ))
 
-    local -n _arrSlice="$1"
-    local _startSlice="$2"
-    local _endSlice="$3"
+    declare -n _arrSlice="$1"
+    declare _startSlice="$2"
+    declare _endSlice="$3"
 
-    local _arrLengthOrig="`array.length _arrSlice`"
-    local _newArrSliced=()
-    local _newArrLengthSliced
+    declare _arrLengthOrig="`array.length _arrSlice`"
+    declare _newArrSliced=()
+    declare _newArrLengthSliced
 
     # Bash native slicing:
     #   Positive index values: ${array:start:length}
@@ -254,7 +254,7 @@ array.slice() {
     _newArrSliced=("${_arrSlice[@]: _startSlice: _newArrLengthSliced}")
 
     if [[ -n "$_retArrNameSliced" ]]; then
-        local -n retArr="$_retArrNameSliced"
+        declare -n retArr="$_retArrNameSliced"
         retArr=("${_newArrSliced[@]}")
     else
         echo "${_newArrSliced[@]}"
@@ -263,9 +263,9 @@ array.slice() {
 
 
 array.filter() {
-    local _retArrNameFiltered
-    local isRegex
-    local OPTIND=1
+    declare _retArrNameFiltered
+    declare isRegex
+    declare OPTIND=1
 
     while getopts "er:" opt; do
         case "$opt" in
@@ -332,7 +332,7 @@ array.filter() {
 
 
     if [[ -n "$_retArrNameFiltered" ]]; then
-        local -n _retArrFiltered="$_retArrNameFiltered"
+        declare -n _retArrFiltered="$_retArrNameFiltered"
         _retArrFiltered=("${_newArrFiltered[@]}")
     else
         echo "${_newArrFiltered[@]}"
@@ -341,8 +341,8 @@ array.filter() {
 
 
 array.contains() {
-    local isRegex
-    local OPTIND=1
+    declare isRegex
+    declare OPTIND=1
 
     while getopts "er:" opt; do
         case "$opt" in
@@ -355,8 +355,8 @@ array.contains() {
     shift $(( OPTIND - 1 ))
 
 
-    local -n _arrContains="$1"
-    local query="$2"
+    declare -n _arrContains="$1"
+    declare query="$2"
 
     # As mentioned in array.empty(), `echo true/false` would work for if-statements.
     # However, if one-lining the function call within a line, then true/false will be echoed to
@@ -431,9 +431,9 @@ array.map() {
 
 
 array.reverse() {
-    local _retArrNameReversed
-    local inPlace
-    local OPTIND=1
+    declare _retArrNameReversed
+    declare inPlace
+    declare OPTIND=1
 
     while getopts "ir:" opt; do
         case "$opt" in
@@ -476,7 +476,7 @@ array.reverse() {
 
 
     if [[ -n "$_retArrNameReversed" ]]; then
-        local -n _retArrReversed="$_retArrNameReversed"
+        declare -n _retArrReversed="$_retArrNameReversed"
         _retArrReversed=("${_newArrReversed[@]}")
     elif [[ -n "$inPlace" ]]; then
         # Do nothing. `:` is a special keyword in Bash to 'do nothing silently'.
@@ -493,12 +493,12 @@ array.merge() {
     # TODO use array.gen-matrix
     # TODO see if `readarray` would work: https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#index-mapfile
 
-    local allArrayNames=("$@")
-    local allArrayValues=()
+    declare allArrayNames=("$@")
+    declare allArrayValues=()
 
     for arrName in ${allArrayNames[@]}; do
-        local arrNameToAccessAllValues="$arrName[@]"
-        local arrValues=("${!arrNameToAccessAllValues}")
+        declare arrNameToAccessAllValues="$arrName[@]"
+        declare arrValues=("${!arrNameToAccessAllValues}")
 
         allArrayValues+=("${arrValues[@]}")
     done
@@ -523,8 +523,8 @@ array.values-from-name() {
 
     # Could alternatively be done via `[declare|local] -n arr=$1` because `-n` does the
     # indirection/name-ref for us
-    local arrName="$1"
-    local arrValuesCmd="$1[@]"
+    declare arrName="$1"
+    declare arrValuesCmd="$1[@]"
     # Indirection in bash is a way of using the passed string as the name of a variable
     # and then reading the value of the string rather than using the string's literal contents.
     # It's somewhat equivalent to how using `eval "$someCmd"` would run e.g. `eval "cd .."`
@@ -541,7 +541,7 @@ array.values-from-name() {
     # echo ${!myArrLength} # 2
     #
     # Exception: `${!name[@]}` expands the keys in an array, int (normal) or string (associative).
-    local arrValues=("${!arrValuesCmd}")
+    declare arrValues=("${!arrValuesCmd}")
     # TODO The below doesn't work b/c `arrName != actualName`
     # local arrKeys=("${!arrName[@]}")
     #
@@ -576,12 +576,12 @@ array.values-from-name() {
     #
     # declare -p array  # outputs: declare -a array=("a" "b")
     # declare -p map    # outputs: declare -A map=([x]="a b" [y]="c d" [z]="e f")
-    local arrDeclarationCmd="`declare -p $arrName`"
+    declare arrDeclarationCmd="`declare -p $arrName`"
     # Strip out the leading content before "=" so that only the variable contents
     # are returned.
     # This way, we can call `declare -[aA] var="$(array.values-from-name myArr)"`
     # to read arrays from input by name.
-    local arrDeclarationOnlyArrayContents="${arrDeclarationCmd#*=}" # string substitution - replace /^.*=/ with ''
+    declare arrDeclarationOnlyArrayContents="${arrDeclarationCmd#*=}" # string substitution - replace /^.*=/ with ''
 
     # echo "$arrDeclarationCmd" # Returns entire string, which can't be called by `eval` or similar
     echo "$arrDeclarationOnlyArrayContents" # Requires calling parent to know the variable type and to use `declare -[aA]` accordingly
@@ -589,19 +589,19 @@ array.values-from-name() {
 
 
 array.gen-matrix() {
-    local allArrayNames=("$@")
+    declare allArrayNames=("$@")
     # `declare -A myAssociativeArray` doesn't work on all systems.
     # However, it's simply meant to declare the type, read/write restrictions, etc.
     # so we can still use associative arrays here.
-    local allArrayValues
+    declare allArrayValues
 
     # for arrName in ${allArrayNames[@]}; do
     # for i in `seq 0 $(( $(array.length allArrayNames) - 1 ))`; do
     for ((i = 0; i < $(array.length allArrayNames); i++)); do
-        local arrName="${allArrayNames[$i]}"
+        declare arrName="${allArrayNames[$i]}"
         # echo "arrName (index=$i): $arrName"
-        local arrNameToAccessAllValues="$arrName[@]"
-        local arrValues=("${!arrNameToAccessAllValues}")
+        declare arrNameToAccessAllValues="$arrName[@]"
+        declare arrValues=("${!arrNameToAccessAllValues}")
 
         # allArrayValues[$arrName]=("${arrValues[@]}")
         # allArrayValues[$arrName]="${arrValues[@]}"
@@ -620,8 +620,8 @@ array.gen-matrix() {
     # echo "Results (length=${#allArrayValues[@]}): ${allArrayValues[@]}"
     for i in ${!allArrayValues[@]}; do
         # local entryLength=${#allArrayValues[$i][@]}
-        local entryLength=${#allArrayValues[$i][@]}
-        local entryValue=${allArrayValues[$i]}
+        declare entryLength=${#allArrayValues[$i][@]}
+        declare entryValue=${allArrayValues[$i]}
         echo "Index [$i] (length=$entryLength): $entryValue"
         echo "Val[0] = ${entryValue[0]}"
         echo "Val[1] = ${entryValue[1]}"

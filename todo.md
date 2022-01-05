@@ -15,8 +15,8 @@
 
         ```bash
         # Gotten from: https://stackoverflow.com/questions/23356779/how-can-i-store-the-find-command-results-as-an-array-in-bash/54561526
-        local IFS=$'\n'
-        local res=($allEntriesWithTrailingSlashOnDirsDirs)
+        declare IFS=$'\n'
+        declare res=($allEntriesWithTrailingSlashOnDirsDirs)
         array.toString -ld '\n' res
         ```
 

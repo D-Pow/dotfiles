@@ -94,9 +94,9 @@ npmr() {
     npm run "$@"
 }
 _autocompleteNpmr() {
-    local lastCommandWordIndex=$COMP_CWORD
-    local commandWords="${COMP_WORDS[@]}"
-    local currentWord="${COMP_WORDS[COMP_CWORD]}"
+    declare lastCommandWordIndex=$COMP_CWORD
+    declare commandWords="${COMP_WORDS[@]}"
+    declare currentWord="${COMP_WORDS[COMP_CWORD]}"
 
     # Don't show suggestions if the first arg has already been autocompleted.
     if (( $lastCommandWordIndex > 1 )); then
@@ -112,8 +112,8 @@ _autocompleteNpmr() {
     # available via `npm run-script`:
     #   build
     #     cross-env NODE_ENV=production webpack --mode production --config ./config/webpack.config.mjs
-    local availableCommands="$(npm run | egrep -o '^  \S*' | egrep -v '^\s*$' | sed -E 's|\s||g')"
-    local commandsMatchingUserInput="$(echo "$availableCommands" | egrep "^$currentWord")"
+    declare availableCommands="$(npm run | egrep -o '^  \S*' | egrep -v '^\s*$' | sed -E 's|\s||g')"
+    declare commandsMatchingUserInput="$(echo "$availableCommands" | egrep "^$currentWord")"
 
     COMPREPLY=($(compgen -W "$commandsMatchingUserInput"))
 
@@ -172,9 +172,9 @@ dockerFindContainer() {
     # Enhanced `docker ps` that filters by any field instead of only by name, ID, image, etc.
     # and allows regex queries.
     # Docs: https://docs.docker.com/engine/reference/commandline/ps
-    local _dockerPsArgs=("$@")
-    local _dockerPsOpts
-    local _dockerPsQueryArray
+    declare _dockerPsArgs=("${argsArray[@]}")
+    declare _dockerPsOpts
+    declare _dockerPsQueryArray
 
     parseArgs _dockerFindContainerOpts "$@"
     (( $? )) && return 1
@@ -184,7 +184,7 @@ dockerFindContainer() {
     # Last arg is image name query string
     array.slice -r _dockerPsQueryArray _dockerPsArgs -1
 
-    local _dockerPsQuery="${_dockerPsQueryArray[0]}"
+    declare _dockerPsQuery="${_dockerPsQueryArray[0]}"
 
     # First, get matching results based on any search query (container ID, image, container name, etc.).
     # Then, apply the user's search criteria to the matches afterwards.
@@ -195,7 +195,7 @@ dockerFindContainer() {
     # handle the header output itself, too.
     # To call it a second time, remove the headers from this initial filter call so it doesn't
     # interfere with the second call.
-    local _dockerPsMatches="$(docker ps -a | egrep -iv 'CONTAINER\s*ID\s*IMAGE' | egrep -i "$_dockerPsQuery")"
+    declare _dockerPsMatches="$(docker ps -a | egrep -iv 'CONTAINER\s*ID\s*IMAGE' | egrep -i "$_dockerPsQuery")"
 
     if [[ -z "$_dockerPsMatches" ]]; then
         return 1
@@ -203,7 +203,8 @@ dockerFindContainer() {
 
     # Get only the container IDs so we can add our own custom `--filter` query to the `ps` options.
     # Works with any other option, including other `--filter` entries, `-q`, etc.
-    local _dockerPsMatchesContainerIds=($(echo "$_dockerPsMatches" | cut -d ' ' -f 1))
+    declare _dockerPsMatchesContainerIds=($(echo "$_dockerPsMatches" | cut -d ' ' -f 1))
+    declare _containerId
 
     for _containerId in "${_dockerPsMatchesContainerIds[@]}"; do
         _dockerPsOpts+=('--filter' "id=$_containerId")
@@ -213,7 +214,7 @@ dockerFindContainer() {
 }
 
 dockerIsContainerRunning() {
-    local imageId="`dockerFindContainer -q "$1"`"
+    declare imageId="`dockerFindContainer -q "$1"`"
 
     docker inspect --format '{{json .State.Running}}' "$imageId" 2>/dev/null
 }
@@ -315,9 +316,9 @@ dockerShowRunCommandForContainers() (
 )
 
 dockerGetLogs() {
-    local _dockerLogOutputFile
-    local _dockerContainerName
-    local OPTIND=1
+    declare _dockerLogOutputFile
+    declare _dockerContainerName
+    declare OPTIND=1
 
     while getopts "o:n:" opt; do
         case "$opt" in
@@ -328,10 +329,10 @@ dockerGetLogs() {
                 _dockerContainerName="$OPTARG"
                 ;;
             *)
-                local _passedArg="${!OPTIND}"
+                declare _passedArg="${!OPTIND}"
 
                 if [[ "$_passedArg" =~ --[a-zA-Z0-9] ]]; then  # String comparison regex (simple bash regex) cannot be quoted
-                    local _errMsg=
+                    declare _errMsg=
 
                     _errMsg+='Please add "--" in between args to this function vs args forwarded to `docker logs`.'
                     _errMsg+='e.g. dockerGetLogs -n myContainerName -- --since 10m'

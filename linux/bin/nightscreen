@@ -3,7 +3,7 @@
 # TODO change to use xrandr to maintain brightness settings for different monitors
 
 printUsage () {
-    local USAGE="nightscreen <level = off|xlow|low|med|high|xhigh>"
+    declare USAGE="nightscreen <level = off|xlow|low|med|high|xhigh>"
     echo -e "$USAGE"
     exit 0
 }

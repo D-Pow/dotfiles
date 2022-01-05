@@ -98,7 +98,7 @@ gitGetIgnoredFiles() {
 
 
 gitBlameParentOfCommit() {
-    local _gitBlameParentOfCommitUsage="Gets the git blame of a parent commit and previous file name/path.
+    declare _gitBlameParentOfCommitUsage="Gets the git blame of a parent commit and previous file name/path.
     Very useful for when files were renamed or bulk syntax formatting was done, hiding the blame you're looking for.
 
     Usage:
@@ -118,7 +118,7 @@ gitBlameParentOfCommit() {
 
 
 gitGetPrimaryBranch() {
-    local _gitPrimaryBranchRemoteName="${1:-origin}"
+    declare _gitPrimaryBranchRemoteName="${1:-origin}"
 
     # http://git-scm.com/docs/git-rev-parse
     # `basename` gets the last entry after all slashes in a path (as opposed to `dirname` which gets everything before the last slash)
@@ -131,13 +131,13 @@ gitGetPrimaryBranch() {
 
 gitGetFilesChangedFromRebase() {
     # Allow only showing certain files in diff output
-    local _diffFileFilter="${1:-.}"
+    declare _diffFileFilter="${1:-.}"
 
     # `git diff --stat` only shows "filename  |  numLines +-" rather than full file diffs
     # Thus, strip out the trailing numLines (note: don't blindly use `(\S+)` b/c file renames use spaces, e.g. "old => new")
-    local _diffOnlyFileSedRegex='s/^\s*([^|]*)\|.*/\1/; s|\s+$||'
-    local _diffFromPrimaryToHead="$(git diff --stat origin/$(gitGetPrimaryBranch)..HEAD | egrep "$_diffFileFilter" | esed "$_diffOnlyFileSedRegex")"
-    local _diffFromRemoteToHead="$(git diff --stat origin/$(gitGetBranch)..HEAD | egrep "$_diffFileFilter" | esed "$_diffOnlyFileSedRegex")"
+    declare _diffOnlyFileSedRegex='s/^\s*([^|]*)\|.*/\1/; s|\s+$||'
+    declare _diffFromPrimaryToHead="$(git diff --stat origin/$(gitGetPrimaryBranch)..HEAD | egrep "$_diffFileFilter" | esed "$_diffOnlyFileSedRegex")"
+    declare _diffFromRemoteToHead="$(git diff --stat origin/$(gitGetBranch)..HEAD | egrep "$_diffFileFilter" | esed "$_diffOnlyFileSedRegex")"
 
     echo -e "$_diffFromPrimaryToHead\n$_diffFromRemoteToHead" | sort | uniq -d
 }
@@ -153,7 +153,7 @@ gitGetParent() {
     # git doesn't track what a branch's parent is, so we have to guess from the git log output.
     # Hence, here we guess based off git log's default branch output first and output from merges second.
     # ref: https://github.community/t/is-there-a-way-to-find-the-parent-branch-from-which-branch-head-is-detached-for-detached-head/825
-    local numLinesToShow=5
+    declare numLinesToShow=5
 
     if ! [ -z "$1" ]; then
         numLinesToShow=$1
@@ -172,7 +172,7 @@ gitGetParent() {
     # git log only this branch's history
     # filter to display only 5 lines before anything that was merged to this branch
     # get the commit hash of only the last entry (since this hash was the very first merge to the current branch)
-    local commitsMergingToCurrentBranch=$(glb | grep -B 5 "to $(gitGetBranch)" | grep "commit" | awk '{print $3}' | tail -1)
+    declare commitsMergingToCurrentBranch=$(glb | grep -B 5 "to $(gitGetBranch)" | grep "commit" | awk '{print $3}' | tail -1)
     # again, decorate git log, and print out only the latest few logs for the above first merge to the current branch,
     # in the hopes that one of those latest logs would be where the current branch was created out of
     git log --decorate $commitsMergingToCurrentBranch | egrep '^commit [a-z0-9]+ \(' | awk '{print "* "$0}' | head -n $numLinesToShow
@@ -180,8 +180,8 @@ gitGetParent() {
 
 
 gitGetReposInDir() {
-    local parentDir='.'
-    local gitDirs=()
+    declare parentDir='.'
+    declare gitDirs=()
 
     if ! [ -z "$1" ]; then
         parentDir="$1"
@@ -189,8 +189,8 @@ gitGetReposInDir() {
 
     parentDir="$(cd "$parentDir" && pwd)"
 
-    local parentDirContents=$parentDir/*
-    local file=
+    declare parentDirContents=$parentDir/*
+    declare file=
 
     for file in $parentDirContents; do
         if [ -d "$file" ]; then # -d = isDirectory
@@ -288,8 +288,8 @@ gitUpdateRepos() {
         -s | Run 'git status' after 'git pull'."
 
     # local vars to avoid them being accessible outside this function
-    local getStatus=false
-    local OPTIND=1
+    declare getStatus=false
+    declare OPTIND=1
 
     while getopts "sh" opt; do
         case "$opt" in
@@ -305,14 +305,14 @@ gitUpdateRepos() {
 
     shift "$((OPTIND - 1))"
 
-    local pathsToSearch=('.')
-    local gitDirs=()
+    declare pathsToSearch=('.')
+    declare gitDirs=()
 
     if [[ -n "$@" ]]; then
         pathsToSearch=("$@")
     fi
 
-    local dir=
+    declare dir=
 
     for dir in ${pathsToSearch[@]}; do
         gitDirs+=($(gitGetReposInDir "$dir"))
@@ -354,7 +354,7 @@ gitStashDiffPaths() {
 
 
 gitGetStashNames() {
-    local path='.'
+    declare path='.'
 
     if ! [[ -z "$1" ]]; then
         path="$1"
@@ -631,7 +631,7 @@ _autocompleteWithAllGitBranches() {
     # Will update to the only matching autocomplete prefix/word when <Tab> is pressed.
     #   e.g. `git reba` will automatically prefill `git rebase` into the live shell
     #   if it's the only suggestion.
-    local lastArg="${COMP_WORDS[COMP_CWORD]}"
+    declare lastArg="${COMP_WORDS[COMP_CWORD]}"
 
     # Don't suggest branches if first arg has already been autocompleted.
     # Leave all args past that to the default shell autocomplete via `complete -o default`.
@@ -646,7 +646,7 @@ _autocompleteWithAllGitBranches() {
         return
     fi
 
-    local gitBranches="$(git branch -a)"
+    declare gitBranches="$(git branch -a)"
 
     # Maintain newlines by quoting `$gitBranches` so they're easier to read/modify.
     # Filter out HEAD since it just points to a branch that is defined later in the list.
