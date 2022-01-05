@@ -1,3 +1,7 @@
+################
+###  NodeJS  ###
+################
+
 npms() {
     # regex is homemade linux/bin/regex python script
     regex '"scripts": [^\}]*\}' ./package.json
@@ -132,6 +136,10 @@ export PATH="$NVM_CURRENT_HOME/bin:$PATH"
 
 
 
+################
+###  Python  ###
+################
+
 pipsearch() {
     if [[ -z "$1" ]]; then
         declare USAGE="Searches pypi.org for packages matching the search query (only the first page).
@@ -165,7 +173,9 @@ pipsearch() {
 
 
 
-### Docker ###
+################
+###  Docker  ###
+################
 # https://docs.docker.com/engine/reference/commandline/docker/
 
 dockerFindContainer() {
@@ -371,7 +381,9 @@ dockerGetLogs() {
 
 
 
-### AWS CLI ###
+################
+###  AWS CLI  ##
+################
 # Configuration: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html
 # Env vars: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html
 # Docker image: https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-docker.html
