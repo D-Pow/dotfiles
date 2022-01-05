@@ -173,6 +173,53 @@ pipsearch() {
 
 
 
+#########################
+###  GitHub CLI (gh)  ###
+#########################
+
+ghScopes() {
+    # Docs: https://cli.github.com/manual/gh_api
+    gh api -i user | grep -i 'X-Oauth-Scopes: ' | sed -E 's/.*: //'
+}
+
+ghAuthToken() {
+    # Docs: https://cli.github.com/manual/gh_auth_status
+    # For some reason, `gh auth` outputs info to STDERR (likely to prevent users from doing what I'm doing here)
+    gh auth status --show-token 2>&1 | grep -i 'token' | sed -E 's/.*: //'
+}
+
+ghAuthForGitHubPackages() {
+    # Required scopes: https://docs.github.com/en/packages/learn-github-packages/about-permissions-for-github-packages#about-scopes-and-permissions-for-package-registries
+    # Modifying scopes: https://cli.github.com/manual/gh_auth_refresh
+    declare _requiredScopes=('read:packages')
+    declare _requiredScopesRegex="$(printf '(%s)|' "${_requiredScopes[@]}" | sed -E 's/.$//')" # strip off trailing `|`
+    declare _currentScopes="$(ghScopes | sed -E 's/ //g')"
+
+    if ! ghScopes | egrep -iq "$_requiredScopesRegex"; then
+        echo "You don't have the required scopes \"${_requiredScopes[@]}\" to access GitHub Packages. Adding them now..."
+
+        declare _newScopes="$(printf '%s,' "${_requiredScopes[@]}")${_currentScopes}" # keep trailing comma to easily add current scopes at the end
+
+        gh auth refresh --scopes "$_newScopes"
+    fi
+}
+
+ghLoginToGitHubPackagesNpmRegistry() {
+    # Ref: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry
+    declare _npmScope="$1"
+
+    if [[ -z "$_npmScope" ]]; then
+        echo "No scope specified! Please specify the scope used for your npm packages." >&2
+        return 1
+    fi
+
+    ghAuthForGitHubPackages
+
+    npm login --scope="$_npmScope" --registry=https://npm.pkg.github.com
+}
+
+
+
 ################
 ###  Docker  ###
 ################
