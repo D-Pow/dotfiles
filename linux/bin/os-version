@@ -47,9 +47,9 @@ fi
 
 # Fix for Mac and other wannabe Linux systems
 if [[ "$allSysInfo" != *"Linux"* ]]; then
-    if [[ "$allSysInfo" == *"Mac"* ]]; then
-        echo "$allSysInfo" | cut -f 1-3 -d ' '
-        exit 0
+    if echo "$allSysInfo" | egrep -iq '(Mac)|(Darwin)|(CYGWIN)|(MINGW)'; then
+        echo "$simpleSysInfo"
+        exit
     fi
 fi
 
