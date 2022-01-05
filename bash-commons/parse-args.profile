@@ -312,7 +312,7 @@ parseArgs() {
             # For the regex match to work using `=~`, we must use:
             #   "string" =~ pattern
             # and `pattern` must not be quoted, otherwise it will be parsed as literal chars, not regex
-            if [[ "$opt" =~ $optKey ]]; then
+            if [[ "$opt" =~ ^$optKey$ ]]; then
                 optHandled=true
                 declare -n getoptsVariable="${getoptsParsingConfig["$optKey"]}"
 
