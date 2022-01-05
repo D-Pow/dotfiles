@@ -147,7 +147,11 @@ parseArgs() {
 
     # Extract custom unknown-option and USAGE entries from parent config
     # so they aren't parsed into `getoptsParsingConfig`
+    #
+    # Extract unknown-flag handler function (passed to `eval`)
+    # Replace any occurrence of "USAGE" with the custom-formatted one generated in this function
     declare unknownFlagHandler="${_parentOptionConfig['?']}"
+    unknownFlagHandler="${unknownFlagHandler//USAGE/parentUsageStr}"
     unset _parentOptionConfig['?']
     # FUNCNAME is an array of the function call stack - 0=thisFunc, 1=parentFunc, 2=grandparentFunc, etc.
     declare parentUsageStr="${FUNCNAME[1]} ${_parentOptionConfig['USAGE']}"
