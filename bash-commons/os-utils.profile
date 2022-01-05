@@ -1,3 +1,17 @@
+isLinux() {
+    os-version -o | grep -iq 'Linux'
+}
+
+isMac() {
+    # TODO Find out how to distinguish M1 macs from normal macs
+    os-version -o | egrep -iq 'mac|darwin'
+}
+
+isWindows() {
+    os-version -o | egrep -iq '(CYGWIN)|(MINGW)'
+}
+
+
 listprocesses() {
     if (( $# > 0 )); then
         # Include header info for what each column means
