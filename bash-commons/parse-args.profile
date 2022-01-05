@@ -68,21 +68,31 @@ parseArgs() {
             ['shortOptionWithArg|longOptionWithArg:,var2']='I require an argument, by space or = sign.'
             [':shortOptionIgnoreFailures|longOptionIgnoreFailures,var3']='Eh, if they don't pass it or error otherwise, don't care'
             [':']= # Flag to set colon at beginning of getopts string, i.e. \`getopts ':abc'\`
-            ['?']='String to pass to \`eval\` upon unknown flag discovery.
-                   Defaults to \`echo -e \$USAGE; return 1;\`.
-                   Pass \`break\` to preserve unknown flags in the returned \`argsArray\`.'
-            ['USAGE']='Usage string option flag descriptions.
-                       \`${FUNCNAME[0]}\` will automatically append auto-spaced option flags/descriptions at the end.'
+            ['?']='String to pass to \`eval\` upon unknown flag discovery.'
+                   # Defaults to \`echo -e \"\$USAGE\"; return 1;\`.
+                   #
+                   # Set the key but leave it blank (i.e. \`['?']=\`) to merge unknown flags and their
+                   # values into \`argsArray\` and step over them to continue parsing the following flags.
+                   #
+                   # Pass \`break\` to stop parsing at the first unknown flag, merging it and all following
+                   # flags (regardless of whether or not they're known) into \`argsArray\`.
+                   #
+                   # These are useful for e.g. forwarding flags to underlying scripts/functions without
+                   # duplicating all those flags in their own USAGE docs.
+            ['USAGE']='Usage string without \${FUNCNAME[0]} or option flag descriptions.'
+                       # \`${FUNCNAME[0]}\` will automatically prepend the calling parent function name at the beginning of the
+                       # specified ['USAGE'] string and append auto-spaced option flags/descriptions at the end.
         )
         ${FUNCNAME[0]} optionConfig \"\$@\"
         # To exit your function if \`${FUNCNAME[0]}\` fails, add the line below (\`USAGE\` will be printed by default).
         (( \$? )) && return 1    # Alternatively: [[ \$? -ne 0 ]]
+        #
         # Note:
         # True(0)/False(1) are reversed in arithmetic expressions -- (( 1 )) == True, (( 0 )) == False
         # so use \`&&\` instead of \`||\`.
-        # Also: \`\$?\` corresponds only to the single, immediate preceding command, so it can't be accessed twice.
-        # If you need to use \`\$?\` multiple times, set it in a variable directly after calling \`${FUNCNAME[0]}\`, e.g.
-        # \`declare _parseArgsRetVal=\"\$?\"\`
+        # Also: \`\$?\` corresponds only to the single, immediately preceding command, so it can't be accessed twice.
+        # If you need to use \`\$?\` multiple times, set it in a variable directly after calling \`${FUNCNAME[0]}\`,
+        # e.g. \`declare _parseArgsRetVal=\"\$?\"\`
 
     Returns:
         0/1 on success/failure.
@@ -124,6 +134,15 @@ parseArgs() {
 
         # Remove from map since we want to iterate over it later
         unset _parentOptionConfig[':']
+    fi
+
+    declare hasUnknownFlagHandler=
+
+    # Mark if an unknown-flag handler has been set, even if it's blank;
+    # `${var+word}` will return `word` if the value is set or blank (e.g. `declare var=`),
+    # but not if it is null (e.g. `declare var`)
+    if [[ -n "${_parentOptionConfig['?']+yo}" ]]; then
+        hasUnknownFlagHandler=true
     fi
 
     # Extract custom unknown-option and USAGE entries from parent config
@@ -211,6 +230,9 @@ parseArgs() {
         parentUsageStr+="$(echo -e "$optionUsageStr" | column -t -c 2 -s $'\t')"
     fi
 
+
+    declare -n remainingArgs="argsArray"
+    remainingArgs=()
 
     declare opt
     declare OPTIND=1
@@ -311,17 +333,40 @@ parseArgs() {
         done
 
         if [[ -z "$optHandled" ]]; then
-            if [[ -n "$unknownFlagHandler" ]]; then
-                if [[ "$unknownFlagHandler" == 'break' ]]; then
-                    # If the user intentionally wants to stop execution via passing the `break` command
-                    # in the `?` option mapping, then shift backwards by 1 so that the shift below that
-                    # doesn't take away that unknown flag.
-                    # This is useful for e.g. forwarding flags to underlying scripts/functions without
-                    # duplicating all those flags in their own USAGE docs.
-                    OPTIND=$(( OPTIND - 1 ))
-                fi
-
+            if [[ -n "$hasUnknownFlagHandler" ]]; then
                 eval "$unknownFlagHandler"
+
+                declare unknownFlagIndex=$(( OPTIND - 1 ))
+                declare unknownFlag="${!unknownFlagIndex}"
+                declare unknownFlagMaybeValueIndex=$OPTIND
+                declare unknownFlagMaybeValue="${!unknownFlagMaybeValueIndex}"
+                declare nextFlagMaybeIndex=$(( OPTIND + 1 ))
+                declare nextFlagMaybe="${!nextFlagMaybeIndex}"
+
+                if [[ "$unknownFlag" =~ = ]]; then
+                    # Unknown flag had an equals sign, e.g. `-a=b` or `--aa=b`
+                    # so we don't have to worry about the next arg after it,
+                    # and we can just add the whole thing directly to `argsArray`
+                    remainingArgs+=("$unknownFlag")
+                elif [[ "$unknownFlag" =~ ^- ]]; then
+                    # Unknown flag had a space, e.g. `-a b` or `--aa b` or `-a -x` or `--aa --xx`
+                    # so we don't know if a known flag comes after it or two entries after it
+
+                    if [[ "$unknownFlagMaybeValue" =~ ^- ]]; then
+                        # Next arg is a flag, e.g. `-a -x`
+                        # so add the flag alone without the value and continue.
+                        # The next `getopts` iteration will handle the next flag
+                        remainingArgs+=("$unknownFlag")
+                    elif [[ "$nextFlagMaybe" =~ ^- ]]; then
+                        # Next arg is not a flag, but the one after it is, e.g. `-a A -x`
+                        # so add both the unknown flag and its arbitrary value to `argsArray`.
+                        # The next `getopts` iteration will handle the next flag
+                        remainingArgs+=("$unknownFlag" "$unknownFlagMaybeValue")
+                        # Skip past the unknown flag's value so the next `getopts` iteration sees
+                        # the next flag instead of the unknown flag's value
+                        shift
+                    fi
+                fi
             else
                 echo -e "$parentUsageStr" >&2
 
@@ -332,6 +377,5 @@ parseArgs() {
 
     shift "$((OPTIND - 1))"
 
-    declare -n remainingArgs="argsArray"
-    remainingArgs=("$@")
+    remainingArgs+=("$@")
 }
