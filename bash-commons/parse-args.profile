@@ -149,7 +149,8 @@ parseArgs() {
     # so they aren't parsed into `getoptsParsingConfig`
     declare unknownFlagHandler="${_parentOptionConfig['?']}"
     unset _parentOptionConfig['?']
-    declare parentUsageStr="${_parentOptionConfig['USAGE']}"
+    # FUNCNAME is an array of the function call stack - 0=thisFunc, 1=parentFunc, 2=grandparentFunc, etc.
+    declare parentUsageStr="${FUNCNAME[1]} ${_parentOptionConfig['USAGE']}"
     unset _parentOptionConfig['USAGE']
     # Create new option-usage map for easier parent-usage printing.
     # Allows us to avoid nested for-loops later to match parsed-config keys to
@@ -180,7 +181,7 @@ parseArgs() {
 
         if [[ -n "$getoptsShort" ]] && [[ -n "$getoptsLong" ]]; then
             getoptsParsingConfigKey="$getoptsShort|$getoptsLong"
-            parentUsageOptionKey="-$getoptsShort|--$getoptsLong"
+            parentUsageOptionKey="-$getoptsShort, --$getoptsLong"
         elif [[ -n "$getoptsShort" ]]; then
             getoptsParsingConfigKey="$getoptsShort"
             parentUsageOptionKey="-$getoptsShort"
