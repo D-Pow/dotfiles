@@ -401,3 +401,45 @@ parseArgs() {
 
     remainingArgs+=("$@")
 }
+
+
+
+_testParseArgs() (
+    echo "Note: Args passed to ${FUNCNAME[0]} will be used as a custom unknown-flag handler command.
+    No args will use the default parsing-halting/USAGE-printing behavior of \`parseArgs\`.
+    "
+
+    declare handler=
+
+    if [[ -n "$@" ]]; then
+        handler="$@"
+    fi
+
+    testMe() (
+        declare aFlag
+        declare bFlag
+        declare cFlag
+        declare argsArray
+        declare -A options=(
+            ['a|asdf:,aFlag']='A usage str'
+            ['b|bvcx:,bFlag']='B usage str'
+            ['c|cdef,cFlag']='C usage str'
+            [':']=
+        )
+
+        if [[ -n "$handler" ]]; then
+            options['?']="$handler"
+        fi
+
+        parseArgs options "$@"
+        declare retVal="$?"
+
+        echo "aFlag(${#aFlag[@]})=${aFlag[@]}"
+        echo "bFlag(${#bFlag[@]})=${bFlag[@]}"
+        echo "cFlag(${#cFlag[@]})=${cFlag[@]}"
+        echo "$(array.toString argsArray)"
+        echo "\$@=$@"
+    )
+
+    testMe --asdf=ASDF -a 'FD SA' --bvcx BBB -H -c 'hello world' yo
+)
