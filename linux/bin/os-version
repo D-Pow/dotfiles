@@ -1,13 +1,58 @@
 #!/usr/bin/env -S bash
 
-allSysInfo="$(uname -a)"
+USAGE="$(basename "${BASH_SOURCE[0]}") [-s] [-o]
+    Outputs a summary of your OS info.
 
+    Options:
+        -s      |   Simple - Output a shorter OS summary instead of the full one.
+        -o      |   OS-only - Output only the generic version of your OS (Linux, Darwin, etc.).
+"
+
+simplifiedOnly=
+osOnly=
+OPTIND=1
+
+while getopts ':so' opt; do
+    case "$opt" in
+        s)
+            simplifiedOnly=true
+            ;;
+        o)
+            osOnly=true
+            ;;
+        *)
+            echo -e "$USAGE"
+            exit 1
+            ;;
+    esac
+done
+
+shift $(( OPTIND - 1 ))
+
+
+allSysInfo="$(uname -a)"
+simpleSysInfo="$(echo "$allSysInfo" | cut -f 1-3 -d ' ')"
+osSysInfo="$(uname)"
+
+
+if [[ -n "$simplifiedOnly" ]]; then
+    echo "$simpleSysInfo"
+    exit
+fi
+
+if [[ -n "$osOnly" ]]; then
+    echo "$osSysInfo"
+    exit
+fi
+
+# Fix for Mac and other wannabe Linux systems
 if [[ "$allSysInfo" != *"Linux"* ]]; then
     if [[ "$allSysInfo" == *"Mac"* ]]; then
         echo "$allSysInfo" | cut -f 1-3 -d ' '
         exit 0
     fi
 fi
+
 
 osSimpleNameFile=/etc/issue.net
 # Following files follow the same format as .env/.properties files,
