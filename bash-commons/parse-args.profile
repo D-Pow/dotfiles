@@ -337,10 +337,20 @@ parseArgs() {
             if [[ -n "$hasUnknownFlagHandler" ]]; then
                 eval "$unknownFlagHandler"
 
+                # `opt` and `OPTARG` were manually parsed above, but that only works for known flags.
+                # Since we now need to parse an unknown flag, we don't know what format it took
+                # so we can't use the helpful manual parsing from above.
+                # e.g. We can't blindly use `OPTARG` b/c if the unknown flag has no args,
+                # then `OPTARG` would be the next flag after the unknown one.
                 declare unknownFlagIndex=$(( OPTIND - 1 ))
                 declare unknownFlag="${!unknownFlagIndex}"
+                # The next arg after the unknown flag - Either the flag arg, a different flag,
+                # or a positional (non-flag) arg to the parent function.
                 declare unknownFlagMaybeValueIndex=$OPTIND
                 declare unknownFlagMaybeValue="${!unknownFlagMaybeValueIndex}"
+                # The next next arg after the unknown flag - Either a flag after the unknown flag's
+                # arg (which we care about for using `shift`), or anything else (which we don't
+                # care about since it doesn't affect `shift`).
                 declare nextFlagMaybeIndex=$(( OPTIND + 1 ))
                 declare nextFlagMaybe="${!nextFlagMaybeIndex}"
 
@@ -360,12 +370,19 @@ parseArgs() {
                         remainingArgs+=("$unknownFlag")
                     elif [[ "$nextFlagMaybe" =~ ^- ]]; then
                         # Next arg is not a flag, but the one after it is, e.g. `-a A -x`
-                        # so add both the unknown flag and its arbitrary value to `argsArray`.
+                        # so add both the unknown flag and its argument value to `argsArray`.
                         # The next `getopts` iteration will handle the next flag
                         remainingArgs+=("$unknownFlag" "$unknownFlagMaybeValue")
                         # Skip past the unknown flag's value so the next `getopts` iteration sees
                         # the next flag instead of the unknown flag's value
                         shift
+                    else
+                        # Neither the next arg nor the one after it are flags, e.g. `-a x y`
+                        # so simply add the unknown flag to `argsArray`.
+                        # We don't need to `break` out of the loop since `getopts` will see that
+                        # neither the next arg nor the one after it are flags, so it will stop iterating
+                        # through args itself.
+                        remainingArgs+=("$unknownFlag")
                     fi
                 fi
             else
