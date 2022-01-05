@@ -90,6 +90,35 @@ cf() {
 alias getAllApps=`mdfind "kMDItemKind == 'Application'"`
 
 getAppInfo() {
+    declare USAGE="${FUNCNAME[0]} [-f] <app-name>
+    Gets information about an app on Mac.
+    Helps address some pain points about Mac's shortcomings when compared to Linux,
+    e.g. finding where app executables are located for use in the terminal, finding where their files are stored, etc.
+
+    Uses \`lsappinfo\` if the app is running (easy to read but provides less information).
+    Uses a mix of \`mdfind\` and \`osascript\` (Apple script) otherwise to extract info from the Info.plist file.
+
+    Options:
+        -f      |   Force getting the full app info from the .plist even if the app is running.
+    "
+
+    declare _fullAppInfo=
+    declare OPTIND=1
+
+    while getopts 'f' opt; do
+        case "$opt" in
+            f)
+                _fullAppInfo=true
+                ;;
+            *)
+                echo -e "$USAGE"
+                return 1
+                ;;
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+
     declare app="$1"
     declare property="$2"
 
@@ -99,7 +128,7 @@ getAppInfo() {
     # echo "${plistKeys['binary2']}"
     declare result=`lsappinfo info -app "$app"`
 
-    if ! [[ -z "${result}" ]]; then
+    if [[ -n "$result" ]] && [[ -z "$_fullAppInfo" ]]; then
         # App is running, so we have safely found correct property values, e.g. absolute path to binary vs just the binary name
 
         if ! [[ -z "${property}" ]]; then
