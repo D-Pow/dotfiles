@@ -121,7 +121,7 @@ getAppInfo() {
 
 
     # App is not running, so we have to manually generate the absolute path
-
+    #
     # osascript is AppleScript. It's annoying, but required to get the app ID
     # `mdfind` is basically the terminal's version of Spotlight (Cmd+Space search system)
     #     `mdfind` is faster than `find` b/c it doesn't search all files everywhere, only those specified with the search criteria

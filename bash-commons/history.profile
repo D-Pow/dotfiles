@@ -22,9 +22,8 @@ bashHistoryImmediatelyAvailableAcrossShellSessions() {
     # See:
     #   https://unix.stackexchange.com/questions/1288/preserve-bash-history-in-multiple-terminal-windows
     #   https://unix.stackexchange.com/questions/18212/bash-history-ignoredups-and-erasedups-setting-conflict-with-common-history
-    declare usage="(De-)activate .bash_history being written to immediately after running commands instead of only on shell termination.
-
-    Usage: ${FUNCNAME[0]} [-a|-d]
+    declare USAGE="Usage: ${FUNCNAME[0]} [-a|-d]
+    (De-)activate .bash_history being written to immediately after running commands instead of only on shell termination.
 
     Options:
         -a | Activate immediate command appending.
@@ -41,8 +40,8 @@ bashHistoryImmediatelyAvailableAcrossShellSessions() {
                 activate=false
                 ;;
             *)
-                echo "$usage"
-                return
+                echo "$USAGE"
+                return 1
                 ;;
         esac
     done

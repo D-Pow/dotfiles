@@ -54,8 +54,8 @@
 #
 #   Parameter substitutions (See: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02)
 #     Where:
-#     "unset" = `var` never instantiated or if no value set, i.e. `declare var`
 #     "null" = `declare var=` or `declare var=''`
+#     "unset" = `var` never instantiated or if no value set, e.g. `declare var`
 #
 #    Expansion    |  Set && !null  |    Set & null      |      Unset
 #   ${var:-word}  |  return $var   |    return word     |   return word

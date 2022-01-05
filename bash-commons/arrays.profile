@@ -295,7 +295,7 @@ array.filter() {
         # Slower alternative (orders of magnitude slower):
         #     for entry in "${_arrFilter[@]}"; do
         #         if [[ -n "$isRegex" ]]; then
-        #             if echo "$entry" | egrep "$filterQuery" &>/dev/null; then
+        #             if echo "$entry" | egrep -q "$filterQuery"; then
         #                 # echo "$entry"
         #                 _newArrFiltered+=("$entry")
         #             fi
