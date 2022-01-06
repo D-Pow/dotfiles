@@ -26,8 +26,6 @@ if [[ -z "$1" ]]; then
     Example:
         source /home/repositories/dotfiles/.profile "linux"
     ' >&2
-
-    return 1
 fi
 
 
@@ -39,6 +37,18 @@ if type thisDir &>/dev/null; then
     export dotfilesDir="`dirname "$(thisFile)"`" # don't use `thisDir` to preserve symlinks/`~` in resulting path (e.g. if ~/repositories is a symlink to external mounted partition)
 
     platform="$1"
+
+    if [[ -z "$platform" ]]; then
+        # Try to guess the platform based off OS
+        if uname | grep -iq 'Linux'; then
+            platform='linux'
+        elif uname | egrep -iq 'mac|darwin'; then
+            platform='mac'
+        elif uname | egrep -iq '(CYGWIN)|(MINGW)'; then
+            platform='Windows/git_bash'
+        fi
+    fi
+
     platformDir="$dotfilesDir/$platform"
     commonsDir="$dotfilesDir/bash-commons"
 
