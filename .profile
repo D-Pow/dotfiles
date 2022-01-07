@@ -28,17 +28,8 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
-if [[ -z "$1" ]]; then
-    echo 'Error: Please specify the dotfiles platform when sourcing.
-    Usage:
-        source path/to/dotfiles/.profile "platform_or/nested/dir"
 
-    Note: Do not append "/" to the end of directories.
-
-    Example:
-        source /home/repositories/dotfiles/.profile "linux"
-    ' >&2
-fi
+declare _osSpecificProfile="$1"
 
 
 # Utils to get the currently running file or the directory it's in.
@@ -55,27 +46,25 @@ alias thisDir='echo "$(realpath "`dirname "$(thisFile)"`")"'
 if type thisDir &>/dev/null; then
     export dotfilesDir="`dirname "$(thisFile)"`" # don't use `thisDir` to preserve symlinks/`~` in resulting path (e.g. if ~/repositories is a symlink to external mounted partition)
 
-    platform="$1"
-
-    if [[ -z "$platform" ]]; then
-        # Try to guess the platform based off OS
+    if [[ -z "$_osSpecificProfile" ]]; then
+        # Try to guess the OS-specific .profile directory based off OS
         if uname | grep -iq 'Linux'; then
-            platform='linux'
+            _osSpecificProfile='linux'
         elif uname | egrep -iq 'mac|darwin'; then
-            platform='mac'
+            _osSpecificProfile='mac'
         elif uname | egrep -iq '(CYGWIN)|(MINGW)'; then
-            platform='Windows/git_bash'
+            _osSpecificProfile='Windows/git_bash'
         fi
     fi
 
-    platformDir="$dotfilesDir/$platform"
-    commonsDir="$dotfilesDir/bash-commons"
+    declare _osSpecificDir="$dotfilesDir/$_osSpecificProfile"
+    declare _commonProfilesDir="$dotfilesDir/bash-commons"
 
     # Always source dotfiles/linux/bin/ since it has many useful scripts
-    export PATH="$dotfilesDir/linux/bin:$platformDir/bin:$HOME/bin:$HOME/.local/bin:$PATH"
+    export PATH="$dotfilesDir/linux/bin:$_osSpecificDir/bin:$HOME/bin:$HOME/.local/bin:$PATH"
 
-    export commonProfile="$commonsDir/common.profile"
-    export customProfile="$platformDir/custom.profile"
+    export commonProfile="$_commonProfilesDir/common.profile"
+    export customProfile="$_osSpecificDir/custom.profile"
     export actualProfile='~/.profile'
 
     source "$commonProfile"
@@ -85,4 +74,30 @@ if type thisDir &>/dev/null; then
     alias editprofile="subl -n -w '$customProfile' && source $actualProfile"
     alias editcommon="subl -n -w '$commonProfile' && source $actualProfile"
     alias editactual="subl -n -w $actualProfile && source $actualProfile"
+fi
+
+
+# If sourced by the running shell, regardless of where the original `source` call is, i.e.
+#   `source $HOME/.profile` (contains `source dotfiles/.profile`)
+#   or
+#   `source /path/to/dotfiles/.profile`
+# then the shell is both interactive and live.
+#
+# If so, then it's sourced directly by the user, not a shell script or system process,
+# so they should be notified that they aren't sourcing this .profile in a safe way and
+# that they should update their code accordingly.
+# If not, then this is probably sourced by a custom script or interactive/login shebang
+# so don't show the error because scripts are meant to be portable. We'll guess what the
+# OS-specific profile directory is dynamically
+if [[ -z "$_osSpecificProfile" ]] && isBeingSourced -s "${BASH_SOURCE[0]}" ; then
+    echo "Error: Please specify the dotfiles OS-specific profile directory when sourcing.
+    Usage:
+        source path/to/dotfiles/.profile \"osDirRelativeToDotfilesDir/optionalNestedDir\"
+
+    Note: Do not append "/" to the end of the directory.
+
+    Examples:
+        source /home/repositories/dotfiles/.profile \"linux\"
+        source /home/repositories/dotfiles/.profile \"Windows/git_bash\"
+    " >&2
 fi
