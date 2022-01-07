@@ -98,33 +98,94 @@ isDefined() {
 
 
 isBeingSourced() {
-    # Determines if the file is being called via `source script.sh` or `./script.sh`, mimicking the
-    # behavior of `if __name__ == '__main__'` in Python.
-    # e.g.
-    #   if ! isBeingSourced "$BASH_SOURCE"; then
-    #       mainFunc "$@"
-    #   fi
-    #
-    # Note that we have to remove any leading hyphen(s) from the calling parents to account for live
-    # interactive shells, e.g. $0 == '-bash' instead of 'bash'.
-    # Also, use `basename` to remove discrepancies in relative vs absolute paths.
+    declare USAGE="[-s|--shell] [BASH_SOURCE filename]
+    Determines if the file is being called via \`source script.sh\` or \`./script.sh\`.
+    Mimics the behavior of \`main()\` functions, like \`if __name__ == '__main__'\` in Python.
 
-    # `BASH_SOURCE` is an array of the file call stack just like `FUNCNAME` is an array of
-    # the function call stack, i.e.
-    #   BASH_SOURCE[0]  ==  this file
-    #   BASH_SOURCE[length - 1]  ==  top-level *file*
-    #   $0  ==  top-level *parent* - either the shell script if it's called directly or `-shellName` if within an interactive shell
+
+    Example:
+
+        if ! isBeingSourced \"\$BASH_SOURCE[0]\"; then
+            mainFunc \"$@\"
+        fi
+    "
+    declare _shellOnly=
+    declare -A _isBeingSourcedOptions=(
+        ['s|shell,_shellOnly']='Restricts sourcing-parent validations to only check if the top-level (interactive/login) shell is sourcing the file.'
+        ['USAGE']="$USAGE"
+    )
+    declare argsArray=
+
+    parseArgs _isBeingSourcedOptions "$@"
+    (( $? )) && return 1
+
+    # `BASH_SOURCE` is an array of the file `source` stack just like `FUNCNAME` is an array of
+    # the function call stack. For example:
+    #   ${BASH_SOURCE[0]}  =  This file.
+    #   ${BASH_SOURCE[1]}  =  The process or file parent that directly sourced this file.
+    #   ${BASH_SOURCE[ ${#BASH_SOURCE[@]} - 1 ]}  =  The top-level file if sourced from a script
+    #       that was run; this file's relative path if sourced from the shell process itself, including
+    #       the case where shell sourced a file that sourced this file.
+    #   $0  =  Top-level parent process/shell (if this file were sourced from an interactive shell,
+    #       takes the format `-shellName`)
+    #       or file (if a script were run that sourced this file, either directly or transiently through other files).
     # Ref: https://unix.stackexchange.com/questions/4650/determining-path-to-sourced-shell-script/153061#153061
     #
     # Thus, compare `$0` (top-level parent, whether file or interactive shell) with either the top-level
     # file or `$1` if specified.
-    # `$1` allows a "relative" parent to be defined so that the file calling this function can be
-    # maintain the desired behavior regardless of whether it's the top-level parent or an intermediate
-    # file being called/sourced from any number of parents.
-    declare topLevelCallingParent="$(basename "$(echo "$0" | sed -E 's/^-*//')")"
-    declare relativeCallingParent="$(basename "$(echo "${1:-${BASH_SOURCE[ ${#BASH_SOURCE[@]} - 1 ]}}" | sed -E 's/^-*//')")"
+    # `$1` allows a "relative" parent to be defined so that the file calling this function can be explicitly
+    # specified, which allows this function to work as expected (it's not an alias, so keywords like `BASH_SOURCE`
+    # are defined relative to this function's physical location).
+    # It also allows for custom source-checking functionality, i.e. checking if a specific file is being sourced.
+    #
+    #
+    # Note that we have to remove any leading hyphen(s) from the calling parents to account for interactive
+    # login shells, e.g. `$0 == -bash` instead of `bash`.
+    #
+    # Also, normalize paths to remove relative/absolute path discrepancies.
+    # Note: We have to use the same combination of `realpath`, `basename`, `dirname`, etc. to resolve both variables,
+    # they can't use different logic.
+    # Primary example is Mac: When using Brew's GNU Bash version >3, the paths resolve in the manner below due to
+    # symlinks - but using `realpath` always gets the absolute path.
+    #     $0  ->  bash
+    #     which  ->  /usr/local/bin/bash
+    #     realpath  ->  /usr/local/Cellar/bash/5.1.12/bin/bash
+    #     basename  ->  bash
+    declare _fileMaybeBeingSourced="${argsArray[0]}"
+    declare _relativeCallingParent="$(realpath "$(echo "${_fileMaybeBeingSourced:-${BASH_SOURCE[ ${#BASH_SOURCE[@]} - 1 ]}}" | sed -E 's/^-*//')")"
+    declare _topLevelCallingParent="$(realpath "$(which "$(echo "$0" | sed -E 's/^-*//')")")"
+    declare _shellParent="$(realpath "$(which "$SHELL")")"
 
-    [[ "$topLevelCallingParent" != "$relativeCallingParent" ]]
+    if [[ -n "$_shellOnly" ]]; then
+        # Avoid issues with shebangs by only checking against interactive login shells
+
+        # `$-` contains the options of the shell before it executes anything else (e.g. .bashrc, .profile, etc.).
+        # If `i` exists in it, then the shell is interactive, i.e. not a script, system process, etc.
+        # See: https://stackoverflow.com/a/42757277/5771107
+        declare _isInteractiveShell="$(
+            [[ "${-//i/_}" != "$-" ]] \
+                && echo 1 \
+                || echo 0
+        )"
+
+        # A shebang of e.g. `#!/usr/bin/env bash -l` will act as a login shell, so it sources the respective `$HOME/.profile`
+        # file rather than `$HOME/.bashrc`.
+        # However, it won't necessarily be interactive, e.g. a script that requires system setup from a user's .profile but isn't
+        # meant to take control of their terminal.
+        # If the top-level parent is the same as the active shell environment, then it's likely either a login shebang
+        # or an interactive shell.
+        declare _isLoginShell="$(
+            [[ "$_topLevelCallingParent" == "$_shellParent" ]] \
+                && echo 1 \
+                || echo 0
+        )"
+
+        declare _isInteractiveLoginShell=$(( $_isLoginShell + $_isInteractiveShell == 2 ))
+
+        (( $_isInteractiveLoginShell ))
+    else
+        [[ "$_topLevelCallingParent" != "$_relativeCallingParent" ]]
+    fi
 }
 
 
