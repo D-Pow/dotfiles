@@ -8,6 +8,18 @@
 # for ssh logins, install and configure the libpam-umask package.
 # umask 022
 
+
+# Export aliases even when the shell isn't interactive so that custom scripts that
+# call `source "$HOME/.profile"` will work.
+# The `shopt` command MUST be used here because the utils used to determine
+# paths of files/directories are aliases, not functions; this means the files
+# sourced here, sourced by them, etc. won't have access to the aliases without this
+# shell configuration and will crash.
+# Note: Those utils must be aliases (see below), so this is the only way to do it.
+shopt -s expand_aliases
+
+
+
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
@@ -29,6 +41,13 @@ if [[ -z "$1" ]]; then
 fi
 
 
+# Utils to get the currently running file or the directory it's in.
+# These must be aliases b/c if they were functions, they'd return the
+# paths of this file, not the file it's called in.
+#
+# As strings, Bash will perform string replacement whenever it encounters
+# an alias; functions, on the other hand, are "real" code, so they're
+# executed as-is without regard to their location.
 alias thisFile='echo "$BASH_SOURCE"'
 alias thisDir='echo "$(realpath "`dirname "$(thisFile)"`")"'
 
