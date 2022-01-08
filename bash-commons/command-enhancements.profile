@@ -152,7 +152,9 @@ getFunctionCallStack() {
     declare _callerId=1  # Don't use 0 b/c that would include this function
 
     # `caller` is essentially equivalent to iterating through each of ${BASH_LINENO[@]}, ${FUNCNAME[@]}, and ${BASH_SOURCE[@]},
-    # except it combines each in one simple call
+    # except it combines each into one simple call.
+    # Inspiration:
+    #   https://stackoverflow.com/questions/11090899/find-line-number-of-function-call-from-sourcing-file/11091255#11091255
     while caller $_callerId &>/dev/null; do
         declare _callStackEntry=($(caller $_callerId))
         declare _callStackLineNumber="${_callStackEntry[0]}"
