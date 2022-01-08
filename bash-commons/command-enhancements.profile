@@ -186,6 +186,25 @@ getFunctionCallStack() {
 }
 
 
+isInteractiveShell() {
+    # Determines if the current environment that called this function is interactive,
+    # i.e. controlling a user's terminal's STDIN/STDOUT/STDERR.
+    #
+    # `$-` contains the options of the shell before it executes anything else (e.g. .bashrc, .profile, etc.).
+    # If `i` exists in it, then the shell is interactive, i.e. not a script, system process, etc.
+    #
+    # Refs:
+    #   `$-` = https://stackoverflow.com/a/42757277/5771107
+    #   TTY vs shell vs terminal = https://unix.stackexchange.com/questions/4126/what-is-the-exact-difference-between-a-terminal-a-shell-a-tty-and-a-con
+    [[ "${-//i/_}" != "$-" ]]
+}
+
+isLoginShell() {
+    # Login shells could be a live (interactive) user's shell or scripts using `#!/usr/bin/env bash -l`
+    shopt -s | egrep -iq 'login_shell'
+}
+
+
 isBeingSourced() {
     declare USAGE="[-s|--shell] [filePath]
     Determines if the file is being sourced (i.e. called via \`source script.sh\` instead of \`./script.sh\`).
@@ -261,11 +280,8 @@ isBeingSourced() {
     if [[ -n "$_shellOnly" ]]; then
         # Avoid issues with shebangs by only checking against interactive login shells
 
-        # `$-` contains the options of the shell before it executes anything else (e.g. .bashrc, .profile, etc.).
-        # If `i` exists in it, then the shell is interactive, i.e. not a script, system process, etc.
-        # See: https://stackoverflow.com/a/42757277/5771107
         declare _isInteractiveShell="$(
-            [[ "${-//i/_}" != "$-" ]] \
+            isInteractiveShell \
                 && echo 1 \
                 || echo 0
         )"
@@ -277,7 +293,7 @@ isBeingSourced() {
         # If the top-level parent is the same as the active shell environment, then it's likely either a login shebang
         # or an interactive shell.
         declare _isLoginShell="$(
-            shopt -s | egrep -iq 'login_shell' || [[ "$_topLevelCallingParent" == "$_shellParent" ]] \
+            isLoginShell || [[ "$_topLevelCallingParent" == "$_shellParent" ]] \
                 && echo 1 \
                 || echo 0
         )"
