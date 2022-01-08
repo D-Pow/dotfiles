@@ -277,7 +277,7 @@ isBeingSourced() {
         # If the top-level parent is the same as the active shell environment, then it's likely either a login shebang
         # or an interactive shell.
         declare _isLoginShell="$(
-            [[ "$_topLevelCallingParent" == "$_shellParent" ]] \
+            shopt -s | egrep -iq 'login_shell' || [[ "$_topLevelCallingParent" == "$_shellParent" ]] \
                 && echo 1 \
                 || echo 0
         )"
