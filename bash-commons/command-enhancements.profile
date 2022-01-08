@@ -185,15 +185,15 @@ getFunctionCallStack() {
 
 
 isBeingSourced() {
-    declare USAGE="[-s|--shell] [BASH_SOURCE filename]
-    Determines if the file is being called via \`source script.sh\` or \`./script.sh\`.
-    Mimics the behavior of \`main()\` functions, like \`if __name__ == '__main__'\` in Python.
+    declare USAGE="[-s|--shell] [filePath]
+    Determines if the file is being sourced (i.e. called via \`source script.sh\` instead of \`./script.sh\`).
+    Optionally, checks the specified file instead of the file in which this function was called.
 
 
     Example:
-
-        if ! isBeingSourced \"\$BASH_SOURCE[0]\"; then
-            mainFunc \"$@\"
+        # Mimic the behavior of \`main()\` functions (e.g. \`if __name__ == '__main__'\` in Python).
+        if ! ${FUNCNAME[0]} \"\$BASH_SOURCE[0]\"; then
+            mainFunc \"\$@\"
         fi
     "
     declare _shellOnly=
@@ -206,6 +206,17 @@ isBeingSourced() {
     parseArgs _isBeingSourcedOptions "$@"
     (( $? )) && return 1
 
+
+    # If no file is specified, then default to the file where this function was called.
+    # Attempt to get it from the function call stack since it's the most reliable method.
+    # and fallback to the last file on the call stack.
+    declare _functionCallStack=()
+    getFunctionCallStack -r _functionCallStack
+    declare _fileMaybeBeingSourcedDefault="${_functionCallStack[0]}"
+
+
+    # Fallback to the last file on the call stack if the function call stack failed.
+    #
     # `BASH_SOURCE` is an array of the file `source` stack just like `FUNCNAME` is an array of
     # the function call stack. For example:
     #   ${BASH_SOURCE[0]}  =  This file.
@@ -217,17 +228,18 @@ isBeingSourced() {
     #       takes the format `-shellName`)
     #       or file (if a script were run that sourced this file, either directly or transiently through other files).
     # Ref: https://unix.stackexchange.com/questions/4650/determining-path-to-sourced-shell-script/153061#153061
-    #
-    # Thus, compare `$0` (top-level parent, whether file or interactive shell) with either the top-level
-    # file or `$1` if specified.
+    _fileMaybeBeingSourcedDefault="${_fileMaybeBeingSourcedDefault:-${BASH_SOURCE[ ${#BASH_SOURCE[@]} - 1 ]}}"
+
+
+    # Compare `$0` (top-level parent, whether file or interactive shell) with either the file specified as an arg
+    # or the (attempted) file in which the function was called.
     # `$1` allows a "relative" parent to be defined so that the file calling this function can be explicitly
-    # specified, which allows this function to work as expected (it's not an alias, so keywords like `BASH_SOURCE`
+    # specified, which ensures this function to work as expected (it's not an alias, so keywords like `BASH_SOURCE`
     # are defined relative to this function's physical location).
     # It also allows for custom source-checking functionality, i.e. checking if a specific file is being sourced.
     #
-    #
-    # Note that we have to remove any leading hyphen(s) from the calling parents to account for interactive
-    # login shells, e.g. `$0 == -bash` instead of `bash`.
+    # Note that we have to remove any leading hyphen(s) from the parents to account for interactive login shells,
+    # e.g. `$0 == -bash` instead of `bash`.
     #
     # Also, normalize paths to remove relative/absolute path discrepancies.
     # Note: We have to use the same combination of `realpath`, `basename`, `dirname`, etc. to resolve both variables,
@@ -238,10 +250,11 @@ isBeingSourced() {
     #     which  ->  /usr/local/bin/bash
     #     realpath  ->  /usr/local/Cellar/bash/5.1.12/bin/bash
     #     basename  ->  bash
-    declare _fileMaybeBeingSourced="${argsArray[0]}"
-    declare _relativeCallingParent="$(realpath "$(echo "${_fileMaybeBeingSourced:-${BASH_SOURCE[ ${#BASH_SOURCE[@]} - 1 ]}}" | sed -E 's/^-*//')")"
+    declare _fileMaybeBeingSourced="${argsArray[0]:-$_fileMaybeBeingSourcedDefault}"
+    declare _relativeCallingParent="$(realpath "$(echo "$_fileMaybeBeingSourced" | sed -E 's/^-*//')")"
     declare _topLevelCallingParent="$(realpath "$(which "$(echo "$0" | sed -E 's/^-*//')")")"
     declare _shellParent="$(realpath "$(which "$SHELL")")"
+
 
     if [[ -n "$_shellOnly" ]]; then
         # Avoid issues with shebangs by only checking against interactive login shells

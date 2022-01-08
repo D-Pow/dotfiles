@@ -89,7 +89,7 @@ fi
 # If not, then this is probably sourced by a custom script or interactive/login shebang
 # so don't show the error because scripts are meant to be portable. We'll guess what the
 # OS-specific profile directory is dynamically
-if [[ -z "$_osSpecificProfile" ]] && isBeingSourced -s "${BASH_SOURCE[0]}" ; then
+if [[ -z "$_osSpecificProfile" ]] && isBeingSourced -s ; then
     echo "Error: Please specify the dotfiles OS-specific profile directory when sourcing.
     Usage:
         source path/to/dotfiles/.profile \"osDirRelativeToDotfilesDir/optionalNestedDir\"
