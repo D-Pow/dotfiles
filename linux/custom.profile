@@ -202,6 +202,7 @@ _notifyOfUninstalledPackages() {
         ['jq']="JSON parser for Bash (see: https://github.com/stedolan/jq/wiki/Cookbook)."
         # example if-elif statement for array-of-objects filtering:
         #   cat keys-array.json | jq -r '.Keys[] | select((.KeyId | contains("some-val")) or (.KeyName | contains("some-other-val")))'
+        ['gh']='GitHub CLI tool - useful for various operations, e.g. auth, API calls, etc. See: https://github.com/cli/cli/blob/trunk/docs/install_linux.md'
         ['google-chrome-stable']="Add \"deb https://dl.google.com/linux/chrome/deb/ stable main\" in \"Software Sources\" in Software Updater.
     May require \`wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -\` first.
     If installing Chrome causes conflicts between \`/etc/apt/sources.list.d/additional-repositories.list\` and \`/google-chrome.list\`, then remove Chrome from additional-repositories via the Software Updater GUI.
