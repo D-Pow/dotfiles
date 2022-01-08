@@ -43,6 +43,11 @@ shift $#
 # As strings, Bash will perform string replacement whenever it encounters
 # an alias; functions, on the other hand, are "real" code, so they're
 # executed as-is without regard to their location.
+#
+# There are some hacky ways around this, but it's best to avoid them.
+# e.g.
+#   Passing args to aliases: https://askubuntu.com/questions/626458/can-i-pass-arguments-to-an-alias-command/928376#928376
+#   Using aliases within functions: https://askubuntu.com/questions/1123186/how-can-i-use-an-alias-in-a-function
 alias thisFile='echo "$BASH_SOURCE"'
 alias thisDir='echo "$(realpath "`dirname "$(thisFile)"`")"'
 
