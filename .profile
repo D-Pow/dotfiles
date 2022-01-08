@@ -47,38 +47,36 @@ alias thisFile='echo "$BASH_SOURCE"'
 alias thisDir='echo "$(realpath "`dirname "$(thisFile)"`")"'
 
 
-if type thisDir &>/dev/null; then
-    export dotfilesDir="`dirname "$(thisFile)"`" # don't use `thisDir` to preserve symlinks/`~` in resulting path (e.g. if ~/repositories is a symlink to external mounted partition)
+export dotfilesDir="`dirname "$(thisFile)"`" # don't use `thisDir` to preserve symlinks/`~` in resulting path (e.g. if ~/repositories is a symlink to external mounted partition)
 
-    if [[ -z "$_osSpecificProfile" ]]; then
-        # Try to guess the OS-specific .profile directory based off OS
-        if uname | grep -iq 'Linux'; then
-            _osSpecificProfile='linux'
-        elif uname | egrep -iq 'mac|darwin'; then
-            _osSpecificProfile='mac'
-        elif uname | egrep -iq '(CYGWIN)|(MINGW)'; then
-            _osSpecificProfile='Windows/git_bash'
-        fi
+if [[ -z "$_osSpecificProfile" ]]; then
+    # Try to guess the OS-specific .profile directory based off OS
+    if uname | grep -iq 'Linux'; then
+        _osSpecificProfile='linux'
+    elif uname | egrep -iq 'mac|darwin'; then
+        _osSpecificProfile='mac'
+    elif uname | egrep -iq '(CYGWIN)|(MINGW)'; then
+        _osSpecificProfile='Windows/git_bash'
     fi
-
-    declare _osSpecificDir="$dotfilesDir/$_osSpecificProfile"
-    declare _commonProfilesDir="$dotfilesDir/bash-commons"
-
-    # Always source dotfiles/linux/bin/ since it has many useful scripts
-    export PATH="$dotfilesDir/linux/bin:$_osSpecificDir/bin:$HOME/bin:$HOME/.local/bin:$PATH"
-
-    export commonProfile="$_commonProfilesDir/common.profile"
-    export customProfile="$_osSpecificDir/custom.profile"
-    export actualProfile='~/.profile'
-
-    source "$commonProfile"
-    source "$customProfile"
-
-    # Overwritten profile content based on relevant paths
-    alias editprofile="subl -n -w '$customProfile' && source $actualProfile"
-    alias editcommon="subl -n -w '$commonProfile' && source $actualProfile"
-    alias editactual="subl -n -w $actualProfile && source $actualProfile"
 fi
+
+declare _osSpecificDir="$dotfilesDir/$_osSpecificProfile"
+declare _commonProfilesDir="$dotfilesDir/bash-commons"
+
+# Always source dotfiles/linux/bin/ since it has many useful scripts
+export PATH="$dotfilesDir/linux/bin:$_osSpecificDir/bin:$HOME/bin:$HOME/.local/bin:$PATH"
+
+export commonProfile="$_commonProfilesDir/common.profile"
+export customProfile="$_osSpecificDir/custom.profile"
+export actualProfile='~/.profile'
+
+source "$commonProfile"
+source "$customProfile"
+
+# Overwritten profile content based on relevant paths
+alias editprofile="subl -n -w '$customProfile' && source $actualProfile"
+alias editcommon="subl -n -w '$commonProfile' && source $actualProfile"
+alias editactual="subl -n -w $actualProfile && source $actualProfile"
 
 
 # If sourced by the running shell, regardless of where the original `source` call is, i.e.
