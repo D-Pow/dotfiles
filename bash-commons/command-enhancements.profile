@@ -196,12 +196,15 @@ isInteractiveShell() {
     # Refs:
     #   `$-` = https://stackoverflow.com/a/42757277/5771107
     #   TTY vs shell vs terminal = https://unix.stackexchange.com/questions/4126/what-is-the-exact-difference-between-a-terminal-a-shell-a-tty-and-a-con
+    #   Checking if interactive/login shell = https://unix.stackexchange.com/questions/26676/how-to-check-if-a-shell-is-login-interactive-batch/26782#26782
     [[ "${-//i/_}" != "$-" ]]
 }
 
 isLoginShell() {
     # Login shells could be a live (interactive) user's shell or scripts using `#!/usr/bin/env bash -l`
-    shopt -s | egrep -iq 'login_shell'
+    #
+    # `-q` is the equivalent of `{ shopt -s | egrep -iq 'login_shell'; }`
+    shopt -q login_shell
 }
 
 
