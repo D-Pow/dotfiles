@@ -97,6 +97,93 @@ isDefined() {
 }
 
 
+getFunctionCallStack() {
+    declare USAGE="[-l|--line-numbers] [-c|--command] [-r|--return-array-name arrayName]
+    Gets the file paths from the function call stack, starting from wherever this function was called up to the top-level parent.
+    Optionally, also includes the functions called and/or the line number in the file where they're defined.
+
+    Example:
+        # script-1.sh
+        #!/usr/bin/env -S bash
+        source ./script-2.sh
+        showFunctionCallStack() {
+            printStuff
+        }
+        echo \"\${BASH_SOURCE[0]}\"
+        showFunctionCallStack
+
+
+        # script-2.sh
+        #!/usr/bin/env -S bash
+        printStuff() {
+            ${FUNCNAME[0]} -lc
+        }
+        echo \"\${BASH_SOURCE[0]}\"
+        printStuff
+
+
+        # Terminal
+        [bash] > ./script-1.sh
+
+
+        # Output from the \`source script-2.sh\` call
+        ./script-2.sh
+        \"6 source ./script-2.sh\"  \"2 main /abs/path/script-1.sh
+        # Output from the \`showFunctionCallStack\` call
+        /abs/path/script-1.sh
+        \"4 showFunctionCallStack /abs/path/script-1.sh\"  \"7 main /abs/path/script-1.sh
+    "
+    declare _callStackKeepLineNumber=
+    declare _callStackKeepCommand=
+    declare _retArrNameCallStack=()
+    declare -A _callStackOptions=(
+        ['c|command,_callStackKeepCommand']="Keep the base command used to run the file (doesn't include flags/args)."
+        ['l|line-numbers,_callStackKeepLineNumber']="Keep file line numbers in the output."
+        ['r|return-array-name:,_retArrNameCallStack']="Name of a (previously declared) array in which to store the results (default is printing to STDOUT)."
+        ['USAGE']="$USAGE"
+    )
+    declare argsArray=
+
+    parseArgs _callStackOptions "$@"
+    (( $? )) && return 1
+
+
+    declare _callStack=()
+    declare _callerId=1  # Don't use 0 b/c that would include this function
+
+    # `caller` is essentially equivalent to iterating through each of ${BASH_LINENO[@]}, ${FUNCNAME[@]}, and ${BASH_SOURCE[@]},
+    # except it combines each in one simple call
+    while caller $_callerId &>/dev/null; do
+        declare _callStackEntry=($(caller $_callerId))
+        declare _callStackLineNumber="${_callStackEntry[0]}"
+        declare _callStackCommandWithoutArgs="${_callStackEntry[1]}"
+        declare _callStackFile="$(array.slice _callStackEntry 2)"
+        declare _callStackOutput=''
+
+        (( _callerId++ ))
+
+        if [[ -n "$_callStackKeepLineNumber" ]]; then
+            _callStackOutput+="$_callStackLineNumber "
+        fi
+
+        if [[ -n "$_callStackKeepCommand" ]]; then
+            _callStackOutput+="$_callStackCommandWithoutArgs "
+        fi
+
+        _callStackOutput+="$_callStackFile"
+
+        _callStack+=("$_callStackOutput")
+    done
+
+    if [[ -n "$_retArrNameCallStack" ]]; then
+        declare -n _retArrCallStack="$_retArrNameCallStack"
+        _retArrCallStack=("${_callStack[@]}")
+    else
+        echo "${_callStack[@]}"
+    fi
+}
+
+
 isBeingSourced() {
     declare USAGE="[-s|--shell] [BASH_SOURCE filename]
     Determines if the file is being called via \`source script.sh\` or \`./script.sh\`.
