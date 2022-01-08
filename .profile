@@ -32,6 +32,10 @@ fi
 declare _osSpecificProfile="$1"
 
 
+# Remove all other unused args to avoid affecting nested functions/aliases
+shift $#
+
+
 # Utils to get the currently running file or the directory it's in.
 # These must be aliases b/c if they were functions, they'd return the
 # paths of this file, not the file it's called in.
