@@ -135,6 +135,52 @@ export NVM_SYMLINK_CURRENT=true # Makes a symlink at ~/.nvm/current/bin/node so 
 export PATH="$NVM_CURRENT_HOME/bin:$PATH"
 
 
+yarnRerunCommand() {
+    # Re-runs a `yarn` command, killing the original great grandparent parent `yarn` process
+    # if needed.
+    #
+    # Default to reading yarn command/args from function args.
+    # e.g. `yarnRerunCommand add pkg-a pkg-b` where `add` is the command and the rest are flags/args.
+    declare yarnCommand="$1"
+    shift
+    declare yarnArgs=("$@")
+
+    if [[ -z "$yarnCommand" ]]; then
+        # Fallback to reading them from original command run/npm env var
+        yarnCommand="$(getYarnArgs -c)"
+        yarnArgs=($(getYarnArgs))
+    fi
+
+    if [[ -n "${yarnArgs[@]}" ]]; then
+        # Since this is a re-run of a command, the parent `yarn` process is still running, waiting
+        # for this Bash script (a deeply nested child process) to finish.
+        #
+        # If there are no args, then that means the user ran something akin to `yarn install`, `yarn`
+        # (whose default command is `install`), or similar. These parent processes pose no issue
+        # for re-running the command because they will check package.json/yarn.lock for any changes,
+        # and self-quit if no changes are found or needed. Since re-running these commands results
+        # in a valid package.json/yarn.lock file, we can let the parent proceed as normal.
+        #
+        # However, for commands with args (like `yarn add pkg`), yarn will always assume a change
+        # is needed, meaning the parent will continue to run the original command even after this
+        # function runs it/makes the necessary changes.
+        # This means duplicate installs will take place if adding a new package (first from the re-run,
+        # then from the parent). For public packages, this is just bad dev experience with no issues or
+        # crashes, but for private packages requiring auth credentials set by this script, this means the
+        # parent yarn process will crash since .npmrc/.yarnrc weren't modified before it was run (their
+        # values have already been loaded into the parent's RAM so changes won't be picked up).
+        #
+        # Thus, if any args are present, kill the parent yarn process running the same command so
+        # that it doesn't crash when it finds it wasn't authenticated (which has the additional benefit
+        # of not duplicating installs).
+        kill -s INT "$(findPids "yarn(.js)? $(getYarnArgs -k)")"
+    fi
+
+
+    yarn $yarnCommand ${yarnArgs[@]}
+}
+
+
 
 ################
 ###  Python  ###
