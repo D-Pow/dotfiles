@@ -346,17 +346,18 @@ _grepIgnoredDirs=('node_modules' '.git' '.idea' 'lcov-report')
 
 alias grep="grep --exclude-dir={`array.join -s _grepIgnoredDirs ','`} --color=auto"
 
-_egrepCommand=
-_setEgrepCommand() {
+egrep() {
+    declare _egrepCommandFlag='-P'
     declare perlRegexSupported="$(echo 'true' | grep -P 'u' 2>/dev/null)"
 
-    if [[ -n "$perlRegexSupported" ]]; then
-        _egrepCommand='grep -P'
-    else
-        _egrepCommand='grep -E'
+    if [[ -z "$perlRegexSupported" ]]; then
+        _egrepCommandFlag='-E'
     fi
-} && _setEgrepCommand
-alias egrep=$_egrepCommand
+
+    grep $_egrepCommandFlag "$@" < /dev/stdin
+}
+
+alias eegrep='$(which egrep)'
 
 gril() {
     declare query="$1"

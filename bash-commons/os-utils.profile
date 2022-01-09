@@ -222,7 +222,7 @@ getVarsByPrefix() {
 
 
 whereIsVarDefined() (
-    declare USAGE="${FUNCNAME[0]} [\`$(alias egrep)\` flags/args]
+    declare USAGE="${FUNCNAME[0]} [\`grep -P\` flags/args]
     Finds where a variable in the user's Bash login shell was defined.
     "
     # Inspired by: https://unix.stackexchange.com/questions/813/how-to-determine-where-an-environment-variable-came-from/154971#154971
@@ -433,6 +433,7 @@ _pasteCommand=
 copy() {
     # Create new `copy` command for writing content to the clipboard.
     # Can be used with both piping `echo "hi" | copy` and with args `copy "hi"`.
+    #   Ref: https://stackoverflow.com/questions/5130968/how-can-i-copy-the-output-of-a-command-directly-into-my-clipboard/62517779#62517779
     #
     #
     # Input from `&0` and/or `/dev/stdin` can be piped directly to another command,
@@ -442,6 +443,7 @@ copy() {
     # match one-by-one to `&1`, then a `read` call must be made.
     #
     # This can be done by either:
+    #
     # 1) "Parallel"/piping output as it's processed, per-entry, in a loop:
     #       while read inputLine; do
     #           echo "$inputLine"
@@ -449,6 +451,7 @@ copy() {
     # 2) "Sequential"/non-piping to collect all input before doing anything:
     #       `readarray -t inputArray`
     #     Where `readarray` == `mapfile`, both of which are array-friendly versions of `read`
+    # 3) See below.
     #
     # Both use IFS to determine distinct entries, so something
     # like `echo 'a b' c | myFunc` will read `a b c` as one entry.
@@ -460,7 +463,10 @@ copy() {
     # Alternatively, we could use `<<<&0` or something, but that gets even more complicated.
     # Avoid that mess by just using the built-in, more user-friendly, `readX` functions.
     #
-    # Ref: https://stackoverflow.com/questions/5130968/how-can-i-copy-the-output-of-a-command-directly-into-my-clipboard/62517779#62517779
+    #
+    # Alternatively, if supported on your OS (it is on Linux and, surprisingly, Mac), you could use
+    # the special `/dev/std(in|out|err)` files to just redirect the content accordingly.
+    # See: http://manpages.ubuntu.com/manpages/trusty/en/man1/bash.1.html#:~:text=Bash%20handles%20several%20filenames%20specially%20when%20they%20are%20used%20in%20redirections%2C%20as%20%20described%0A%20%20%20%20%20%20%20in%20the%20following%20table%3A
     declare _toCopyArgs=("$@")
     declare _toCopyStdin=()
 

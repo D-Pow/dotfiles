@@ -44,6 +44,10 @@ COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
 #
 # To wait for them all to come in, and then read them all into an array:
 #   readarray -t stdin
+#
+# Skip all the difficulty of redirections by reading from one of the special `/dev/std(in|out|err)` files
+# See: http://manpages.ubuntu.com/manpages/trusty/en/man1/bash.1.html#:~:text=Bash%20handles%20several%20filenames%20specially%20when%20they%20are%20used%20in%20redirections%2C%20as%20%20described%0A%20%20%20%20%20%20%20in%20the%20following%20table%3A
+#   myCommandAcceptingBothArgsAndStdin "$@" < /dev/stdin
 
 
 
