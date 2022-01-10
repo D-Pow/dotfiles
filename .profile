@@ -48,11 +48,16 @@ shift $#
 # e.g.
 #   Passing args to aliases: https://askubuntu.com/questions/626458/can-i-pass-arguments-to-an-alias-command/928376#928376
 #   Using aliases within functions: https://askubuntu.com/questions/1123186/how-can-i-use-an-alias-in-a-function
-alias thisFile='echo "$BASH_SOURCE"'
-alias thisDir='echo "$(realpath "`dirname "$(thisFile)"`")"'
+# Or `caller` (see: ./bash-commons/)
+alias thisFile='echo "${BASH_SOURCE[0]}"'
+alias thisDir='echo "$(realpath "$(dirname "$(thisFile)")")"'
 
 
-export dotfilesDir="`dirname "$(thisFile)"`" # don't use `thisDir` to preserve symlinks/`~` in resulting path (e.g. if ~/repositories is a symlink to external mounted partition)
+# Don't use `thisDir` because it uses `realpath` which resolves absolute paths instead of preserving
+# symlinks, which ruins some utils when dotfiles is on an external drive/mounted partition.
+# e.g. `repos` resolves all directories in the same parent directory as dotfiles.
+export dotfilesDir="$(dirname "$(thisFile)")"
+
 
 if [[ -z "$_osSpecificProfile" ]]; then
     # Try to guess the OS-specific .profile directory based off OS
