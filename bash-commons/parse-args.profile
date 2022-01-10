@@ -147,7 +147,7 @@ parseArgs() {
     # Mark if an unknown-flag handler has been set, even if it's blank;
     # `${var+word}` will return `word` if the value is set or blank (e.g. `declare var=`),
     # but not if it is null (e.g. `declare var`)
-    if [[ -n "${_parentOptionConfig['?']+yo}" ]]; then
+    if [[ -n "${_parentOptionConfig['?']+hasHandler}" ]]; then
         hasUnknownFlagHandler=true
     fi
 
@@ -438,6 +438,10 @@ parseArgs() {
     shift "$((OPTIND - 1))"
 
     remainingArgs+=("$@")
+
+    # Let the parent know which arg index it stopped at.
+    # Likely won't be necessary since all flags/args are handled here, but why not.
+    echo "$OPTIND"
 }
 
 
