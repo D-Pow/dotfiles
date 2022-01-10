@@ -240,22 +240,100 @@ getVarsByPrefix() {
 
 
 whereIsVarDefined() (
-    declare USAGE="${FUNCNAME[0]} [\`grep -P\` flags/args]
+    declare USAGE="${FUNCNAME[0]} <nameToFind> [\`grep -P\` options]
     Finds where a variable in the user's Bash login shell was defined.
     "
-    # Inspired by: https://unix.stackexchange.com/questions/813/how-to-determine-where-an-environment-variable-came-from/154971#154971
+    # Inspired by:
+    #   https://unix.stackexchange.com/questions/813/how-to-determine-where-an-environment-variable-came-from/154971#154971
+    #   https://unix.stackexchange.com/questions/322817/how-to-find-the-file-where-a-bash-function-is-defined/322887#322887
     # Except you stay in the resulting `bash` shell session rather than returning to your own,
     # and you can't `grep` the output.
-    # Adding `-ic 'exit'` causes the resulting shell to exit:
+    # Adding `-ic 'exit'` to the nested `bash` command causes the resulting shell to exit:
     #   `-c 'exit'` to run the command.
     #   `-i` to ensure that bash finishes loading before exit is called (without `-i`, it exits prematurely).
+    #
+    # Test with:
+    # source ~/.profile; ( for var in {egrep,eegrep,dotfilesDir}; do echo "$var"; whereIsVarDefined "$var"; echo -e "\n-----\n"; done; )
 
-    if [[ "$1" =~ -h|--help ]] || (( $# == 0 )); then
+    if [[ "$1" =~ -h ]] || (( $# == 0 )); then
         echo -e "$USAGE" >&2
         return 1
     fi
 
-    ( PS4='+$BASH_SOURCE> ' BASH_XTRACEFD=7 bash -xlic 'exit' 7>&2 ) 2>&1 | egrep "$@"
+    declare _varToFind="$1"
+
+    shift
+
+    # Outputs a single word:
+    #   'keyword' = language keywords, e.g. `if`
+    #   'builtin' = Bash commands that aren't executables, e.g. `declare` or `shopt`
+    #   'file' = executables, regardless of native or custom PATH
+    #   'alias'
+    #   'function'
+    #   '' = variable
+    declare _varType="$(type -t "$_varToFind")"
+
+
+    if [[ "$_varType" == 'keyword' || "$_varType" == 'builtin' ]]; then
+        echo "$_varType"
+
+        return
+    fi
+
+
+    if [[ "$_varType" == 'file' ]]; then
+        abspath "$_varToFind"
+
+        return
+    fi
+
+
+    # If alias/function/variable, then we must debug a new interactive login Bash shell to
+    # find the origin and/or where it was overwritten.
+
+    # Delimiter placed after the filename, both at the end of `PS4` line (for aliases/variables)
+    # and manually added after function `declare` statements.
+    declare _varFileDelimiter='<<>>'
+    # Command to run in the debugged Bash shell.
+    # Default to getting the definitions of aliases and variables.
+    declare _varBashCommand="declare -p $_varToFind"
+    # Extra flags to pass to the debugged `bash` command.
+    declare _extraBashFlags=
+
+    if [[ "$_varType" == 'function' ]]; then
+        # `declare -p` doesn't work for functions.
+        # `declare -F` usually only gets the function name, but in a debug shell session, it functions
+        # in the same way that `caller` does.
+        _varBashCommand="echo \"\$(declare -F $_varToFind)$_varFileDelimiter\""
+    else
+        # `bash -x` activates debug mode from the initiation of the process, so every single call
+        # parsed by Bash is shown (except function definitions and anything defined/found in $PATH
+        # instead of sourced files).
+        _extraBashFlags='-x'
+    fi
+
+    # `shopt -s extdebug` = Activate debug mode where it was called
+    # `bash -x` = Activate debug mode for the duration of the shell session.
+    # In debug mode, Bash always outputs debug traces to STDERR, but that can be changed with the
+    # env var `BASH_XTRACEFD=<number>`.
+    # However, outputting the traces to STDOUT (1) causes normal STDOUT by the parent shell (which
+    # called this function) to be overwritten, so it doesn't pick up the `declare -p` commands for
+    # aliases and variables. That could probably be fixed with manually redirecting the nested bash
+    # command defined above to STDOUT, but simply redirecting all STDERR to STDOUT afterwards is
+    # easier; it's also more reliable so we don't accidentally pick up calls to the desired variable
+    # made in other sourced files.
+    (
+        PS4="+\${BASH_SOURCE[0]}$_varFileDelimiter " \
+        bash -lic $_extraBashFlags "shopt -s extdebug; set -x; $_varBashCommand; set +x; exit;"
+    ) 2>&1 \
+        | egrep "$@" "$_varToFind" \
+        | egrep -o "[^\+ ]*/.*(?=$_varFileDelimiter)" \
+        | uniq
+    # Grep for the desired variable, filter out the filenames from the debug trace using the
+    # specified delimiter (e.g. +++/path/to/some.profile<<>> alias <varName>=<varDefinition>),
+    # and then reduce duplicated definitions in the same file via `uniq` (however, leave duplicate
+    # definitions in different files so it shows all files that define the variable in order of
+    # when they defined it).
 )
 
 
