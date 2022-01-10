@@ -29,8 +29,34 @@ if [ -n "$BASH_VERSION" ]; then
 fi
 
 
-declare _specifiedProfileDir="$1"
-declare _profileDir="$_specifiedProfileDir"
+
+declare _profileDir="$1"
+
+
+# If sourced by the running shell, regardless of where the original `source` call is, i.e.
+#   `source $HOME/.profile` (contains `source dotfiles/.profile`)
+#   or
+#   `source /path/to/dotfiles/.profile`
+# then the shell is both interactive and live.
+#
+# If so, then it's sourced directly by the user, not a shell script or system process,
+# so they should be notified that they aren't sourcing this .profile in a safe way and
+# that they should update their code accordingly.
+# If not, then this is probably sourced by a custom script or interactive/login shebang
+# so don't show the error because scripts are meant to be portable. We'll guess what the
+# OS-specific profile directory is dynamically
+if [[ -z "$1" ]] && isBeingSourced -s ; then
+    echo "Error: Please specify the dotfiles OS-specific profile directory when sourcing.
+    Usage:
+        source path/to/dotfiles/.profile \"osDirRelativeToDotfilesDir/optionalNestedDir\"
+
+    Note: Do not append "/" to the end of the directory.
+
+    Examples:
+        source /home/repositories/dotfiles/.profile \"linux\"
+        source /home/repositories/dotfiles/.profile \"Windows/git_bash\"
+    " >&2
+fi
 
 
 # Remove all other unused args to avoid affecting nested functions/aliases
@@ -88,29 +114,3 @@ source "$customProfile"
 alias editprofile="subl -n -w '$customProfile' && source $actualProfile"
 alias editcommon="subl -n -w '$commonProfile' && source $actualProfile"
 alias editactual="subl -n -w $actualProfile && source $actualProfile"
-
-
-# If sourced by the running shell, regardless of where the original `source` call is, i.e.
-#   `source $HOME/.profile` (contains `source dotfiles/.profile`)
-#   or
-#   `source /path/to/dotfiles/.profile`
-# then the shell is both interactive and live.
-#
-# If so, then it's sourced directly by the user, not a shell script or system process,
-# so they should be notified that they aren't sourcing this .profile in a safe way and
-# that they should update their code accordingly.
-# If not, then this is probably sourced by a custom script or interactive/login shebang
-# so don't show the error because scripts are meant to be portable. We'll guess what the
-# OS-specific profile directory is dynamically
-if [[ -z "$_specifiedProfileDir" ]] && isBeingSourced -s ; then
-    echo "Error: Please specify the dotfiles OS-specific profile directory when sourcing.
-    Usage:
-        source path/to/dotfiles/.profile \"osDirRelativeToDotfilesDir/optionalNestedDir\"
-
-    Note: Do not append "/" to the end of the directory.
-
-    Examples:
-        source /home/repositories/dotfiles/.profile \"linux\"
-        source /home/repositories/dotfiles/.profile \"Windows/git_bash\"
-    " >&2
-fi
