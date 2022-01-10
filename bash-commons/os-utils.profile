@@ -368,6 +368,24 @@ trapAdd() {
 }
 
 
+getLargestAvailableFd() {
+    if [[ -d /dev/fd ]]; then
+        # File descriptor dir is defined, so get the number from there.
+        # Disable color from `ls` so the ASCII chars representing them aren't included in `grep`.
+        # Only get the digits (to exclude classifiers since `-F|--classify` from our custom `ls`
+        #   alias can't be disabled once enabled).
+        # Add 10 to allow extra FDs to be created in between this command and where it's used.
+        echo $(( $(ls --color=never /dev/fd | egrep -o '\d+' | sort -r | head -n 1) + 10 ))
+
+        return
+    fi
+
+    # /dev/ dir doesn't have /fd/ so get it manually.
+    # Only add 3 instead of 10 b/c `exec` usually chooses an FD that's already much higher than
+    # the current highest FD.
+    echo $(( $( ( exec {FD}>/dev/null; echo $FD; exec $FD>&-; ) 2>/dev/null ) + 3 ))
+}
+
 makeTempPipe() {
     # Refs:
     # https://stackoverflow.com/questions/8297415/in-bash-how-to-find-the-lowest-numbered-unused-file-descriptor/17030546#17030546
