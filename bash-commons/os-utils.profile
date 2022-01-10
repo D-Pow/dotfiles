@@ -1,3 +1,21 @@
+abspath() {
+    # Without flags, `realpath` is the same as `readlink` if the path
+    # exists; however, if it doesn't, `realpath` will still resolve the
+    # specified path even though it doesn't exist.
+    #
+    # Both follow symlinks.
+    #
+    # `-e` ensures the path exists for both of them, which fixes that issue.
+    # `realpath -e` will print an error whereas `readlink -e` does not.
+    # This is helpful in this case since we're using it in tandem with other commands.
+    #
+    # `type -P` will traverse $PATH to try to find the file if it isn't found by `readlink`.
+    #
+    # Ref: https://stackoverflow.com/a/66044002/5771107
+    readlink -e "$1" || type -P "$1" || { echo "'$1' not found." >&2 && return 1; }
+}
+
+
 isLinux() {
     os-version -o | grep -iq 'Linux'
 }
