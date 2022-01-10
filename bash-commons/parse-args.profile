@@ -75,11 +75,13 @@ parseArgs() {
             ['?']='String to pass to \`eval\` upon unknown flag discovery.'
                    # Defaults to \`echo -e \"\$USAGE\"; return 1;\`.
                    #
-                   # Set the key but leave it blank (i.e. \`['?']=\`) to merge unknown flags and their
-                   # values into \`argsArray\` and step over them to continue parsing the following flags.
+                   # Set the key to \`break\` to stop parsing at the first unknown flag, merging it and all
+                   # following flags/args (regardless of whether or not they're known) into \`argsArray\`.
                    #
-                   # Pass \`break\` to stop parsing at the first unknown flag, merging it and all following
-                   # flags (regardless of whether or not they're known) into \`argsArray\`.
+                   # Set the key but leave it blank (i.e. \`['?']=\`) to step over unknown flags if encountered
+                   # and continue trying to parse known flags that might exist after unknown ones.
+                   # All unknown flags and their values will still be placed in \`argsArray\` like they are
+                   # with \`break\`.
                    #
                    # These are useful for e.g. forwarding flags to underlying scripts/functions without
                    # duplicating all those flags in their own USAGE docs.
@@ -245,6 +247,7 @@ parseArgs() {
 
     declare opt
     declare OPTIND=1
+    declare prevOptind=$OPTIND # Helps split single-hyphen, multi-char unknown flags. See below for details.
 
     while getopts "$getoptsStr" opt; do
         if [[ "$opt" == "-" ]]; then
@@ -338,12 +341,43 @@ parseArgs() {
                     # so convert/add to an array instead of string
                     getoptsVariable+=("$OPTARG")
                 fi
+
+                # Track OPTIND for each known flag to handle single-hyphen, multi-char unknown flags
+                prevOptind=$OPTIND
             fi
         done
 
         if [[ -z "$optHandled" ]]; then
             if [[ -n "$hasUnknownFlagHandler" ]]; then
                 eval "$unknownFlagHandler"
+
+                if (( $OPTIND == $prevOptind )); then
+                    # NOTE: OPTIND only increments if the flag is in "standard" format,
+                    # e.g. `-a Val` or `-a=Val`
+                    # But in the case of a flag merged with other flags and/or their values,
+                    # e.g. `-aVal` or `-abc Val` or `-abcVal` or `-abc == -a -b -c`
+                    # then it's NOT incremented until it reaches the end of the string.
+                    #
+                    # This is because OPTIND technically holds the index of the *next*
+                    # arg, and `getopts` hasn't encountered the next arg yet b/c it's stuck
+                    # iterating on the merged flag(s) characters one-by-one.
+                    # See: https://unix.stackexchange.com/questions/214141/explain-the-shell-command-shift-optind-1/214151
+                    #
+                    # Some common analogies IRL:
+                    #   find -iname val
+                    #   grep -B4
+                    # Though, technically, these would still be handled by `getopts` as expected since they're defined in
+                    # the getopts string, i.e. find -> opt=i, OPTIND=2, OPTARG=val
+                    #
+                    # Thus, in this situation, just skip it since a future iteration will capture
+                    # the whole string.
+                    #
+                    # An alternative would be to try to split the characters manually,
+                    # e.g. `echo '-abcd' | sed -E 's/\W*(\w)\W*/-\1 /g'`
+                    # but this might mess up whatever these flags are passed to by the parent,
+                    # so just leave them as-is and let the parent handle them itself.
+                    continue
+                fi
 
                 # `opt` and `OPTARG` were manually parsed above, but that only works for known flags.
                 # Since we now need to parse an unknown flag, we don't know what format it took
