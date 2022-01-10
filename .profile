@@ -29,7 +29,8 @@ if [ -n "$BASH_VERSION" ]; then
 fi
 
 
-declare _osSpecificProfile="$1"
+declare _specifiedProfileDir="$1"
+declare _profileDir="$_specifiedProfileDir"
 
 
 # Remove all other unused args to avoid affecting nested functions/aliases
@@ -59,18 +60,18 @@ alias thisDir='echo "$(realpath "$(dirname "$(thisFile)")")"'
 export dotfilesDir="$(dirname "$(thisFile)")"
 
 
-if [[ -z "$_osSpecificProfile" ]]; then
+if [[ -z "$_profileDir" ]]; then
     # Try to guess the OS-specific .profile directory based off OS
     if uname | grep -iq 'Linux'; then
-        _osSpecificProfile='linux'
+        _profileDir='linux'
     elif uname | egrep -iq 'mac|darwin'; then
-        _osSpecificProfile='mac'
+        _profileDir='mac'
     elif uname | egrep -iq '(CYGWIN)|(MINGW)'; then
-        _osSpecificProfile='Windows/git_bash'
+        _profileDir='Windows/git_bash'
     fi
 fi
 
-declare _osSpecificDir="$dotfilesDir/$_osSpecificProfile"
+declare _osSpecificDir="$dotfilesDir/$_profileDir"
 declare _commonProfilesDir="$dotfilesDir/bash-commons"
 
 # Always source dotfiles/linux/bin/ since it has many useful scripts
@@ -101,7 +102,7 @@ alias editactual="subl -n -w $actualProfile && source $actualProfile"
 # If not, then this is probably sourced by a custom script or interactive/login shebang
 # so don't show the error because scripts are meant to be portable. We'll guess what the
 # OS-specific profile directory is dynamically
-if [[ -z "$_osSpecificProfile" ]] && isBeingSourced -s ; then
+if [[ -z "$_specifiedProfileDir" ]] && isBeingSourced -s ; then
     echo "Error: Please specify the dotfiles OS-specific profile directory when sourcing.
     Usage:
         source path/to/dotfiles/.profile \"osDirRelativeToDotfilesDir/optionalNestedDir\"
