@@ -109,7 +109,7 @@ getFunctionCallStack() {
         showFunctionCallStack() {
             printStuff
         }
-        echo \"\${BASH_SOURCE[0]}\"
+        echo \"Output from \${BASH_SOURCE[0]}\"
         showFunctionCallStack
 
 
@@ -118,20 +118,18 @@ getFunctionCallStack() {
         printStuff() {
             ${FUNCNAME[0]} -lc
         }
-        echo \"\${BASH_SOURCE[0]}\"
+        echo \"Output from \${BASH_SOURCE[0]}\"
         printStuff
 
 
         # Terminal
-        [bash] > ./script-1.sh
+        ./script-1.sh
 
-
-        # Output from the \`source script-2.sh\` call
-        ./script-2.sh
-        \"6 source ./script-2.sh\"  \"2 main /abs/path/script-1.sh
-        # Output from the \`showFunctionCallStack\` call
-        /abs/path/script-1.sh
-        \"4 showFunctionCallStack /abs/path/script-1.sh\"  \"7 main /abs/path/script-1.sh
+        # Result
+        Output from ./script-2.sh
+        \"3 printStuff ./script-2.sh\"  \"6 source ./script-2.sh\"  \"2 main /abs/path/script-1.sh
+        Output from /abs/path/script-1.sh\"
+        \"3 printStuff ./script-2.sh\"  \"4 showFunctionCallStack /abs/path/script-1.sh\"  \"7 main /abs/path/script-1.sh
     "
     declare _callStackKeepLineNumber=
     declare _callStackKeepCommand=
