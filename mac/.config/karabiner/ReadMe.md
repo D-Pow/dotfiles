@@ -8,6 +8,7 @@ The best option out there for re-mapping keyboard/mouse buttons to custom functi
 * **Disable `Spaces` in Mac keyboard shortcuts**
     - `System Preferences --> Keyboard --> Shortcuts --> Mission Control --> Move (left|right) a space`.
     - Required to allow `Ctrl+(left|right)_arrow` work in JetBrains.
+* **Disable `Screenshots` in Mac keyboard shortcuts**
 * **Other**
     - `JetBrains --> Keymap --> Activate Next Window --> Command+Tilde`
 * [Rules defined first take precedence over rules defined later](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-evaluation-priority/)

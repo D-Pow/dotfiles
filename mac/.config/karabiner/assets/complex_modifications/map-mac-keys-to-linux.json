@@ -494,52 +494,6 @@
                 {
                     "type": "basic",
                     "from": {
-                        "key_code": "home"
-                    },
-                    "to": [
-                        {
-                            "key_code": "up_arrow",
-                            "modifiers": [
-                                "option"
-                            ]
-                        }
-                    ],
-                    "conditions": [
-                        {
-                            "type": "frontmost_application_if",
-                            "bundle_identifiers": [
-                                "com.google.Chrome",
-                                "org.mozilla.firefox"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "type": "basic",
-                    "from": {
-                        "key_code": "end"
-                    },
-                    "to": [
-                        {
-                            "key_code": "down_arrow",
-                            "modifiers": [
-                                "option"
-                            ]
-                        }
-                    ],
-                    "conditions": [
-                        {
-                            "type": "frontmost_application_if",
-                            "bundle_identifiers": [
-                                "com.google.Chrome",
-                                "org.mozilla.firefox"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "type": "basic",
-                    "from": {
                         "key_code": "i",
                         "modifiers": {
                             "mandatory": [
@@ -905,6 +859,52 @@
         {
             "description": "Home/End to behave like PC",
             "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "home"
+                    },
+                    "to": [
+                        {
+                            "key_code": "up_arrow",
+                            "modifiers": [
+                                "option"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_if",
+                            "bundle_identifiers": [
+                                "com.google.Chrome",
+                                "org.mozilla.firefox"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "end"
+                    },
+                    "to": [
+                        {
+                            "key_code": "down_arrow",
+                            "modifiers": [
+                                "option"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "frontmost_application_if",
+                            "bundle_identifiers": [
+                                "com.google.Chrome",
+                                "org.mozilla.firefox"
+                            ]
+                        }
+                    ]
+                },
                 {
                     "type": "basic",
                     "from": {
