@@ -26,7 +26,10 @@ npmvalidatePackageLockResolvedUrls() {
 }
 
 alias npmrtf="npm run test 2>&1 | egrep -o '^FAIL.*'" # only print filenames of suites that failed
-alias npmPackagesWithVulns="npm audit | grep 'Dependency of' | sort -u | egrep -o '\S+(?=\s\[\w+\])'"
+# npm@>=8 prints the dependencies in a white space-indented nested list with "Depends on"
+# npm@<=7 prints them in a non-ASCII table with "Dependency of"
+# Nested dependencies of both will either not match those strings or will start with >= 3 spaces
+alias npmPackagesWithVulns="npm audit | egrep '(Dependency of)|(^..Depends on)' | egrep -v '^\s{3,}' | sort -u | egrep -o '\S+(?=(\s\[\w+\])|$)' | awk '/[:ascii:]/ { print }' | sort -ur"
 
 npmGetProjectPath() {
     npm prefix
