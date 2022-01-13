@@ -225,6 +225,9 @@ pipsearch() {
 #########################
 ###  GitHub CLI (gh)  ###
 #########################
+# REST API: https://docs.github.com/en/rest
+# CLI: https://cli.github.com/manual
+#   Install: https://github.com/cli/cli#installation
 
 ghScopes() {
     # Docs: https://cli.github.com/manual/gh_api
