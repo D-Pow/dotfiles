@@ -16,6 +16,16 @@ abspath() {
 }
 
 
+timestamp() {
+    # Creates a readable timestamp using all the useful fields and none of the useless ones.
+    # e.g. `12/31/2020-15:31:05_(EST)`
+    #
+    # Refs:
+    #   https://stackoverflow.com/questions/17066250/create-timestamp-variable-in-bash-script/69400542#69400542
+    date '+%m/%d/%Y-%H:%M:%S_(%Z)'
+}
+
+
 isLinux() {
     os-version -o | grep -iq 'Linux'
 }
