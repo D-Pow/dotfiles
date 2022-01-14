@@ -108,10 +108,20 @@ export commonProfile="$_commonProfilesDir/common.profile"
 export customProfile="$_osSpecificDir/custom.profile"
 export actualProfile="$HOME/.profile"
 
-source "$commonProfile"
-source "$customProfile"
+
+_editProfile() {
+    declare _profileToEdit="$1"
+    declare _profileToSource="${2:-$actualProfile}"
+
+    subl -n -w "$_profileToEdit" && source "$_profileToSource"
+}
+
 
 # Overwritten profile content based on relevant paths
-alias editprofile="subl -n -w '$customProfile' && source $actualProfile"
-alias editcommon="subl -n -w '$commonProfile' && source $actualProfile"
-alias editactual="subl -n -w $actualProfile && source $actualProfile"
+alias editprofile="_editProfile '$customProfile'"
+alias editcommon="_editProfile '$commonProfile'"
+alias editactual="_editProfile '$actualProfile'"
+
+
+source "$commonProfile"
+source "$customProfile"
