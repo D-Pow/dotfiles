@@ -396,7 +396,12 @@ parseArgs() {
                 declare nextFlagMaybeIndex=$(( OPTIND + 1 ))
                 declare nextFlagMaybe="${!nextFlagMaybeIndex}"
 
-                if [[ "$unknownFlag" =~ = ]]; then
+                if [[ "$unknownFlag" == '-h' || "$unknownFlag" == '--help' ]]; then
+                    # Make next iteration execute the "help" sequence by removing the handler
+                    # and back-tracking by one arg
+                    hasUnknownFlagHandler=
+                    (( OPTIND-- ))
+                elif [[ "$unknownFlag" =~ = ]]; then
                     # Unknown flag had an equals sign, e.g. `-a=b` or `--aa=b`
                     # so we don't have to worry about the next arg after it,
                     # and we can just add the whole thing directly to `argsArray`
