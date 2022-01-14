@@ -122,7 +122,7 @@ gitGetIgnoredFiles() {
         ['s|status,_ignoredFilesStatus']='Show `git status` output instead of a list of files.'
         ['i|ignored-only,_ignoredFilesOnlyIgnored']='Only include ignored files.'
         ['u|untracked-only,_ignoredFilesOnlyUntracked']='Only include untracked files.'
-        ['f|file:,_ignoredFilesGitignoreFile']='Specific .gitignore file to use (default: `./.gitignore` if it exists).'
+        ['f|file:,_ignoredFilesGitignoreFile']='Specific .gitignore file to use (defaults to all `.gitignore` files in the repo).'
         [':']=
         ['?']=
         ['USAGE']="$USAGE"
@@ -139,7 +139,6 @@ gitGetIgnoredFiles() {
 
 
     declare _ignoredFilesCmd=('git' 'ls-files')
-    _ignoredFilesGitignoreFile="${_ignoredFilesGitignoreFile:-.gitignore}"
 
 
     if [[ -n "$_ignoredFilesOnlyIgnored" ]]; then
