@@ -1,6 +1,16 @@
 ### Which nested `mac/` environment's .profile should be sourced ###
-# Source it at the end to ensure all Mac defaults are included/defined first
-CURRENT_ENV='Nextdoor'
+# Source it at the end to ensure all Mac defaults are included/defined first before company-/device-specific ones
+
+MAC_ENV='Nextdoor'
+
+_macSpecificDir="$(thisDir)/$MAC_ENV"
+_macSpecificProfile="$_macSpecificDir/custom.profile"
+
+export PATH="$_macSpecificDir/bin:$PATH"
+
+unalias editprofile
+alias editprofile="_editProfile '$_macSpecificProfile'"
+
 
 
 ### Program paths ###
@@ -228,4 +238,4 @@ complete -F _autocompleteWithJiraTicket -P \" "gac"
 
 
 
-source "$(thisDir)/$CURRENT_ENV/custom.profile"
+source "$_macSpecificProfile"
