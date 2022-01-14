@@ -438,10 +438,6 @@ parseArgs() {
     shift "$((OPTIND - 1))"
 
     remainingArgs+=("$@")
-
-    # Let the parent know which arg index it stopped at.
-    # Likely won't be necessary since all flags/args are handled here, but why not.
-    echo "$OPTIND"
 }
 
 
