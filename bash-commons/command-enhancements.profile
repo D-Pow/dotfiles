@@ -323,6 +323,8 @@ open() {
         _openCommand=xdg-open
     elif isDefined gnome-open; then
         _openCommand=gnome-open
+    elif os-version | grep -iq MINGW; then
+        _openCommand=start
     else
         _openCommand=open
     fi
