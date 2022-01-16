@@ -2,9 +2,6 @@ export subsystemProfile="$dotfilesDir/Windows/bash_subsystem/custom.profile"
 
 # source "$subsystemProfile"
 
-alias ls='ls --color'
-alias lah='lah --color'
-
 # alias subl='/c/Program\ Files/Sublime\ Text\ 3/subl'
 
 export FORCE_COLOR=1
