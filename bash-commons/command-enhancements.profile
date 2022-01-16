@@ -344,6 +344,10 @@ _grepIgnoredDirs=('node_modules' '.git' '.idea' 'lcov-report')
 
 alias grep="grep --exclude-dir={`array.join -s _grepIgnoredDirs ','`} --color=auto"
 
+if [[ "$(type -t egrep)" == 'alias' ]]; then
+    unalias egrep
+fi
+
 egrep() {
     declare _egrepCommandFlag='-P'
     declare perlRegexSupported="$(echo 'true' | grep -P 'u' 2>/dev/null)"
