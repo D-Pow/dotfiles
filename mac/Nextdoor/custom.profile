@@ -1,5 +1,6 @@
 _nextdoorRoot="${NEXTDOOR_ROOT:-$HOME/src/nextdoor.com}"
 
+export NO_COMMIT_AS=true
 
 
 _removePythonSymlinksAndAliases() {
