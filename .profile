@@ -125,3 +125,8 @@ alias editactual="_editProfile '$actualProfile'"
 
 source "$commonProfile"
 source "$customProfile"
+
+
+# Cleanup duplicate PATH entries inserted by each OS' specific PATH requirements
+# and from running `source $HOME/.profile` multiple times in one shell
+export PATH="$(echo "$PATH" | str.unique -d ':')"
