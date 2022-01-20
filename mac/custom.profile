@@ -43,7 +43,7 @@ for (( i=0; i < "${#_brewGnuUtils[@]}"; i++ )); do
 done
 BREW_GNU_UTILS_HOMES="`array.join -s _brewGnuUtils ':'`"
 
-_brewPathEntries="$(echo "$BREW_PATHS" | sed -E 's/\s+/:/g')" # /usr/local/sbin and some others
+_brewPathEntries="$(echo "$BREW_PATHS" | sed -E 's/( |\t)+/:/g')" # /usr/local/sbin and some others
 
 export PATH=$BREW_GNU_UTILS_HOMES:$JAVA_HOME:$SUBLIME_HOME:$TEXMFHOME:/usr/local/bin:$HOME/bin:$_brewPathEntries:$PATH
 
