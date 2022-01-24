@@ -1,9 +1,0 @@
-#!/usr/bin/env -S bash
-
-path="$1"
-
-if [[ -z "$path" ]]; then
-    path='.'
-fi
-
-realpath "$path"
