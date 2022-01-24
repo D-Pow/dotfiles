@@ -28,6 +28,36 @@ array.isArray() {
 }
 
 
+array.keys() {
+    # Docs: https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#:~:text=a%20separate%20word.-,%24%7B!name%5B%40%5D%7D,-%24%7B!name%5B*%5D%7D
+    declare _retArrKeysName
+    declare OPTIND=1
+
+    while getopts "r:" opt; do
+        case "$opt" in
+            r)
+                _retArrKeysName="$OPTARG"
+                ;;
+        esac
+    done
+
+    shift $(( OPTIND - 1 ))
+
+
+    declare -n _arrKeysArr="$1"
+    declare _arrKeys=("${!_arrKeysArr[@]}") # Quotes to preserve spaces in associative arrays' keys
+
+
+    if [[ -n "$_retArrKeysName" ]]; then
+        declare -n _retArrKeys="$_retArrKeysName"
+
+        _retArrKeys=("${_arrKeys[@]}")
+    else
+        echo "${_arrKeys[@]}"
+    fi
+}
+
+
 array.length() {
     declare -n _arrLengthArr="$1"
     declare _arrLength=${#_arrLengthArr[@]}
