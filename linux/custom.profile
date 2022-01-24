@@ -21,6 +21,8 @@ alias listupdate='sudo apt update && sudo apt list --upgradable'
 
 alias systeminfo='inxi -SMCGx'
 
+alias get-architecture='dpkg --print-architecture'
+
 
 is-installed() {
     declare packages="$@"
