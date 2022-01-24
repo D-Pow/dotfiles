@@ -131,11 +131,34 @@ complete -F _autocompleteNpmr -o default "yarn"
 
 
 export NVM_DIR="$HOME/.nvm"
-export NVM_CURRENT_HOME="$HOME/.nvm/current"
+export NVM_CURRENT_HOME="$NVM_DIR/current"
 [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"  # Load nvm
 [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"  # Load nvm bash_completion
-export NVM_SYMLINK_CURRENT=true # Makes a symlink at ~/.nvm/current/bin/node so you don't have to chage IDEs' configurations when changing node versions
+export NVM_SYMLINK_CURRENT=true # Makes a symlink at ~/.nvm/current/bin/node so you don't have to change IDEs' configurations when changing node versions
 export PATH="$NVM_CURRENT_HOME/bin:$PATH"
+
+# Make NODE_PATH always include the `node_modules/` directory of the currently selected NodeJS.
+# While not advised (see refs), this is helpful for e.g. individual NodeJS scripts placed in
+# a `bin/` directory of this repo.
+#
+# Refs:
+#   NODE_PATH and ways to set it: https://stackoverflow.com/questions/7970793/how-do-i-import-global-modules-in-node-i-get-error-cannot-find-module-module
+#   NODE_PATH isn't meant to include globals: https://github.com/nvm-sh/nvm/issues/1290#issuecomment-261320632
+#
+# Here, we get the global `node_modules/` manually from NVM's `current/` dir so it always uses the
+# active Node version. If we used `npm root -g` instead, we'd be locked into the version active when
+# the `.profile` is sourced.
+#
+# `-L` = Keep symlinks in output as well as allow searching within them.
+# Remove "symlink is a cycle" errors.
+# `sed` = Remove nested global node_modules dirs from the top-level node_modules dir.
+# `trim` = Remove superfluous spaces.
+_nvmCurrentNodePath="$(
+    find -L "$NVM_CURRENT_HOME" -iname node_modules 2>/dev/null \
+        | sed -E 's|.*node_modules/.+||' \
+        | trim
+)"
+export NODE_PATH="$(str.unique -d ':' "${NODE_PATH:+$NODE_PATH:}$_nvmCurrentNodePath")"
 
 
 yarnRerunCommand() {
