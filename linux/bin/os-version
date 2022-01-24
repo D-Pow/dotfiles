@@ -58,7 +58,7 @@ osSimpleNameFile=/etc/issue.net
 # Following files follow the same format as .env/.properties files,
 # i.e. each line is `key=value`
 allOsInfoFile=/etc/os-release
-allBranchedFromOsInfoFile=/etc/upstream-release/lsb-release
+allBranchedFromOsInfoFile=/etc/upstream-release/lsb-release  # Could also use `lsb_release`
 
 osSimpleName="$(cat $osSimpleNameFile)"
 
