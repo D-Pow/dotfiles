@@ -1,74 +1,14 @@
 #!/usr/bin/env -S node --experimental-top-level-await --experimental-json-modules --experimental-import-meta-resolve --experimental-specifier-resolution=node
 
-import fs from 'fs';
 import path from 'path';
-import childProcess from 'child_process';
-import { createRequire } from 'module';
+import { importGlobalModule } from './NodeUtils';
 
-
-const require = createRequire(import.meta.url);
 
 /**
  * Import the [isomorphic-fetch]{@link https://www.npmjs.com/package/isomorphic-fetch}
  * `fetch` polyfill for easy use in back-end scripts.
  */
 await importGlobalModule('isomorphic-fetch');
-
-
-/**
- * Imports a module by name, checking the local `node_modules/` directory first,
- * followed by the global one if it doesn't exist.
- *
- * This helps account for the fact that [global modules can't be imported]{@link https://stackoverflow.com/questions/7970793/how-do-i-import-global-modules-in-node-i-get-error-cannot-find-module-module}.
- * This function is only needed for MJS files when `NODE_PATH` isn't defined.
- * CJS files automatically include the global `node_modules/` regardless of the existence of `NODE_PATH`.
- *
- * @param {string} name - Module name to import.
- * @param {Object} [options]
- * @param {Boolean} [options.useRequire] - If `require` should be used instead of a dynamic `import` (will fallback to `require` if `import()` fails).
- * @return {any} - The resolved module.
- * @throws {ModuleNotFoundError} - If the module can't be found.
- */
-async function importGlobalModule(packageName, {
-    useRequire = false,
-} = {}) {
-    const nodeModulesPackageDirLocal = path.resolve(
-        childProcess
-            .execSync('npm root')
-            .toString()
-            .replace(/\n/g, ''),
-        packageName,
-    );
-    const nodeModulesPackageDirGlobal = path.resolve(
-        childProcess
-            .execSync('npm root --global')
-            .toString()
-            .replace(/\n/g, ''),
-        packageName,
-    );
-
-    let nodeModulesPackageDir = nodeModulesPackageDirLocal;
-
-    if (!fs.existsSync(nodeModulesPackageDirLocal)) {
-        nodeModulesPackageDir = nodeModulesPackageDirGlobal;
-    }
-
-
-    if (!useRequire) {
-        try {
-            return await import(nodeModulesPackageDir);
-        } catch (moduleNotFoundOrModuleResolutionDoesntSupportDirectoryImports) {
-            // Ignore, use `require` fallback below
-        }
-    }
-
-
-    try {
-        return require(nodeModulesPackageDir);
-    } catch {
-        throw new Error(`Module "${packageName}" could not be found in either "${nodeModulesPackageDirLocal}" or "${nodeModulesPackageDirGlobal}" directories.`)
-    }
-}
 
 
 function getApiUrl(artist, song) {
