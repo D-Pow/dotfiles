@@ -166,6 +166,40 @@ apt-get-repositories() {
 }
 
 
+apt-show-package-repo() {
+    declare _aptPackages=("$@")
+    declare _numAptPackages="${#_aptPackages[@]}"
+
+    # Loop through keys of the array to track if package is last in the arg array
+    declare i
+    for i in $(array.keys _aptPackages); do
+        declare _aptPackage="${_aptPackages[$i]}"
+
+        # If multiple packages, then print the package name as a header
+        if (( $_numAptPackages > 1 )); then
+            echo "$_aptPackage"
+        fi
+
+
+        # Delete the first column (priority of package) via `awk`.
+        #   https://stackoverflow.com/questions/15361632/delete-a-column-with-awk-or-sed/15361856#15361856
+        # Higher priority numbers will be installed before lower ones (500 = not installed).
+        #   https://itsfoss.com/apt-cache-command/#:~:text=By%20default%2C%20each%20installed%20package%20version%20has%20a%20priority%20of%20100%20and%20a%20non%2Dinstalled%20package%20has%20a%20priority%20of%20500.%20The%20same%20package%20may%20have%20more%20than%20one%20version%20with%20a%20different%20priority.%20APT%20installs%20the%20version%20with%20higher%20priority%20unless%20the%20installed%20version%20is%20newer.
+        apt policy "$_aptPackage" \
+            | grep -i "$(get-architecture)" \
+            | awk '{ $1=""; print $0 }' \
+            | trim \
+            | str.unique
+
+
+        # Print extra newline between different packages
+        if (( $i != ( $_numAptPackages - 1 ) )); then
+            echo
+        fi
+    done
+}
+
+
 # systemctl commands:
 #   status              =  shows service status
 #   start               =  start a service
