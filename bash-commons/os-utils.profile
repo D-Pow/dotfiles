@@ -40,6 +40,17 @@ isWindows() {
 }
 
 
+trim() {
+    declare _trimInput="$@"
+
+    if [[ -z "$_trimInput" ]]; then
+        _trimInput="$(egrep '.' < /dev/stdin)"
+    fi
+
+    echo "$_trimInput" | sed -E 's/(^\s+)|(\s+$)//g'
+}
+
+
 listprocesses() {
     if (( $# > 0 )); then
         # Include header info for what each column means
