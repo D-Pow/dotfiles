@@ -52,19 +52,69 @@ trim() {
 
 
 listprocesses() {
-    if (( $# > 0 )); then
-        # Include header info for what each column means
-        ps aux | head -n 1
+    # `ps aux` has been deprecated, and only marginally supported now.
+    # Now you have to specify everything manually.
+    #
+    # As a replacement:
+    # `-A` = `-a` except implies `-x`.
+    # `-a` = Include processes you do and don't own. Excludes those without controlling (TTY) terminals.
+    # `-x` = Include processes without controlling (TTY) terminals.
+    # `-o` = Columns you want.
+    #
+    # Theoretically, `ps -A` == `ps -ax` but we're using `-Ax` for safe keeping.
+    declare _psOptsDefault='-Axo user,pid,ppid,%cpu,%mem,vsize,rss,tty,stat,start,time,command'
 
+    declare USAGE="[options] [\`grep -P\` options/args]
+    Runs \`ps\` with the specified options and searches for the specified string with the most supportive (Perl) regex.
+
+    Defaults to the same headers as the obsolete \`ps aux\` would show, and removes the \`grep\` process
+    from the output to avoid needing to use \`ps [args] | grep -v grep | grep -P [what-you-want]\`.
+
+    Default \`ps\` options:
+        $_psOptsDefault
+    "
+    declare _psOpts=
+    declare argsArray=
+    declare -A _lsPsOptions=(
+        ['a|append:,_psOptsDefault']='`ps` options to append to the default options (before calling `grep`); e.g. `-a "-U root"`'
+        ['o|overwrite:,_psOpts']='`ps` options to overwrite the default options (before calling `grep`); e.g. `-o "-o ppid= 1234"`'
+        [':']=
+        ['?']=
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _lsPsOptions "$@"
+    (( $? )) && return 1
+
+
+    _psOpts="${_psOpts:-${_psOptsDefault[@]}}"
+
+
+    declare _psCommand=(ps ${_psOpts[@]}) # Don't quote to preserve spaces from input string
+    # Actual `ps` command
+    declare _psOutput=$(${_psCommand[@]})
+    # Include header info for what each column means
+    declare _psHeaders="$(echo "$_psOutput" | head -n 1)"
+    # Results to `grep` through - requires the headers be removed
+    declare _psResults="$(echo "$_psOutput" | tail -n +2)"
+    # Options for `grep -[PE]`
+    declare _egrepOptions="${argsArray[@]}"
+
+    if [[ -n "$_egrepOptions" ]]; then
         # Print info for the desired search query.
         # Filter out the `grep` command that searches for said query
         # since it's just noise.
         # Note: grep flags can still be passed by using this method.
-        ps aux | grep -v grep | egrep "$@"
-    else
+        _psResults="$(echo "$_psResults" | grep -v grep | egrep $_egrepOptions)"
+
+        if [[ -n "$_psResults" ]]; then
+            echo "$_psHeaders"
+            echo "$_psResults"
+        fi
+    elif [[ -n "$_psResults" ]]; then
         # Otherwise, standard command output includes headers,
         # so no manual interaction needed.
-        ps aux
+        echo "$_psOutput"
     fi
 }
 
