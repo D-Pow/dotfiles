@@ -292,7 +292,7 @@ parseArgs() {
                 # Thus, check if option config wants an argument for this; if so, manually add it.
                 declare _parentOptionConfigKeys="${!_parentOptionConfig[@]}"
 
-                if array.contains -e _parentOptionConfigKeys "$_longOptionKey:"; then
+                if array.contains _parentOptionConfigKeys "$_longOptionKey:"; then
                     _longOptionVal="${!OPTIND}"
                     # Since this is a makeshift opt/arg reader, we have to manually shift over
                     # by one to get rid of the next option entry.

@@ -294,7 +294,7 @@ array.slice() {
 
 array.filter() {
     declare _retArrNameFiltered
-    declare isRegex
+    declare _filterIsEval
     declare OPTIND=1
 
     while getopts "er:" opt; do
@@ -303,7 +303,7 @@ array.filter() {
                 _retArrNameFiltered="$OPTARG"
                 ;;
             e)
-                isRegex=true
+                _filterIsEval=true
                 ;;
         esac
     done
@@ -316,7 +316,7 @@ array.filter() {
     declare _newArrFiltered=()
 
 
-    if [[ -n "$isRegex" ]]; then
+    if [[ -z "$_filterIsEval" ]]; then
         # Do this outside of the loop so that a new `egrep` command isn't
         # instantiated on every entry.
         # Net result is to parse the entire array at once rather than one entry
@@ -371,13 +371,13 @@ array.filter() {
 
 
 array.contains() {
-    declare isRegex
+    declare _arrContainsIsEval
     declare OPTIND=1
 
-    while getopts "er:" opt; do
+    while getopts "e" opt; do
         case "$opt" in
             e)
-                isRegex=true
+                _arrContainsIsEval=true
                 ;;
         esac
     done
@@ -393,18 +393,11 @@ array.contains() {
     # the console. For example, the line below would print 'true/false' unexpectedly:
     # `array.contains myArr 'hello' && cd dir1 || cd dir2`
     # Thus, rely on the standard `return 0/1` for true/false instead of echoing it.
-    if [[ -n "$isRegex" ]]; then
-        array.filter -er filteredArray _arrContains "$query"
+    declare _arrContainsFilteredArray
 
-        ! $(array.empty filteredArray) && return
-    else
-        for entry in "${_arrContains[@]}"; do
-            # TODO verify this works
-            if [[ "$entry" =~ "$query" ]]; then
-                return
-            fi
-        done
-    fi
+    array.filter ${_arrContainsIsEval:+-e} -r _arrContainsFilteredArray _arrContains "$query"
+
+    ! $(array.empty _arrContainsFilteredArray) && return
 
     return 1
 }
