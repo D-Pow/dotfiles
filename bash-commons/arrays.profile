@@ -311,54 +311,38 @@ array.filter() {
     shift $(( OPTIND - 1 ))
 
     declare -n _arrFilter="$1"
-    declare filterQuery="$2"
+    declare _arrFilterQuery="$2"
+
 
     declare _newArrFiltered=()
+    declare _arrFilterEntry
 
-
-    if [[ -z "$_filterIsEval" ]]; then
-        # Do this outside of the loop so that a new `egrep` command isn't
-        # instantiated on every entry.
-        # Net result is to parse the entire array at once rather than one entry
-        # at a time, resulting in a significant speed boost.
-        #
-        # Slower alternative (orders of magnitude slower):
-        #     for entry in "${_arrFilter[@]}"; do
-        #         if [[ -n "$isRegex" ]]; then
-        #             if echo "$entry" | egrep -q "$filterQuery"; then
-        #                 # echo "$entry"
-        #                 _newArrFiltered+=("$entry")
-        #             fi
-        #         else
-        #             if eval "$filterQuery" 2>/dev/null; then
-        #                 _newArrFiltered+=("$entry")
-        #             fi
-        #         fi
-        #     done
-        #
-        # TODO Will fail with array entries that contain \n
-        # TODO Will fail to maintain quoted strings
-        # Test:
-        # failingNewline=('a
-        # 10
-        # b' c d 12 f 1)  # filtered (length=5): a b c d f
-        # failingSpaces=('a 10 b' c d 12 f 1)  # filtered (length=6): a 10 b c d f
-        # source .profile mac_Nextdoor && array.filter -er filtered arr '\D' && array.toString filtered
-        #
-        # Attempt:
-        # local _ifsOrigFilter=$IFS
-        # local IFS=$'\n'
-        # printf '%s\n' "${arr1[@]}" | egrep '\D' | xargs -0 printf '%s~~'
-        _newArrFiltered+=($(printf '%s\n' "${_arrFilter[@]}" | egrep "$filterQuery"))
-        # IFS=$_ifsOrigFilter
-    else
-        # Call using, e.g. `array.filter myArray '[[ "$entry" =~ [a-z] ]]'`
-        for entry in "${_arrFilter[@]}"; do
-            if eval "$filterQuery" 2>/dev/null; then
-                _newArrFiltered+=("$entry")
+    for _arrFilterEntry in "${_arrFilter[@]}"; do
+        if [[ -n "$_filterIsEval" ]]; then
+            # Call using, e.g. `array.filter myArray '[[ "$_arrFilterEntry" =~ [a-z] ]]'`
+            if eval "$_arrFilterQuery" 2>/dev/null; then
+                _newArrFiltered+=("$_arrFilterEntry")
             fi
-        done
-    fi
+        else
+            # Note: Doing this outside a loop would make it much faster since a new
+            # `egrep` command isn't instantiated on every entry.
+            #
+            # e.g.
+            #   declare IFS=$'\n'
+            #   _newArrFiltered+=($(printf '%s\n' "${_arrFilter[@]}" | egrep "$_arrFilterQuery"))
+            #   # Another attempt
+            #   printf '%s\n' "${arr1[@]}" | egrep '\D' | xargs -0 printf '%s~~'
+            #
+            # The net result of that would be to parse the entire array at once rather than one entry
+            # at a time, resulting in a significant speed boost, but reducing its entry-parsing
+            # capabilities, e.g. doing so makes it inaccurate against array entries that contain
+            # newlines and splits each line into separate return-array entries, each of which would
+            # be tested against.
+            if echo "$_arrFilterEntry" | egrep -q "$_arrFilterQuery"; then
+                _newArrFiltered+=("$_arrFilterEntry")
+            fi
+        fi
+    done
 
 
     if [[ -n "$_retArrNameFiltered" ]]; then
