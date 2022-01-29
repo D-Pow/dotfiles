@@ -1,3 +1,51 @@
+trim() {
+    declare USAGE="[-t|--top numLinesToRemoveFromTop] [-b|--bottom numLinesToRemoveFromBottom] [-l|--lines] <input-string>
+    Removes the number of lines (rows) from the top/bottom of the input, optionally trimming white-space from each line.
+
+    Defaults to trimming each line if no options specified.
+    "
+    declare _trimTop=
+    declare _trimBottom=
+    declare _trimLines=
+    declare argsArray=
+    declare -A _trimOptions=(
+        ['t|top:,_trimTop']='Number of lines to remove from the top of the input.'
+        ['b|bottom:,_trimBottom']='Number of lines to remove from the bottom of the input.'
+        ['l|lines,_trimLines']='Trim white-space off the beginning/end of each line when also removing top/bottom lines.'
+        [':']=
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _trimOptions "$@"
+    (( $? )) && return 1
+
+    declare _trimInput="${argsArray[@]}"
+
+    if [[ -z "$_trimInput" ]]; then
+        _trimInput="$(egrep '.' < /dev/stdin)"
+    fi
+
+
+    declare _trimOutput="$_trimInput"
+
+    if [[ -n "$_trimTop" ]]; then
+        # `tail -n` accepts `numLinesToShowFromBottom` or `+(numLinesToRemoveFromTop + 1)`
+        _trimOutput="$(echo "$_trimOutput" | tail -n "+$(( _trimTop + 1 ))")"
+    fi
+
+    if [[ -n "$_trimBottom" ]]; then
+        # `head -n` accepts `numLinesToShowFromTop` or `-numLinesToRemoveFromBottom`
+        _trimOutput="$(echo "$_trimOutput" | head -n "-$_trimBottom")"
+    fi
+
+    if [[ -z "$_trimTop" && -z "$_trimBottom" ]] || [[ -n "$_trimLines" ]]; then
+        _trimOutput="$(echo "$_trimOutput" | sed -E 's/(^\s+)|(\s+$)//g')"
+    fi
+
+    echo "$_trimOutput"
+}
+
+
 str.repeat() {
     declare _strToRepeat="$1"
     declare _strRepeatTimes="$2"
