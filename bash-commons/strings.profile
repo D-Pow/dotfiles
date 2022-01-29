@@ -140,3 +140,48 @@ str.unique() {
 
     str.join -d '\n' -j "$_strUniqueDelim" "$_strUniqueOutput"
 }
+
+
+
+_todoFancyUseOfAwk() (
+    # Inspiration:
+    #   https://stackoverflow.com/questions/41591828/use-bash-variable-as-array-in-awk-and-filter-input-file-by-comparing-with-array/41591888#41591888
+    #   https://stackoverflow.com/questions/40846595/how-to-slice-a-variable-into-array-indexes/40848893#40848893
+    # Refs:
+    #   split(): https://www.gnu.org/software/gawk/manual/html_node/String-Functions.html#:~:text=split(string%2C%20array%20%5B%2C%20fieldsep%20%5B%2C%20seps%20%5D%20%5D)
+    #   BEGIN/END: https://www.gnu.org/software/gawk/manual/gawk.html#Using-BEGIN_002fEND
+    #   Can't use arrays as awk var: https://stackoverflow.com/questions/33105808/can-i-pass-an-array-to-awk-using-v
+    declare input='
+abc   4   5
+abc   8   8
+def   43  4
+def   7   51
+jkl   4   0
+mno   32  2
+mno   9   2
+pqr   12  1
+'
+
+    declare firstColFilterArray=('abc' 'jkl' 'pqr')
+
+    # `awk` can't accept arrays as variables, so join them by some delimiter (comma in this example)
+    echo "$input" | awk -v firstColFilterString="$(array.join -s firstColFilterArray ',')" '
+    # BEGIN runs before the rest of the program, END after
+    BEGIN {
+        # Split the external string variable into an awk array
+        split(firstColFilterString, awkArrayFilter, ",");
+    }
+
+    {
+        # Convert first-column filter from an array to a map for quick reading
+        for (i in awkArrayFilter) {
+            columnFilterMap[awkArrayFilter[i]];
+        }
+
+        # Check if the first column exists in the map and print it if so
+        if ($1 in columnFilterMap) {
+            print $0;
+        }
+    }
+    '
+)
