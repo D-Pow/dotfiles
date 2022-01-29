@@ -533,9 +533,21 @@ gitLogIgnoreFileRenames() {
     # `--graph` = Show ASCII art for branch relationships (merges, base branches, etc.).
     # `--follow` = Follow file history beyond renames instead of stopping at them (removing noisy "-100 lines here, +100 lines there" in the process).
     #   Requires only one file (or path without globs) to be specified.
-    #   But, that file/path doesn't have to be *right after* `--follow` and/or could be after `--` e.g. `git log -- path/file.txt`
-    #       so we can use that to auto-inject `.` if `git log --follow` fails.
-    declare _gitLogCmd="git log --stat --graph --follow"
+    #   But, that file/path doesn't have to be *right after* `--follow` and/or could be after `--`
+    #   e.g. `git log -- path/file.txt`
+    declare _gitLogCmd=(
+        git
+        log
+        --stat
+        --graph
+    )
+
+    declare _gitLogArgs=("$@")
+    declare _gitLogPaths=
+
+    array.filter -r _gitLogPaths _gitLogArgs '^[^-]\S'
+
+    declare _gitLogNumPaths="$(array.length _gitLogPaths)"
 
     # `-n <number>` = max number of commits to display.
     # Use to make `git log` command check quick (i.e. don't actually try to load up the entire git history).
@@ -543,10 +555,18 @@ gitLogIgnoreFileRenames() {
     # Allows us to check whether or not the command works, e.g.
     #   `git log --follow [-n 0]`  =>  Error, requires exactly one path-spec (thus, add `.`)
     #   `git log --follow [-n 0] file.txt`  =>  (Success! Has no output)
-    if eval "$_gitLogCmd -n 0 $@" &>/dev/null; then
-        eval "$_gitLogCmd $@"
+    #
+    # If `git log --follow` fails, then we'll have to modify the command manually to add/remove
+    # `--follow` (it can only use one path) and/or a file path (`--follow` requires exactly 1 path).
+    if "${_gitLogCmd[@]}" --follow -n 0 $@ &>/dev/null; then
+        # If the command succeeds, the parent specified exactly one path, so call as-is
+        "${_gitLogCmd[@]}" --follow "$@"
+    elif (( _gitLogNumPaths == 0 )); then
+        # If no path specified, add `.` to include everything
+        "${_gitLogCmd[@]}" --follow "$@" .
     else
-        eval "$_gitLogCmd $@ ."
+        # If > 1 path specified, don't add `--follow`
+        "${_gitLogCmd[@]}" "$@"
     fi
 }
 
