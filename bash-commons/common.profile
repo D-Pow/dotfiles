@@ -12,8 +12,10 @@
 #   2 = stderr
 #   src > dest = Output redirect (overwrites anything in dest). Use `>>` to append.
 #   dest < src = Input redirect.
-#   dest < <(command) = Input redirect + bash process substitution (run a command and use the output as input to `dest`)
-#                       See: https://stackoverflow.com/questions/6541109/send-string-to-stdin/61973974#61973974
+#   dest < <(srcCommand) = Input redirect + bash process substitution (run `srcCommand` and use the output as input to `dest`)
+#                       Example: https://stackoverflow.com/questions/6541109/send-string-to-stdin/61973974#61973974
+#   src >(destCommand) = Output redirect + bash process substitution (run `src` and use the output as input to `destCommand`)
+#                       Example: https://stackoverflow.com/questions/13804965/how-to-tee-to-stderr/20553986#20553986
 #   & = File descriptor.
 #       A reference to a file/location (by the number it's assigned to) for reading/writing.
 #       Most commonly used to redirect std(in|out|err).
