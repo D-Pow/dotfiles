@@ -32,7 +32,7 @@ isLinux() {
 
 isMac() {
     # TODO Find out how to distinguish M1 macs from normal macs
-    os-version -o | egrep -iq 'mac|darwin'
+    os-version -o | egrep -iq 'mac|darwin|osx'
 }
 
 isWindows() {
