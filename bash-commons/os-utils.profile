@@ -149,6 +149,68 @@ listopenports() {
     eval "${_listopenportsCmd[@]}"
 }
 
+getParentPid() {
+    ps -o ppid= ${1:-$$} | trim
+}
+
+ancestorProcesses() {
+    declare USAGE="[-n|--num-generations <num-generations>] [PID]
+    Shows process information for <num-generations>, starting with <PID>.
+    PID defaults to BASHPID (or \$\$ if it's undefined, e.g. on Mac's primitive version of Bash).
+    "
+    declare _numGenerations=
+    declare argsArray
+    declare -A _ancestorProcessesOptions=(
+        ['n|num-generations:,_numGenerations']='Maximum number of processes to find (default: infinity).'
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _ancestorProcessesOptions "$@"
+    (( $? )) && return 1
+
+    declare _startingPid="${argsArray[0]}"
+    _numGenerations="${_numGenerations:--1}"
+
+    if [[ -z "$_startingPid" ]]; then
+        _startingPid="${BASHPID:-$$}"
+    fi
+
+
+    declare _ancestorPids=()
+    declare _currentPid="$_startingPid"
+    declare _ancestorProcessesHeader="$(listprocesses | head -n 1)"
+    # Use `awk` to dynamically determine the number of columns for aligned printing later
+    declare _ancestorProcessesHeaderLength="$(echo "$_ancestorProcessesHeader" | awk '{ print NF }')"
+    declare _ancestorProcessesDetails="$_ancestorProcessesHeader\n"
+
+    while (( _currentPid != 1 )) && (( _numGenerations != 0 )); do
+        _ancestorPids+=("$_currentPid")
+        _ancestorProcessesDetails+="$(
+            listprocesses -a "-o pid= $_currentPid" \
+            | trim -t 1 \
+            | awk '{ $NF=""; print $0 }' # Remove trailing `-o pid` output since it duplicates the PID column. Only needed b/c primitive Mac doesn't support `--pid 123,456,789` format even with Brew's newest Bash v5
+        )\n"
+        _currentPid="$(getParentPid $_currentPid)"
+        _numGenerations=$(( _numGenerations - 1 ))
+    done
+
+    if (( ${#_ancestorPids[@]} < 1 )); then
+        return 1
+    fi
+
+    # `-l columnLength` ensures `column` only formats the entries before the specified column length
+    # in `-c` such that entries beyond the length are printed as-is (i.e. not spaced evenly).
+    # Except it's not supported on Mac and Brew doesn't provide a GNU version of `column`, so only use
+    # it if possible.
+    if echo '' | column -l 1 &>/dev/null; then
+        echo -e "${_ancestorProcessesDetails[@]}" \
+            | column -t -c "$_ancestorProcessesHeaderLength" -l "$_ancestorProcessesHeaderLength"
+    else
+        echo -e "${_ancestorProcessesDetails[@]}" \
+            | column -t -c "$_ancestorProcessesHeaderLength"
+    fi
+}
+
 
 getip() {
     # Must get default interface (`en0`, `en1`, etc.)
