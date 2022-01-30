@@ -657,7 +657,7 @@ paste() {
 }
 
 _setClipboardCopyAndPasteCommands() {
-    declare _copyPasteError="Error: Cannot find native CLI copy/paste commands for platform [$OSTYPE].
+    declare _copyPasteError="Error: Cannot find native CLI copy/paste commands for platform [$(os-version -o)].
     In order to copy/paste from the clipboard, \`xclip\` or \`xsel\` are required.
     Please run next command:
         sudo apt-get install xclip"
