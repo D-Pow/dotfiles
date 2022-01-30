@@ -664,7 +664,7 @@ _setClipboardCopyAndPasteCommands() {
     declare _printCopyPasteError='echo -e "$_copyPasteError" >&2'
 
     # Linux OS
-    if [[ -n "$(os-version | grep -i 'linux')" ]]; then
+    if isLinux; then
         # `paste` is actually a handy tool to merge different files line-by-line
         # where resulting lines are the files' lines joined by <Tab>.
         # First, alias that to a more helpful name so it's not lost, then alias copy/paste.
@@ -681,7 +681,7 @@ _setClipboardCopyAndPasteCommands() {
             eval "$_printCopyPasteError"
         fi
     # Mac OS
-    elif [[ -n "$(os-version | egrep -i '(darwin|mac|osx)')" ]]; then
+    elif isMac; then
         # Use built-in `pb` commands.
         _copyCommand='pbcopy'
         _pasteCommand='pbpaste'
