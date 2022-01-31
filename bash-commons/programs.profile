@@ -290,7 +290,44 @@ ghLoginToGitHubPackagesNpmRegistry() {
 
     ghAuthForGitHubPackages
 
-    npm login --scope="$_npmScope" --registry=https://npm.pkg.github.com
+    # Or: gh api user | jq -r '.login' | str.lower
+    declare _npmLoginUsername="$(git config --global user.name)"
+    declare _npmLoginPasswordToken="$(ghAuthToken)"
+    declare _npmLoginEmail="$(git config --global user.email)"
+
+    declare _npmGitHubRegistryUrl='https://npm.pkg.github.com'
+    declare _npmConfigGitHubKeyPrefix="$(npmConfigScopedPackageFormatUrl "$_npmGitHubRegistryUrl")/:"
+    declare _npmConfigGitHubTokenField="${_npmConfigGitHubKeyPrefix}_authToken"
+
+    echo "Logging into npm registry \"$_npmGitHubRegistryUrl\" with username \"$_npmLoginUsername\" and email \"$_npmLoginEmail\"..."
+
+    # Note: We can't just do
+    #   echo -e "$field1\n$field2\n$field3\n..." | npm login ...
+    # nor
+    #   npm login ... < <(echo -e "...")
+    # because `npm login` shows prompts so each field must be injected sequentially, waiting for the
+    # next prompt to appear before we `echo` it.
+    # Thus, add a `sleep` call to ensure we wait long enough for the next prompt to appear.
+    npm login --scope="$_npmScope" --registry="$_npmGitHubRegistryUrl" < <(
+        declare _npmLoginField
+        for _npmLoginField in {"$_npmLoginUsername","$_npmLoginPasswordToken","$_npmLoginEmail"}; do
+            echo "$_npmLoginField"
+            sleep 1
+        done
+    )
+
+    # Usually, npm config fields prefixed with an underscore are protected and will throw an error
+    # if a read is attempted.
+    # Thus, fallback to just listing the config fields and ensuring the field exists manually.
+    if
+        [[ "$(npm config --global get "$_npmConfigGitHubTokenField" 2>/dev/null)" == "$_npmLoginPasswordToken" ]] \
+        || \
+        npmConfigGetFile -l | egrep -iq "$_npmConfigGitHubTokenField" \
+    ; then
+        echo 'Logged in successfully!'
+    else
+        echo 'Error: Could not login to GitHub npm registry.' >&2
+    fi
 }
 
 
