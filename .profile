@@ -104,7 +104,7 @@ declare _commonProfilesDir="$dotfilesDir/bash-commons"
 export PATH="$dotfilesDir/linux/bin:$_osSpecificDir/bin:$HOME/bin:$HOME/.local/bin:$PATH"
 
 
-export commonProfile="$_commonProfilesDir/common.profile"
+export commonProfile="$_commonProfilesDir/index.profile"
 export customProfile="$_osSpecificDir/custom.profile"
 export actualProfile="$HOME/.profile"
 

@@ -7,7 +7,7 @@
 # General
 
 * Rename `bash-X.profile` to just `X.profile`
-* Move common.profile notes to separate `bash-notes.profile` or similar
+* Move `bash-commons/index.profile` notes to separate `bash-notes.profile` or similar
 * Move string manipulation code to new `strings.profile` file
     - Starter content:
     - https://stackoverflow.com/questions/55623092/parsing-a-string-with-quotes-in-getopts
