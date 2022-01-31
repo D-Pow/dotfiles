@@ -61,7 +61,7 @@ npmConfigGetFile() {
                 ;;
             a)
                 configList=true
-                configListAll='-a'
+                configListAll='-l'
                 ;;
             *)
                 echo -e "$USAGE" >&2
@@ -71,10 +71,10 @@ npmConfigGetFile() {
 
     shift $(( OPTIND - 1 ))
 
-    if [[ -z "$configList" ]]; then
+    if [[ -n "$configList" ]]; then
         # Note: `--location` flag technically not needed when listing, but added for completeness
         # to show how to use with `npm config (get|set)`
-        npm config --location "$configLocation" "$configListAll" list
+        npm config --location "$configLocation" $configListAll list
     elif [[ "$configLocation" != "$configLocationDefault" ]]; then
         # `userconfig` and `globalconfig` are npm built-ins but `projectconfig` isn't
         npm config get "${configLocation}config"
