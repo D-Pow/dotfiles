@@ -417,7 +417,7 @@ array.map() {
         # `-d ''` = Set delimiter to empty (null) string so newlines can be accepted.
         #
         # e.g.
-        #   array.map arr << 'EOF'
+        #   array.map arr <<- 'EOF'
         #       entryLength=${#value}
         #       echo "Cost of key: $key = $(( entryLength + 100 ))"
         #   EOF

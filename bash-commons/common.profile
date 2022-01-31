@@ -46,6 +46,18 @@
 #       echo '# High priority error' >&5   # Add custom note that the last error in err.log is of high priority.
 #       exec 5>&-   # Close err.log (FD 5) to prevent further reading/writing
 #
+# Here documents and here strings: https://www.gnu.org/software/bash/manual/bash.html#Here-Documents
+# Generally, you'll want to use here documents (`<<`) instead of here strings (`<<<`).
+# Add a hyphen (`<<-`) to strip leading Tab characters (NOT spaces) so you can indent as you please.
+# Quoting the `DelimiterText` will make the containing string be read literally, i.e. variables/commands won't be parsed.
+# The closing `DelimiterText` CANNOT have leading spaces before it; See: https://stackoverflow.com/questions/19986541/error-when-using-a-bash-here-doc-unexpected-end-of-file
+# e.g.
+#   cmd <<- DelimiterText
+#       text
+#       $var
+#       $(command)
+#   DelimiterText
+#
 # Special keywords: https://www.gnu.org/software/bash/manual/bash.html#Bash-Variables
 #
 # String manipulation: https://tldp.org/LDP/abs/html/string-manipulation.html
