@@ -20,20 +20,29 @@ export SUBLIME_DIR=/Users/dpowell1/Library/Application\ Support/Sublime\ Text/Pa
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_291.jdk/Contents/Home/
 export TEXMFHOME=/Users/dpowell/texlive/2021/bin/universal-darwin
 
-# Run: brew install bash coreutils gawk gnutls gnu-indent gnu-getopt gnu-sed gnu-tar grep findutils
+# Run: brew install ${_brewGnuUtils[@]}
 # Then, add `/usr/local/bin/bash` to `/etc/shells`
 # Then, set default bash for all users (including root): sudo chsh -s /usr/local/bin/bash
+# See:
+#   List of things to install: https://github.com/fabiomaia/linuxify/blob/6290bfe581b2b4dacc8d5526e6157594a5b2b331/linuxify#L37
+#   Original StackOverflow thread: https://apple.stackexchange.com/questions/69223/how-to-replace-mac-os-x-utilities-with-gnu-core-utilities
 _brewGnuUtils=(
-    bash
     coreutils
+    findutils
+    binutils
+    diffutils
+    bash
+    grep
     gawk
+    gzip
+    # screen
+    watch
     gnutls
     gnu-indent
     gnu-getopt
     gnu-sed
     gnu-tar
-    grep
-    findutils
+    gnu-which
 )
 _brewGnuUtilsHomePrefix=/usr/local/opt
 _brewGnuUtilsHomeSuffix=libexec/gnubin
