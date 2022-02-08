@@ -51,7 +51,7 @@ listprocesses() {
     # `-o` = Columns you want.
     #
     # Theoretically, `ps -A` == `ps -ax` but we're using `-Ax` for safe keeping.
-    declare _psOptsDefault='-Axo user,pid,ppid,%cpu,%mem,vsize,rss,tty,stat,start,time,command'
+    declare _psOptsDefault='-Ao user,pid,ppid,%cpu,%mem,vsize,rss,tty,stat,start,time,command'
 
     declare USAGE="[options] [\`grep -P\` options/args]
     Runs \`ps\` with the specified options and searches for the specified string with the most supportive (Perl) regex.
