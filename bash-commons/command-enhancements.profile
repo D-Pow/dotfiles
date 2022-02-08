@@ -20,11 +20,6 @@ shopt -u globasciiranges
 # See: https://stackoverflow.com/questions/11821378/what-does-bashno-job-control-in-this-shell-mean/46829294#46829294
 set -m
 
-# Set SHELL environment to user's default shell.
-# It doesn't always update even after calling `chsh -s /my/new/shell` so update it here.
-#   See: https://www.gnu.org/software/bash/manual/bash.html#index-SHELL
-SHELL="$(which "$(echo "$0" | sed -E 's/^-//')")"
-
 if [[ -z "$SHELL" ]] || [[ "$SHELL" =~ ^/bin/(bash|sh) ]]; then
     # If `$0` is empty or matches `/bin/(bash|sh)`, then get the "real" SHELL from the running process.
     # This helps for e.g. Mac where the default shell is determined by a system setting rather than
@@ -196,13 +191,6 @@ isInteractiveShell() {
     #   TTY vs shell vs terminal = https://unix.stackexchange.com/questions/4126/what-is-the-exact-difference-between-a-terminal-a-shell-a-tty-and-a-con
     #   Checking if interactive/login shell = https://unix.stackexchange.com/questions/26676/how-to-check-if-a-shell-is-login-interactive-batch/26782#26782
     [[ "${-//i/_}" != "$-" ]]
-}
-
-isLoginShell() {
-    # Login shells could be a live (interactive) user's shell or scripts using `#!/usr/bin/env bash -l`
-    #
-    # `-q` is the equivalent of `{ shopt -s | egrep -iq 'login_shell'; }`
-    shopt -q login_shell
 }
 
 

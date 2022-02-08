@@ -9,6 +9,78 @@
 # umask 022
 
 
+
+_origShell="$(echo "$0" | sed -E 's/^-//')"
+
+# Set SHELL environment to user's default shell.
+# It doesn't always update even after calling `chsh -s /my/new/shell` so update it here.
+#   See: https://www.gnu.org/software/bash/manual/bash.html#index-SHELL
+export SHELL="$(which "$_origShell")"
+
+
+isLoginShell() {
+    # Login shells could be a live (interactive) user's shell or scripts using `#!/usr/bin/env bash -l`
+    #
+    # `-q` is the equivalent of `{ shopt -s | egrep -iq 'login_shell'; }`
+    shopt -q login_shell
+}
+
+
+
+# A recent update did the horrible sin of making a non-login shell source $HOME/.profile
+# which breaks Xsession, Wayland, everything.
+# Thus, if the file exists and tries to source what should ONLY be sourced by login shells
+# (like the terminal), tell the user to remove $HOME/.profile from the evil file's `source`
+# calls in order to prevent breaking the whole system.
+#
+# Note: Normal, reasonable login shells (like the terminal and user-specified apps) that
+# SHOULD BE LOGIN SHELLS -- unlike `lightdm` -- won't be affected, so this change is
+# both safe and beneficial.
+#
+# See:
+#   Original post shedding light on the issue: https://unix.stackexchange.com/questions/552459/why-does-lightdm-source-my-profile-even-though-my-login-shell-is-zsh
+#   Respective bug filed: https://bugs.launchpad.net/ubuntu/+source/lightdm/+bug/1468832
+#   Related Xorg bug: https://bugs.launchpad.net/ubuntu/+source/xorg/+bug/1468834
+#   Showing alerts in Linux: https://superuser.com/questions/31917/is-there-a-way-to-show-notification-from-bash-script-in-ubuntu
+#   LightDM configs: https://unix.stackexchange.com/questions/52280/lightdm-user-session-settings-on-ubuntu
+#   LightDM docs: https://wiki.archlinux.org/title/LightDM
+_shouldAbortProfileSourcing() {
+    declare _evilFileSourcingProfileEvenThoughItsNotALoginShell='/usr/sbin/lightdm-session'
+    declare _evilFileTextToCheck='$HOME/.profile'
+
+    if grep -iq "$_evilFileTextToCheck" "$_evilFileSourcingProfileEvenThoughItsNotALoginShell"; then
+        zenity --error --text "
+        $_evilFileSourcingProfileEvenThoughItsNotALoginShell is calling \`source $_evilFileTextToCheck\`
+        even though it's not a login shell.
+        Please delete all references to $_evilFileTextToCheck within $_evilFileSourcingProfileEvenThoughItsNotALoginShell
+        in order to proceed.
+        "
+
+        exit 1
+    fi
+
+
+    # Alternative, manual way to check if the parent is a login shell or LightDM
+
+    # declare _origCurrentShellMerged="$_origShell - $SHELL"
+    #
+    # [[ "$_origShell" != "$(basename "$SHELL")" ]] \
+    #     || ! isLoginShell \
+    #     || [[ "$_origCurrentShellMerged" =~ 'lightdm' ]] \
+    #     || [[ "$_origCurrentShellMerged" =~ 'session' ]]
+
+    # Return false if we shouldn't abort
+    return 1
+}
+
+
+
+if _shouldAbortProfileSourcing; then
+    return
+fi
+
+
+
 # Export aliases even when the shell isn't interactive so that custom scripts that
 # call `source "$HOME/.profile"` will work.
 # The `shopt` command MUST be used here because the utils used to determine
