@@ -45,14 +45,14 @@ isLoginShell() {
 #   LightDM configs: https://unix.stackexchange.com/questions/52280/lightdm-user-session-settings-on-ubuntu
 #   LightDM docs: https://wiki.archlinux.org/title/LightDM
 _shouldAbortProfileSourcing() {
-    declare _evilFileSourcingProfileEvenThoughItsNotALoginShell='/usr/sbin/lightdm-session'
+    declare _evilFileSourcingProfile='/usr/sbin/lightdm-session'
     declare _evilFileTextToCheck='$HOME/.profile'
 
-    if grep -iq "$_evilFileTextToCheck" "$_evilFileSourcingProfileEvenThoughItsNotALoginShell"; then
+    if [[ -f "$_evilFileSourcingProfile" ]] && grep -iq "$_evilFileTextToCheck" "$_evilFileSourcingProfile"; then
         zenity --error --text "
-        $_evilFileSourcingProfileEvenThoughItsNotALoginShell is calling \`source $_evilFileTextToCheck\`
+        $_evilFileSourcingProfile is calling \`source $_evilFileTextToCheck\`
         even though it's not a login shell.
-        Please delete all references to $_evilFileTextToCheck within $_evilFileSourcingProfileEvenThoughItsNotALoginShell
+        Please delete all references to $_evilFileTextToCheck within $_evilFileSourcingProfile
         in order to proceed.
         "
 
