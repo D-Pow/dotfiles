@@ -212,6 +212,15 @@ yarnRerunCommand() {
 ###  Python  ###
 ################
 
+
+if [[ -z "$VIRTUAL_ENV" ]] && ! echo "$(which python)" | grep -iq conda; then
+    # If not in a virtual environment nor Conda environment,
+    # then make Python v3 the default for `python` command
+    alias python='python3'
+    alias python2='/usr/bin/python'
+fi
+
+
 pipsearch() {
     if [[ -z "$1" ]]; then
         declare USAGE="Searches pypi.org for packages matching the search query (only the first page).

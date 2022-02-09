@@ -9,8 +9,6 @@ export PIP2_HOME=/Users/dpowell1/Library/Python/2.7/bin
 export PATH=$PIP3_HOME:$PIP2_HOME:$MAVEN_HOME:$GRADLE_HOME:$GRADLE_4_HOME:$BOOST_HOME:$PATH
 
 
-alias python='python3'
-alias python2='/usr/bin/python'
 export PIP_INDEX_URL='https://artifactory.etrade.com/artifactory/api/pypi/pypi/simple'
 
 alias devcurl="curl --noproxy '*'"

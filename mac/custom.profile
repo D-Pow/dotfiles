@@ -72,9 +72,6 @@ export LSCOLORS=gxfxcxdxbxxhxhbxbxGxGx
 export LS_COLORS='di=36:ln=35:so=32:pi=33:ex=31:bd=0;47:cd=0;47:su=31:sg=31:tw=1;36:ow=1;36'
 
 
-alias python='python3'
-alias python2='/usr/bin/python'
-
 alias devcurl="curl --noproxy '*'"
 
 

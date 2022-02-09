@@ -3,24 +3,6 @@ _nextdoorRoot="${NEXTDOOR_ROOT:-$HOME/src/nextdoor.com}"
 export NO_COMMIT_AS=true
 
 
-_removePythonSymlinksAndAliases() {
-    # Ensure Conda python executables are used instead of Linux's symlinks
-    # or aliases from top-level Mac .profile
-
-    declare pythonAlias
-    for pythonAlias in $(compgen -a python); do
-        unalias "$pythonAlias" &>/dev/null
-    done
-
-    declare pythonSymlink
-    for pythonSymlink in $(find "$dotfilesDir/linux/bin" -iname 'python*'); do
-        # Delete and assume-unchanged in git
-        rm -f "$pythonSymlink"
-        gau "$pythonSymlink" &>/dev/null # Ignore errors caused by being in a different dir than dotfiles/
-    done
-} && _removePythonSymlinksAndAliases
-
-
 
 alias fe="cd $_nextdoorRoot/apps/nextdoor/frontend"
 alias fenext="cd $_nextdoorRoot/services/client-web"
