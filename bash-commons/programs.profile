@@ -317,6 +317,8 @@ ghLoginToGitHubPackagesNpmRegistry() {
     # because `npm login` shows prompts so each field must be injected sequentially, waiting for the
     # next prompt to appear before we `echo` it.
     # Thus, add a `sleep` call to ensure we wait long enough for the next prompt to appear.
+    # See:
+    #   https://stackoverflow.com/questions/23460980/how-to-set-npm-credentials-using-npm-login-without-reading-from-stdin
     npm login --scope="$_npmScope" --registry="$_npmGitHubRegistryUrl" < <(
         declare _npmLoginField
         for _npmLoginField in {"$_npmLoginUsername","$_npmLoginPasswordToken","$_npmLoginEmail"}; do
