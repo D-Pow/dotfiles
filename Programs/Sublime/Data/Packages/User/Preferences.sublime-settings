@@ -29,6 +29,25 @@
     "ignored_packages": [
         "Vintage",
     ],
+    // Exclude files/folders from "go to anything" but show in side bar.
+    //  See: https://forum.sublimetext.com/t/folder-exclude-patterns-but-show-in-sidebar/14735
+    // Or, prevent them from being indexed via `index_exclude_patterns`
+    "binary_file_patterns": [
+        "*.jpg",
+        "*.jpeg",
+        "*.png",
+        "*.gif",
+        "*.ttf",
+        "*.tga",
+        "*.dds",
+        "*.ico",
+        "*.eot",
+        "*.pdf",
+        "*.swf",
+        "*.jar",
+        "*.zip",
+        "*/node_modules/*",
+    ],
     "added_words": [
         "anime",
         "app",
