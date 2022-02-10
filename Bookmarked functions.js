@@ -160,6 +160,183 @@ window.htmlUnescape = str => {
         .replace(/&#x2F;/g, '/');
 };
 
+window.getElementAttributes = elem => [ ...(elem.attributes) ] /* `attributes` is a `NamedNodeMap`: https://developer.mozilla.org/en-US/docs/Web/API/NamedNodeMap */
+    .reduce((attrsObj, { name, value }) => ( /* Grab desired keys from the `Attr` object: https://developer.mozilla.org/en-US/docs/Web/API/Attr */
+        (attrsObj[name] = value)
+        && attrsObj /*  Use short-circuiting to ensure we always return the `attrsObj` without having to convert this to a full blown function like `(args) => { myLogic; return attrsObj; }` */
+        || attrsObj
+    ), {});
+
+
+/**
+ * Makes a class iterable, adding an implementation of `Class.prototype[Symbol.iterator]`.
+ *
+ * @param {Object} cls - Class to make iterable.
+ * @param {string} nextLikeFuncName - The name of the function generating values, to be called like an iterator's `next()` function.
+ * @param {Object} [options]
+ * @param {boolean} [options.force] - Force overwriting of any preexisting iterator implementations.
+ * @param {Object} [options.trackItemsOnNextCall] - Keep track of all values returned from the next-like function;
+ *                                                  Useful for when items are deleted after being read (e.g. NodeIterator, TreeWalker)
+ *                                                  or when the next-like function will generate new items over time and you want the
+ *                                                  iterator to track them.
+ * @returns {void}
+ *
+ * @see [Implementation inspiration]{@link https://github.com/whatwg/dom/issues/704}
+ * @see [Iterable/Iterator protocols]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols}
+ */
+function makeClassIterable(cls, nextLikeFuncName, {
+    trackItemsOnNextCall = false,
+    force = false,
+} = {}) {
+    const clsName = cls.name || cls.prototype.constructor.name;
+    const nextLikeFunc = cls.prototype[nextLikeFuncName];
+    const isIterable = cls.prototype[Symbol.iterator] instanceof Function;
+
+    if (!(nextLikeFunc && nextLikeFunc instanceof Function)) {
+        throw new TypeError(`${clsName}.prototype.${nextLikeFuncName} is not a function`);
+    }
+
+    if (isIterable) {
+        console.warn(`${clsName}.prototype[Symbol.iterator] already exists`);
+
+        if (!force) {
+            return;
+        }
+
+        console.log(`Overwriting ${clsName}.prototype[Symbol.iterator]...`);
+    }
+
+    /* Use `function` instead of arrow function so `this` works on the class instance */
+    function* iteratorFunc() {
+        let nextValue;
+
+        while ((nextValue = this[nextLikeFuncName]()) != null) {
+            yield nextValue;
+        }
+    }
+
+    function makeIterator(trackItems = false) {
+        if (trackItems) {
+            const values = [];
+            let iterator;
+            let iteratorExhausted = false;
+
+            /* TODO Extract this out to its own function and make it possible to reset iterators */
+            return function* () {
+                /*
+                 * Neither `makeIterator` nor `iteratorFunc` are bound to the class because `makeIterator`
+                 * is not a generator/doesn't return an iterator and is called in the context of the parent
+                 * who called this function (e.g. `window` if in dev tools, a different class, or some script).
+                 *
+                 * Thus, bind `this` to `iteratorFunc` within this anonymous function b/c it is called on
+                 * the class instance itself (i.e. when `clsInstance[Symbol.iterator]()` is called), giving
+                 * it the correct value of `this`.
+                 *
+                 * Note: we don't need to `bind(this)` if returning the `iteratorFunc` itself b/c it will
+                 * be called on the class instance, not from the parent context nor within another function.
+                 */
+                const bindIteratorFunc = () => iterator = iteratorFunc.bind(this)();
+
+                if (!iterator) {
+                    bindIteratorFunc();
+                }
+
+                if (iteratorExhausted) {
+                    /*
+                     * Delegate this (returned) generator's iterator logic to Array.prototype[Symbol.iterator]
+                     * since all items have been deleted.
+                     * Then, reset the `iterator` to a new instance from `iteratorFunc` to capture any values
+                     * that might be added after the first iteration (which also means don't return from the
+                     * function here, either).
+                     */
+                    yield* values;
+                    bindIteratorFunc();
+                }
+
+                let value;
+
+                /*
+                 * Set the `next()` output to `value` and `done` variables, then use JS' internal/natural return
+                 * logic of statement executions to read the `next()` return object's `done` field (which was copied)
+                 * into the local variable)
+                 */
+                while (!({ value } = iterator.next()).done) {
+                    values.push(value);
+                    yield value;
+                }
+
+                iteratorExhausted = true;
+            };
+        }
+
+        return iteratorFunc;
+    }
+
+    cls.prototype[Symbol.iterator] = makeIterator(trackItemsOnNextCall);
+}
+window.makeClassIterable = makeClassIterable;
+
+
+/**
+ * Finds all Nodes/Elements through custom logic that can't be captured by CSS query selectors.
+ *
+ * Useful cases include:
+ * - innerText
+ * - All attribute values (i.e. CSS selector akin to `[.* *= 'my-search-text']`)
+ * - Custom "is a parent/child of" logic (i.e. skipping over any elements whose parent is <h1> for performance improvements)
+ *
+ * @param {function} nodeFilterFunc - Filter function; `(Node) => boolean | NodeFilter.FILTER_[X]`.
+ * @param {Object} [options]
+ * @param {boolean} [options.useCustomNodeIteratorReturn] - If `nodeFilterFunc` returns a `NodeFilter` property instead of a boolean (see `useNodeIterator` example).
+ * @param {Object} [options.useNodeIterator] - If a `NodeIterator` should be used instead of `document.querySelectorAll('*')`;
+ *                                             Typically only useful if your filter function wants to return a custom `NodeIterator`
+ *                                             value, which is generally only used over `querySelectorAll()` to improve performance
+ *                                             by e.g. dropping entire DOM sub-trees so they aren't searched, i.e.
+ *                                             `return node.tagName.match(/div/i) ? NodeFilter.FILTER_REJECT : node.innerText === 'hi' ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;`.
+ * @return {Node[]} - Array of matching [DOM Nodes]{@link https://developer.mozilla.org/en-US/docs/Web/API/Node}.
+ *
+ * @see [When to use NodeIterator instead of querySelectorAll]{@link https://stackoverflow.com/questions/7941288/when-to-use-nodeiterator/58221592}
+ * @see [NodeIterator]{@link https://developer.mozilla.org/en-US/docs/Web/API/NodeIterator}
+ * @see [NodeFilter]{@link https://developer.mozilla.org/en-US/docs/Web/API/NodeFilter}
+ * @see [CSS Selectors]{@link https://www.w3schools.com/cssref/css_selectors.asp}
+ * @see [innerText vs textContent]{@link https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent#differences_from_innertext}
+ * @see [Xpath vs TreeWalker vs manual element iteratation]{@link https://stackoverflow.com/questions/3813294/how-to-get-element-by-innertext}
+ * @see [Secret CSS Selector finds by attribute, but has no documentation anywhere]{@link https://stackoverflow.com/a/42479114}
+ */
+function findElementsByAnything(nodeFilterFunc, {
+    useNodeIterator = false,
+    useCustomNodeIteratorReturn = false,
+} = {}) {
+    if (useNodeIterator || useCustomNodeIteratorReturn) {
+        const nodeIterator = document.createNodeIterator(
+            document.body,
+            NodeFilter.SHOW_ELEMENT,
+            {
+                acceptNode(node) {
+                    if (useCustomNodeIteratorReturn) {
+                        return nodeFilterFunc(node);
+                    }
+
+                    return nodeFilterFunc(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+                }
+            }
+        );
+
+        const nodeMatches = [];
+        let currentNode;
+
+        while (currentNode = nodeIterator.nextNode()) {
+            nodeMatches.push(currentNode);
+        }
+
+        return nodeMatches;
+    }
+
+    return [ ...document.body.querySelectorAll('*') ].filter(nodeFilterFunc);
+}
+window.findElementsByAnything = findElementsByAnything;
+
+
 window.setDocumentReferer = function(url = null, useOrigin = false) {
     if (!url) {
         /*
