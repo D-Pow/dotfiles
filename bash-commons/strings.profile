@@ -46,6 +46,15 @@ trim() {
 }
 
 
+decolor() {
+    # Strips coloring/bolding from text
+    #
+    # See:
+    #   https://stackoverflow.com/questions/17998978/removing-colors-from-output
+    sed -E 's/\x1B\[(;?[0-9]{1,3})+[mGK]//g'
+}
+
+
 str.repeat() {
     declare _strToRepeat="$1"
     declare _strRepeatTimes="$2"
