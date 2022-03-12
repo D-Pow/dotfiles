@@ -14,12 +14,13 @@ topath() {
 }
 
 towindowspath() {
-    argArray=()
+    declare argArray=()
 
     # $@ is all args
     # Wrapping "$@" in double quotes preserves args that have spaces in them
+    declare i
     for i in "$@"; do
-        path=$(topath "$i")
+        declare path=$(topath "$i")
         # sed -e (execute script that uses regex)
         #     Allows multiple sed executions instead of only one.
         #
@@ -35,7 +36,7 @@ towindowspath() {
         #         * Replace '/mnt/x' with uppercase letter and colon, i.e. 'X:'
         #         * Used for the case that path is in a native Windows directory,
         #           (e.g. /mnt/c or /mnt/d), so don't append $rootdir.
-        parsedPath=`echo $path | sed -e "/^\/mnt\//! s|/|$rootdir/|" -e "s|/mnt/\(.\)|\U\1:|"`
+        declare parsedPath=`echo $path | sed -e "/^\/mnt\//! s|/|$rootdir/|" -e "s|/mnt/\(.\)|\U\1:|"`
         argArray+=("$parsedPath")
     done
 
@@ -51,15 +52,16 @@ towindowspath() {
 
 cmd() {
     # For some reason, flags aren't picked up in $@, $2, etc. so just parse out the command
-    commandToRun="$1"
-    rest=${@/$commandToRun/""}
+    declare commandToRun="$1"
+    declare rest=${@/$commandToRun/""}
+
     /c/Windows/System32/cmd.exe "/C" "$commandToRun" $rest
 }
 
 # TODO make the command below work
 # subl -n `towindowspath '/mnt/d/file with spaces.txt' /home/file`
 testargs() {
-    argArray=()
+    declare argArray=()
 
     # $@ is all args
     # Wrapping "$@" in double quotes preserves args that have spaces in them
