@@ -58,6 +58,15 @@ cmd() {
     /c/Windows/System32/cmd.exe "/C" "$commandToRun" $rest
 }
 
+
+
+getProcessLockingFile() {
+    # See: https://superuser.com/questions/117902/find-out-which-process-is-locking-a-file-or-folder-in-windows/1203347#1203347
+    cmd openfiles /query /fo table | cmd find /I "$1"
+}
+
+
+
 # TODO make the command below work
 # subl -n `towindowspath '/mnt/d/file with spaces.txt' /home/file`
 testargs() {
