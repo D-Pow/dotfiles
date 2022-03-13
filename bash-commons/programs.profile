@@ -158,7 +158,7 @@ _nvmCurrentNodePath="$(
         | sed -E 's|.*node_modules/.+||' \
         | trim
 )"
-export NODE_PATH="$(str.unique -d ':' "${NODE_PATH:+$NODE_PATH:}$_nvmCurrentNodePath")"
+export NODE_PATH="$(str.unique -d ':' "${NODE_PATH:+${NODE_PATH}:}$_nvmCurrentNodePath")"
 
 
 yarnRerunCommand() {
