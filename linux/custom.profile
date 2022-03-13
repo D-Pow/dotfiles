@@ -216,7 +216,9 @@ alias liststartupservices='sudo systemctl list-unit-files | grep enabled | sort'
 
 
 # Requires Sophos antivirus
-alias scan='savscan -all -rec -f -archive'
+scan() {
+    savscan -all -rec -f -archive "$@" | grep -vi 'Using IDE file'
+}
 alias sophosUpdate='sudo /opt/sophos-av/bin/savupdate && /opt/sophos-av/bin/savdstatus --version'
 
 
