@@ -663,6 +663,13 @@ getBgCmdJobId() {
 
 
 
+zipSizeAfterUnzipped() {
+    # See: https://unix.stackexchange.com/questions/229931/how-to-know-how-much-space-an-uncompressed-zip-will-take/229936#229936
+    unzip -Zt "$1"
+}
+
+
+
 _copyCommand=
 _pasteCommand=
 
