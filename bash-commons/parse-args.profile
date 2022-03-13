@@ -105,7 +105,7 @@ parseArgs() {
 
     Sets:
         Variables as described by \`config\` (e.g. \`var1\`).
-        An array of the remaining args in the form of \`argsArray\`=(\"\$@\")
+        An array of the remaining args in the form of \`argsArray=(\"\$@\")\`.
 
     Important:
         Declare your variables *BEFORE* calling ${FUNCNAME[0]} to ensure they're local to your
@@ -123,7 +123,6 @@ parseArgs() {
 
     if array.empty _parentOptionConfig || [[ -z "$1" ]]; then
         echo -e "$USAGE"
-
         return 1
     fi
 
@@ -440,7 +439,7 @@ parseArgs() {
         fi
     done
 
-    shift "$((OPTIND - 1))"
+    shift "$(( OPTIND - 1 ))"
 
     remainingArgs+=("$@")
 }
