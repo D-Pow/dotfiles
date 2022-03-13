@@ -205,8 +205,11 @@ parseArgs() {
         parentUsageOptions["$parentUsageOptionKey"]="${_parentOptionConfig["$optConfigKey"]}"
     done
 
-    # Add ability to parse long options, which use `--optName`
-    getoptsStr+='-:'
+    # Add ability to parse long options, e.g. `--optName`
+    # but only do so if options were specified (otherwise `getopts` throws an error)
+    if [[ -n "$getoptsStr" ]]; then
+        getoptsStr+='-:'
+    fi
 
     # Add short/long options and their descriptions to parent's USAGE string
     # only if it's present.
