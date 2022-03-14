@@ -135,6 +135,7 @@ fi
 shift $#
 
 
+
 # Utils to get the currently running file or the directory it's in.
 # These must be aliases b/c if they were functions, they'd return the
 # paths of this file, not the file it's called in.
@@ -148,6 +149,35 @@ shift $#
 #   Passing args to aliases: https://askubuntu.com/questions/626458/can-i-pass-arguments-to-an-alias-command/928376#928376
 #   Using aliases within functions: https://askubuntu.com/questions/1123186/how-can-i-use-an-alias-in-a-function
 # Or `caller` (see: ./bash-commons/)
+
+
+# Gets the absolute path of wherever the alias was called, whether it's in the terminal (resolves
+# the current dir) or the file calling it (not the file this alias was defined in).
+# Maintains symbolic links regardless of current location, unlike `realpath` and `readlink`.
+#
+# `realpath -s|--no-symlink` doesn't convert symlinks to the actual path, but only works if the
+# symlink is in the path arg passed to it, i.e. it still resolves the actual path if you're already
+# in the path pointed to by the symlink.
+# However, `pwd` does keep the symlink in the path.
+# Combining the two keeps symlinks, but since `pwd` only returns the directory, add `BASH_SOURCE`
+# if it exists for files.
+# Also, add `-e` to canonicalize/resolve relative paths (like `-m` except all path parts must exist).
+#
+# For example:
+#   realpath -s /path/to/symlink/file       ->  /path/to/symlink/file
+#   realpath -s /path/to/symlink/dir/file   ->  /path/to/symlink/dir/file
+#   realpath -s ./file      ->  /path/to/abspath/file
+#   realpath -s ./dir/file  ->  /path/to/abspath/dir/file
+#   pwd [./dir]         ->  /path/to/symlink/dir
+#   pwd [./dir/file]    ->  /path/to/symlink/dir/file
+#   realpath -s $(pwd) [./dir]              ->  /path/to/symlink/dir
+#   realpath -s $(pwd)/file [./dir/file]    ->  /path/to/symlink/dir/file
+#
+# NOTE: `pwd` takes the parent shell's path into account, not the file's,
+# so it's best to avoid using this with `source` calls.
+alias this='echo "$([[ -n "${BASH_SOURCE[0]}" ]] && realpath -se "$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd)/$(basename "${BASH_SOURCE[0]}")" || realpath -es "$(pwd)")"'
+# Aliases for `this` except with absolute paths so calling parents have a choice between the two.
+# These two are recommended for use with `source` so the path is always guaranteed to be resolved.
 alias thisFile='echo "${BASH_SOURCE[0]}"'
 alias thisDir='echo "$(realpath "$(dirname "$(thisFile)")")"'
 
@@ -155,6 +185,10 @@ alias thisDir='echo "$(realpath "$(dirname "$(thisFile)")")"'
 # Don't use `thisDir` because it uses `realpath` which resolves absolute paths instead of preserving
 # symlinks, which ruins some utils when dotfiles is on an external drive/mounted partition.
 # e.g. `repos` resolves all directories in the same parent directory as dotfiles.
+#
+# Likewise, as mentioned above, don't use `this` because when first opening a new terminal or sourcing
+# dotfiles/.profile, `pwd` resolves to the directory the user is in, so it would only work if
+# they're currently in the dotfiles directory.
 export dotfilesDir="$(dirname "$(thisFile)")"
 
 
