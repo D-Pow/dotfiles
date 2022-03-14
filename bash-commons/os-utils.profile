@@ -833,6 +833,26 @@ _setClipboardCopyAndPasteCommands() {
 
 
 
+decodeUri() {
+    # See: https://stackoverflow.com/questions/6250698/how-to-decode-url-encoded-string-in-shell
+    declare argsArray
+    declare stdin
+    declare -A _decodeUriOptions=()
+
+    parseArgs _decodeUriOptions "$@"
+    (( $? )) && return 1
+
+    declare _uriInput="${stdin[@]} ${argsArray[@]}"
+
+    # `sed`:
+    #   `s/+/ /g` to replace all `+` characters with spaces.
+    #   `s/%(..)/\x\1/g` to convert from URI-escaped strings to Bash strings (e.g. `%20` to `\x20`).
+    # `echo -e` to parse `\x` for its meaning rather than the literal characters.
+    echo -e "$(echo "$_uriInput" | sed -E 's/\+/ /g; s/%(..)/\\x\1/g')"
+}
+
+
+
 dirsize() {
     # ${FUNCNAME[0]} gets the name of this function, regardless of where it was called/defined
     usage="Displays total disk usages of all directories within the given path.
