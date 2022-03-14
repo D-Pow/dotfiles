@@ -257,6 +257,167 @@ str.replace() {
 }
 
 
+convertMillisToReadable() {
+    declare USAGE="[options...] < STDIN
+    Converts text containing milliseconds that may or may not be Unix Epoch timestamps into readable date/time strings.
+    "
+    declare _convertMillisRemoveDate
+    declare _convertMillisRemoveTimezone
+    declare _convertMillisPrefix
+    declare _convertMillisSuffix
+    declare _convertMillisJson
+    declare _convertMillisStr
+    declare argsArray
+    declare -A _convertMillisOptions=(
+        ['j|json,_convertMillisJson']='Use `jq` to parse entries (must map entries before piping here).'
+        ['s|string,_convertMillisStr']='Use `awk` to parse text files containing `timestampNumber (ms|millis|sec|min|etc.)`.'
+        ['p|prefix:,_convertMillisPrefix']='String to prepend to the specified command (e.g. `map(` for `jq`).'
+        ['e|suffix:,_convertMillisSuffix']='String to append to the specified command (e.g. `)` for `map(` prefix for `jq`).'
+        ['d|remove-date,_convertMillisRemoveDate']='Remove date string from output.'
+        ['z|remove-timezone,_convertMillisRemoveTimezone']='Remove timezone string from output.'
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _convertMillisOptions "$@"
+    (( $? )) && return 1
+
+    declare _convertMillisDateFormat='%m/%d/%Y-'
+    declare _convertMillisTimeFormat='%H:%M:%S'
+    declare _convertMillisTimezoneFormat='_(%Z)'
+
+    if [[ -n "$_convertMillisRemoveDate" ]]; then
+        _convertMillisDateFormat=
+    fi
+
+    if [[ -n "$_convertMillisRemoveTimezone" ]]; then
+        _convertMillisTimezoneFormat=
+    fi
+
+
+    if [[ -n "$_convertMillisJson" ]]; then
+        if [[ -n "$_convertMillisPrefix" ]] && ! echo "$_convertMillisPrefix" | egrep -q '\| ?$'; then
+            _convertMillisPrefix="$_convertMillisPrefix | "
+        fi
+
+        # See:
+        #   Repo: https://github.com/stedolan/jq
+        #   Builtins: https://stedolan.github.io/jq/manual/#Builtinoperatorsandfunctions
+        #   Handling timestamps: https://stackoverflow.com/questions/36853202/jq-dates-and-unix-timestamps
+        #   Transforming current/creating-temp objects: https://stackoverflow.com/questions/31764035/transforming-nested-array-of-objects-using-jq
+        #   Adding new fields: https://stackoverflow.com/questions/52441157/jq-add-properties-to-nested-object-in-nested-array
+        #   Combining multiple fields into one: https://stackoverflow.com/questions/28164849/using-jq-to-parse-and-display-multiple-fields-in-a-json-serially
+        #   Conditionals: https://unix.stackexchange.com/questions/672784/jq-set-a-value-to-another-value-conditionally
+
+        jq "$_convertMillisPrefix
+        if tostring | length == 13 then
+            # 13 digits contain milliseconds, which is unrecognizable by the \`strftime\` C function.
+            # So strip them from the input and convert them into a string.
+            {
+                base: (. / 1000 | floor),
+                millis: (. / 1000 | tostring | match(\"(\\\\d{3})\$\") | \".\" + .string)
+            }
+        elif tostring | length == 10 then
+            {
+                base: .,
+                millis: \"\"
+            }
+        # else
+            # TODO Manual string parsing like \`awk\`
+        end
+        # Final string creation: Net result: 01/27/2000-13:45:55.123_(EST)
+        # Format Unix Epoch timestamp without timezone.
+        | (
+            .base
+            | strftime(\"$_convertMillisDateFormat$_convertMillisTimeFormat\")
+        )
+        # Append milliseconds if they exist after seconds.
+        + .millis
+        # Append the timezone after any possible milliseconds.
+        + (
+            ${_convertMillisTimezoneFormat:+".base | strftime(\"$_convertMillisTimezoneFormat\") + "}
+            \"\"
+        )
+        # TODO This doesn't work! See: https://stackoverflow.com/questions/31658278/terminating-jq-processing-when-condition-is-met
+        # Fallback to original number
+        // .
+        $_convertMillisSuffix"
+
+        return
+    fi
+
+    echo "TODO Touch up the rest"
+    return 1
+
+
+    # See:
+    #   Unix timestamps to readable: https://unix.stackexchange.com/questions/265950/convert-unix-timestamp-to-hhmmsssss-where-sss-is-milliseconds-in-awk
+    #   `awk` time functions: https://www.gnu.org/software/gawk/manual/html_node/Time-Functions.html
+    #   `awk` string functions: https://www.gnu.org/software/gawk/manual/html_node/String-Functions.html
+
+    awk --re-interval '{
+        $0=gensub(/([0-9]+),+/, "\\1", "g")
+        minutes=gensub(/.*[^0-9]([0-9]{6,}[0-9.]*)[^0-9].*/, "\\1", "g")
+        minutesConverted=minutes / 60
+
+        # printf("\n\nMins: %s => %s\n", minutes, minutesConverted)
+
+        if (minutesConverted > 0) {
+            # Regex must be extracted to separate string b/c of var injection
+            # See:
+            #   https://stackoverflow.com/questions/3686204/how-can-i-mix-math-with-regexs-in-awk-or-sed
+            #   https://stackoverflow.com/questions/41658836/using-shell-variables-in-gensub-in-awk
+            timeRegex=sprintf("(%s) (ms|millis?|sec)", minutes)
+            # `gsub(regex, replacement, [ target = $0 ]`  ==  `target=gensub(regex, replacement, "g", [ target = $0])`
+            gsub(timeRegex, minutesConverted " min")
+        }
+
+        seconds=gensub(/.*[^0-9]([0-9]{4,}[0-9.]*)[^0-9].*/, "\\1", "g")
+        secondsConverted=seconds / 1000
+
+        # printf("\nSeconds: %s => %s\n", seconds, secondsConverted)
+
+        if (secondsConverted > 0) {
+            # timeRegex=sprintf("(%s) (ms|millis?)", seconds)
+            # gsub(timeRegex, secondsConverted " sec")
+            # `gsub` always takes variables literally, so `gsub(seconds, secondsConverted`
+
+            # Split these calls up to avoid overwriting "min" from above
+            gsub(seconds, secondsConverted)
+            gsub(/(ms|millis?)/, "sec")
+        }
+
+        # Need to use `gensub` to access capture group
+        $0=gensub(/([0-9]+\.[0-9]+)(\.[0-9]+)*/, "\\1", "g")
+
+        print
+    }'
+
+    # Alternatively, convert this into a custom function and use this instead for HH:MM:SS display.
+    #
+    # See:
+    #   `awk` time functions: https://www.gnu.org/software/gawk/manual/html_node/Time-Functions.html
+    #   Custom functions: https://www.tutorialspoint.com/awk/awk_user_defined_functions.htm
+    #   Manual time conversion: https://stackoverflow.com/questions/12362562/convert-milliseconds-timestamp-to-date-from-unix-command-line
+    echo '' | awk '{
+        millis=5253523
+        sec=millis / 1000
+
+        print millis
+        print sec
+
+        print(systime())
+        print systime() + sec
+
+        # This is what we want
+        print strftime("%H:%M:%S", systime())           # Orig time
+        print strftime("%H:%M:%S", systime() + sec)     # Time after `sec`
+
+        print strftime("%H:%M:%S", systime(), 1)
+        print strftime("%H:%M:%S", systime() + sec, 1)
+    }'
+}
+
+
 
 _todoFancyUseOfAwk() (
     # Inspiration:
