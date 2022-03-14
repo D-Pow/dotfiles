@@ -373,22 +373,17 @@ gitUpdateRepos() {
 
     shift "$((OPTIND - 1))"
 
-    declare pathsToSearch=('.')
+    declare pathsToSearch=("${@:-.}")
     declare gitDirs=()
 
-    if [[ -n "$@" ]]; then
-        pathsToSearch=("$@")
-    fi
-
-    declare dir=
-
-    for dir in ${pathsToSearch[@]}; do
-        gitDirs+=($(gitGetReposInDir "$dir"))
+    declare gitDir=
+    for gitDir in "${pathsToSearch[@]}"; do
+        gitDirs+=($(gitGetReposInDir "$gitDir"))
     done
 
-    for dir in "${gitDirs[@]}"; do
-        echo "Updating $dir..."
-        (cd "$dir" && git pull && [ "$getStatus" = true ] && git status)
+    for gitDir in "${gitDirs[@]}"; do
+        echo "Updating $gitDir..."
+        (cd "$gitDir" && git pull && [ "$getStatus" = true ] && git status)
         echo -e "\n\n---------------------\n\n"
     done
 }
