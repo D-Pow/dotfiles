@@ -35,22 +35,6 @@ COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
 
 
 
-# STDIN Notes:
-#
-# To simultaneously read from stdin/output to stdout as lines come in (e.g. grep):
-#   while read stdinLine; do
-#       doWork stdinLine
-#   done >&1
-#
-# To wait for them all to come in, and then read them all into an array:
-#   readarray -t stdin
-#
-# Skip all the difficulty of redirections by reading from one of the special `/dev/std(in|out|err)` files
-# See: http://manpages.ubuntu.com/manpages/trusty/en/man1/bash.1.html#:~:text=Bash%20handles%20several%20filenames%20specially%20when%20they%20are%20used%20in%20redirections%2C%20as%20%20described%0A%20%20%20%20%20%20%20in%20the%20following%20table%3A
-#   myCommandAcceptingBothArgsAndStdin "$@" < /dev/stdin
-
-
-
 parseArgs() {
     declare USAGE="${FUNCNAME[0]} optionConfig \"\$@\"
     \`optionConfig\` is a specially-formatted associative array of options-to-variable names.
@@ -67,6 +51,7 @@ parseArgs() {
         declare var2
         declare var3
         declare argsArray
+        declare stdin
         declare -A optionConfig=(
             ['shortOption|longOption,var1']='Description of the option'
             ['shortOptionWithArg|longOptionWithArg:,var2']='I require an argument, by space or = sign.'
@@ -100,12 +85,16 @@ parseArgs() {
         # If you need to use \`\$?\` multiple times, set it in a variable directly after calling \`${FUNCNAME[0]}\`,
         # e.g. \`declare _parseArgsRetVal=\"\$?\"\`
 
+    Options:
+        -i  |   Don't capture/read from STDIN.
+
     Returns:
         0/1 on success/failure.
 
     Sets:
         Variables as described by \`config\` (e.g. \`var1\`).
         An array of the remaining args in the form of \`argsArray=(\"\$@\")\`.
+        An array of STDIN inputs (not interactive/live) in the form of \`readarray -t stdin\`.
 
     Important:
         Declare your variables *BEFORE* calling ${FUNCNAME[0]} to ensure they're local to your
@@ -118,6 +107,40 @@ parseArgs() {
         be added to an array.
         Thus, \`config=(['a|alpha,arr'])\` will result in \`arr=('val1' 'val2')\`
     "
+
+    # Custom options for `parseArgs()` itself
+    declare _parseStdin=true
+
+    declare opt=
+    declare OPTIND=1
+    # "abc" == flags without an input following them, e.g. `-h` for --help
+    # "a:"  == flags with an input following them, e.g. `-a 5`
+    # ":ab" == leading colon activates silent mode, e.g. don't print `illegal option -- x`
+    #
+    # Alternatives for parsing long option flags: https://stackoverflow.com/questions/402377/using-getopts-to-process-long-and-short-command-line-options/12523979#12523979
+    #   while [[ -n "$1" ]]; do <-- `getopts` doesn't support long args
+    #       case "$1" in # <-- Read arg directly
+    #           -d | --depth) ... ;;
+    #       esac
+    #       shift # <-- Manually shift by one arg
+    #   done
+    while getopts 'i' opt; do
+        # OPTIND = Arg index (equivalent to $1, $2, etc.)
+        # OPTARG = Variable set to the flag (e.g. `-i myArgValue` makes OPTARG=myArgValue)
+        # ${!OPTIND} = Actual flag (e.g. `-i myArgValue` makes ${!OPTIND}='-d')
+        case "$opt" in
+            i)
+                _parseStdin=
+                ;;
+            *)
+                echo -e "$USAGE"
+                return 1
+                ;;
+        esac
+    done
+
+    shift "$(( OPTIND - 1 ))"
+
 
     declare -n _parentOptionConfig="$1" 2>/dev/null
 
@@ -244,11 +267,47 @@ parseArgs() {
     fi
 
 
+    # Ways to parse STDIN:
+    #
+    # To simultaneously read from stdin/output to stdout as lines come in (e.g. grep):
+    #   while read stdinLine [or: var1 var2 ...]; do
+    #       someCommand stdinLine
+    #   done >&1
+    #
+    # To wait for them all to come in, and then read them all into an array:
+    #   readarray -t stdin
+    #
+    # Skip all the difficulty of redirections by reading from one of the special `/dev/std(in|out|err)` files,
+    # though this will block code execution if STD(IN|OUT|ERR) are empty.
+    #   e.g.
+    #       myCommandAcceptingBothArgsAndStdin "$@" < /dev/stdin
+    #       cat /dev/stdin | myCommand
+    #   See:
+    #       http://manpages.ubuntu.com/manpages/trusty/en/man1/bash.1.html#:~:text=Bash%20handles%20several%20filenames%20specially%20when%20they%20are%20used%20in%20redirections%2C%20as%20%20described%0A%20%20%20%20%20%20%20in%20the%20following%20table%3A
+    if [[ -n "$_parseStdin" ]] && [[ -p /dev/stdin ]]; then
+        # We must check if /dev/stdin is open with `test -p` first.
+        # Otherwise, `readarray` will block indefinitely.
+        #
+        # See:
+        #   https://unix.stackexchange.com/questions/33049/how-to-check-if-a-pipe-is-empty-and-run-a-command-on-the-data-if-it-isnt
+        declare -n _stdin='stdin'
+
+        # Note: we can't use `read -r -d '' -t 0 [-a] _stdin` b/c for some reason
+        # it doesn't capture STDIN for the parent function correctly.
+        #
+        # See:
+        #   https://www.baeldung.com/linux/reading-output-into-array
+        #   https://www.reddit.com/r/commandline/comments/iev25m/how_can_i_timeout_a_readarray_in_bash/
+        readarray -t _stdin
+    fi
+
+
     declare -n remainingArgs="argsArray"
     remainingArgs=()
 
-    declare opt
-    declare OPTIND=1
+
+    opt=
+    OPTIND=1
     declare prevOptind=$OPTIND # Helps split single-hyphen, multi-char unknown flags. See below for details.
 
     while getopts "$getoptsStr" opt; do
