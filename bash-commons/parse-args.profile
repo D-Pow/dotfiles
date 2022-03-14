@@ -36,10 +36,10 @@ COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
 
 
 parseArgs() {
-    declare USAGE="${FUNCNAME[0]} optionConfig \"\$@\"
-    \`optionConfig\` is a specially-formatted associative array of options-to-variable names.
+    declare USAGE="${FUNCNAME[0]} optionsConfig \"\$@\"
+    \`optionsConfig\` is a specially-formatted associative array of optionFlag-to-variable names.
 
-    \`optionConfig\` format:
+    \`optionsConfig\` format:
         ([:singleLetterOption|multiLetterOption:,variableName]='Usage description')
         where each of the colons and option-entries are optional and multiLetterOption
         uses two hyphens.
@@ -52,7 +52,7 @@ parseArgs() {
         declare var3
         declare argsArray
         declare stdin
-        declare -A optionConfig=(
+        declare -A optionsConfig=(
             ['shortOption|longOption,var1']='Description of the option'
             ['shortOptionWithArg|longOptionWithArg:,var2']='I require an argument, by space or = sign.'
             [':shortOptionIgnoreFailures|longOptionIgnoreFailures,var3']='Eh, if they don't pass it or error otherwise, don't care'
@@ -74,7 +74,7 @@ parseArgs() {
                        # \`${FUNCNAME[0]}\` will automatically prepend the calling parent function name at the beginning of the
                        # specified ['USAGE'] string and append auto-spaced option flags/descriptions at the end.
         )
-        ${FUNCNAME[0]} optionConfig \"\$@\"
+        ${FUNCNAME[0]} optionsConfig \"\$@\"
         # To exit your function if \`${FUNCNAME[0]}\` fails, add the line below (\`USAGE\` will be printed by default).
         (( \$? )) && return 1    # Alternatively: [[ \$? -ne 0 ]]
         #
@@ -142,7 +142,7 @@ parseArgs() {
     shift "$(( OPTIND - 1 ))"
 
 
-    declare -n _parentOptionConfig="$1" 2>/dev/null
+    declare -n _parentOptionsConfig="$1" 2>/dev/null
 
     if [[ -z "$1" ]]; then
         echo -e "$USAGE"
@@ -155,13 +155,13 @@ parseArgs() {
     declare -A getoptsParsingConfig=()
     declare getoptsStr=''
 
-    if [[ -n "${_parentOptionConfig[':']+true}" ]]; then
+    if [[ -n "${_parentOptionsConfig[':']+true}" ]]; then
         # Append colon to beginning if specified, silencing
         # all unrecognized flags and flags lacking args which require them.
         getoptsStr=':'
 
         # Remove from map since we want to iterate over it later
-        unset _parentOptionConfig[':']
+        unset _parentOptionsConfig[':']
     fi
 
     declare hasUnknownFlagHandler=
@@ -169,7 +169,7 @@ parseArgs() {
     # Mark if an unknown-flag handler has been set, even if it's blank;
     # `${var+word}` will return `word` if the value is set or blank (e.g. `declare var=`),
     # but not if it is null (e.g. `declare var`)
-    if [[ -n "${_parentOptionConfig['?']+hasHandler}" ]]; then
+    if [[ -n "${_parentOptionsConfig['?']+hasHandler}" ]]; then
         hasUnknownFlagHandler=true
     fi
 
@@ -178,12 +178,12 @@ parseArgs() {
     #
     # Extract unknown-flag handler function (passed to `eval`)
     # Replace any occurrence of "USAGE" with the custom-formatted one generated in this function
-    declare unknownFlagHandler="${_parentOptionConfig['?']}"
+    declare unknownFlagHandler="${_parentOptionsConfig['?']}"
     unknownFlagHandler="${unknownFlagHandler//USAGE/parentUsageStr}"
-    unset _parentOptionConfig['?']
+    unset _parentOptionsConfig['?']
     # FUNCNAME is an array of the function call stack - 0=thisFunc, 1=parentFunc, 2=grandparentFunc, etc.
-    declare parentUsageStr="${FUNCNAME[1]} ${_parentOptionConfig['USAGE']}"
-    unset _parentOptionConfig['USAGE']
+    declare parentUsageStr="${FUNCNAME[1]} ${_parentOptionsConfig['USAGE']}"
+    unset _parentOptionsConfig['USAGE']
     # Create new option-usage map for easier parent-usage printing.
     # Allows us to avoid nested for-loops later to match parsed-config keys to
     # parent-config descriptions.
@@ -191,7 +191,7 @@ parseArgs() {
 
     declare optConfigKey
 
-    for optConfigKey in "${!_parentOptionConfig[@]}"; do
+    for optConfigKey in "${!_parentOptionsConfig[@]}"; do
         # Extract single-letter option name
         declare getoptsShort="$(echo "$optConfigKey" | sed -E 's/:?([^|:,]*).*/\1/')"
         # Extract multi-letter option name
@@ -225,7 +225,7 @@ parseArgs() {
         # Store variable in internal config map to access when reading options
         getoptsParsingConfig["$getoptsParsingConfigKey"]="$getoptsVariableName"
         # Store description string in usage-config to access when printing parent's USAGE
-        parentUsageOptions["$parentUsageOptionKey"]="${_parentOptionConfig["$optConfigKey"]}"
+        parentUsageOptions["$parentUsageOptionKey"]="${_parentOptionsConfig["$optConfigKey"]}"
     done
 
     # Add ability to parse long options, e.g. `--optName`
@@ -351,9 +351,9 @@ parseArgs() {
                 # `--long-opt MyValue` instead of `--long-opt=MyValue`
                 # If `$_longOptionVal` is empty, then the long option as a ' ' rather than a '=' in it.
                 # Thus, check if option config wants an argument for this; if so, manually add it.
-                declare _parentOptionConfigKeys="${!_parentOptionConfig[@]}"
+                declare _parentOptionsConfigKeys="${!_parentOptionsConfig[@]}"
 
-                if array.contains _parentOptionConfigKeys "$_longOptionKey:"; then
+                if array.contains _parentOptionsConfigKeys "$_longOptionKey:"; then
                     _longOptionVal="${!OPTIND}"
                     # Since this is a makeshift opt/arg reader, we have to manually shift over
                     # by one to get rid of the next option entry.
