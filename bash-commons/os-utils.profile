@@ -15,6 +15,61 @@ abspath() {
     readlink -e "$1" || type -P "$1" || { echo "'$1' not found." >&2 && return 1; }
 }
 
+filename() {
+    # See: https://stackoverflow.com/questions/965053/extract-filename-and-extension-in-bash
+    declare USAGE="[OPTION]... <file>...
+    Gets the filename of a file.
+    Optionally, selects only the leading name with(out) sub-extensions, all sub/final extensions, or final extension.
+
+    For example, the below option flags handle the file \"example.tar.gz\" in different ways.
+    "
+    declare _onlyLeadingName=
+    declare _onlyLeadingNameAndSubExtensions=
+    declare _onlySubAndFinalExtensions=
+    declare _onlyFinalExtension=
+    declare _keepLeadingPath=
+    declare argsArray
+    declare stdin
+    declare -A _filenameOptions=(
+        ['l|leading-name,_onlyLeadingName']='Only print the leading name before periods (e.g. `example`).'
+        ['n|name-and-sub-exts,_onlyLeadingNameAndSubExtensions']='Only print the leading name and sub extensions (e.g. `example.tar`).'
+        ['s|sub-and-final-exts,_onlySubAndFinalExtensions']='Only print the sub and final extensions (e.g. `tar.gz`).'
+        ['e|ext,_onlyFinalExtension']='Only print the final, "real" extension (e.g. `gz`).'
+        ['p|keep-leading-path,_keepLeadingPath']='Prepends the leading path to the filename selection output (e.g. `./path/to/example.tar`).'
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _filenameOptions "$@"
+    (( $? )) && return 1
+
+
+    declare _filenamesToParse=("${stdin[@]}" "${argsArray[@]}")
+
+    declare _file
+    for _file in "${_filenamesToParse[@]}"; do
+        declare _filename="$(basename "$_file")"
+        declare _filenameSubSection="$_filename" # default to the full filename
+
+        if [[ -n "$_onlyLeadingName" ]]; then
+            _filenameSubSection="${_filename%%.*}"
+        elif [[ -n "$_onlyLeadingNameAndSubExtensions" ]]; then
+            _filenameSubSection="${_filename%.*}"
+        elif [[ -n "$_onlySubAndFinalExtensions" ]]; then
+            _filenameSubSection="${_filename#*.}"
+        elif [[ -n "$_onlyFinalExtension" ]]; then
+            _filenameSubSection="${_filename##*.}"
+        fi
+
+        declare _filenameOutput="$_filenameSubSection"
+
+        if [[ -n "$_keepLeadingPath" ]]; then
+            _filenameOutput="$(str.replace -s "$_filename" "$_filenameOutput" "$_file")"
+        fi
+
+        echo "$_filenameOutput"
+    done
+}
+
 
 timestamp() {
     # Creates a readable timestamp using all the useful fields and none of the useless ones.
