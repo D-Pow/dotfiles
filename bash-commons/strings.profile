@@ -194,6 +194,69 @@ str.unique() {
 }
 
 
+str.replace() {
+    # String replacement: https://tldp.org/LDP/abs/html/parameter-substitution.html
+    declare USAGE="[OPTION]... <PatternToReplace> <Replacement> [StringToAlter]...
+    Replaces \`PatternToReplace\` occurrence(s) with \`Replacement\` within all \`StringToAlter\` arguments.
+    Optionally, executes each \`StringToAlter\` replacement in the way specified by the (mutually exclusive) options.
+    "
+    declare _strReplaceGlobally=
+    declare _strReplaceFirstMatch=
+    declare _strReplacePrefix=
+    declare _strReplaceSuffix=
+    declare argsArray
+    declare stdin
+    declare -A _strReplaceOptions=(
+        ['g|global,_strReplaceGlobally']='Replace the pattern globally.'
+        ['f|first,_strReplaceFirstMatch']='Replace only the first match (default).'
+        ['p|prefix,_strReplacePrefix']='Replace only matches at the beginning of the string.'
+        ['s|suffix,_strReplaceSuffix']='Replace only matches at the end of the string.'
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _strReplaceOptions "$@"
+    (( $? )) && return 1
+
+
+    declare _strReplacePattern="${argsArray[0]}"
+    declare _strReplaceReplacement="${argsArray[1]}"
+
+    declare _strReplaceStrings=()
+    array.slice -r _strReplaceStrings argsArray 2
+    _strReplaceStrings=("${stdin[@]}" "${_strReplaceStrings[@]}") # Inject STDIN before args
+
+    declare _strReplaceString
+
+    for _strReplaceString in "${_strReplaceStrings[@]}"; do
+        declare _strReplaceOutput="$_strReplaceString"
+
+        if [[ -n "$_strReplaceGlobally" ]]; then
+            # See: https://tldp.org/LDP/abs/html/parameter-substitution.html#:~:text=%24%7Bvar//Pattern/Replacement%7D
+            _strReplaceOutput="${_strReplaceString//$_strReplacePattern/$_strReplaceReplacement}"
+        elif [[ -n "$_strReplaceFirstMatch" ]]; then
+            # See: https://tldp.org/LDP/abs/html/parameter-substitution.html#:~:text=%24%7Bvar/Pattern/Replacement%7D
+            _strReplaceOutput="${_strReplaceString/$_strReplacePattern/$_strReplaceReplacement}"
+        elif [[ -n "$_strReplacePrefix" ]]; then
+            # See: https://tldp.org/LDP/abs/html/parameter-substitution.html#:~:text=%24%7Bvar/%23Pattern/Replacement%7D
+            #
+            # Similar to longest prefix removal: https://tldp.org/LDP/abs/html/parameter-substitution.html#:~:text=%24%7Bvar%23Pattern%7D%2C%20%24%7Bvar%23%23Pattern%7D
+            #   Shortest: ${var#Pattern}
+            #   Longest: ${var##Pattern}
+            _strReplaceOutput="${_strReplaceString/#$_strReplacePattern/$_strReplaceReplacement}"
+        elif [[ -n "$_strReplaceSuffix" ]]; then
+            # See: https://tldp.org/LDP/abs/html/parameter-substitution.html#:~:text=%24%7Bvar/%25Pattern/Replacement%7D
+            #
+            # Similar to longest suffix removal: https://tldp.org/LDP/abs/html/parameter-substitution.html#:~:text=%24%7Bvar%23Pattern%7D%2C%20%24%7Bvar%23%23Pattern%7D
+            #   Shortest: ${var%Pattern}
+            #   Longest: ${var%%Pattern}
+            _strReplaceOutput="${_strReplaceString/%$_strReplacePattern/$_strReplaceReplacement}"
+        fi
+
+        echo "$_strReplaceOutput"
+    done
+}
+
+
 
 _todoFancyUseOfAwk() (
     # Inspiration:
