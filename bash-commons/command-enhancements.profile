@@ -346,7 +346,7 @@ egrep() {
         _egrepCommandFlag='-E'
     fi
 
-    grep $_egrepCommandFlag "$@" < /dev/stdin
+    grep $_egrepCommandFlag "$@"
 }
 
 alias eegrep='$(which egrep)'
