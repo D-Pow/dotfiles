@@ -1,4 +1,6 @@
 abspath() {
+    declare _path="${1:-.}"
+
     # Without flags, `realpath` is the same as `readlink` if the path
     # exists; however, if it doesn't, `realpath` will still resolve the
     # specified path even though it doesn't exist.
@@ -12,7 +14,7 @@ abspath() {
     # `type -P` will traverse $PATH to try to find the file if it isn't found by `readlink`.
     #
     # Ref: https://stackoverflow.com/a/66044002/5771107
-    readlink -e "$1" || type -P "$1" || { echo "'$1' not found." >&2 && return 1; }
+    readlink -e "$_path" || type -P "$_path" || { echo "'$_path' not found." >&2 && return 1; }
 }
 
 filename() {
