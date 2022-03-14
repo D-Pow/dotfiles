@@ -8,6 +8,7 @@ trim() {
     declare _trimBottom=
     declare _trimLines=
     declare argsArray=
+    declare stdin=
     declare -A _trimOptions=(
         ['t|top:,_trimTop']='Number of lines to remove from the top of the input.'
         ['b|bottom:,_trimBottom']='Number of lines to remove from the bottom of the input.'
@@ -19,12 +20,9 @@ trim() {
     parseArgs _trimOptions "$@"
     (( $? )) && return 1
 
-    declare _trimInput="${argsArray[@]}"
 
-    if [[ -z "$_trimInput" ]]; then
-        _trimInput="$(egrep '.' < /dev/stdin)"
-    fi
-
+    declare _trimInputArray=("${stdin[@]}" "${argsArray[@]}")
+    declare _trimInput="${_trimInputArray[@]}"
 
     declare _trimOutput="$_trimInput"
 
@@ -109,16 +107,14 @@ str.join() {
         ['USAGE']="$USAGE"
     )
     declare argsArray
+    declare stdin
 
     parseArgs _strJoinOptions "$@"
     (( $? )) && return 1
 
 
-    declare _strJoinInput="${argsArray[@]}"
-
-    if [[ -z "$_strJoinInput" ]]; then
-        _strJoinInput="$(egrep '.' < /dev/stdin)"
-    fi
+    declare _strJoinInputArray=("${stdin[@]}" "${argsArray[@]}")
+    declare _strJoinInput="${_strJoinInputArray[@]}"
 
     _strJoinDelim="${_strJoinDelim:-\n}"
 
@@ -165,15 +161,14 @@ str.unique() {
         ['USAGE']="$USAGE"
     )
     declare argsArray
+    declare stdin
 
     parseArgs _strUniqueOptions "$@"
     (( $? )) && return 1
 
-    declare _strUniqueInput="${argsArray[@]}"
 
-    if [[ -z "$_strUniqueInput" ]]; then
-        _strUniqueInput="$(egrep '.' < /dev/stdin)"
-    fi
+    declare _strUniqueInputArray=("${stdin[@]}" "${argsArray[@]}")
+    declare _strUniqueInput="${_strUniqueInputArray[@]}"
 
     _strUniqueDelim="${_strUniqueDelim:-\n}"
 
