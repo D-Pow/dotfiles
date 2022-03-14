@@ -361,6 +361,23 @@ getVarsByPrefix() {
 }
 
 
+lowercaseExtensions() {
+    declare _lowerExtsPath="${1:-.}"
+
+    declare _lowerExtsFile
+    for _lowerExtsFile in $(find "$_lowerExtsPath" -type f); do
+        declare _lowerExtsFilename="$(basename "$_lowerExtsFile")"
+        declare _lowerExtsFilenameExt="$(str.replace -p '*.' '' "$_lowerExtsFilename")" # Could also use pattern removal: "${_lowerExtsFilename##*.}"
+        declare _lowerExtsFilenameExtLowercase="$(str.lower "$_lowerExtsFilenameExt")"
+        declare _lowerExtsFilenameLowercase="$(str.replace -s "$_lowerExtsFilenameExt" "$_lowerExtsFilenameExtLowercase" "$_lowerExtsFilename")"
+        declare _lowerExtsFileLowercase="$(str.replace -s "$_lowerExtsFilename" "$_lowerExtsFilenameLowercase" "$_lowerExtsFile")"
+
+        mv "$_lowerExtsFile" "$_lowerExtsFileLowercase"
+        echo "Renamed \"$_lowerExtsFile\" to \"$_lowerExtsFileLowercase\""
+    done
+}
+
+
 whereIsVarDefined() (
     declare USAGE="${FUNCNAME[0]} <nameToFind> [\`grep -P\` options]
     Finds where a variable in the user's Bash login shell was defined.
