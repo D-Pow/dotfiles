@@ -88,7 +88,7 @@ function getQueryParams(input = self.location.search + self.location.hash) {
         return queryString + (hash ? `#${hash}` : '');
     }
 
-    const queryParamHashString = fromUrl.replace(/^\?/, '');
+    const queryParamHashString = fromUrl.match(/([?#].*$)/i)?.[0] ?? '';
     const [ urlSearchQuery, hash ] = queryParamHashString.split('#');
 
     const queryParamsObj = {};
