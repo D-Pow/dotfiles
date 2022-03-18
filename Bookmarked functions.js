@@ -467,9 +467,84 @@ window.compareEscapingFunctions = function() {
 };
 
 
+/**********************************
+ ********    Life utils    *******
+ *********************************/
+
+/**
+ * Estimates the blood alcohol concentration (BAC) after drinking over a period of time.
+ *
+ * Not 100% accurate due to differences in bodies' metabolism and other factors, but gives
+ * a reasonable rough estimate.
+ *
+ * @param {number} drinkVolume - Volume of the drink(s).
+ * @param {number} drinkPercentage - Alcohol percentage of the drink(s).
+ * @param {number} bodyWeight - Person's body weight (defaults to lbs; use option to use kg).
+ * @param {Object} [options]
+ * @param {number} [options.hoursElapsed] - Number of hours elapsed while drinking.
+ * @param {boolean} [options.isMale] - If the person is a male.
+ * @param {boolean} [options.isDrinkVolumeOunces] - If using ounces for drink volume.
+ * @param {boolean} [options.isBodyWeightPounds] - If using pounds for body weight.
+ * @return {number} - BAC after `hoursElapsed` hours.
+ *
+ * @see [Wikipedia article supplying the formula]{@link https://en.wikipedia.org/wiki/Blood_alcohol_content#Estimation_by_intake}
+ */
+window.bac = function bac(drinkVolume, drinkPercentage, bodyWeight, {
+    hoursElapsed = 1,
+    isMale = true,
+    isDrinkVolumeOunces = true,
+    isBodyWeightPounds = true,
+} = {}) {
+    if (!drinkVolume) {
+        throw new Error('`drinkVolume` must be specified.');
+    }
+
+    if (!drinkPercentage) {
+        throw new Error('`drinkPercentage` must be specified.');
+    }
+
+    if (!bodyWeight) {
+        throw new Error('`bodyWeight` must be specified.');
+    }
+
+
+    if (isDrinkVolumeOunces) {
+        drinkVolume *= 29.5735; /* 1 mL == 29.5735 oz */
+    }
+
+    if (isBodyWeightPounds) {
+        bodyWeight *= 0.453592; /* 1 lbs == 0.453592 kg */
+    }
+
+    const alcoholMassUnit = 1000; /* 1000 g == 1 kg; 16 oz == 1 lb, but no need to worry about that since it's converted to grams above */
+    const alcoholMetabolismRate = isMale ? 0.015 : 0.017; /* Males process alcohol slower than females on average */
+    const bodyWaterToBodyWeightRatio = isMale ? 0.68 : 0.55; /* Males have less body fat than females, thus have more water */
+    /* See: https://www.engineeringtoolbox.com/ethanol-water-mixture-density-d_2162.html */
+    const alcoholWaterDensityAt20Celsius = 0.935;
+    const alcoholWaterDensityAt25Celsius = 0.931;
+    const alcoholWaterDensity = (alcoholWaterDensityAt20Celsius + alcoholWaterDensityAt25Celsius) / 2;
+
+    const bloodDensity = 1.055; /* g/mL */
+    const bloodDensityToBloodConcentration = bloodDensity * 100; /* 1% BAC == 1/100 g/mL. See: https://en.wikipedia.org/wiki/Blood_alcohol_content#Units_of_measurement */
+    const alcoholMass = (drinkVolume * drinkPercentage) / alcoholMassUnit; /* g => kg. For comparison to body weight */
+    const bodyWaterWeight = bodyWaterToBodyWeightRatio * bodyWeight; /* How much alcohol is in the blood, not the tissues */
+    const alcoholMetabolismRatePerTime = alcoholMetabolismRate * hoursElapsed; /* How quickly the alcohol is processed */
+
+    const bacNum = (
+        (alcoholMass / bodyWaterWeight)
+        * bloodDensityToBloodConcentration
+        * alcoholWaterDensity
+        - alcoholMetabolismRatePerTime
+    );
+
+    return Number(bacNum.toFixed(3));
+};
+
+
 /************************************
  ********    Website utils    *******
  ***********************************/
+
 window.githubGetAllFilesChangedByName = function({
     nameRegex = /./,
     onlyFileName = false,
@@ -659,7 +734,6 @@ async function translateJapanese(query) {
         }
     }
 }
-
 window.translateJapanese = translateJapanese;
 
 
