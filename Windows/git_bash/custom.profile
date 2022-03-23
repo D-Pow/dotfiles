@@ -53,9 +53,9 @@ towindowspath() {
 cmd() {
     # For some reason, flags aren't picked up in $@, $2, etc. so just parse out the command
     declare commandToRun="$1"
-    declare rest=${@/$commandToRun/""}
+    declare rest="${@/$commandToRun/""}"
 
-    /c/Windows/System32/cmd.exe "/C" "$commandToRun" $rest
+    /c/Windows/System32/cmd.exe "/C" "$commandToRun" "$rest"
 }
 
 
