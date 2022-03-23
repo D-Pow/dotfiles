@@ -36,7 +36,7 @@ towindowspath() {
         #         * Replace '/mnt/x' with uppercase letter and colon, i.e. 'X:'
         #         * Used for the case that path is in a native Windows directory,
         #           (e.g. /mnt/c or /mnt/d), so don't append $rootdir.
-        declare parsedPath=`echo $path | sed -e "/^\/mnt\//! s|/|$rootdir/|" -e "s|/mnt/\(.\)|\U\1:|"`
+        declare parsedPath="$(echo "$path" | sed -E  "s~^/mnt/(.)~\U\1:~; s~^/(.)/~\U\1:/~; s|/|\\\\|g")"
         argArray+=("$parsedPath")
     done
 
