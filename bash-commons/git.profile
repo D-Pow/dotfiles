@@ -248,31 +248,20 @@ gitGetParent() {
 
 
 gitGetReposInDir() {
-    declare parentDir='.'
-    declare gitDirs=()
+    declare _parentDirs=("${@:-.}")
 
-    if ! [ -z "$1" ]; then
-        parentDir="$1"
-    fi
+    declare _parentDir
+    for _parentDir in "${_parentDirs[@]}"; do
+        # get real path, preserving symlinks
+        _parentDir="$(abspath "$_parentDir")"
 
-    parentDir="$(cd "$parentDir" && pwd)"
-
-    declare parentDirContents=$parentDir/*
-    declare file=
-
-    for file in $parentDirContents; do
-        if [ -d "$file" ]; then # -d = isDirectory
-            if [ -d "$file/.git" ]; then # if $file directory contains .git/
-                gitDirs+=("$file")
-            fi
-        fi
+        # Check if the parent dir has a `.git/` directory as well as all its children.
+        # Requires `-maxdepth 2` since a depth of 1 is only the children directories,
+        # excluding the directories (including `.git/`) within them.
+        # Finally, add `-exec dirname` to the end to return the repository dirs, not
+        # the `.git/` ones.
+        find "$_parentDir" -maxdepth 2 -type d -name '.git' -exec dirname "{}" ";"
     done
-
-    if [ -d "$parentDir/.git" ]; then # if $parentDir itself contains .git/
-        gitDirs+=("$parentDir")
-    fi
-
-    echo ${gitDirs[@]}
 }
 
 
