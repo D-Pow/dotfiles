@@ -81,6 +81,18 @@
 
 ## [String manipulation](https://tldp.org/LDP/abs/html/string-manipulation.html)
 
+## [Pattern matching](https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Pattern-Matching) and [Bash's primitive regex](https://tldp.org/LDP/abs/html/regexp.html)
+
+* `*(pattern)` = Zero or more occurrences.
+* `?(pattern)` = Zero or one occurrence.
+* `+(pattern)` = One or more occurrences.
+* `@(pattern)` = One occurrence.
+* `!(pattern)` = Anything except one of the given patterns.
+
+Examples:
+
+* `**/*.@(test|spec).[tj]s?(x)` - Finds all JS, JSX, TS, and TSX files with a sub-extension of "test" or "spec" at any level of directory nesting.
+
 ## [Variable manipulation](https://www.gnu.org/software/bash/manual/bash.html#Shell-Parameter-Expansion)
 
 * Includes stuff like slicing, string replacement, substitutions, etc.
