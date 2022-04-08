@@ -40,6 +40,25 @@ ignoreFileInGitDiffCached() {
 }
 
 
+gitGetRootDir() {
+    # See: https://stackoverflow.com/questions/957928/is-there-a-way-to-get-the-git-root-directory-in-one-command
+    declare _showGitDir=
+    declare -A optionConfig=(
+        ['g|git-dir,_showGitDir']='Show the closest `.git/` directory instead of the top-level git directory.'
+        ['USAGE']='Show the top-level/root git directory.'
+    )
+
+    parseArgs optionConfig "$@"
+    (( $? )) && return 1
+
+    if [[ -n "$_showGitDir" ]]; then
+        git rev-parse --git-dir
+    else
+        git rev-parse --show-toplevel
+    fi
+}
+
+
 gitGetBranch() {
     # get the current branch (one that starts with '* ')
     # replace '* ' with ''
