@@ -641,7 +641,7 @@ makeTempPipe() {
     # Ensure this call's `_tmpPipeFile` isn't overwritten by another call to
     # `makeTempPipe` by adding the filename directly into the call rather than
     # the variable name.
-    "$_tmpPipeTrapCmd" "rm -rf \"$_tmpPipeFile\"" "${_tmpPipeSignals[@]}"
+    "$_tmpPipeTrapCmd" "rm -rf \"$_tmpPipeFile\" && eval \"exec $FD>&-\"" "${_tmpPipeSignals[@]}"
 
     echo "$_tmpPipeFile"
 }
