@@ -131,10 +131,10 @@ complete -F _autocompleteNpmr -o default "yarn"
 
 
 export NVM_DIR="$HOME/.nvm"
-export NVM_CURRENT_HOME="$NVM_DIR/current"
 [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"  # Load nvm
 [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"  # Load nvm bash_completion
 export NVM_SYMLINK_CURRENT=true # Makes a symlink at ~/.nvm/current/bin/node so you don't have to change IDEs' configurations when changing node versions
+export NVM_CURRENT_HOME="$NVM_DIR/current"
 export PATH="$NVM_CURRENT_HOME/bin:$PATH"
 
 # Make NODE_PATH always include the `node_modules/` directory of the currently selected NodeJS.
