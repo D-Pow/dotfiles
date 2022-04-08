@@ -177,33 +177,45 @@ yarnRerunCommand() {
         yarnArgs=($(getYarnArgs))
     fi
 
-    if [[ -n "${yarnArgs[@]}" ]]; then
-        # Since this is a re-run of a command, the parent `yarn` process is still running, waiting
-        # for this Bash script (a deeply nested child process) to finish.
-        #
-        # If there are no args, then that means the user ran something akin to `yarn install`, `yarn`
-        # (whose default command is `install`), or similar. These parent processes pose no issue
-        # for re-running the command because they will check package.json/yarn.lock for any changes,
-        # and self-quit if no changes are found or needed. Since re-running these commands results
-        # in a valid package.json/yarn.lock file, we can let the parent proceed as normal.
-        #
-        # However, for commands with args (like `yarn add pkg`), yarn will always assume a change
-        # is needed, meaning the parent will continue to run the original command even after this
-        # function runs it/makes the necessary changes.
-        # This means duplicate installs will take place if adding a new package (first from the re-run,
-        # then from the parent). For public packages, this is just bad dev experience with no issues or
-        # crashes, but for private packages requiring auth credentials set by this script, this means the
-        # parent yarn process will crash since .npmrc/.yarnrc weren't modified before it was run (their
-        # values have already been loaded into the parent's RAM so changes won't be picked up).
-        #
-        # Thus, if any args are present, kill the parent yarn process running the same command so
-        # that it doesn't crash when it finds it wasn't authenticated (which has the additional benefit
-        # of not duplicating installs).
-        kill -s INT "$(findPids "yarn(.js)? $(getYarnArgs -k)")"
-    fi
+    declare yarnRerunExitCode=$?
 
+    # Since this is a re-run of a command, the parent `yarn` process is still running, waiting
+    # for this Bash script (a deeply nested child process) to finish.
+    #
+    # For commands related to installing packages (like `yarn`, `yarn install`, `yarn (add|upgrade) <pkg>`),
+    # yarn will always assume a change is needed. This means duplicate installs will take place (first from
+    # the re-run, second from the original parent).
+    # For public packages, this is just bad dev experience with no issues or crashes, but for private
+    # packages requiring auth credentials set by the registry-login script, this means the parent yarn
+    # process will crash since .npmrc/.yarnrc weren't modified before the command was run (their
+    # values have already been loaded into RAM so changes won't be picked up).
+    #
+    # Thus, when re-running the original command, kill the parent process running the same command so
+    # that it doesn't crash when it finds it wasn't authenticated (which has the additional benefit
+    # of not duplicating installs or re-calling life-cycle methods).
+    #
+    # In order to do so, wait until this process (calling the re-run) has ended, and then kill the
+    # parent process of this Bash script so that all logic will be run before killing the parent.
+    # This keeps the return code of the child and forwards it up to the parent, e.g.
+    # - `yarn install` -> `yarn preinstall`
+    # - `yarn preinstall` -> `./scripts/registry-login.sh`
+    # - `./scripts/registry-login.sh` -> `if not-logged-in; then yarnRerunCommand; fi`
+    # - Success/failure of the re-run is forwarded up the call stack.
+    #
+    # Note: Use SIGINT instead of SIGTERM (default) or otherwise because they often force exit codes > 0
+    # even if run from sub-commands/sub-processes, but exit with the same exit code that the re-run command
+    # exited with to preserve success/failure.
+    #
+    # See:
+    # - https://serverfault.com/questions/390846/kill-a-process-and-force-it-to-return-0-in-linux
+    # - https://linux.die.net/Bash-Beginners-Guide/sect_12_01.html
+    trap "yarnRerunExitCode=\$?; kill -s INT $(findPids "yarn(.js)? $(getYarnArgs -k)"); exit \$yarnRerunExitCode;" EXIT QUIT INT TERM
 
-    yarn $yarnCommand ${yarnArgs[@]}
+    ( yarn $yarnCommand ${yarnArgs[@]} )
+
+    yarnRerunExitCode=$?
+
+    return $yarnRerunExitCode
 }
 
 
