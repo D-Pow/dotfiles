@@ -12,8 +12,12 @@ window.sortObjectByKeys = function(obj) {
     }, {});
 };
 
-window.getCookie = function getCookie({ cookie = document.cookie, decodeBase64 = true } = {}) {
-    return cookie.split('; ').reduce((cookieObj, entry) => {
+window.getCookie = function getCookie({
+    key = '',
+    cookie = document.cookie,
+    decodeBase64 = true,
+} = {}) {
+    const cookieObj = cookie.split('; ').reduce((obj, entry) => {
         const keyVal = entry.split('=');
         const key = decodeURIComponent(keyVal[0]);
         let value = decodeURIComponent(keyVal.slice(1).join('='));
@@ -26,10 +30,12 @@ window.getCookie = function getCookie({ cookie = document.cookie, decodeBase64 =
             }
         }
 
-        cookieObj[key] = value;
+        obj[key] = value;
 
-        return cookieObj;
+        return obj;
     }, {});
+
+    return key ? cookieObj[key] : cookieObj;
 };
 
 window.resetCookie = function() {
