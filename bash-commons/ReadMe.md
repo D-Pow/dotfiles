@@ -2,6 +2,8 @@
 
 ## [All docs](https://www.gnu.org/software/bash/manual/bash.html)
 
+* More details and examples at https://tldp.org/LDP/abs/html/index.html
+
 ## [`complete`](https://www.gnu.org/software/bash/manual/html_node/Programmable-Completion-Builtins.html)
 
 * https://www.oreilly.com/library/view/bash-quick-reference/0596527764/re18.html
