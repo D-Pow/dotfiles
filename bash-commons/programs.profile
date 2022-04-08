@@ -209,7 +209,9 @@ yarnRerunCommand() {
     # See:
     # - https://serverfault.com/questions/390846/kill-a-process-and-force-it-to-return-0-in-linux
     # - https://linux.die.net/Bash-Beginners-Guide/sect_12_01.html
-    trap "yarnRerunExitCode=\$?; kill -s INT $(findPids "yarn(.js)? $(getYarnArgs -k)"); exit \$yarnRerunExitCode;" EXIT QUIT INT TERM
+    declare parentProcessPid=$(findPids "yarn(.js)? $(getYarnArgs -k)")
+
+    trap "yarnRerunExitCode=\$?; [[ -n \"$parentProcessPid\" ]] && kill -s INT $parentProcessPid; exit \$yarnRerunExitCode;" EXIT QUIT INT TERM
 
     ( yarn $yarnCommand ${yarnArgs[@]} )
 
