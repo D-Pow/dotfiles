@@ -989,42 +989,85 @@ window.SlackInBrowserService = SlackInBrowserService;
  ***********************************************/
 window.getVolumeThatCanSurpass1 = function() {
     /* https://stackoverflow.com/a/43794379/5771107 */
+    const video = document.querySelector('video');
     const audioCtx = new AudioContext();
-    const audioSource = audioCtx.createMediaElementSource(document.querySelector('video'));
+    const audioSource = audioCtx.createMediaElementSource(video);
     const audioGain = audioCtx.createGain();
     audioSource.connect(audioGain);
     audioGain.connect(audioCtx.destination);
-    window.volume = audioGain.gain;
+    video.gain = audioGain.gain;
 };
 
 window.videoArrowKeyListenerExec = function() {
     /* useful video seek arrow functionality for video players that don't include it automatically */
-    window.seekSpeed = 5;
-    window.video = document.querySelector('video');
+
+    const isHboMax = !!location.origin.match(/hbomax/i);
+
+    if (!isHboMax) {
+        getVolumeThatCanSurpass1();
+    }
+
+    let seekSpeed = 5;
+    const video = window.video || document.querySelector('video');
+
+    const exitFullScreen = () => {
+        document.exitFullscreen?.() ?? window.exitFullscreen?.();
+    };
+
     document.onkeydown = event => {
         switch(event.key) {
             case 'ArrowLeft':
-                window.video.currentTime -= window.seekSpeed;
+                video.currentTime -= seekSpeed;
                 break;
             case 'ArrowRight':
-                window.video.currentTime += window.seekSpeed;
+                video.currentTime += seekSpeed;
                 break;
             case 'ArrowUp':
                 if (event.shiftKey) {
-                    window.seekSpeed++;
-                } else if (event.ctrlKey && window.volume) {
-                    window.volume.value++;
+                    seekSpeed++;
+                } else if (event.ctrlKey && video.gain) {
+                    video.gain.value++;
                 }
                 break;
             case 'ArrowDown':
                 if (event.shiftKey) {
-                    window.seekSpeed--;
-                } else if (event.ctrlKey && window.volume) {
-                    window.volume.value--;
+                    seekSpeed--;
+                } else if (event.ctrlKey && video.gain) {
+                    video.gain.value--;
                 }
                 break;
+            case 'Escape':
+                exitFullscreen();
+                break;
             case 'f':
-                window.video.requestFullscreen();
+                /* See: https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API#methods_on_the_document_interface */
+                if (document.fullscreen || document.fullscreenElement || window.fullscreen || window.fullscreenElement) {
+                    exitFullscreen();
+                } else {
+                    self?.video?.requestFullscreen?.();
+                }
+                break;
+            case 'Enter':
+                /* TODO Press "Skip intro" button.
+                 * We'd have to find an element where any attribute it contains either has a name or value of
+                 * /Skip(?!\s*\d+\s*(ms|sec|forward|backward|rewind))/i
+                 * so we can grab "Skip intro" or just "Skip" without grabbing "Skip 10 sec forward" or similar.
+                 *
+                 * See:
+                 * - getElementAttributes()
+                 * - findElementsByAnything()
+                 */
+                const { origin } = new URL(self.location.href);
+                let skipIntroButton;
+
+                if (origin.match(/hulu\.com/i)) {
+                    skipIntroButton = findElementsByAnything(node => (
+                        node.tagName.match(/button/i)
+                        && node.innerText?.match(/skip intro/i)
+                    ))?.[0];
+
+                    skipIntroButton.click();
+                }
                 break;
         }
     }
