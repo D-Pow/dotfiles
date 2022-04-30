@@ -8,7 +8,11 @@
 
 * https://www.oreilly.com/library/view/bash-quick-reference/0596527764/re18.html
 
-## [`compgen`](https://unix.stackexchange.com/questions/151118/understand-compgen-builtin-command/151120#151120)
+## [`compgen`](https://www.gnu.org/software/bash/manual/html_node/Programmable-Completion-Builtins.html)
+
+* [`complete`/`compgen` options](https://unix.stackexchange.com/questions/151118/understand-compgen-builtin-command/151120#151120)
+* [`complete` vs `compgen`](https://unix.stackexchange.com/questions/250262/how-to-use-bashs-complete-or-compgen-c-command-option)
+* [`complete` example](https://www.gnu.org/software/bash/manual/html_node/A-Programmable-Completion-Example.html)
 
 ## [IO/redirection](https://www.gnu.org/software/bash/manual/bash.html#Redirections)
 
