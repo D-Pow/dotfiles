@@ -734,11 +734,11 @@ window.githubToggleFilesByName = function(
 
     matchingFilesChanged.forEach(({ fileElement }) => {
         if (collapsedToggle) {
-            fileElement.querySelector(fileCollapseButtonSelector).click();
+            fileElement?.querySelector?.(fileCollapseButtonSelector)?.click();
         }
 
         if (viewedToggle) {
-            fileElement.querySelector(viewedToggleButtonElementSelector).click();
+            fileElement?.querySelector?.(viewedToggleButtonElementSelector)?.click();
         }
     });
 };
