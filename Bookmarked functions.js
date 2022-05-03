@@ -701,8 +701,7 @@ window.bac = function bac(drinkVolume, drinkPercentage, bodyWeight, {
  ********    Website utils    *******
  ***********************************/
 
-window.githubGetAllFilesChangedByName = function({
-    nameRegex = /./,
+window.githubGetAllFilesChangedByName = function(nameRegex = /./, {
     onlyFileName = false,
 } = {}) {
     const filenameLinkSelector = '.file-info a[title]';
@@ -731,7 +730,7 @@ window.githubToggleFilesByName = function(
     const fileCollapseButtonSelector = 'button[aria-label="Toggle diff contents"]';
     const viewedToggleButtonElementSelector = '.file-actions .js-replace-file-header-review label';
 
-    const matchingFilesChanged = githubGetAllFilesChangedByName({ nameRegex });
+    const matchingFilesChanged = githubGetAllFilesChangedByName(nameRegex);
 
     matchingFilesChanged.forEach(({ fileElement }) => {
         if (collapsedToggle) {
