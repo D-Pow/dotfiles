@@ -42,23 +42,15 @@ window.resetCookie = function() {
     document.cookie = 'expires=Thu, 01 Jan 1970 00:00:01 GMT';
 };
 
-/**
- * Gets URL query parameter entries as either key-value pairs in an object
- * or as a string formatted how they would appear in the URL bar (e.g. `?a=b&c=d`).
- *
- * Defaults to getting the query parameters from the current page's URL as an object.
- * If `fromObj` is specified, then `fromUrl` will be ignored and a string will be returned instead.
- *
- * @param {(string|Object)} [input=location.search+location.hash] - URL search/hash string to convert to an object, or
- *                                                                  an object to convert to a search+hash string.
- * @returns {(Object|string)} - All query param and hash key-value pairs (if input is a string) or URL search+hash string (if input is an object).
- */
-function getQueryParams(input = self.location.search + self.location.hash) {
-    let fromUrl;
+function getQueryParams(input = self.location.search + self.location.hash, { delimiter, } = {}) {
+    let fromString;
     let fromObj;
+    let from2dMatrix;
 
     if (typeof input === typeof '') {
-        fromUrl = input;
+        fromString = input;
+    } else if (Array.isArray(input)) {
+        from2dMatrix = input;
     } else if (typeof input === typeof {}) {
         fromObj = input;
     } else {
@@ -80,9 +72,21 @@ function getQueryParams(input = self.location.search + self.location.hash) {
                 queryParamEntries
                     .map(([ queryKey, queryValue ]) => {
                         if (Array.isArray(queryValue)) {
+                            if (delimiter) {
+                                return getEncodedKeyValStr(queryKey, queryValue.join(delimiter));
+                            }
+
                             return queryValue
                                 .map(val => getEncodedKeyValStr(queryKey, val))
                                 .join('&');
+                        }
+
+                        if (queryValue == null) {
+                            /* Convert null/undefined to empty string */
+                            queryValue = '';
+                        } else if (typeof queryValue === typeof {}) {
+                            /* Stringify objects, arrays, etc. */
+                            return getEncodedKeyValStr(queryKey, JSON.stringify(queryValue));
                         }
 
                         return getEncodedKeyValStr(queryKey, queryValue);
@@ -94,25 +98,79 @@ function getQueryParams(input = self.location.search + self.location.hash) {
         return queryString + (hash ? `#${hash}` : '');
     }
 
-    const queryParamHashString = fromUrl.match(/([?#].*$)/i)?.[0] ?? '';
-    const [ urlSearchQuery, hash ] = queryParamHashString.split('#');
-
     const queryParamsObj = {};
+    let urlSearchParamsEntries;
 
-    if (hash) {
-        queryParamsObj['#'] = hash;
+    if (from2dMatrix) {
+        const stringifiedMatrixValues = from2dMatrix.map(([ key, value ]) => {
+            if (value && (typeof value === typeof {})) {
+                /* Arrays are objects so only one `typeof` check is needed */
+                value = JSON.stringify(value);
+            }
+
+            return [ key, value ];
+        });
+
+        urlSearchParamsEntries = [...new URLSearchParams(stringifiedMatrixValues).entries()];
+    } else {
+        const queryParamHashString = fromString.match(/([?#].*$)/i)?.[0] ?? '';
+        const [ urlSearchQuery, hash ] = queryParamHashString.split('#');
+
+        if (hash) {
+            queryParamsObj['#'] = hash;
+        }
+
+        urlSearchParamsEntries = [...new URLSearchParams(urlSearchQuery).entries()];
     }
 
-    return [ ...new URLSearchParams(urlSearchQuery).entries() ]
+    const attemptParseJson = (str) => {
+        try {
+            return JSON.parse(str);
+        } catch (e) {}
+
+        return str;
+    };
+
+    return urlSearchParamsEntries
         .reduce((queryParams, nextQueryParam) => {
-            const [ key, value ] = nextQueryParam;
+            let [ key, value ] = nextQueryParam;
+
+            if (delimiter != null) {
+                value = value.split(delimiter);
+                if (value.length === 0) {
+                    value = '';
+                } else if (value.length === 1) {
+                    value = value[0];
+                }
+            }
+
+            if (Array.isArray(value)) {
+                value = value.map(val => attemptParseJson(val));
+            } else {
+                value = attemptParseJson(value);
+            }
 
             if (key in queryParams) {
-                if (Array.isArray(queryParams[key])) {
-                    queryParams[key].push(value);
-                } else {
-                    queryParams[key] = [ queryParams[key], value ];
+                if (!Array.isArray(value)) {
+                    value = [ value ]; /* cast to array for easier boolean logic below */
                 }
+
+                /* Remove duplicate entries using a Set, which maintains insertion order in JS */
+                let newValuesSet;
+
+                if (Array.isArray(queryParams[key])) {
+                    newValuesSet = new Set([
+                        ...queryParams[key],
+                        ...value,
+                    ]);
+                } else {
+                    newValuesSet = new Set([
+                        queryParams[key],
+                        ...value,
+                    ]);
+                }
+
+                queryParams[key] = [ ...newValuesSet ]; /* Cast back to an array */
             } else {
                 queryParams[key] = value;
             }
@@ -120,6 +178,98 @@ function getQueryParams(input = self.location.search + self.location.hash) {
             return queryParams;
         }, queryParamsObj);
 }
+
+window.getQueryParams = getQueryParams;
+
+
+/**
+ * Extracts the different segments from a URL segments and adds automatic parsing of query parameters/hash
+ * into an object. Also normalizes resulting strings to never contain a trailing slash.
+ *
+ * @param url - URL to parse for query parameters
+ * @returns URL segments.
+ */
+function getUrlSegments(url = '') {
+    let fullUrl = url;
+    let protocol = '';
+    let domain = '';
+    let port = '';
+    let origin = '';
+    let pathname = '';
+    let queryString = '';
+    let queryParamHashString = '';
+    let hash = '';
+
+    try {
+        ({
+            href: fullUrl,
+            origin,
+            protocol,
+            hostname: domain,
+            port,
+            pathname,
+            search: queryString,
+            hash, /* empty string or '#...' */
+        } = new URL(url));
+    } catch (e) {
+        /*
+         * Either `URL` isn't defined or some other error, so try to parse it manually.
+         *
+         * All regex strings use `*` to mark them as optional when capturing so that
+         * they're always the same location in the resulting array, regardless of whether
+         * or not they exist.
+         *
+         * URL segment markers must each ignore all special characters used by
+         * those after it to avoid capturing the next segment's content.
+         */
+        const protocolRegex = '([^:/?#]*://)?'; /* include `://` for `origin` creation below */
+        const domainRegex = '([^:/?#]*)'; /* capture everything after the protocol but before the port, pathname, query-params, or hash */
+        const portRegex = '(?::)?(\\d*)'; /* colon followed by digits; non-capture must be outside capture group so it isn't included in output */
+        const pathnameRegex = '([^?#]*)'; /* everything after the origin (starts with `/`) but before query-params or hash */
+        const queryParamRegex = '([^#]*)'; /* everything before the hash (starts with `?`) */
+        const hashRegex = '(.*)'; /* anything leftover after the above capture groups have done their job (starts with `#`) */
+        const urlPiecesRegex = new RegExp(`^${protocolRegex}${domainRegex}${portRegex}${pathnameRegex}${queryParamRegex}${hashRegex}$`);
+
+        [
+            fullUrl,
+            protocol,
+            domain,
+            port,
+            pathname,
+            queryString,
+            hash,
+        ] = urlPiecesRegex.exec(url);
+
+        origin = protocol + domain + (port ? `:${port}` : '');
+    }
+
+    queryParamHashString = queryString + hash;
+    /* protocol can be `undefined` due to having to nest the entire thing in `()?` */
+    protocol = (protocol || '').replace(/:\/?\/?/, '');
+    /* normalize strings: remove trailing slashes and leading ? or # */
+    fullUrl = fullUrl.replace(/\/+(?=\?|#|$)/, ''); /* fullUrl could have `/` followed by query params, hash, or end of string */
+    origin = origin.replace(/\/+$/, '');
+    pathname = pathname.replace(/\/+$/, '');
+    queryString = queryString.substring(1);
+    hash = hash.substring(1);
+
+    const queryParamMap = getQueryParams(queryParamHashString);
+
+    return {
+        fullUrl,
+        protocol,
+        domain,
+        port,
+        origin,
+        pathname,
+        queryParamHashString,
+        queryParamMap,
+        queryString,
+        hash,
+    };
+}
+
+window.getUrlSegments = getUrlSegments;
 
 window.getQueryParams = getQueryParams;
 
