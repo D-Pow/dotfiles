@@ -755,6 +755,14 @@ window.githubToggleAllSnapshotsViewedStatus = function() {
 };
 
 
+window.youtubeGetAllChaptersOfVideo = function() {
+    return [ ...document.querySelectorAll('[href*="watch"] ~ span.style-scope.yt-formatted-string') ]
+        .map(elem => elem.innerText)
+        .filter(str => Boolean(str.trim()))
+        .map(str => str.replace(/(^[\s-]*)|([\s-]*)/gi, ''));
+};
+
+
 window.circleCiGetAllFailedTests = function({
     nameRegex = /./,
     onlyFileName = false,
