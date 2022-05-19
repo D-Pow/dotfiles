@@ -856,56 +856,27 @@ decodeUri() {
 
 
 dirsize() {
-    # ${FUNCNAME[0]} gets the name of this function, regardless of where it was called/defined
-    usage="Displays total disk usages of all directories within the given path.
+    declare USAGE="[OPTIONS...] <path=./>
+    Displays total disk usages of all directories within the given path.
+    "
+    declare _depth=
+    declare _showFiles=
+    declare argsArray
+    declare -A _dirsizeOptions=(
+        ['d|depth:,_depth']='Depth of directories to display; defaults to 1 (dirs inside <path>).\nTotal disk usages will be calculated regardless of value.'
+        ['f|include-files,_showFiles']='Include files in output.'
+        ['USAGE']="$USAGE"
+    )
 
-    Usage: ${FUNCNAME[0]} [-d=1] [-f] [path=./]
+    parseArgs _dirsizeOptions "$@"
+    (( $? )) && return 1
 
-    Options:
-        -d | Depth of directories to display; defaults to 1 (dirs inside <path>).
-           | Total disk usages will be calculated regardless of -d value.
-        -f | Include files in output."
-
-    # local vars to avoid them being accessible outside this function
-    declare OPTIND=1 # bash is retarded and uses a *global* OPTIND, so it isn't reset on subsequent calls
-    declare depth=1
-    declare showFiles=false
-    declare path="."
-
-    while getopts "d:fh" opt; do
-        case "$opt" in
-            d)
-                depth="$OPTARG"
-                ;;
-            f)
-                showFiles=true
-                ;;
-            *)
-                # While nested functions are valid syntax in bash, we cannot create a
-                # nested printUsage() function because it would be available outside the
-                # scope of this function, and `local myFunc() {...}` is invalid syntax
-                echo "$usage"
-                return  # since this function is in a .profile, cannot use `exit` as that
-                        # would exit the terminal session
-                ;;
-        esac
-    done
-
-    # ! (not) expression goes outside braces
-    # -z is unary operator for length == 0
-    # OPTIND gives the index of the next arg after getopts cycles through flags
-    # Could instead do `shift "$((OPTIND - 1))"` to delete all args that getopts processed
-    #   to allow for using $1 instead of ${!OPTIND}
-    # ${x} == $x, gets arg at index `x`, e.g. $1
-    # ${!x} is "indirection" - !x gets the value of x instead of its name, similar
-    #   to JavaScript's `var x = 'hi'; return obj[x];` instead of `obj['x']`.
-    if ! [[ -z "${!OPTIND}" ]]; then
-        path="${!OPTIND}"
-    fi
-
-    if [ "$showFiles" = true ]; then
+    if [[ -n "$_showFiles" ]]; then
         echo -e "Directories:"
     fi
+
+    declare _path="${argsArray[0]:-.}"
+    _depth="${_depth:-1}"
 
     # ls -lah has a max size display of 4.0K or 1G, so it doesn't show sizes bigger than that,
     # and doesn't tally up total size of nested directories.
@@ -915,14 +886,13 @@ dirsize() {
     # sort -reverse -human-numeric-sort - sorts based on size number (taking into account
     #   human-readable sizes like KB, MB, GB, etc.) in descending order
     # Manually add '/' at the end of output to show they are directories
-    du -h -d $depth "$path" | sort -rh | sed -E 's|(.)$|\1/|'
+    du -h -d $_depth "$_path" | sort -rh | sed -E 's|(.)$|\1/|'
 
-    if [ "$showFiles" = true ]; then
-        # -e flag enables interpreting backslashes instead of printing them, e.g. \n
+    if [[ -n "$_showFiles" ]]; then
         echo -e "\nFiles:"
 
         # du can't mix -a (show files) and -d (depth) flags, so run it again for files
-        find "$path" -maxdepth $depth -type f -print0 | xargs -0 du -h | sort -rh
+        find "$_path" -maxdepth $_depth -type f -print0 | xargs -0 du -h | sort -rh
     fi
 }
 
