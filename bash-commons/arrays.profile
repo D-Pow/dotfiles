@@ -389,8 +389,10 @@ array.contains() {
 
 array.map() {
     declare _arrMapRetArrName
+    declare _arrMapNoPreserveSpaces
     declare -A optsConfig=(
         ['r:,_arrMapRetArrName']='Array in which to store resulting transformed entries'
+        ['s|no-preserve-spaces,_arrMapNoPreserveSpaces']="Don't preserve spaces in mapped output array"
     )
     declare argsArray
 
@@ -425,9 +427,15 @@ array.map() {
     fi
 
 
+    declare key
     for key in "${!_arrMapArrOrig[@]}"; do
         declare value="${_arrMapArrOrig[$key]}"
-        _arrMapRetArr+=("$(eval "$_arrMapCmd")")
+
+        if [[ -n "$_arrMapNoPreserveSpaces" ]]; then
+            _arrMapRetArr+=($(eval "$_arrMapCmd"))
+        else
+            _arrMapRetArr+=("$(eval "$_arrMapCmd")")
+        fi
     done
 
 
