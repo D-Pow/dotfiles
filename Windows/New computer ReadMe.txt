@@ -2,7 +2,7 @@ In addTo.etc.fstab, everything in that line is correct and follows the instructi
 at <https://www.howtogeek.com/howto/35807/how-to-harmonize-your-dual-boot-setup-for-windows-and-ubuntu/>,
 but adds the additional dmask and fmask to prevent the storage NTFS partition
 from being executable by default.
-*Note: you MUST change the UUID of the storage drive and make sure that you
+\*Note: you MUST change the UUID of the storage drive and make sure that you
 actually follow the instructions at the website above so you don't miss something.
 Will look almost exactly like what's seen in addTo.etc.fstab.txt (note the intentional Xmasks, Xid, and permission entries)
 
@@ -16,6 +16,11 @@ Open command prompt anywhere
     Make new key for CommandPrompt, titled "command" with data=`cmd.exe /s /k pushd "%V"`
         for /Background/shell or `cmd.exe /k cd %1` for /Directory/shell
     Delete the "Extended" value inside HKEY_CLASSES_ROOT\Directory\shell\cmd
+
+Make right-click context menu use classic format rather than annoying double-nested new format (Windows 11 only):
+    * Open admin terminal
+    * Run `reg.exe add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve`
+    * Restart "Windows Explorer" in task manager
 
 Also, add sublime to context menu (see Sublime folder's ReadMe)
 
