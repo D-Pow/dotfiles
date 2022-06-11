@@ -273,6 +273,81 @@ window.getUrlSegments = getUrlSegments;
 
 window.getQueryParams = getQueryParams;
 
+
+/** @see [Boilerplate Date utils]{@link https://github.com/D-Pow/react-app-boilerplate/blob/master/src/utils/Dates.ts} */
+window.diffDateTime = function diffDateTime(
+    earlier = new Date(),
+    later = new Date(),
+) {
+    let earlierDate = new Date(earlier);
+    let laterDate = new Date(later);
+
+    if (laterDate.valueOf() < earlierDate.valueOf()) {
+        const earlierDateOrig = earlierDate;
+
+        earlierDate = laterDate;
+        laterDate = earlierDateOrig;
+    }
+
+    const diffDateObj = {
+        years: laterDate.getFullYear() - earlierDate.getFullYear(),
+        months: laterDate.getMonth() - earlierDate.getMonth(),
+        days: laterDate.getDate() - earlierDate.getDate(),
+        hours: laterDate.getHours() - earlierDate.getHours(),
+        minutes: laterDate.getMinutes() - earlierDate.getMinutes(),
+        seconds: laterDate.getSeconds() - earlierDate.getSeconds(),
+        milliseconds: laterDate.getMilliseconds() - earlierDate.getMilliseconds(),
+    };
+
+    Object.entries(diffDateObj).reverse().forEach(([ key, val ], i, entries) => {
+        const nextEntry = entries[i+1];
+
+        if (!nextEntry) {
+            return;
+        }
+
+        const [ nextKey, nextVal ] = nextEntry;
+        const timeConfig = diffDateTime.ordersOfMagnitude[key];
+
+        if (val < 0) {
+            diffDateObj[key] = numberToBaseX(diffDateObj[key], timeConfig.maxValue, { signed: false });
+            diffDateObj[nextKey] = nextVal - 1;
+        }
+    });
+
+    return diffDateObj;
+};
+diffDateTime.ordersOfMagnitude = {
+    milliseconds: {
+        maxValue: 1,
+    },
+    seconds: {
+        maxValue: 60,
+    },
+    minutes: {
+        maxValue: 60,
+    },
+    hours: {
+        maxValue: 24,
+    },
+    days: {
+        maxValue: 7,
+    },
+    weeks: {
+        maxValue: 4,
+    },
+    dates: {
+        maxValue: 31,
+    },
+    months: {
+        maxValue: 12,
+    },
+    years: {
+        maxValue: 1,
+    },
+};
+
+
 window.getAlphabet = function getAlphabet({
     lowercase = true,
     uppercase = true,
