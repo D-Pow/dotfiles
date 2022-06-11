@@ -587,7 +587,7 @@ makeTempPipe() {
     # https://stackoverflow.com/questions/8297415/in-bash-how-to-find-the-lowest-numbered-unused-file-descriptor/17030546#17030546
     # https://superuser.com/questions/184307/bash-create-anonymous-fifo/633185#633185
 
-    declare USAGE="${FUNCNAME[0]} [-s|--signal <SIGNAL>] [-t|--no-append-traps]
+    declare USAGE="[OPTIONS...]
     Makes a temporary file for IO, and sets its file descriptor into \`\$FD\` for IO redirection.
     Since outputting to a file descriptor auto-seeks it to the end, it cannot be read from directly;
     to read from it, use \`getFileFromDescriptor \$FD\` to get the temp file's path.
@@ -603,7 +603,7 @@ makeTempPipe() {
         ['USAGE']="$USAGE"
     )
 
-    parseArgs _tmpPipeOptions "$@"
+    parseArgs -i _tmpPipeOptions "$@"
 
     if array.empty _tmpPipeSignals; then
         _tmpPipeSignals+=(EXIT QUIT INT TERM)
