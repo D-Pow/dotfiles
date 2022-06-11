@@ -97,6 +97,46 @@ isWindows() {
 }
 
 
+aggregate() {
+    # See: https://www.unix.com/shell-programming-and-scripting/51129-column-sum-group-uniq-records.html
+    # TODO Allow aggregating by multiple columns
+    declare USAGE="[OPTIONS...] <column-to-sum> [string-or-stdin]
+    Sums up all numbers in one column (argument) according to equal entries in another (option).
+    "
+    declare _aggregateColumnToSumBy
+    declare argsArray
+    declare -A _aggregateOptions=(
+        ['c|column:,_aggregateColumnToSumBy']="The column(s) that will remain while summing up the column defined in <argument>."
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs -i _aggregateOptions "$@"
+    (( $? )) && return 1
+
+    declare _aggregateColumnToSum="${argsArray[0]}"
+    declare _aggregateInput="${argsArray[@]:1}"
+    declare _aggregateAwkCmd="
+        {
+            # Note: This cannot be done in a BEGIN block since the line hasn't been read yet
+            map[\$$_aggregateColumnToSumBy] += \$$_aggregateColumnToSum;
+        }
+
+        END {
+            for (i in map) {
+                print i, map[i]
+            }
+        }
+    "
+
+    if [[ -n "$_aggregateInput" ]]; then
+        echo "$_aggregateInput" | awk "$_aggregateAwkCmd"
+    else
+        # Allow `awk` to read from STDIN itself instead of us using `read` and forwarding that along to `awk`
+        awk "$_aggregateAwkCmd"
+    fi
+}
+
+
 listprocesses() {
     # `ps aux` has been deprecated, and only marginally supported now.
     # Now you have to specify everything manually.
