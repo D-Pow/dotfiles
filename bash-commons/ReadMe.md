@@ -26,6 +26,10 @@
     - Runs `srcCommand` and use the output as input to `dest`.
     - Examples:
         + https://stackoverflow.com/questions/6541109/send-string-to-stdin/61973974#61973974
+* `dest <(srcCommand)` = Input redirect + bash process substitution as a file.
+    - Runs `srcCommand`, converts it to a file (Idk if temp file or just an Inode in RAM), and then uses that "file" as input to `dest`.
+    - Examples:
+        + Check if a file has changed using a previous hash: `diff my-file.hash <(sha256sum my-file.txt)`
 * `src >(destCommand)` = Output redirect + bash process substitution.
     - Runs `src` and use the output as input to `destCommand`.
     - Examples:
