@@ -169,9 +169,9 @@
         const multiplayerGames = allGameData
             .filter(game => game)
             .filter(game => {
-                const gameCategoryIds = game.categories.map(category => category.id);
+                const gameCategoryIds = game?.categories?.map(category => category.id);
                 return Object.values(GameCategories.MultiplayerByType)
-                    .some(multiplayerId => gameCategoryIds.includes(multiplayerId));
+                    .some(multiplayerId => gameCategoryIds?.includes(multiplayerId));
             });
 
         return multiplayerGames;
