@@ -345,6 +345,33 @@ diffDateTime.ordersOfMagnitude = {
     },
 };
 
+/**
+ * Mods two numbers with a custom radix; i.e. Makes `num1 % num2` have a max of a
+ * certain number, regardless of positive or negative mod value.
+ * Helpful for stuff like diffing minutes relative to the max minute possible, 60.
+ *
+ * e.g. If the date diff of the first date resulted in a negative minute value (-52)
+ * and the later date had a positive value (30) and you want to diff the minutes
+ * relative to a "radix" of 60, then:
+ * min1 = -52
+ * min2 = 30
+ * -52 % 30 =
+ *     -22 (signed)
+ *       8 (unsigned)
+ */
+window.numberToBaseX = function numberToBaseX(num, base, {
+    signed = true,
+} = {}) {
+    const signedModBase = num % base;
+
+    if (!signed) {
+        /* Converts e.g. -52 % 30 => 8 instead of -22 */
+        return (signedModBase + base) % base;
+    }
+
+    return signedModBase;
+};
+
 
 window.getAlphabet = function getAlphabet({
     lowercase = true,
