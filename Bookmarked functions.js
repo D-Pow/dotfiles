@@ -271,8 +271,6 @@ function getUrlSegments(url = '') {
 
 window.getUrlSegments = getUrlSegments;
 
-window.getQueryParams = getQueryParams;
-
 
 /** @see [Boilerplate Date utils]{@link https://github.com/D-Pow/react-app-boilerplate/blob/master/src/utils/Dates.ts} */
 window.diffDateTime = function diffDateTime(
