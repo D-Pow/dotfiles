@@ -290,7 +290,7 @@ window.diffDateTime = function diffDateTime(
     const diffDateObj = {
         years: laterDate.getFullYear() - earlierDate.getFullYear(),
         months: laterDate.getMonth() - earlierDate.getMonth(),
-        days: laterDate.getDate() - earlierDate.getDate(),
+        dates: laterDate.getDate() - earlierDate.getDate(),
         hours: laterDate.getHours() - earlierDate.getHours(),
         minutes: laterDate.getMinutes() - earlierDate.getMinutes(),
         seconds: laterDate.getSeconds() - earlierDate.getSeconds(),
@@ -298,7 +298,7 @@ window.diffDateTime = function diffDateTime(
     };
 
     Object.entries(diffDateObj).reverse().forEach(([ key, val ], i, entries) => {
-        const nextEntry = entries[i+1];
+        const nextEntry = entries[i + 1];
 
         if (!nextEntry) {
             return;
@@ -312,6 +312,9 @@ window.diffDateTime = function diffDateTime(
             diffDateObj[nextKey] = nextVal - 1;
         }
     });
+
+    diffDateObj.days = diffDateObj.dates;
+    delete diffDateObj.dates;
 
     return diffDateObj;
 };
