@@ -1,4 +1,6 @@
 trim() {
+    # TODO Allow trimming spaces from beginning/end of lines instead of only trimming lines
+    #   See: https://stackoverflow.com/questions/20600982/trim-leading-and-trailing-spaces-from-a-string-in-awk
     declare USAGE="[-t|--top numLinesToRemoveFromTop] [-b|--bottom numLinesToRemoveFromBottom] [-l|--lines] <input-string>
     Removes the number of lines (rows) from the top/bottom of the input, optionally trimming white-space from each line.
 
