@@ -630,7 +630,7 @@ awsGetAllKeysInfo() {
     echo "$allKeyInfo" | jq --indent 4 '.'
 }
 
-awsCmdInDocker () {
+awsCmdInDocker() {
     declare USAGE="${FUNCNAME[0]} [-e envVar=envVal] [-b] <aws-command>
     Runs an AWS CLI command either:
         * Locally if installed.
