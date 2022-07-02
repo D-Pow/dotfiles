@@ -868,6 +868,8 @@ _setClipboardCopyAndPasteCommands() {
         # Use built-in `pb` commands.
         _copyCommand='pbcopy'
         _pasteCommand='pbpaste'
+    elif isWindows; then
+        echo "TODO - Find copy/paste commands for Windows (git-bash, Linux subsystem, etc.)"
     else
         eval "$_printCopyPasteError"
     fi
