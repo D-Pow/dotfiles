@@ -52,8 +52,6 @@ cmd() {
     /mnt/c/Windows/System32/cmd.exe "/C" "$commandToRun" $rest
 }
 
-alias subl=/mnt/c/Sublime_Text_3/subl.exe
-
 # TODO make the command below work
 # subl -n `towindowspath '/mnt/d/file with spaces.txt' /home/file`
 testargs() {
@@ -73,6 +71,7 @@ clip() {
     echo "$1" | cmd clip
 }
 
+
 # Add Windows PATH to Ubuntu subsystem PATH
 # Replace Windows-specific directory syntax with Ubuntu's with sed:
 #   1. Replace drive letters with lowercase prepended with /mnt/, e.g. `C:/` -> `/mnt/c/`
@@ -80,3 +79,8 @@ clip() {
 #   3. Replace Windows directory slash `\` with Ubuntu's `/`
 windowsPath=$(cmd "echo %PATH%" | sed -E 's|(\w):|/mnt/\L\1|g' | sed -E 's|;|:|g' | sed -E 's|\\|/|g')
 export PATH=$PATH:$windowsPath
+
+
+if ! echo $PATH | egrep -iq '\bsubl'; then
+    echo "Add the 'Sublime Text' directory to 'Environment Variables -> PATH'" >&2
+fi
