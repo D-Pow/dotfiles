@@ -9,6 +9,11 @@ export FORCE_COLOR=1
 export rootdir='C:/Users/djp93'
 export homedir="$rootdir"
 
+# Note: Run `ln -s /path/to/jdkFolder /path/to/jdk-active` to make this work
+# Also, add `%JAVA_PATH%` above the `/path/to/Oracle/Java/javapath` entry in PATH
+export JAVA_HOME='C:/Program\ Files/Java/jdk-active'
+export JAVA_PATH="$JAVA_HOME/bin"
+
 topath() {
     readlink -m "$1"
 }
