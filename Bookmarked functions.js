@@ -730,6 +730,114 @@ window.compareEscapingFunctions = function() {
  ********    Life utils    *******
  *********************************/
 
+ window.celsiusFahrenheit = function ({
+    c,
+    f,
+} = {}) {
+    if (!c && !f) {
+        throw new TypeError('Either `c` or `f` must be specified');
+    }
+
+    if (c) {
+        return (c * 9/5) + 32;
+    }
+
+    if (f) {
+        return (f - 32) * 5/9;
+    }
+
+    return NaN;
+}
+
+
+window.kilogramsPounds = function ({
+    kg,
+    lbs,
+} = {}) {
+    if (!kg && !lbs) {
+        throw new TypeError('Either `kg` or `lbs` must be specified');
+    }
+
+    const kgToLbsRatio = 2.20462;
+
+    if (lbs) {
+        return lbs * (1 / kgToLbsRatio); /* ~ 0.453592 */
+    }
+
+    if (kg) {
+        return kg * kgToLbsRatio;
+    }
+
+    return NaN;
+}
+
+
+window.ouncesPounds = function ({
+    oz,
+    lbs,
+} = {}) {
+    if (!oz && !lbs) {
+        throw new TypeError('Either `oz` or `lbs` must be specified');
+    }
+
+    const ozToLbsRatio = 16;
+
+    if (oz) {
+        return oz * (1 / ozToLbsRatio);
+    }
+
+    if (lbs) {
+        return lbs * ozToLbsRatio;
+    }
+
+    return NaN;
+}
+
+
+window.gramsOunces = function ({
+    g,
+    oz,
+} = {}) {
+    if (!g && !oz) {
+        throw new TypeError('Either `g` or `oz` must be specified');
+    }
+
+    const gToOzRatio = 28.3495;
+
+    if (g) {
+        return g * (1 / gToOzRatio);
+    }
+
+    if (oz) {
+        return oz * gToOzRatio;
+    }
+
+    return NaN;
+}
+
+
+window.ouncesMilliliters = function ({
+    oz,
+    ml,
+} = {}) {
+    if (!oz && !ml) {
+        throw new TypeError('Either `oz` or `ml` must be specified');
+    }
+
+    const mlToOzRatio = 0.033814;
+
+    if (oz) {
+        return oz * (1 / mlToOzRatio);
+    }
+
+    if (ml) {
+        return ml * mlToOzRatio;
+    }
+
+    return NaN;
+}
+
+
 /**
  * Estimates the blood alcohol concentration (BAC) after drinking over a period of time.
  *
