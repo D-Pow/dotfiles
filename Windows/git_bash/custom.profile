@@ -14,6 +14,11 @@ export homedir="$rootdir"
 export JAVA_HOME='C:/Program\ Files/Java/jdk-active'
 export JAVA_PATH="$JAVA_HOME/bin"
 
+
+workDir='/g/My Drive/Work'
+alias todo="subl '$workDir/ToDo.md'"
+
+
 topath() {
     readlink -m "$1"
 }
