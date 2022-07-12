@@ -876,7 +876,7 @@ window.bac = function bac(drinkVolume, drinkPercentage, bodyWeight, {
 
 
     if (isDrinkVolumeOunces) {
-        drinkVolume *= 29.5735; /* 1 mL == 29.5735 oz */
+        drinkVolume *= 29.5735; /* 1 oz == 29.5735 ml */
     }
 
     if (isBodyWeightPounds) {
