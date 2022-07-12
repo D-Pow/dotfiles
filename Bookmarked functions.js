@@ -177,7 +177,7 @@ function getQueryParams(input = self.location.search + self.location.hash, { del
 
             return queryParams;
         }, queryParamsObj);
-}
+};
 
 window.getQueryParams = getQueryParams;
 
@@ -267,7 +267,7 @@ function getUrlSegments(url = '') {
         queryString,
         hash,
     };
-}
+};
 
 window.getUrlSegments = getUrlSegments;
 
@@ -532,7 +532,7 @@ function makeClassIterable(cls, nextLikeFuncName, {
     }
 
     cls.prototype[Symbol.iterator] = makeIterator(trackItemsOnNextCall);
-}
+};
 window.makeClassIterable = makeClassIterable;
 
 
@@ -592,7 +592,7 @@ function findElementsByAnything(nodeFilterFunc, {
     }
 
     return [ ...document.body.querySelectorAll('*') ].filter(nodeFilterFunc);
-}
+};
 window.findElementsByAnything = findElementsByAnything;
 
 
@@ -747,7 +747,7 @@ window.compareEscapingFunctions = function() {
     }
 
     return NaN;
-}
+};
 
 
 window.kilogramsPounds = function ({
@@ -769,7 +769,7 @@ window.kilogramsPounds = function ({
     }
 
     return NaN;
-}
+};
 
 
 window.ouncesPounds = function ({
@@ -791,7 +791,7 @@ window.ouncesPounds = function ({
     }
 
     return NaN;
-}
+};
 
 
 window.gramsOunces = function ({
@@ -813,7 +813,7 @@ window.gramsOunces = function ({
     }
 
     return NaN;
-}
+};
 
 
 window.ouncesMilliliters = function ({
@@ -835,7 +835,7 @@ window.ouncesMilliliters = function ({
     }
 
     return NaN;
-}
+};
 
 
 /**
@@ -1107,7 +1107,7 @@ async function translateJapanese(query) {
             console.error(e);
         }
     }
-}
+};
 window.translateJapanese = translateJapanese;
 
 
@@ -1346,7 +1346,7 @@ class SlackInBrowserService {
 
         return members.map(user => ({ id: user.id, name: user.name }));
     }
-}
+};
 
 window.SlackInBrowserService = SlackInBrowserService;
 
