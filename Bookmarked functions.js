@@ -850,8 +850,8 @@ window.ouncesMilliliters = function ({
  * @param {Object} [options]
  * @param {number} [options.hoursElapsed] - Number of hours elapsed while drinking.
  * @param {boolean} [options.isMale] - If the person is a male.
- * @param {boolean} [options.isDrinkVolumeOunces] - If using ounces for drink volume.
- * @param {boolean} [options.isBodyWeightPounds] - If using pounds for body weight.
+ * @param {boolean} [options.isDrinkVolumeOunces] - If using oz for drink volume instead of mL.
+ * @param {boolean} [options.isBodyWeightPounds] - If using lbs for body weight instead of kg.
  * @return {number} - BAC after `hoursElapsed` hours.
  *
  * @see [Wikipedia article supplying the formula]{@link https://en.wikipedia.org/wiki/Blood_alcohol_content#Estimation_by_intake}
