@@ -839,20 +839,29 @@ window.ouncesMilliliters = function ({
 
 
 /**
+ * @typedef BacConfig
+ * @property {number} hoursElapsed - Number of hours elapsed while drinking.
+ * @property {boolean} isMale - If the person is a male.
+ * @property {boolean} isDrinkVolumeOunces - If using oz for drink volume instead of mL.
+ * @property {boolean} isBodyWeightPounds - If using lbs for body weight instead of kg.
+ */
+/**
+ * @typedef BacDrink
+ * @property {number} drinkVolume - Volume of the drink.
+ * @property {number} drinkPercentage - Alcohol percentage of the drink
+ * @property {number} hoursElapsed - Number of hours elapsed while drinking.
+ */
+/**
  * Estimates the blood alcohol concentration (BAC) after drinking over a period of time.
  *
  * Not 100% accurate due to differences in bodies' metabolism and other factors, but gives
  * a reasonable rough estimate.
  *
- * @param {number} drinkVolume - Volume of the drink(s).
- * @param {number} drinkPercentage - Alcohol percentage of the drink(s).
+ * @param {(number | ({ drinks: Array<BacDrink>; } & BacConfig))} drinkVolume - Volume of the drink or drinks/options config object.
+ * @param {number} drinkPercentage - Alcohol percentage of the drink.
  * @param {number} bodyWeight - Person's body weight (defaults to lbs; use option to use kg).
- * @param {Object} [options]
- * @param {number} [options.hoursElapsed] - Number of hours elapsed while drinking.
- * @param {boolean} [options.isMale] - If the person is a male.
- * @param {boolean} [options.isDrinkVolumeOunces] - If using oz for drink volume instead of mL.
- * @param {boolean} [options.isBodyWeightPounds] - If using lbs for body weight instead of kg.
- * @return {number} - BAC after `hoursElapsed` hours.
+ * @param {BacConfig} [options]
+ * @returns {number} - Estimated BAC.
  *
  * @see [Wikipedia article supplying the formula]{@link https://en.wikipedia.org/wiki/Blood_alcohol_content#Estimation_by_intake}
  */
@@ -862,6 +871,25 @@ window.bac = function bac(drinkVolume, drinkPercentage, bodyWeight, {
     isDrinkVolumeOunces = true,
     isBodyWeightPounds = true,
 } = {}) {
+    if (typeof drinkVolume === typeof {}) {
+        const fullConfig = drinkVolume;
+
+        /* Options with fallback to default values */
+        isMale = fullConfig.isMale || isMale;
+        isDrinkVolumeOunces = fullConfig.isDrinkVolumeOunces || isDrinkVolumeOunces;
+        isBodyWeightPounds = fullConfig.isBodyWeightPounds || isBodyWeightPounds;
+
+        return fullConfig.drinks.reduce((totalBac, { drinkVolume, drinkPercentage, hoursElapsed }) => (
+            totalBac + bac(drinkVolume, drinkPercentage, fullConfig.bodyWeight, {
+                hoursElapsed,
+                isMale: fullConfig.isMale,
+                isDrinkVolumeOunces: fullConfig.isDrinkVolumeOunces,
+                isBodyWeightPounds: fullConfig.isBodyWeightPounds,
+            })
+        ), 0);
+    }
+
+
     if (!drinkVolume) {
         throw new Error('`drinkVolume` must be specified.');
     }
