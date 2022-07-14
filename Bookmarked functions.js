@@ -838,6 +838,28 @@ window.ouncesMilliliters = function ({
 };
 
 
+window.inchesMillimeters = function ({
+    inches,
+    mm,
+} = {}) {
+    if (!inches && !mm) {
+        throw new TypeError('Either `inches` or `mm` must be specified');
+    }
+
+    const inchesToMmRatio = 25.4;
+
+    if (mm) {
+        return mm / inchesToMmRatio; /* 1 inch = 25.4 mm */
+    }
+
+    if (inches) {
+        return inches * inchesToMmRatio; /* 1 mm = 0.0393701 in */
+    }
+
+    return NaN;
+};
+
+
 /**
  * @typedef BacConfig
  * @property {number} hoursElapsed - Number of hours elapsed while drinking.
