@@ -233,6 +233,177 @@ alias todo="subl '$workDir/ToDo.md'"
 
 
 
+# See:
+#   `gio` man-page: http://manpages.ubuntu.com/manpages/bionic/man1/gio.1.html
+#   Google Drive IDs being unreadable: https://gitlab.gnome.org/GNOME/gvfs/-/issues/402
+remoteDrivesListAll() {
+    gio mount -l | grep '\->' | egrep -o '\s\S*$' | egrep -o '\S*' | sort -u
+}
+
+remoteDriveFind() {
+    remoteDrivesListAll | egrep -i "$@" | decolor
+}
+
+remoteDriveIsPathDirectory() {
+    gio info "$1" | egrep -i '^type' | grep -iq directory
+}
+
+remoteDriveGetFilename() {
+    declare _remoteDriveFilePath="$1"
+    declare _remoteDriveFilenameAttribute='standard::display-name'
+
+    declare _remoteDriveFileName="$(
+        gio info -a "$_remoteDriveFilenameAttribute" "$_remoteDriveFilePath" \
+            | grep "$_remoteDriveFilenameAttribute" \
+            | awk '{ $1 = ""; print $0; }' \
+            | trim
+    )"
+
+    if remoteDriveIsPathDirectory "$_remoteDriveFilePath"; then
+        echo "${_remoteDriveFileName}/"
+    else
+        echo "$_remoteDriveFileName"
+    fi
+}
+
+remoteDriveGetPath() {
+    declare USAGE="[OPTION...] <path...>
+    Translates between a remote drive's paths' IDs (e.g. hashes) and readable names (e.g. what's in the file explorer).
+    "
+    declare _remoteDrive=
+    declare _convertReadableToId=
+    declare argsArray
+    declare -A _remoteDriveGetPathOptions=(
+        ['d|drive:,_remoteDrive']="Name of the remote drive's root directory."
+        ['i|to-id,_convertReadableToId']="Convert readable paths to the actual ID paths used by the remote drive."
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _remoteDriveGetPathOptions "$@"
+    (( $? )) && return 1
+
+
+    declare _rdFinalPaths=()
+    declare -A _rdSubPathOptionMap=()
+
+    declare _rdPath
+    for _rdPath in "${argsArray[@]}"; do
+        if [[ -z "$_remoteDrive" ]]; then
+            # Ensure the remote drive is defined if it wasn't specified by stripping
+            # it out of the original string request
+            for _remoteDrive in $(remoteDrivesListAll); do
+                if [[ "$_rdPath" =~ ^$_remoteDrive ]]; then
+                    # Short-circuit the remote-drive name-processing by using the same
+                    # variable name in the for-loop, defining it as the loop executes
+                    break
+                fi
+            done
+        fi
+
+        declare _rdFinalPath=()
+        declare _rdFinalPathActual=()
+
+        declare _rdPathSegments=()
+        array.fromString -d '/' -r _rdPathSegments "$_rdPath"
+
+        declare _rdSubPath
+        for _rdSubPath in "${_rdPathSegments[@]}"; do
+            declare _rdSubPathAbsolute="${_remoteDrive}/$(array.join -s _rdFinalPathActual '/')"
+
+            declare _rdSubPathEntry
+
+            if [[ -n "${_rdSubPathOptionMap["$_rdSubPath"]}" ]]; then
+                _rdSubPathEntry="${_rdSubPathOptionMap["$_rdSubPath"]}"
+            elif [[ -z "$_convertReadableToId" ]]; then
+                # Convert from remote-drive ID(s) to readable names.
+                # Since the path is already in remote-drive ID format, we can simply
+                # emit the sub-path's name.
+                _rdFinalPathActual+=("$_rdSubPath")
+                _rdSubPathEntry="$(remoteDriveGetFilename "$(echo "$_rdSubPathAbsolute" | egrep -io ".*$_rdSubPath")")"
+
+                _rdSubPathOptionMap["$_rdSubPath"]="$_rdSubPathEntry"
+            else
+                # Convert from readable remote-drive path names to their respective IDs.
+                # Remote drive path ID entries never include spaces, so we can blindly join
+                # them with '/' to make them real paths.
+                declare _rdSubPathOptions=$(gio list "$_rdSubPathAbsolute")
+
+                declare _rdSubPathOption
+                for _rdSubPathOption in "${_rdSubPathOptions[@]}"; do
+                    declare _rdSubPathOptionReadableName="$(remoteDriveGetFilename "$_rdSubPathAbsolute")"
+
+                    _rdSubPathOptionMap["$_rdSubPathOptionReadableName"]="$_rdSubPathOption"
+
+                    if [[ "$_rdSubPath" =~ "$_rdSubPathOptionReadableName" ]]; then
+                        _rdSubPathEntry="$_rdSubPathOption"
+
+                        break
+                    fi
+                done
+            fi
+
+            _rdFinalPath+=("$_rdSubPathEntry")
+        done
+
+        _rdFinalPaths+=("$(str.join -j '/' "${_rdFinalPath[@]}")")
+    done
+
+    echo "${_rdFinalPaths[@]}"
+}
+
+remoteDriveLs() {
+    declare _remoteDrive="$1"
+    shift
+
+    declare _remoteDriveFilePaths=("${@:-.}")
+    declare _remoteDriveFileNames=()
+    # declare listAttributes='standard::display-name,standard::content-type'
+
+    declare _remoteDriveLsAddIndentation=
+
+    if (( $(array.length _remoteDriveFilePaths) != 1 )); then
+        _remoteDriveLsAddIndentation='true'
+    fi
+
+
+    declare _remoteDriveFilePath
+    for _remoteDriveFilePath in "${_remoteDriveFilePaths[@]}"; do
+        _remoteDriveFilePath="${_remoteDrive}/${_remoteDriveFilePath}"
+
+
+        declare _remoteDriveFileName="$(remoteDriveGetFilename "$_remoteDriveFilePath")"
+
+        if [[ -n "$_remoteDriveLsAddIndentation" ]]; then
+            # Only append the dir name if not the root
+            _remoteDriveFileNames+=("$_remoteDriveFileName")
+        fi
+
+
+        if remoteDriveIsPathDirectory "$_remoteDriveFilePath"; then
+            declare _remoteDriveFileSubPaths=($(gio list "$_remoteDriveFilePath"))
+
+            declare _remoteDriveFileSubPath
+            for _remoteDriveFileSubPath in "${_remoteDriveFileSubPaths[@]}"; do
+                _remoteDriveFileSubPath="${_remoteDriveFilePath}/${_remoteDriveFileSubPath}"
+
+                declare _remoteDriveFileSubPathDisplayPrefix="$([[ -n "$_remoteDriveLsAddIndentation" ]] && echo '\t')"
+                declare _remoteDriveFileSubPathName="$(remoteDriveGetFilename "$_remoteDriveFileSubPath")"
+
+                _remoteDriveFileNames+=("$(echo -e "${_remoteDriveFileSubPathDisplayPrefix}${_remoteDriveFileSubPathName}")")
+            done
+        fi
+    done
+
+
+    # Wait till after all processing is done to output file names
+    declare _remoteDriveFileName
+    for _remoteDriveFileName in "${_remoteDriveFileNames[@]}"; do
+        echo -e "$_remoteDriveFileName"
+    done
+}
+
+
+
 _notifyOfUninstalledPackages() {
     declare -A _pkgsToInstall=(
         ['simplescreenrecorder']="Recording your screen."
