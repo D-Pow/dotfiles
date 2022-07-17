@@ -403,6 +403,24 @@ remoteDriveLs() {
 }
 
 
+gdriveLocation() {
+    # TODO
+    # ls ~/.local/share/gvfs-metadata/ | grep -i google-drive | egrep -v '\.log$'
+    remoteDriveFind 'google.?drive'
+}
+
+gdriveLs() {
+    # Works for directories, not files
+    declare gdriveDir="$(gdriveLocation)"
+
+    remoteDriveLs "$gdriveDir" "$@"
+}
+_gdriveLsAutocomplete() {
+    # TODO
+    echo
+}
+
+
 
 _notifyOfUninstalledPackages() {
     declare -A _pkgsToInstall=(
