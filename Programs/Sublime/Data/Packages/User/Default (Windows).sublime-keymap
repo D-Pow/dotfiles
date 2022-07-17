@@ -77,10 +77,10 @@
      * Ctrl+D => [ var1, 'var1', var1(1), 'var1(1)' ]
      * Ctrl+Shift+D => [ var1, 'var1' ]
      */
-     { "keys": ["ctrl+shift+d"], "command": "find_all_under" },
+    { "keys": ["ctrl+shift+d"], "command": "find_all_under" },
 
 
-     /* Terminus (PackageControl) key bindings */
+    /* Terminus (PackageControl) key bindings */
     // Open a terminal tab at current file directory
     { "keys": ["super+t"], "command": "terminus_open", "args": { "cwd": "${file_path:${folder}}", "show_in_panel": true } },
     { "keys": ["super+shift+t"], "command": "terminus_open", "args": { "cwd": "${file_path:${folder}}" } },
