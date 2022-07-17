@@ -421,11 +421,81 @@ _gdriveLsAutocomplete() {
 }
 
 
+# Utils for working with the trash/recycle bin.
+# e.g. To move files to trash instead of deleting them immediately.
+#
+# See:
+#   https://askubuntu.com/questions/213533/command-to-move-a-file-to-trash-via-terminal/1123631#1123631
+#   Alternative apt package: https://github.com/andreafrancia/trash-cli
+#       Gotten from: https://www.reddit.com/r/linuxmasterrace/comments/plift1/what_a_great_way_to_start_the_weekend_deleting/hcd70aq/
+
+trash() {
+    gio trash "$@"
+}
+
+trashInfo() {
+    declare _trashInfoFile="$(echo "$@" | egrep '[^-]((\S*)|(\\ \S*))+$' | trim)"
+    # declare _trashInfoFlags
+    # TODO: Might not have to deal with 'my\ file.txt' b/c it's already quoted/split by Bash
+
+    gio info "$@"
+}
+
+trashLocation() {
+    echo "$HOME/.local/share/Trash"
+}
+
+trashList() {
+    declare _trashedPath="${@:-.}"
+
+    _trashedPath="($_trashedPath)|($(str.replace -g '\\' '[\\/]' "$_trashedPath"))"
+
+    gio list trash:// | egrep "$_trashedPath"
+}
+
+trashRestore() {
+    declare _trashedFileOrigLocationAttributeName='trash::orig-path'
+    # declare _trashedFileOrigLocationAttributeName
+
+    declare _trashedFile
+    for _trashedFile in "$(trashList "$@")"; do
+        # Get the info of a trashed file, selecting only the original path of said file.
+        # `gio info` outputs all the info of a trashed file, `gio info -a` only shows the specified attribute.
+        # The output will include the URI of the currently-trashed file as well as a list of all its attributes.
+        # Since we only care about one, `grep` for it, remove the preceding attribute name, and remove leading/trailing spaces.
+        #
+        # See: https://gitlab.gnome.org/GNOME/glib/-/issues/2098
+        declare _trashedFileOrigLocationUri="$(
+            trashInfo -a "$_trashedFileOrigLocationAttributeName" "$_trashedFile" \
+                | grep "$_trashedFileOrigLocationAttributeName" \
+                | awk '{ $1 = ""; print }' \
+                | trim
+        )"
+
+        declare _trashedFileOrigLocation="$(decodeUri "$_trashedFileOrigLocationUri")"
+
+        # if [[ -z "$_trashedFileOrigLocation" ]]; then
+
+        # Left off
+        # ( _trashedFile='\media\storage\.Trash-1000\files\blah.tar.gz'; trashList "($_trashedFile)|($(str.replace -g '\\' '[\\/]' "$_trashedFile"))"; )
+        # trashRestore '\media\storage\.Trash-1000\files\blah.tar.gz'
+
+        # Ensure any NTFS file system's back-slashed paths use "correct" forward-slashed paths.
+        declare _trashedFileCurrentLocation="($_trashedFile)|($(str.replace -g '\\' '[\\/]' "$_trashedFile"))"
+
+        # _trashedFile="$(str.replace -g '\\' '/' "$_trashedFile")"
+
+        # gio move "$_trashedFileOrigLocation"
+        echo "Restored trashed file \"$_trashedFile\" from \"$_trashedFileCurrentLocation\" to \"$_trashedFileOrigLocation\""
+    done
+}
+
+
 
 _notifyOfUninstalledPackages() {
     declare -A _pkgsToInstall=(
         ['simplescreenrecorder']="Recording your screen."
-        ['trash-cli']="For using \`trash\` instead of \`rm\` to move files to trash instead of deleting them immediately.\n\tSee: https://github.com/andreafrancia/trash-cli" # Gotten from: https://www.reddit.com/r/linuxmasterrace/comments/plift1/what_a_great_way_to_start_the_weekend_deleting/hcd70aq/
+        # ['trash-cli']="For using \`trash\` instead of \`rm\` to move files to trash instead of deleting them immediately.\n\tSee: https://github.com/andreafrancia/trash-cli" # Gotten from: https://www.reddit.com/r/linuxmasterrace/comments/plift1/what_a_great_way_to_start_the_weekend_deleting/hcd70aq/
         ['jq']="JSON parser for Bash (see: https://github.com/stedolan/jq/wiki/Cookbook)."
         # example if-elif statement for array-of-objects filtering:
         #   cat keys-array.json | jq -r '.Keys[] | select((.KeyId | contains("some-val")) or (.KeyName | contains("some-other-val")))'
