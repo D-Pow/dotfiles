@@ -214,6 +214,7 @@
             "SublimeLinter-eslint (also required with SublimeLinter",
             "SublimeREPL",
             "tern_for_sublime (after installing in sublime, `npm install` in the tern_for_sublime directory)",
+            "Terminus",
         ],
         "TernJS": [
             "Put .tern-project in project root",

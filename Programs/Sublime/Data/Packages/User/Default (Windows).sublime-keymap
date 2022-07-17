@@ -80,6 +80,15 @@
      { "keys": ["ctrl+shift+d"], "command": "find_all_under" },
 
 
+     /* Terminus (PackageControl) key bindings */
+    // Open a terminal tab at current file directory
+    { "keys": ["super+t"], "command": "terminus_open", "args": { "cwd": "${file_path:${folder}}", "show_in_panel": true } },
+    { "keys": ["super+shift+t"], "command": "terminus_open", "args": { "cwd": "${file_path:${folder}}" } },
+    /* Mac */
+    // { "keys": ["option+t"], "command": "terminus_open", "args": { "cwd": "${file_path:${folder}}", "show_in_panel": true } },
+    // { "keys": ["option+shift+t"], "command": "terminus_open", "args": { "cwd": "${file_path:${folder}}" } },
+
+
     /* Tab selection */
     { "keys": ["ctrl+1"], "command": "select_by_index", "args": { "index": 0 } },
     { "keys": ["ctrl+2"], "command": "select_by_index", "args": { "index": 1 } },
