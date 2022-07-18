@@ -1,20 +1,19 @@
 trim() {
     # TODO Allow trimming spaces from beginning/end of lines instead of only trimming lines
     #   See: https://stackoverflow.com/questions/20600982/trim-leading-and-trailing-spaces-from-a-string-in-awk
-    declare USAGE="[-t|--top numLinesToRemoveFromTop] [-b|--bottom numLinesToRemoveFromBottom] [-l|--lines] <input-string>
-    Removes the number of lines (rows) from the top/bottom of the input, optionally trimming white-space from each line.
-
-    Defaults to trimming each line if no options specified.
+    declare USAGE="[OPTIONS...] <input-string-or-stdin>
+    Removes the number of lines (rows) from the top/bottom of the input.
+    Also trims leading/trailing white-space from each line by default.
     "
     declare _trimTop=
     declare _trimBottom=
-    declare _trimLines=
+    declare _noTrimWhitespace=
     declare argsArray=
     declare stdin=
     declare -A _trimOptions=(
         ['t|top:,_trimTop']='Number of lines to remove from the top of the input.'
         ['b|bottom:,_trimBottom']='Number of lines to remove from the bottom of the input.'
-        ['l|lines,_trimLines']='Trim white-space off the beginning/end of each line when also removing top/bottom lines.'
+        ['s|no-whitespace,_noTrimWhitespace']='Keeps leading/trailing white-space on each line.'
         [':']=
         ['USAGE']="$USAGE"
     )
@@ -24,9 +23,19 @@ trim() {
 
 
     declare _trimInputArray=("${stdin[@]}" "${argsArray[@]}")
-    declare _trimInput="${_trimInputArray[@]}"
+    declare _trimOutputArray=()
 
-    declare _trimOutput="$_trimInput"
+    declare _trimInputline
+    for _trimInputline in "${_trimInputArray[@]}"; do
+        if [[ -z "$_noTrimWhitespace" ]]; then
+            _trimOutputArray+=("$(echo "$_trimInputline" | sed -E 's/(^\s+)|(\s+$)//g')")
+        else
+            _trimOutputArray+=("$_trimInputline")
+        fi
+    done
+
+    # Re-join input lines by \n to maintain original input format
+    declare _trimOutput="$(array.join -s _trimOutputArray '\n')"
 
     if [[ -n "$_trimTop" ]]; then
         # `tail -n` accepts `numLinesToShowFromBottom` or `+(numLinesToRemoveFromTop + 1)`
@@ -36,10 +45,6 @@ trim() {
     if [[ -n "$_trimBottom" ]]; then
         # `head -n` accepts `numLinesToShowFromTop` or `-numLinesToRemoveFromBottom`
         _trimOutput="$(echo "$_trimOutput" | head -n "-$_trimBottom")"
-    fi
-
-    if [[ -z "$_trimTop" && -z "$_trimBottom" ]] || [[ -n "$_trimLines" ]]; then
-        _trimOutput="$(echo "$_trimOutput" | sed -E 's/(^\s+)|(\s+$)//g')"
     fi
 
     echo "$_trimOutput"
