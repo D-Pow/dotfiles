@@ -308,6 +308,7 @@ convertMillisToReadable() {
 
         # See:
         #   Repo: https://github.com/stedolan/jq
+        #   Docs: https://stedolan.github.io/jq/manual
         #   Builtins: https://stedolan.github.io/jq/manual/#Builtinoperatorsandfunctions
         #   Handling timestamps: https://stackoverflow.com/questions/36853202/jq-dates-and-unix-timestamps
         #   Transforming current/creating-temp objects: https://stackoverflow.com/questions/31764035/transforming-nested-array-of-objects-using-jq
