@@ -1,4 +1,5 @@
-export JAVA_HOME="/usr/java"
+# NOTE: /usr/java/current is a symlink to /usr/var/jdk_1.2.3 for easy changing of versions like nvm does
+export JAVA_HOME="/usr/java/current"
 export GRADLE_HOME="/opt/gradle"
 export LATEX_HOME="$HOME/texlive/*/bin/*linux*/"
 export PATH="$JAVA_HOME/bin:$GRADLE_HOME/bin:$LATEX_HOME:$PATH"
