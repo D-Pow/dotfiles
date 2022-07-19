@@ -730,7 +730,7 @@ window.compareEscapingFunctions = function() {
  ********    Life utils    *******
  *********************************/
 
- window.celsiusFahrenheit = function ({
+window.celsiusFahrenheit = function ({
     c,
     f,
 } = {}) {
