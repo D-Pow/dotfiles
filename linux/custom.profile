@@ -1,8 +1,6 @@
-JAVA_HOME="/usr/java"
-GRADLE_HOME="/opt/gradle"
-LATEX_HOME="$HOME/texlive/*/bin/*linux*/"
-export JAVA_HOME
-export GRADLE_HOME
+export JAVA_HOME="/usr/java"
+export GRADLE_HOME="/opt/gradle"
+export LATEX_HOME="$HOME/texlive/*/bin/*linux*/"
 export PATH="$JAVA_HOME/bin:$GRADLE_HOME/bin:$LATEX_HOME:$PATH"
 
 if ! [[ -f /usr/local/bin/pdflatex ]] && realpath $LATEX_HOME &>/dev/null; then
