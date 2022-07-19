@@ -172,11 +172,11 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
             + Install `Fcitx` from the Software Manager (GUI).
 
 
-* Copy the `home_config_backups/.local/` to `~`.
+* Copy `home_config_backups/*` to `~`.
 
 
 * Import personalized settings for the following items via `dconf` in [./dconf_dumps/](./dconf_dumps/ReadMe.md)
-    - Do this **after** installing programs and copying the `home_config_backups/.local/` dir to the home `~` dir.
+    - Do this **after** installing programs and copying the `home_config_backups/*` dirs to the home `~` dir.
 
 
 * If dconf for keyboard shortcuts didn't work, then add useful keyboard shortcuts manually
