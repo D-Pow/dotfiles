@@ -59,6 +59,14 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
 
 
 * Add the following to Settings --> Startup Applications
+    - Mount Google Drive
+        + Title: `Mount Google Drive`
+        + Command: `gio mount google-drive://djp460@nyu.edu/`
+        + Delay: `10s`
+    - Start Discord on boot
+        + Title: `Discord - start on boot`
+        + Command: `discord --start-minimized`
+        + Delay: `10s`
     - Numlock:
         + Title: `Turn on numlock`
         + Command: `turn-on-numlock`
@@ -66,7 +74,7 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
     - Changing desktop background image:
         + Title: `Change background`
         + Command: `change-desktop-image`
-        + Delay: `0s`
+        + Delay: `15s`
     - Keyboard key re-maps:
         + Title: `Map R-Ctrl to Menu`
         + Command: `custom-key-mapping -a`
