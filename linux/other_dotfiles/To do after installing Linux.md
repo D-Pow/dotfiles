@@ -142,13 +142,34 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         + `Numeric keypad always enter digits`
 
 
-* In Linux, after installing Mozc and IBus (for Japanese input):
-    - Mozc settings
-        + Keymap style --> Import --> `./mozc-keymap-style.txt`
+* For Japanese input in Linux:
+    - Install Japanese and its language packs from `Languages` settings menu.
+    - Install `iBus` and `ibus-mozc` from Software Manager (GUI).
+    - Install `fcitx-mozc` from apt.
+    - Ensure the Japanese layout is *not* in `Keyboard` -> `Layouts` settings menu.
+        + Likewise, ensure the `Options` -> `Switching to another layout` has no key combos checked.
+    - In `iBus Preferences`:
+        + "Next input method" --> `Ctrl+Super+Space`.
+            * `Super+Space` works, but you have to hold it down to avoid it registering as a regular space, so this is easier.
+        + "Show property panel" --> `Do not show`.
+            * This hides an annoying GUI popup when using Mozc.
+    - In `Mozc settings` (from either iBus.Japanese or the OS panel when Mozc/Japanese is selected):
         + Space input style --> Halfwidth
+        + General --> Keymap style --> Import --> `./mozc-keymap-style.txt`
         + Advanced --> Shift key mode switch --> Katakana
-    - IBus
-        + Next input method --> Ctrl+Super+Space (Super+Space doesn't work for some reason)
+    - ***IFF*** you encounter issues:
+        + iBus isn't starting on boot: Add this to `$HOME/.bashrc`
+        ```bash
+        if [[ -n "$(compgen -c ibus-setup)" ]]; then
+            export GTK_IM_MODULE=ibus
+            export XMODIFIERS=@im=ibus
+            export QT_IM_MODULE=ibus
+
+            ibus-daemon &
+        fi
+        ```
+        - Something else:
+            + Install `Fcitx` from the Software Manager (GUI).
 
 
 * Copy the `home_config_backups/.local/` to `~`.
