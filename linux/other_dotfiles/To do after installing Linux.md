@@ -67,6 +67,10 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         + Title: `Discord - start on boot`
         + Command: `discord --start-minimized`
         + Delay: `10s`
+    - Start iBus (Japanese)
+        + Title: `Start iBus (Japanese)`
+        + Command: `/path/to/repositories/linux/bin/start-ibus-for-japanese.sh`
+        + Delay: `10s`
     - Numlock:
         + Title: `Turn on numlock`
         + Command: `turn-on-numlock`
