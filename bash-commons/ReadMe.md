@@ -130,6 +130,15 @@ Examples:
 * `${var:-word}` - Result is 'word' if `var` is (unset|null), otherwise it's `${var}`
 * `${var+word}` - Result is nothing if `var` is (unset), otherwise `word`
 
+### [String substitution](https://tldp.org/LDP/abs/html/parameter-substitution.html)
+
+* `${var#Pattern}` - Remove from `$var` the shortest part of `$Pattern` that matches the **front** end of `$var`.
+    - `${var/#Pattern/Replacement}` - Replace in `$var` any match of `$Pattern` from the **front** end of `$var`.
+* `${var##Pattern}` - Remove from `$var` the longest part of `$Pattern` that matches the **front** end of `$var`.
+* `${var%Pattern}` - Remove from `$var` the shortest part of `$Pattern` that matches the **back** end of `$var`.
+* `${var%%Pattern}` - Remove from `$var` the longest part of `$Pattern` that matches the **back** end of `$var`.
+    - `${var/%Pattern/Replacement}` - Replace in `$var` any match of `$Pattern` from the **back** end of `$var`.
+
 
 
 
