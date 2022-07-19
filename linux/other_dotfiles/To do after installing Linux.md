@@ -169,7 +169,9 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
             export XMODIFIERS=@im=ibus
             export QT_IM_MODULE=ibus
 
-            ibus-daemon &
+            if ! ps aux | grep -i ibus | grep -iq mozc; then
+                ibus-daemon &
+            fi
         fi
         ```
         - Something else:
