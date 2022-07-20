@@ -815,6 +815,7 @@ _checkPythonVersion() {
     declare pythonSymlinkPath="$(which python3)"
     declare pythonExecutablePath="$(readlink -f "$pythonSymlinkPath")"
     declare executableDir="$(dirname "$pythonExecutablePath")"
+    # TODO Could also just use `basename "$pythonExecutablePath"`
     declare currentPythonVersion="$(echo "$pythonExecutablePath" | sed -E 's|.*/([^/]*)$|\1|')"
     declare allAvailableVersions="$(ls "$executableDir" | egrep -o 'python\d\.\d' | sort -ru)"
     declare allPython3Versions="$(echo "$allAvailableVersions" | grep 3)"
@@ -822,7 +823,7 @@ _checkPythonVersion() {
     declare oldestVersion="$(echo "$allPython3Versions" | tail -n 1)"
 
     # Allow using anything newer than the oldest rather than restricting to only the newest
-    if [[ "$currentPythonVersion" == "$oldestVersion" ]]; then
+    if [[ "$currentPythonVersion" != "$latestVersion" ]]; then
         echo 'Your python version is out of date. Please run this command:'
         echo "    sudo rm /usr/bin/python3 && sudo ln -s $executableDir/$latestVersion /usr/bin/python3"
     fi
