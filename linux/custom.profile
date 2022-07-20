@@ -571,9 +571,9 @@ brightness() {
         declare _brightnessVcpCode=10
 
         if [[ -n "$_brightness" ]]; then
-            ddcutil --display "$_display" setvcp "$_brightnessVcpCode" "$_brightness"
+            sudo ddcutil --display "$_display" setvcp "$_brightnessVcpCode" "$_brightness"
         else
-            ddcutil --display "$_display" getvcp "$_brightnessVcpCode"
+            sudo ddcutil --display "$_display" getvcp "$_brightnessVcpCode"
         fi
 
         return
