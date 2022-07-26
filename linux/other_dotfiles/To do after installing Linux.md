@@ -52,10 +52,16 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
 * Install updates.
 
 
-* Fix Linux/Windows time configuration
+* Fix Linux/Windows time configuration:
+* Changing Linux (UTC) to match Windows (RTC)
+    - Unfortunate but easier and allows for both to update automatically with daylight savings.
     - `gksudo gedit /etc/default/rcS` --> add/change `UTC=yes`
     - `timedatectl set-local-rtc 1` Changes from UTC to local (Windows uses local)
     - If you want to switch back to UTC on Linux, replace `1` with `0`
+* Changing Windows to match Linux
+    - https://superuser.com/questions/884278/windows-vs-linux-local-time/884311#884311
+    - Regedit --> `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\TimeZoneInformation`
+    - Add/update `RealTimeIsUniversal=(dword)00000001`
 
 
 * Add the following to Settings --> Startup Applications
