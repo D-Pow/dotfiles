@@ -96,10 +96,11 @@ array.toString() {
     declare lengthOnly
     declare _toStringDelim
     declare _toStringQuotes=\"
+    declare _entriesOnly
     declare OPTIND=1
 
     # See os-utils.profile for more info on flag parsing
-    while getopts "ld:q:" opt; do
+    while getopts "eld:q:" opt; do
         case "$opt" in
             l)
                 lengthOnly=true
@@ -109,6 +110,9 @@ array.toString() {
                 ;;
             q)
                 _toStringQuotes="$OPTARG"
+                ;;
+            e)
+                _entriesOnly=true
                 ;;
         esac
     done
@@ -120,7 +124,9 @@ array.toString() {
     declare _arrToStringQuotes="$_toStringQuotes"
     declare _arrToStringCmd='printf "${_arrToStringQuotes}%s${_toStringDelim:-}${_arrToStringQuotes} " "${_arrToString[@]}"'
 
-    if [[ -n "$lengthOnly" ]]; then
+    if [[ -n "$_entriesOnly" ]]; then
+        eval "$_arrToStringCmd"
+    elif [[ -n "$lengthOnly" ]]; then
         echo "$1 (length=$_arrToStringLength)"
     else
         echo "$1 (length=$_arrToStringLength): $(eval "$_arrToStringCmd")"
