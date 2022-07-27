@@ -3,7 +3,7 @@ openGitMergeConflictFilesWithSublime() {
 }
 
 
-ignorePathsInGit() {
+gitIgnorePathsArgs() {
     # Git offers a glossary of terms to modify how commands work,
     # e.g. only showing some files, excluding others, etc.
     # Kind of like `git diff -- src/dir/` except supporting more
@@ -14,11 +14,29 @@ ignorePathsInGit() {
     #   `:(top)` = git root (shorthand: `.` but only if in root dir)
     #   `:(exclude)myPath` = path to exclude (shorthand: `:!myPath`)
     # Ref: https://stackoverflow.com/a/39937070/5771107
-    declare _gitIgnoreArgs=("$@")
-    declare _gitIgnorePaths
-    array.map -r _gitIgnorePaths _gitIgnoreArgs "echo \"':(exclude)\$value'\""
+    declare USAGE="[OPTIONS...] <paths...>
+    Generates the args required to ignore certain paths in git commands, esp \`diff\`, \`status\`, etc.
+    "
+    declare _gitIgnorePaths=()
+    declare argsArray
+    declare -A _gitIgnorePathsArgsOptions=(
+        ['i|ignore:,_gitIgnorePaths']="Ignore the specified paths in git commands."
+        ['USAGE']="$USAGE"
+    )
 
-    if [[ -z "$_gitIgnorePaths" ]] || array.empty _gitIgnorePaths; then
+    parseArgs _gitIgnorePathsArgsOptions "$@"
+    (( $? )) && return 1
+
+    declare _gitPathsToScan=("${argsArray[@]}")
+
+    if array.empty _gitPathsToScan; then
+        _gitPathsToScan=("':(top)'")
+    fi
+
+    declare _gitIgnorePathsArgs
+    array.map -r _gitIgnorePathsArgs _gitIgnorePaths "echo \"':(exclude)\$value'\""
+
+    if [[ -z "$_gitIgnorePathsArgs" ]] || array.empty _gitIgnorePathsArgs; then
         return
     fi
 
@@ -26,7 +44,7 @@ ignorePathsInGit() {
     # it doesn't currently work with ANY combination of quotes above, below,
     # in between, or a removal of `-r retArray` in the above `array.map` call.
     # TODO `:(top)` doesn't work
-    echo "':(top)'" ${_gitIgnorePaths[@]}
+    echo "${_gitPathsToScan[@]}" "${_gitIgnorePathsArgs[@]}"
 }
 
 
