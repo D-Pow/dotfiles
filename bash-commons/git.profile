@@ -146,8 +146,8 @@ gitGetIgnoredFiles() {
     #   git ls-files: https://git-scm.com/docs/git-ls-files
     #   git check-ignore: https://git-scm.com/docs/git-check-ignore
     #       Simpler API but only available on Git versions >= 2.34.1
-    declare USAGE="[-s|--status] [-i|--ignored-only] [-u|--untracked-only] [-f|--file <.gitignore file path>]  <other \`git ls-files\` flags/args>
-    Retrieves all the ignored/untracked files within a repository.
+    declare USAGE="[OPTIONS...]  [other \`git ls-files\` flags/args...]
+    Retrieves all the ignored/untracked files within a repository (default: only ignored).
     Optionally, can display them in \`git status\` format (\`-s\`), show only certain types of files, or use a specific \`.gitignore\` file.
     "
     declare _ignoredFilesStatus=
@@ -157,7 +157,6 @@ gitGetIgnoredFiles() {
     declare argsArray=
     declare -A _ignoredFilesOptions=(
         ['s|status,_ignoredFilesStatus']='Show `git status` output instead of a list of files.'
-        ['i|ignored-only,_ignoredFilesOnlyIgnored']='Only include ignored files.'
         ['u|untracked-only,_ignoredFilesOnlyUntracked']='Only include untracked files.'
         ['f|file:,_ignoredFilesGitignoreFile']='Specific .gitignore file to use (defaults to all `.gitignore` files in the repo).'
         [':']=
@@ -178,15 +177,14 @@ gitGetIgnoredFiles() {
     declare _ignoredFilesCmd=('git' 'ls-files')
 
 
-    if [[ -n "$_ignoredFilesOnlyIgnored" ]]; then
-        _ignoredFilesCmd+=('-i')
-    elif [[ -n "$_ignoredFilesOnlyUntracked" ]]; then
+    if [[ -n "$_ignoredFilesOnlyUntracked" ]]; then
+        # --others = Show "other" files, either ignored (-i) or untracked (default)
         _ignoredFilesCmd+=('-o')
     else
         _ignoredFilesCmd+=('-i' '-o')
     fi
 
-
+    # --directory = Don't show all the contents of ignored directories
     _ignoredFilesCmd+=('--directory')
 
 
