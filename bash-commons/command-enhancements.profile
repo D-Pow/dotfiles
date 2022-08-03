@@ -595,6 +595,13 @@ tarremovepathprefix() {
 
 if ! isDefined tree; then
     # `tree` isn't defined, so define it here
+    declare _treeUsage="${FUNCNAME[0]} [OPTIONS...] [path]
+    Manual re-implementation of GNU \`tree\` (https://linux.die.net/man/1/tree) with some minor modifications.
+
+    Options:
+        -i | Ignore directory during traversal.
+    "
+
     tree() {
         declare _treeIgnoreDirs=()
         declare OPTIND=1
@@ -603,6 +610,9 @@ if ! isDefined tree; then
             case "$opt" in
                 i)
                     _treeIgnoreDirs+=("$OPTARG")
+                    ;;
+                *)
+                    echo -e "$_treeUsage"
                     ;;
             esac
         done
