@@ -600,16 +600,21 @@ if ! isDefined tree; then
 
     Options:
         -i | Ignore directory during traversal.
+        -d | Limit to \`d\` levels deep.
     "
 
     tree() {
         declare _treeIgnoreDirs=()
+        declare _treeDepth=
         declare OPTIND=1
 
-        while getopts "i:" opt; do
+        while getopts "i:d:" opt; do
             case "$opt" in
                 i)
                     _treeIgnoreDirs+=("$OPTARG")
+                    ;;
+                d)
+                    _treeDepth="$OPTARG"
                     ;;
                 *)
                     echo -e "$_treeUsage"
@@ -625,6 +630,7 @@ if ! isDefined tree; then
             path='.'
         fi
 
+        declare _treeDepthFindOpts="${_treeDepth:+-maxdepth $_treeDepth}"
         declare _treeIgnoreDirsFindOpts=''
 
         if ! array.empty _treeIgnoreDirs; then
@@ -640,7 +646,7 @@ if ! isDefined tree; then
         # `find` doesn't add a trailing slash on directories by default, so add them manually via `printf`
         declare allEntriesWithTrailingSlashOnDirsDirs="$(
             cd "$path"
-            findIgnoreDirs $_treeIgnoreDirsFindOpts . -type d -exec sh -c "'printf \"\$0/\n\"'" {} '\;' -or -print
+            findIgnoreDirs $_treeIgnoreDirsFindOpts . $_treeDepthFindOpts -type d -exec sh -c "'printf \"\$0/\n\"'" {} '\;' -or -print 2>/dev/null
         )"
         # Remove duplicate `//` when runing `tree someDir/` (no double slashes with `tree someDir`)
         declare normalizedPaths="`echo "$allEntriesWithTrailingSlashOnDirsDirs" | sed -E "s#//#/#g"`"
