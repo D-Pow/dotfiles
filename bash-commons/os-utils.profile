@@ -97,6 +97,37 @@ isWindows() {
 }
 
 
+bytesReadable() {
+    declare USAGE="[OPTIONS...] <input-or-stdin...>
+    Converts numbers from bytes to readable sizes (B, KB, MB, GB, etc.).
+    "
+    declare _bytesReadableDecimalPlaces
+    declare _bytesReadableDecimalPlacesDefault=2
+    declare _bytesReadableRemoveSpace
+    declare argsArray
+    declare stdin
+    declare -A _bytesReadableOptions=(
+        ['d|decimals:,_bytesReadableDecimalPlaces']="Number of decimal places to round to (default: $_bytesReadableDecimalPlacesDefault)."
+        ['s|no-spaces,_bytesReadableRemoveSpace']="Remove the space between file size and unit."
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _bytesReadableOptions "$@"
+    (( $? )) && return 1
+
+    declare _bytesReadableNumbersArray=(${stdin[@]} ${argsArray[@]})
+    declare _bytesReadablePrintfFormat="%.${_bytesReadableDecimalPlaces:-$_bytesReadableDecimalPlacesDefault}f"
+
+    declare _bytesReadableString="$(numfmt --to=iec --suffix=B --format="$_bytesReadablePrintfFormat" "${_bytesReadableNumbersArray[@]}")"
+
+    if [[ -n "$_bytesReadableRemoveSpace" ]]; then
+        echo "$_bytesReadableString"
+    else
+        echo "$_bytesReadableString" | sed -E 's/([0-9])([a-zA-Z])/\1 \2/'
+    fi
+}
+
+
 aggregate() {
     # See: https://www.unix.com/shell-programming-and-scripting/51129-column-sum-group-uniq-records.html
     # TODO Allow aggregating by multiple columns
