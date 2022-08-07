@@ -548,6 +548,7 @@ brightness() {
 
 
     if isDefined ddcutil; then
+        (
         # `ddcutil` docs:
         #   http://www.ddcutil.com/
         # All VCP codes can be found with:
@@ -576,8 +577,12 @@ brightness() {
         else
             sudo ddcutil --display "$_display" getvcp "$_brightnessVcpCode"
         fi
+        ) 2>/dev/null
 
-        return
+        if ! (( $? )); then
+            # If there was an error, fallback to `xrandr` logic below
+            return
+        fi
     fi
 
 
