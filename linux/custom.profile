@@ -603,7 +603,7 @@ brightness() {
         _brightness="1"  # Reset brightness back to 100% through '-1'
     fi
 
-    declare _displayOutputNames=($(xrandr -q | egrep -o '^\S+(?=.*connected)'))
+    declare _displayOutputNames=($(xrandr -q | egrep -o '^\S+(?=\b\s*connected)'))
 
     if [[ -z "$_display" ]]; then
         echo "Please specify the display for which you want to change the brightness." >&2
