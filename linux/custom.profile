@@ -521,6 +521,124 @@ _notifyOfUninstalledPackages() {
 
 
 
+monitors() {
+    declare USAGE="[OPTIONS...]
+    TODO
+    "
+    declare _monitorsList
+    declare _monitorsNamesOnly
+    declare _monitorsOnlyDimensions
+    declare _monitorsReturnArrayName
+    declare _monitorDisplayDesktopWindowId
+    declare -A _monitorsOptions=(
+        ['l|list,_monitorsList']="List the monitors and their information instead of modifying them."
+        ['n|name-only,_monitorsNamesOnly']="Only display the names of the monitors."
+        ['s|dimensions,_monitorsOnlyDimensions']="Get the specific dimensions of monitor(s)."
+        ['a|return-array:,_monitorsReturnArrayName']="Return monitor dimensions as a Map into the specified variable."
+        ['i|id,_monitorDisplayDesktopWindowId']="Show the desktop \"window\" ID instead of the monitor's name."
+        # TODO - ['v|verbose,_monitorsVerbose']="Include extra info like DPI, rotations, etc."
+    )
+
+    parseArgs _monitorsOptions "$@"
+    (( $? )) && return 1
+
+    # Command breakdown
+    #   - List all display info
+    #   - Filter out all lines that aren't connected displays
+    #   - Remove superfluous "connected" in output line
+    #   - Replace "`width`x`height`+`x-position`+`y-position`" with space as a delimiter for easier splitting later
+    #   - Move primary monitor to the top and sort the external monitors by their x-position
+    #   - Remove duplicate spaces between columns
+    # Alternative commands:
+    #   xrandr --listactivemonitors | trim -t 1 | awk '{ print($4, $3) }' | sed -E 's/\+/ /g'
+    #       - List all monitors
+    #       - Remove the "Monitors:" header
+    #       - Only print unique info/remove superfluous, duplicate output
+    #       - Replace `+` with ` ` for X and Y position output columns
+    declare _monitorsAllInfo="$(
+        xrandr -q \
+            | egrep --color=never '^\S+(?=\b\s*connected)' \
+            | sed -E 's/(\s)connected(\s)/\1/' \
+            | sed -E 's/([0-9]+)x([0-9]+)|\+|\//\1 \2/g' \
+            | awk '
+                BEGIN {
+                    primaryMonitor = ""
+                    externalMonitors = ""
+                }
+                {
+                    # Third column will either be the width-px or "primary"
+                    if ($2 == "primary") {
+                        # Move "primary" to the end of the line to match format of external monitors
+                        $2 = ""
+                        $(NF + 1) = "primary"
+                        primaryMonitor = $0
+                    } else {
+                        externalMonitors = externalMonitors "\n" $0
+                    }
+                }
+                END {
+                    # Show the primary monitor first, then the other monitors
+                    printf("%s", primaryMonitor)
+                    # Sort all other monitors in order from left to right
+                    # We need `printf` above to avoid double-newlines in the output
+                    print(externalMonitors) | "sort -n -k 4"
+                }
+            ' \
+            | sed -E 's/\s{2,}/ /g'
+    )"
+
+    declare _monitorsOrigIFS="$IFS"
+    declare IFS=$'\n'
+    declare _monitorsAllInfoArr=($_monitorsAllInfo)
+    declare _numMonitors=${#_monitorsAllInfoArr[@]}
+    IFS="$_monitorsOrigIFS"
+
+    # Format:
+    # array[monitorIndex]=(width height x-offset y-offset)
+    # where offset is the pixel where that screen's x/y begins.
+    # i.e. For default multi-monitor setups using X11/Xorg, there is only 1 "desktop"
+    # even if it has multiple screens.
+    # This means that `wmctrl` and `xprop` only see one giant screen, and the offset is how
+    # they determine where each screen starts/ends.
+    # e.g. screen 1 = 1000x2000, screen 2 = 3000x500, then
+    # arr=(
+    #   1000 2000 0 0
+    #   3000 4000 1001 750 # Last number is assuming the screen is centered based on first screen's height
+    # )
+    declare -A _monitorsDimsAndPos=()
+
+    declare i
+    for i in "${!_monitorsAllInfoArr[@]}"; do
+        declare _monitorInfoEntry="${_monitorsAllInfoArr[i]}"
+        declare _monitorInfoEntryName="$(echo "$_monitorInfoEntry" | awk '{ print $1 }')"
+        declare _monitorInfoEntryDimsAndPos=($(echo "$_monitorInfoEntry" | awk '{ $1 = ""; print($2, $3, $4, $5); }'))
+
+        _monitorsDimsAndPos["$_monitorInfoEntryName"]="${_monitorInfoEntryDimsAndPos[@]}"
+    done
+
+
+    if [[ -n "$_monitorsList" ]]; then
+        echo "$_monitorsAllInfo"
+    elif [[ -n "$_monitorsNamesOnly" ]]; then
+        # echo "$_monitorsAllInfo" | awk '{ print $1 }'
+        echo "${!_monitorsDimsAndPos[@]}"
+    elif [[ -n "$_monitorsOnlyDimensions" ]]; then
+        echo "${_monitorsDimsAndPos[@]}"
+    elif [[ -n "$_monitorsReturnArrayName" ]]; then
+        declare -n _retMonitorsList="$_monitorsReturnArrayName"
+
+        declare _monitorName
+        for _monitorName in "${!_monitorsDimsAndPos[@]}"; do
+            _retMonitorsList["$_monitorName"]="${_monitorsDimsAndPos["$_monitorName"]}"
+        done
+    elif [[ -n "$_monitorDisplayDesktopWindowId" ]]; then
+        echo "TODO"
+        # windows -l | egrep '^\S+ -1' | awk '{ print $1 }'
+    fi
+}
+
+
+
 brightness() {
     declare USAGE="${FUNCNAME[0]} [-r|--reset] [-d|--display DISPLAY_NUM] [brightnessValue]
     Changes the brightness of a display of NUM [0-n], where 0 is the internal display.
@@ -708,6 +826,7 @@ window() {
 
     shift $(( OPTIND - 1 ))
 
+    # TODO - Use monitor function
     # Format:
     # array[screenIndex]=(width height x-offset y-offset)
     # where offset is what pixel that screen's x/y begins.
