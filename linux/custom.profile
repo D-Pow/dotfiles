@@ -604,16 +604,6 @@ brightness() {
     fi
 
     declare _displayOutputNames=($(xrandr -q | egrep -o '^\S+(?=\b\s*connected)'))
-
-    if [[ -z "$_display" ]]; then
-        echo "Please specify the display for which you want to change the brightness." >&2
-        echo "Valid display values are [0$(
-            declare _numDisplays=$(array.length _displayOutputNames)
-            (( _numDisplays > 1 )) && echo "-$(( _numDisplays - 1 ))"
-        )]." >&2
-        return 1;
-    fi
-
     declare _displayOutputSelected="${_displayOutputNames[_display]}"
 
     xrandr --output "$_displayOutputSelected" --brightness "$_brightness"
