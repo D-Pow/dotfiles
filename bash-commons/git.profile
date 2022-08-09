@@ -158,7 +158,7 @@ gitGetIgnoredFiles() {
     declare -A _ignoredFilesOptions=(
         ['s|status,_ignoredFilesStatus']='Show `git status` output instead of a list of files.'
         ['u|untracked-only,_ignoredFilesOnlyUntracked']='Only include untracked files.'
-        ['f|file:,_ignoredFilesGitignoreFile']='Specific .gitignore file to use (defaults to all `.gitignore` files in the repo).'
+        ['g|gitignore:,_ignoredFilesGitignoreFile']='Specific .gitignore file to use (defaults to all `.gitignore` files in the repo).'
         [':']=
         ['?']=
         ['USAGE']="$USAGE"
