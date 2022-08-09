@@ -78,10 +78,13 @@ gitGetRootDir() {
 
 
 gitGetBranch() {
-    # get the current branch (one that starts with '* ')
-    # replace '* ' with ''
-    # Alternative: git rev-parse --abbrev-ref HEAD
-    git branch | grep '*' | sed -E 's|(^\* )||'
+    # Gets the current branch
+    # Try using git's builtin flag, but fallback to manual parsing with `sed`
+    #
+    # Alternatives:
+    #   git rev-parse --abbrev-ref HEAD
+    git branch --show-current 2>/dev/null \
+        || git branch | grep '*' | sed -E 's|(^\* )||'
 }
 
 
