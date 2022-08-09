@@ -341,6 +341,24 @@ ancestorProcesses() {
 
 
 getip() {
+    declare USAGE="[OPTIONS...]
+    Gets all IP addresses for the computer.
+    "
+    declare _localOnly
+    declare _publicOnly
+    declare _getipQuietMode
+    declare -A _getipOptions=(
+        ['l|local,_localOnly']='Only output the local LAN IP address.'
+        ['p|public,_publicOnly']='Only output the public IP address (seen by the outside world).'
+        ['q|quiet,_getipQuietMode']='Remove all-IP-addresses from output, showing only the local/public IPs.'
+        ['?']=
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _getipOptions "$@"
+    (( $? )) && return 1
+
+
     # Must get default interface (`en0`, `en1`, etc.)
     # See: https://superuser.com/questions/89994/how-can-i-tell-which-network-interface-my-computer-is-using/627581#627581
     declare _ipDefaultNetworkInterface=
@@ -389,11 +407,19 @@ getip() {
         fi
     done
 
-    echo "All IPs:"
-    declare _interfaceToIpv4
-    for _interfaceToIpv4 in "${_ipAllAddressesIpv4[@]}"; do
-        echo "$_interfaceToIpv4"
-    done
+    # Output:
+    declare _getipNoOptions=
+    if [[ -z "${_getipQuietMode}${_localOnly}${_publicOnly}" ]]; then
+        _getipNoOptions=true
+    fi
+
+    if [[ -n "$_getipNoOptions" ]]; then
+        echo "All IPs:"
+        declare _interfaceToIpv4
+        for _interfaceToIpv4 in "${_ipAllAddressesIpv4[@]}"; do
+            echo "$_interfaceToIpv4"
+        done
+    fi
 
 
     declare _ipLocalDefault=
@@ -409,13 +435,25 @@ getip() {
         _ipLocalDefault="$(ifconfig "$_ipDefaultNetworkInterface" | awk '/inet / {print $2}')"
     fi
 
-    echo -e "\nYour local IP (default network interface = $_ipDefaultNetworkInterface):"
-    echo "$_ipLocalDefault"
+    if [[ -n "$_getipNoOptions" ]]; then
+        # Default mode
+        echo -e "\nYour local IP (default network interface = $_ipDefaultNetworkInterface):"
+        echo "$_ipLocalDefault"
+    elif [[ -z "$_publicOnly" ]]; then
+        # Quiet mode and local-only mode
+        echo "$_ipLocalDefault"
+    fi
 
+    if [[ -n "$_getipNoOptions" ]] || [[ -z "$_localOnly" ]]; then
+        declare _ipPublic="$(curl -sS ifconfig.me)" # --silent hides download progress details, --show-error for use with --silent
 
-    declare _ipPublic="$(curl -sS ifconfig.me)" # --silent hides download progress details, --show-error for use with --silent
-    echo -e "\nPublic IP:"
-    echo "$_ipPublic"
+        if [[ -z "${_getipQuietMode}${_publicOnly}" ]]; then
+            # Default mode
+            echo -e "\nPublic IP:"
+        fi
+
+        echo "$_ipPublic"
+    fi
 }
 
 
