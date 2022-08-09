@@ -7,3 +7,4 @@
 
 # Code/compilation temp files
 .pyc
+*.tsbuildinfo
