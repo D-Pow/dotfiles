@@ -1,4 +1,9 @@
+# OS files
 .DS_Store
+
+# IDE temp files
 *.sublime-project*
 *.sublime-workspace*
+
+# Code/compilation temp files
 .pyc
