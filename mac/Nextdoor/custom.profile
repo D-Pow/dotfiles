@@ -1,4 +1,5 @@
 _nextdoorRoot="${NEXTDOOR_ROOT:-$HOME/src/nextdoor.com}"
+_nextdoorAwsHost="364942603424.dkr.ecr.us-west-2.amazonaws.com"
 
 export NO_COMMIT_AS=true
 
