@@ -193,6 +193,7 @@
         "Packages to install": [
             "Babel",
             "Babel Snippets",
+            "Chain of Command",
             "DocBlockr",
             "Emmet",
             "HTML-CSS-JS Prettify",
