@@ -21,6 +21,70 @@ stopAllNextdoorDockerContainers() {
     docker-compose -f "${_nextdoorRoot}/docker-compose.yml" stop
 }
 
+ndRunDockerImageDx() {
+    declare _dxImageTag="${1:-latest}"
+
+    docker run -it --rm "${_nextdoorAwsHost}/dev/dx:$_dxImageTag" /bin/bash
+}
+
+ndRunDockerImageWebsiteNextdoor() {
+    declare USAGE="[OPTIONS...]
+    Runs the nextdoor.com Docker image from AWS.
+    Default is the test/staging image; production image can be run by providing an image tag.
+    "
+    declare _runImageAsServer
+    declare _runImageProdTag
+    declare -A _ndTestImageOptions=(
+        ['s|server,_runImageAsServer']='Run the image as a local server instead of using Bash as an entrypoint.'
+        ['p|prod-image-tag:,_runImageProdTag']='Runs the specified production Docker image tag.'
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _ndTestImageOptions "$@"
+    (( $? )) && return 1
+
+    declare _mergeBaseCommitHash="$(gitGetMergeBaseForCurrentBranch)"
+    declare _ndTestImage="${_nextdoorAwsHost}/dev/nextdoor-test:commit-$_mergeBaseCommitHash"
+    declare _ndProdImage="${_nextdoorAwsHost}/nextdoor/nextdoor-com:${_runImageProdTag}"
+    declare _ndSelectedImage="$([[ -n "$_runImageProdTag" ]] && echo "$_ndProdImage" || echo "$_ndTestImage")"
+
+    declare _ndTestDefaultExposedPort='8000'
+
+    # DOCKER_NETWORK_IP == 'docker.for.mac.host.internal' on dev computers, but we need actual IP address
+    declare _localIpForDockerHost="$(getip -l)"
+
+    declare _runImageExtraOptions=
+    declare _runImageCmd=
+
+    if [[ -z "$_runImageAsServer" ]]; then
+        _runImageExtraOptions='-it'
+        _runImageCmd='/bin/bash'
+
+        if [[ -n "$_runImageProdTag" ]]; then
+            _runImageExtraOptions="$_runImageExtraOptions --entrypoint=bash"
+            _runImageCmd=
+        fi
+    else
+        _runImageExtraOptions="-p $_ndTestDefaultExposedPort:$_ndTestDefaultExposedPort --add-host localhost.com:$_localIpForDockerHost --add-host localhost:$_localIpForDockerHost"
+    fi
+
+    # Not needed currently, but in case we want to add local dev credentials to the docker container:
+    # awsCredentialsFile="$HOME/.aws/credentials"
+    # AWS_ACCESS_KEY_ID="$(cat "$awsCredentialsFile" | grep -i 'aws_access_key_id' | cut -d '=' -f 2 | sed -E 's/ //g')"
+    # AWS_SECRET_ACCESS_KEY="$(cat "$awsCredentialsFile" | grep -i 'aws_secret_access_key' | cut -d '=' -f 2 | sed -E 's/ //g')"
+    docker run --rm \
+        --mount type=bind,src=${_nextdoorRoot}/static,target=/app/static \
+        -e READ_MANIFEST=1 \
+        -e RINGBEARER_READ_TIMEOUT=30 \
+        -e NEXTDOOR_RINGBEARER_SERVICE_HOST=localhost.com \
+        -e SERVICE_FLAVOR=dev_standalone \
+        -e AWS_REGION=us-east-1 \
+        -e AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}" \
+        -e AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}" \
+        ${_runImageExtraOptions} \
+        "$_ndSelectedImage" ${_runImageCmd}
+}
+
 
 export testUserLogins=(
     iceweasel@example.com
