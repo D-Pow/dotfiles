@@ -727,6 +727,12 @@ gitPullFromOrigin() {
 }
 
 
+gitGetMergeBaseForCurrentBranch() {
+    # Gets the commit hash of the primary branch that the current branch would merge into
+    git merge-base "$(gitGetPrimaryBranch)" "$(gitGetBranch)"
+}
+
+
 alias     g='git'
 alias    gs='git status'
 alias   gsi='gitGetIgnoredFiles'
