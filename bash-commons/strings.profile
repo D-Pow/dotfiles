@@ -187,10 +187,16 @@ str.unique() {
         _strUniqueOutput="$(str.join -d "$_strUniqueDelim" -j '\n' "$_strUniqueInput")"
     fi
 
-    # `awk` uses `u` to check if the line is unique, regardless of location; if it is not,
-    # then advance the line number by 1 so we skip over the duplicate line.
+    # `awk` unique checks work regardless of location.
     # This is the opposite of `uniq` which only checks unique entries that are neighbors, and
     # maintains order unlike `sort -u`.
+    #
+    # Command breakdown:
+    #   `u` == Unique
+    #   `NF` == Row index
+    #   Default command if none specified == `print $0`
+    # Result: If the row's value is not unique for the entire set of rows, then skip over the
+    # line (via `++`) rather than printing it.
     #
     # See:
     #   https://stackoverflow.com/questions/13648410/how-can-i-get-unique-values-from-an-array-in-bash
