@@ -1073,6 +1073,9 @@ repos() {
     cd "$absPath"
 }
 _autocompleteRepos() {
+    # TODO - try `builtin cd "${some-combo-of-reposDir-and-COMP_WORDS}"` and/or find out how to use
+    #   the autocompletion from builtins (`builtin only runs the built-in command, not necessarily
+    #   its assigned `complete` function)
     declare requestedRelativePath="${COMP_WORDS[@]:1}"
     declare requestedAbsPath="$reposDir/$requestedRelativePath"
 
