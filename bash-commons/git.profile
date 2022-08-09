@@ -371,8 +371,10 @@ gitConfigWithScopes() {
 }
 
 
-gitPrShowOpen() {
-    # Shows open PRs, whether created by you or requesting your review.
+gitPrShow() {
+    # Shows PRs and their info, whether created by you or requesting your review.
+    #
+    # TODO - Add more commands/options like `closed` PRs, `closed reviewed-by:@D-Pow`, etc.
     #
     # See:
     #   GitHub issue about `gh` formatting: https://github.com/cli/cli/issues/846#issuecomment-1142104190
