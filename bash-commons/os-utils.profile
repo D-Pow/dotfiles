@@ -970,17 +970,21 @@ dirsize() {
     declare USAGE="[OPTIONS...] <path=./>
     Displays total disk usages of all directories within the given path.
 
-    Note: Doesn't show actual file sizes, rather their space usage on disk.
-    This means the smallest file size shown will be that of your disk's block/allocation size.
+    By default, this shows the apparent file sizes (the size of the file's contents),
+    rather their actual space usage on disk (disk blocks used/allocation size, usually
+    larger than the file's contents).
+    This behavior can be customized (see options below).
     "
     declare _depth
     declare _showFiles
     declare _ignoredPaths
+    declare _actualDiskSpaceUsed
     declare argsArray
     declare -A _dirsizeOptions=(
         ['d|depth:,_depth']='Depth of directories to display; defaults to 1 (dirs inside <path>).\nTotal disk usages will be calculated regardless of value.'
         ['f|include-files,_showFiles']='Include files in output.'
         ['i|ignore:,_ignoredPaths']='Path glob(s) to ignore (multiple paths require using multiple flags).'
+        ['a|actual,_actualDiskSpaceUsed']='Show the physical/actual/real disk usage (i.e. blocks reserved for the file(s) on disk)'
         ['USAGE']="$USAGE"
     )
 
@@ -993,6 +997,7 @@ dirsize() {
 
     declare _path="${argsArray[0]:-.}"
     _depth="${_depth:-1}"
+    _actualDiskSpaceUsed="${_actualDiskSpaceUsed:--b}"  # `du [-b|--bytes]` means "apparent size" i.e. block size == 1 byte
 
     declare _ignoredPathsFlags=()
     if ! array.empty _ignoredPaths; then
@@ -1014,7 +1019,7 @@ dirsize() {
     # sort -reverse -human-numeric-sort - sorts based on size number (taking into account
     #   human-readable sizes like KB, MB, GB, etc.) in descending order
     # Manually add '/' at the end of output to show they are directories
-    du -h -d $_depth "${_ignoredPathsFlags[@]}" "$_path" | sort -rh | sed -E 's|(.)$|\1/|'
+    du -h -d $_depth $_actualDiskSpaceUsed "${_ignoredPathsFlags[@]}" "$_path" | sort -rh | sed -E 's|(.)$|\1/|'
 
     if [[ -n "$_showFiles" ]]; then
         echo -e "\nFiles:"
