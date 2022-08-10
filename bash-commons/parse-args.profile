@@ -244,7 +244,7 @@ parseArgs() {
     # Use keys from `getoptsParsingConfig` since it already parsed long/short
     # options, then get the description from the original parent config.
     if [[ -n "$parentUsageStr" ]] && ! array.empty parentUsageOptions; then
-        parentUsageStr+="\n\n    Options:\n"
+        parentUsageStr+="\n    Options:\n"
         declare indentationAmount="        "
         declare optionUsageStr=''
         declare optionUsageKey
