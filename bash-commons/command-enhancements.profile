@@ -485,26 +485,27 @@ modifyFileLinesInPlace() {
 
 
 findIgnoreDirs() {
+    declare USAGE="[OPTIONS...] [PATH] [\`find\` OPTIONS...]
+    Calls \`find\`, ignoring the specified directories.
+    "
     # Net result (where [] represents what's added by the user):
     #   `find . -type d \( -name 'node_modules' -o -name '*est*' \) -prune -false -o` [-name '*.js']
     # See: https://stackoverflow.com/questions/4210042/how-to-exclude-a-directory-in-find-command/4210072#4210072
     declare _findIgnoreDirs=()
-    declare OPTIND=1
+    declare _findToSearchIn=
+    declare argsArray
+    declare -A _findIgnoreDirsOptions=(
+        ['i|ignore:,_findIgnoreDirs']="Directory to ignore; Don't use glob-stars."
+        [':']=
+        ['?']=
+        ['USAGE']="$USAGE"
+    )
 
-    while getopts "i:" opt; do
-        case "$opt" in
-            i)
-                _findIgnoreDirs+=("$OPTARG")
-                ;;
-        esac
-    done
+    parseArgs _findIgnoreDirsOptions "$@"
+    (( $? )) && return 1
 
-    shift $(( OPTIND - 1 ))
-
-    declare _findArgs=("$@")
-    declare _findToSearchIn="$1"
-    declare _findOpts
-    array.slice -r _findOpts _findArgs 1
+    declare _findToSearchIn="${argsArray[0]}"
+    array.slice -r _findOpts argsArray 1
 
     declare _findIgnoreDirsOptionName=' -o -name '
     declare _findIgnoreDirsOption=''
