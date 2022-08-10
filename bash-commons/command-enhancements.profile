@@ -496,16 +496,25 @@ findIgnoreDirs() {
     declare argsArray
     declare -A _findIgnoreDirsOptions=(
         ['i|ignore:,_findIgnoreDirs']="Directory to ignore; Don't use glob-stars."
+        ['p|search-dir:,_findToSearchIn']="Path in which to run \`find\`; Use in place of positional arg for path; Helpful for custom functions calling ${FUNCNAME[0]}."
         [':']=
         ['?']=
         ['USAGE']="$USAGE"
     )
 
-    parseArgs _findIgnoreDirsOptions "$@"
+    parseArgs -c _findIgnoreDirsOptions "$@"
     (( $? )) && return 1
 
-    declare _findToSearchIn="${argsArray[0]}"
-    array.slice -r _findOpts argsArray 1
+    declare _findOpts=("${argsArray[@]}")
+
+    if [[ -z "$_findToSearchIn" ]] && [[ -d "${argsArray[0]}" ]]; then
+        # If the dir to search through with `find` was passed as positional arg 1,
+        # then pop it out from the positional args
+        _findToSearchIn="${argsArray[0]}"
+        _findOpts=()
+
+        array.slice -r _findOpts argsArray 1
+    fi
 
     declare _findIgnoreDirsOptionName=' -o -name '
     declare _findIgnoreDirsOption=''
