@@ -86,6 +86,7 @@ parseArgs() {
         # e.g. \`declare _parseArgsRetVal=\"\$?\"\`
 
     Options:
+        -c  |   Allow reading options placed after positional args.
         -i  |   Don't capture/read from STDIN.
 
     Returns:
@@ -109,6 +110,7 @@ parseArgs() {
     "
 
     # Custom options for `parseArgs()` itself
+    declare _allowOptsAfterArgs=
     declare _parseStdin=true
 
     declare opt=
@@ -124,11 +126,14 @@ parseArgs() {
     #       esac
     #       shift # <-- Manually shift by one arg
     #   done
-    while getopts 'i' opt; do
+    while getopts 'ic' opt; do
         # OPTIND = Arg index (equivalent to $1, $2, etc.)
         # OPTARG = Variable set to the flag (e.g. `-i myArgValue` makes OPTARG=myArgValue)
         # ${!OPTIND} = Actual flag (e.g. `-i myArgValue` makes ${!OPTIND}='-d')
         case "$opt" in
+            c)
+                _allowOptsAfterArgs=true
+                ;;
             i)
                 _parseStdin=
                 ;;
@@ -409,7 +414,46 @@ parseArgs() {
         done
 
         if [[ -z "$optHandled" ]]; then
-            if [[ -n "$hasUnknownFlagHandler" ]]; then
+            # `opt` and `OPTARG` were manually parsed above, but that only works for known flags.
+            # Since we now need to parse an unknown flag, we don't know what format it took
+            # so we can't use the helpful manual parsing from above.
+            # e.g. We can't blindly use `OPTARG` b/c if the unknown flag has no args,
+            # then `OPTARG` would be the next flag after the unknown one.
+            declare unknownFlagIndex=$(( OPTIND - 1 ))
+            declare unknownFlag="${!unknownFlagIndex}"
+            # The next arg after the unknown flag - Either the flag arg, a different flag,
+            # or a positional (non-flag) arg to the parent function.
+            declare unknownFlagMaybeValueIndex=$OPTIND
+            declare unknownFlagMaybeValue="${!unknownFlagMaybeValueIndex}"
+            # The next next arg after the unknown flag - Either a flag after the unknown flag's
+            # arg (which we care about for using `shift`), or anything else (which we don't
+            # care about since it doesn't affect `shift`).
+            declare nextFlagMaybeIndex=$(( OPTIND + 1 ))
+            declare nextFlagMaybe="${!nextFlagMaybeIndex}"
+
+            if [[ -n "$_allowOptsAfterArgs" ]]; then
+                # If trying to parse args after an unknown one, then chances are, the parent function
+                # is trying to wrap another function and allow forwarding its flags to said function.
+                #
+                # `getopts` goes letter by letter, meaning that it will fail for functions that wrap
+                # other functions which break standard option format, e.g. using a single hyphen for
+                # long option names.
+                # For example, `find` uses `-maxdepth` instead of `--maxdepth`, which would result
+                # in `getopts` going letter-by-letter when iterating, e.g.
+                # `findWrapper --allowed-flag -maxdepth 3` would result in `m`, `a`, `x`, `d`, etc.
+                # each being iterated through individually.
+                #
+                # As such, we want to account for this by taking the whole arg as one and then continue
+                # on as if it were formatted properly.
+                # BUT only do so if the parent specifies this b/c otherwise function wrappers for
+                # single-letter flags with values, e.g. `grep -A5` will fail.
+                remainingArgs+=("$unknownFlagMaybeValue")
+
+                prevOptind=$OPTIND
+                (( OPTIND++ ))
+
+                continue
+            elif [[ -n "$hasUnknownFlagHandler" ]]; then
                 eval "$unknownFlagHandler"
 
                 if (( $OPTIND == $prevOptind )); then
@@ -439,23 +483,6 @@ parseArgs() {
                     # so just leave them as-is and let the parent handle them itself.
                     continue
                 fi
-
-                # `opt` and `OPTARG` were manually parsed above, but that only works for known flags.
-                # Since we now need to parse an unknown flag, we don't know what format it took
-                # so we can't use the helpful manual parsing from above.
-                # e.g. We can't blindly use `OPTARG` b/c if the unknown flag has no args,
-                # then `OPTARG` would be the next flag after the unknown one.
-                declare unknownFlagIndex=$(( OPTIND - 1 ))
-                declare unknownFlag="${!unknownFlagIndex}"
-                # The next arg after the unknown flag - Either the flag arg, a different flag,
-                # or a positional (non-flag) arg to the parent function.
-                declare unknownFlagMaybeValueIndex=$OPTIND
-                declare unknownFlagMaybeValue="${!unknownFlagMaybeValueIndex}"
-                # The next next arg after the unknown flag - Either a flag after the unknown flag's
-                # arg (which we care about for using `shift`), or anything else (which we don't
-                # care about since it doesn't affect `shift`).
-                declare nextFlagMaybeIndex=$(( OPTIND + 1 ))
-                declare nextFlagMaybe="${!nextFlagMaybeIndex}"
 
                 if [[ "$unknownFlag" == '-h' || "$unknownFlag" == '--help' ]]; then
                     # Make next iteration execute the "help" sequence by removing the handler
