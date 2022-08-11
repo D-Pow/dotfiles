@@ -853,6 +853,114 @@ zipSizeAfterUnzipped() {
 
 
 
+hashDir() {
+    declare USAGE="[OPTIONS...] [path...] [-- \`findIgnoreDirs\` OPTIONS...]
+    Hashes directories with SHA-256 since native commands like \`sha256sum\` can only hash files.
+
+    Does so by hashing all files in the directory, sorting them by name, and then
+    hashing that final output string.
+
+    Optionally, specify custom \`findIgnoreDirs\` options after a double-hyphen arg, \`--\` in
+    order to fine-tune what files count towards the final hash.
+    Useful for ignoring .git/node_modules, selectively finding the hash of only a subset of files
+    in the directory (e.g. dist/), etc.
+    "
+    declare _hashDirIncludeFiles
+    declare _hashDirIncludeDirs
+    declare _hashDirHashesFirst
+    declare argsArray
+    declare stdin
+    declare -A _hashDirOptions=(
+        ['f|filenames,_hashDirIncludeFiles']='Include individual file hashes in the output.'
+        ['d|directory-names,_hashDirIncludeDirs']='Include top-level directory names in the output.'
+        ['h|hashes-first,_hashDirHashesFirst']='Prints hashes before names in output; No effect without `-d` and/or `-f`.'
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _hashDirOptions "$@"
+    (( $? )) && return 1
+
+    declare _hashDirNoOptionsPassed=
+
+    if [[ -z "${_hashDirIncludeFiles}${_hashDirIncludeDirs}${_hashDirHashesFirst}" ]]; then
+        _hashDirNoOptionsPassed=true
+    fi
+
+    # `--` signifies to stop parsing options and forward args as positional ones, usually
+    # to an underlying process/command.
+    declare _hashDirFindOpts=()
+    declare _hashDirFindOptsSeparatorIndex="$(array.indexOf argsArray '--')"
+
+    if [[ -n "$_hashDirFindOptsSeparatorIndex" ]]; then
+        # Extract trailing args after the `--` to the `find` options array
+        array.slice -r _hashDirFindOpts argsArray $(( _hashDirFindOptsSeparatorIndex + 1 ))
+        # Extract leading args before the `--` to the args array for this function
+        array.slice -r argsArray argsArray 0 _hashDirFindOptsSeparatorIndex
+    fi
+
+    declare _hashDirAllPaths=("${stdin[@]}" "${argsArray[@]}")
+    declare _dirHashes=()
+
+    declare _hashDirPath
+    for _hashDirPath in "${_hashDirAllPaths[@]}"; do
+        declare _fileHashes=()
+
+        # Separate by newline for easier array creation
+        declare _origIFS="$IFS"
+        declare IFS=$'\n'
+        declare _filesToHash=($(findIgnoreDirs -p "$_hashDirPath" "${_hashDirFindOpts[@]}" -type f)) #  2>/dev/null
+        IFS="$origIFS"
+
+        declare _fileToHash
+        for _fileToHash in "${_filesToHash[@]}"; do
+            declare _fileHashAndName="$(sha256sum "$_fileToHash")"
+
+            _fileHashes+=("$_fileHashAndName")
+        done
+
+        # Avoid another for-loop by just joining the "hash\tname" entries by newlines
+        declare _fileHashesStr="$(array.join -s _fileHashes '\n')"
+        # Sort by "version" (i.e. alphanumeric) starting from the 2nd column onward
+        # `-k start[,end][options]` means that not specifying an end causes `sort` to continue
+        # checking subsequent columns if the previous ones were the same
+        declare _fileHashesSortedByFilename="$(echo "$_fileHashesStr" | sort -V -k 2)"
+        # Prevent inaccurate hashes due to `echo` appending newlines at the end of the output
+        declare _dirHash="$(echo -n "$_fileHashesSortedByFilename" | sha256sum | awk '{ print $1 }')"
+
+        if [[ -n "$_hashDirNoOptionsPassed" ]]; then
+            echo "$_dirHash"
+
+            continue
+        fi
+
+        if [[ -n "$_hashDirIncludeDirs" ]]; then
+            if [[ -z "$_hashDirHashesFirst" ]]; then
+                echo -e "$_hashDirPath\t$_dirHash"
+            else
+                echo -e "$_dirHash\t$_hashDirPath"
+            fi
+        fi
+
+        if [[ -n "$_hashDirIncludeFiles" ]]; then
+            if [[ -z "$_hashDirHashesFirst" ]]; then
+                _fileHashesSortedByFilename="$(echo "${_fileHashesSortedByFilename[@]}" | awk '{
+                    hash = $1
+                    $1 = ""
+
+                    line = sprintf("%s\t%s", $0, hash)
+                    gsub(/(^[ \t]+)|([ \t]+$)/, "", line)
+
+                    print(line)
+                }')"
+            fi
+
+            echo "$_fileHashesSortedByFilename"
+        fi
+    done
+}
+
+
+
 _copyCommand=
 _pasteCommand=
 
