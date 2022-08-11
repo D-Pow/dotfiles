@@ -298,6 +298,25 @@ array.slice() {
 }
 
 
+array.indexOf() {
+    declare -n _arrIndexOfArr="$1"
+    declare _arrIndexOfQuery="$2"
+
+    declare _arrIndexOfArrIndex
+    for _arrIndexOfArrIndex in "${!_arrIndexOfArr[@]}"; do
+        declare _arrIndexOfEntry="${_arrIndexOfArr[_arrIndexOfArrIndex]}"
+
+        if [[ "$_arrIndexOfEntry" == "$_arrIndexOfQuery" ]]; then
+            echo "$_arrIndexOfArrIndex"
+
+            return
+        fi
+    done
+
+    return 1
+}
+
+
 array.filter() {
     declare _retArrNameFiltered
     declare _filterIsEval
