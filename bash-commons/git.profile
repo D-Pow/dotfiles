@@ -408,9 +408,8 @@ gitPrShow() {
                 # Get the text itself
                 prInfoLine=prInfoArrayFlat[line]
 
-                # Strip leading/trailing spaces in-place (must be done in separate calls b/c `(a|b)` isnt understood)
-                gsub(/^[ \t]+/, "", prInfoLine)
-                gsub(/[ \t]+$/, "", prInfoLine)
+                # Strip leading/trailing spaces in-place
+                gsub(/(^[ \t]+)|([ \t]+$)/, "", prInfoLine)
 
                 # Split the line itself into an array to get the first entry (the PR number)
                 split(prInfoLine, prInfoLineArray)
