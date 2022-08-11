@@ -554,7 +554,9 @@ findIgnoreDirs() {
     # Ignored dirs are already quoted, but still need to quote the search query
     declare _findFinalCmd="find $_findToSearchIn $_findIgnoreDirsOption ${_findOpts[@]}"
 
-    eval "$_findFinalCmd"
+    # Silence the annoying warnings about `-maxdepth` is a global option that needs to be before
+    # others since it's not easily removed during arg-parsing without extra complex logic
+    eval "$_findFinalCmd" 2> >(awk '{ if (! /.*find: warning:/) { print($0); } }')
 }
 
 
