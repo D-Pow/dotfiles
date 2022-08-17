@@ -851,6 +851,20 @@ zipSizeAfterUnzipped() {
     unzip -Zt "$1"
 }
 
+zipSizeAfterGzipped() {
+    declare _fileToZip
+
+    for _fileToZip in "$@"; do
+        declare _fileSizeAfterGzipped="$(gzip -c "$_fileToZip" | wc -c)"
+
+        if (( $# > 1 )); then
+            echo "${_fileToZip}: $_fileSizeAfterGzipped"
+        else
+            echo "$_fileSizeAfterGzipped"
+        fi
+    done
+}
+
 
 
 hashDir() {
