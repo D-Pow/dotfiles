@@ -272,6 +272,60 @@ function getUrlSegments(url = '') {
 window.getUrlSegments = getUrlSegments;
 
 
+/**
+ * Hashes a string using the specified algorithm.
+ *
+ * Defaults to SHA-256. Available algorithms exist in the `hash.ALGOS` object.
+ *
+ * @param {string} str - String to hash.
+ * @param {typeof hash.ALGOS[keyof hash.ALGOS]} [algo] - Algorithm to use.
+ * @returns The hashed string.
+ *
+ * @see [Crypto.subtle hashing API]{@link https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest#converting_a_digest_to_a_hex_string}
+ * @see [Boilerplate crypto utils]{@link https://github.com/D-Pow/react-app-boilerplate/blob/master/src/utils/Crypto.ts}
+ */
+window.hash = async function hash(str, {
+    algo = hash.ALGOS.Sha256,
+} = {}) {
+    const validAlgorithms = new Set(Object.values(hash.ALGOS));
+
+    if (!validAlgorithms.has(algo)) {
+        throw new TypeError(`Error: Hash algorithm "${algo}" not supported. Valid values are: [ ${[ ...validAlgorithms ].join(', ')} ].`);
+    }
+
+    /* Encode to (UTF-8) Uint8Array */
+    const utf8IntArray = new TextEncoder().encode(str);
+    /* Hash the string */
+    const hashBuffer = await self.crypto.subtle.digest(algo, utf8IntArray);
+    /* Get hex string from buffer/byte array */
+    const hashAsciiHex = byteArrayToHexString(new Uint8Array(hashBuffer));
+
+    return hashAsciiHex;
+}
+hash.ALGOS = {
+    Sha1: 'SHA-1',
+    Sha256: 'SHA-256',
+    Sha384: 'SHA-384',
+    Sha512: 'SHA-512',
+};;
+
+/** @see [Boilerplate text utils]{@link https://github.com/D-Pow/react-app-boilerplate/blob/master/src/utils/Text.js} */
+window.byteArrayToHexString = function byteArrayToHexString(uint8Array, {
+    hexPrefix = '',
+    hexDelimiter = '',
+    asArray = false,
+} = {}) {
+    const hexStrings = [ ...uint8Array ].map(byte => byte.toString(16).padStart(2, '0'));
+    const hexStringsWithPrefixes = hexStrings.map(hexString => `${hexPrefix}${hexString}`);
+
+    if (asArray) {
+        return hexStringsWithPrefixes;
+    }
+
+    return hexStringsWithPrefixes.join(hexDelimiter);
+};
+
+
 /** @see [Boilerplate Date utils]{@link https://github.com/D-Pow/react-app-boilerplate/blob/master/src/utils/Dates.ts} */
 window.diffDateTime = function diffDateTime(
     earlier = new Date(),
