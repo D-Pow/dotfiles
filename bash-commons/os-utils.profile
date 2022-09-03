@@ -482,6 +482,48 @@ readEnvFile() {
 }
 
 
+getEnvEntries() {
+    declare USAGE="[OPTIONS...] <grep-options>
+    Gets the entry from \`env\`.
+    "
+    declare _envKeysAndVals
+    declare _envSortOutput
+    declare argsArray
+    declare -A _getEnvEntriesOptions=(
+        ['e|keys-and-values,_envKeysAndVals']="Output both key and value for queried results instead of just the value."
+        ['s|sort,_envSortOutput']="Sort the resulting query matches."
+        [':']=
+        ['?']=
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _getEnvEntriesOptions "$@"
+    (( $? )) && return 1
+
+    declare _getEnvEntriesGrepOptions=()
+    declare _getEnvEntriesQuery=()
+
+    array.slice -r _getEnvEntriesGrepOptions argsArray 0 -1   # all but last arg
+    array.slice -r _getEnvEntriesQuery argsArray -1   # only last arg
+
+    _getEnvEntriesQuery="${_getEnvEntriesQuery[0]}"
+
+    declare _getEnvEntriesQueryDelimiter="[^:$([[ -z "$_envKeysAndVals" ]] && echo '=')]+" # Separates PATH and key/val entries, `[^:=]`; Allow `=` if keys are desired, `[^:]`
+    declare _getEnvEntriesQuerySuffix='($|:)' # Separates PATH entries and/or the end of an entry
+
+    _getEnvEntriesQuery="${_getEnvEntriesQueryDelimiter}${_getEnvEntriesQuery}${_getEnvEntriesQueryDelimiter}${_getEnvEntriesQuerySuffix}"
+
+    # Note: Nest command inside string/var declaration to preserve newlines/similar whitespaces
+    declare _matchingEnvValues="$(env \
+        | egrep -o "${_getEnvEntriesGrepOptions[@]}" "${_getEnvEntriesQuery}" \
+        | sed -E 's/:$//g' \
+        | $([[ -n $_envSortOutput ]] && echo "sort -Vu" || echo "cat")
+    )"
+
+    echo -e "$_matchingEnvValues"
+}
+
+
 getAllCrlfFiles() {
     # find [args] -exec [command] "output from find" "necessary `-exec` terminator to show end of command"
     find . -not -type d -exec file "{}" ";" | grep CRLF
