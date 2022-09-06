@@ -894,17 +894,100 @@ zipSizeAfterUnzipped() {
 }
 
 zipSizeAfterGzipped() {
+    declare USAGE="[OPTIONS...] <path...>
+    Outputs the size of the path(s) after gzip-ing them.
+    "
+    declare _humanReadable
+    declare _outputIndividualFiles
+    declare argsArray
+    declare stdin
+    declare -A _zipAfterGzippedOptions=(
+        ['r|human-readable,_humanReadable']="Display output gzipped sizes in human-readable format."
+        ['f|files,_outputIndividualFiles']="Display individual files' gzipped size along with the directory."
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _zipAfterGzippedOptions "$@"
+    (( $? )) && return 1
+
+    declare _dirsToZip=("${stdin[@]}" "${argsArray[@]}")
+
+    if array.empty _dirsToZip; then
+        _dirsToZip=('.')
+    fi
+
+    declare _zippedIfsOrig="$IFS"
+    declare IFS=$'\n'
+
+    declare _zipSizeTotal=0
+    # Need to use separate map with string entries/newline separators since arrays aren't
+    # acceptable values
+    declare -A _zippedDirFileContents=()
+    declare -A _zippedDirNameSizeMap=()
+    declare -A _zippedFileNameSizeMap=()
+
+    declare _dirToZip
     declare _fileToZip
 
-    for _fileToZip in "$@"; do
-        declare _fileSizeAfterGzipped="$(gzip -c "$_fileToZip" | wc -c)"
+    for _dirToZip in "${_dirsToZip[@]}"; do
+        for _fileToZip in $(find "$_dirToZip" -type f); do
+            declare _fileSizeAfterGzipped="$(gzip -c "$_fileToZip" | wc -c)"
 
-        if (( $# > 1 )); then
-            echo "${_fileToZip}: $_fileSizeAfterGzipped"
-        else
-            echo "$_fileSizeAfterGzipped"
-        fi
+            (( _zipSizeTotal += _fileSizeAfterGzipped ))
+
+            _zippedDirNameSizeMap["$_dirToZip"]="$(( _zippedDirNameSizeMap["$_dirToZip"] + _fileSizeAfterGzipped ))"
+            _zippedFileNameSizeMap["$_fileToZip"]="$_fileSizeAfterGzipped"
+            _zippedDirFileContents["$_dirToZip"]+="$_fileToZip\n"
+        done
     done
+
+    declare _zippedDirsSorted=($(printf "%s\n" ${!_zippedDirNameSizeMap[@]} | sort))
+
+    if [[ -z "$_outputIndividualFiles" ]]; then
+        for _dirToZip in "${_zippedDirsSorted[@]}"; do
+            declare _dirToZipSize="${_zippedDirNameSizeMap["$_dirToZip"]}"
+
+            if [[ -n "$_humanReadable" ]]; then
+                _dirToZipSize="$(bytesReadable "$_dirToZipSize")"
+            fi
+
+            if (( ${#_zippedDirNameSizeMap[@]} == 1 )); then
+                echo "$_dirToZipSize"
+            else
+                echo "${_dirToZip}: $_dirToZipSize"
+            fi
+        done
+    else
+        for _dirToZip in "${_zippedDirsSorted[@]}"; do
+            declare _dirToZipSize="${_zippedDirNameSizeMap["$_dirToZip"]}"
+
+            if [[ -n "$_humanReadable" ]]; then
+                _dirToZipSize="$(bytesReadable "$_dirToZipSize")"
+            fi
+
+            echo "${_dirToZip}: $_dirToZipSize"
+
+            for _fileToZip in $(echo -e "${_zippedDirFileContents["$_dirToZip"]}"); do
+                declare _fileToZipSize="${_zippedFileNameSizeMap["$_fileToZip"]}"
+
+                if [[ -n "$_humanReadable" ]]; then
+                    _fileToZipSize="$(bytesReadable "$_fileToZipSize")"
+                fi
+
+                echo -e "${_fileToZip}: $_fileToZipSize"
+            done
+        done
+    fi
+
+    if (( ${#_zippedDirsSorted[@]} < 2 )); then
+        return
+    fi
+
+    if [[ -n "$_humanReadable" ]]; then
+        _zipSizeTotal="$(bytesReadable "$_zipSizeTotal")"
+    fi
+
+    echo "Total: $_zipSizeTotal"
 }
 
 
