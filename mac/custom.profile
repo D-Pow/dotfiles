@@ -221,6 +221,23 @@ getAppBinaryPath() {
     getAppInfo "$1" 'binary'
 }
 
+getMacAppDomains() {
+    declare _appNameOrDomainToSearch="${1:-\w}"
+
+    defaults domains | egrep -io "\b[^ ]*${_appDomainToSearch}[^ ]*\b"
+}
+
+getMacAppPath() {
+    # Basically a simpler version of the `mdfind`/`osascript`
+    #
+    # See:
+    #   - https://apple.stackexchange.com/questions/212445/the-location-of-plist-file-with-defaults
+    #   - https://apple.stackexchange.com/questions/19899/how-to-list-all-available-plist-keys-on-a-certain-domain-application-by-default
+    declare _appNameToSearch="${1:-\w}"
+
+    mdfind -name '.app' | egrep -i '\.(plist|app)$' | egrep -i "$_appNameToSearch"
+}
+
 
 
 resetJetbrains() {
