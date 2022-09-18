@@ -1,10 +1,38 @@
-/**** Fat jar ****/
+/**
+ * {@inheritDoc}
+ *
+ * Creates a "fat JAR" which bundles all libs/dependencies into the resulting
+ * {@code .jar} file.
+ *
+ * This has some trade-offs:
+ *
+ * Pros
+ *     - It allows end users to run the file instantly without having to install
+ *       its dependencies locally.
+ * Cons:
+ *     - Anytime you update your app, end users have to re-download all dependencies
+ *       again even if they haven't changed.
+ *     - You can't implement an "installer" system (i.e. downloading dependencies
+ *       from a parent "install manager" app separately, e.g. how Java itself is
+ *       usually installed) because there are no libs to download (they're already
+ *       bundled in the JAR), which results in a serial download instead of a parallel
+ *       one and slows down installs.
+ */
 task fatJar(type: Jar) {
     // Include sources from built-in Jar task
     from sourceSets.main.output
 
     manifest {
-        attributes('Main-Class':'<package.mainClass>')
+        attributes(
+            'Main-Class':'<package.mainClass>',
+            // TODO - Fill out the rest of the fields needed for a fully valid manifest.json
+            //  See:
+            //      - https://stackoverflow.com/questions/39406822/change-file-permission-by-gradle
+            // 'Implementation-Title': 'My App',
+            // 'Implementation-Version': "${version}",
+            // 'Main-Class':'com.mycompany.App',
+            // 'Class-Path': 'com.mycompany'
+        )
     }
 
     // Copy dependencies into jar
