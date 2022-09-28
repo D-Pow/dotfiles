@@ -1,1 +1,1 @@
-source /Users/dpowell/src/dotfile/.profile 'mac'
+source /Users/me/repositories/dotfiles/.profile 'mac'

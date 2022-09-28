@@ -1,7 +1,8 @@
 ### Which nested `mac/` environment's .profile should be sourced ###
 # Source it at the end to ensure all Mac defaults are included/defined first before company-/device-specific ones
 
-MAC_ENV='Nextdoor'
+_MAC_ENV_PERSONAL='Personal'
+MAC_ENV="$_MAC_ENV_PERSONAL"
 
 _macSpecificDir="$(thisDir)/$MAC_ENV"
 _macSpecificProfile="$_macSpecificDir/custom.profile"
@@ -16,7 +17,7 @@ alias editprofile="_editProfile '$_macSpecificProfile'"
 ### Program paths ###
 
 export SUBLIME_HOME=/Applications/Sublime\ Text.app/Contents/SharedSupport/bin
-export SUBLIME_DIR=/Users/dpowell1/Library/Application\ Support/Sublime\ Text/Packages/User/
+export SUBLIME_DIR=$HOME/Library/Application\ Support/Sublime\ Text/Packages/User/
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_291.jdk/Contents/Home/
 export TEXMFHOME=/Users/dpowell/texlive/2021/bin/universal-darwin
 
@@ -82,16 +83,18 @@ alias gpu='git push -u origin $(gitGetBranch) --no-verify'
 alias todo="subl '~/Desktop/ToDo.md'"
 
 
-_personalReposGitConfig="$(realpath "$dotfilesDir/../me/.gitconfig")"
+if [[ "$MAC_ENV" != "$_MAC_ENV_PERSONAL" ]]; then
+    _personalReposGitConfig="$(realpath "$dotfilesDir/../me/.gitconfig")"
 
-if ! [[ -f "$_personalReposGitConfig" ]]; then
-    # Allows overriding global .gitconfig by specifying the dirs where a different .gitconfig should be included in the global config.
-    #   See: https://stackoverflow.com/questions/8337071/different-gitconfig-for-a-given-subdirectory/60344116#60344116
-    echo "Add my custom .gitconfig file to $(dirname "$_personalReposGitConfig")/ and add the lines below AT THE END of the global .gitconfig to override Git configs for every repo in that directory. Copy everything from Linux's .gitconfig other than the \`[credential]\` section."
-    echo '```
-[includeIf "gitdir:~/src/me/"]
-    path = ~/src/me/.gitconfig
-```'
+    if ! [[ -f "$_personalReposGitConfig" ]]; then
+        # Allows overriding global .gitconfig by specifying the dirs where a different .gitconfig should be included in the global config.
+        #   See: https://stackoverflow.com/questions/8337071/different-gitconfig-for-a-given-subdirectory/60344116#60344116
+        echo "Add my custom .gitconfig file to $(dirname "$_personalReposGitConfig")/ and add the lines below AT THE END of the global .gitconfig to override Git configs for every repo in that directory. Copy everything from Linux's .gitconfig other than the \`[credential]\` section."
+        echo '```
+    [includeIf "gitdir:~/src/me/"]
+        path = ~/src/me/.gitconfig
+    ```'
+    fi
 fi
 
 
