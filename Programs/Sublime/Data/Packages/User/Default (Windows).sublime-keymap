@@ -3,8 +3,12 @@
     // { "keys": ["ctrl+alt+up"], "command": "select_lines", "args": {"forward": false} },
     // { "keys": ["ctrl+alt+down"], "command": "select_lines", "args": {"forward": true} },
 
-    /* Mac only, assumes use of Karabiner */
-    /* Also, change all the normal ones below this to: ctrl-->command, alt-->ctrl, super-->alt */
+    /* Mac only, assumes use of Karabiner.
+     * Also, change all the normal ones below this to: ctrl-->command, alt-->ctrl, super-->alt
+     * except:
+     *  - `ctrl[+shift]+tab`
+     *  - go-to definitions (requires manual mapping)
+     */
     // { "keys": ["command+shift+up"], "command": "swap_line_up" },
     // { "keys": ["command+shift+down"], "command": "swap_line_down" },
     // { "keys": ["ctrl+command+up"], "command": "select_lines", "args": {"forward": false} },
