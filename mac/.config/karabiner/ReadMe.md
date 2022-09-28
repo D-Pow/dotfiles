@@ -7,7 +7,7 @@ The best option out there for re-mapping keyboard/mouse buttons to custom functi
 * Make sure that `Terminal -> Preferences -> Profiles --> 'Use Option as Meta key'` is checked, otherwise the Option/Ctrl keys won't work for e.g. moving cursor by word.
 * **Disable `Spaces` in Mac keyboard shortcuts**
     - `System Preferences --> Keyboard --> Shortcuts --> Mission Control --> Move (left|right) a space`.
-    - Required to allow `Ctrl+(left|right)_arrow` work in JetBrains.
+        + Required to allow `Ctrl+(left|right)_arrow` work in JetBrains.
 * **Disable `Screenshots` in Mac keyboard shortcuts**
 * **Other**
     - `JetBrains --> Keymap --> Activate Next Window --> Command+Tilde`
