@@ -14,16 +14,12 @@ alias editprofile="_editProfile '$_macSpecificProfile'"
 
 
 
-### Program paths ###
-
-export SUBLIME_HOME=/Applications/Sublime\ Text.app/Contents/SharedSupport/bin
-export SUBLIME_DIR=$HOME/Library/Application\ Support/Sublime\ Text/Packages/User/
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_291.jdk/Contents/Home/
-export TEXMFHOME=/Users/dpowell/texlive/2021/bin/universal-darwin
-
 # Run: brew install ${_brewGnuUtils[@]}
 # Then, add `/usr/local/bin/bash` to `/etc/shells`
 # Then, set default bash for all users (including root): sudo chsh -s /usr/local/bin/bash
+#
+# Put this before other `PATH` modifications so standard GNU utils are available.
+#
 # See:
 #   List of things to install: https://github.com/fabiomaia/linuxify/blob/6290bfe581b2b4dacc8d5526e6157594a5b2b331/linuxify#L37
 #   Original StackOverflow thread: https://apple.stackexchange.com/questions/69223/how-to-replace-mac-os-x-utilities-with-gnu-core-utilities
@@ -55,7 +51,33 @@ BREW_GNU_UTILS_HOMES="`array.join -s _brewGnuUtils ':'`"
 
 _brewPathEntries="$(echo "$BREW_PATHS" | sed -E 's/( |\t)+/:/g')" # /usr/local/sbin and some others
 
-export PATH=$BREW_GNU_UTILS_HOMES:$JAVA_HOME:$SUBLIME_HOME:$TEXMFHOME:/usr/local/bin:$HOME/bin:$_brewPathEntries:$PATH
+export PATH="$BREW_GNU_UTILS_HOMES:$PATH"
+
+### Program paths ###
+
+export SUBLIME_HOME=/Applications/Sublime\ Text.app/Contents/SharedSupport/bin
+export SUBLIME_DIR=$HOME/Library/Application\ Support/Sublime\ Text/Packages/User/
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_291.jdk/Contents/Home/
+# TeX root dir
+export TEXROOT=/usr/local/texlive
+# The main TeX directory
+export TEXDIR="$(abspath $TEXROOT/2*)"
+# Executables for TeX
+export TEXBIN="$(abspath $TEXDIR/bin/*darwin*)"
+# Directory for site-wide local files
+export TEXMFLOCAL="$TEXROOT/texmf-local"
+# Directory for variable and automatically generated data
+export TEXMFSYSVAR="$TEXDIR/texmf-var"
+# Directory for local config
+export TEXMFSYSCONFIG="$TEXDIR/texmf-config"
+# Personal directory for variable and automatically generated data
+export TEXMFVAR="$(abspath $HOME/Library/texlive/2*/texmf-var 2>/dev/null)"  # Not always present on Mac
+# Personal directory for local config
+export TEXMFCONFIG="$(abspath $HOME/Library/texlive/2*/texmf-config 2>/dev/null)"  # Not always present on Mac
+# Directory for user-specific files
+export TEXMFHOME="$HOME/Library/texmf"
+
+export PATH=$JAVA_HOME:$SUBLIME_HOME:$TEXBIN:/usr/local/bin:$HOME/bin:$_brewPathEntries:$PATH
 
 
 # Colored terminal
