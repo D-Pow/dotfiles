@@ -55,9 +55,9 @@ export PATH="$BREW_GNU_UTILS_HOMES:$PATH"
 
 ### Program paths ###
 
-export SUBLIME_HOME=/Applications/Sublime\ Text.app/Contents/SharedSupport/bin
-export SUBLIME_DIR=$HOME/Library/Application\ Support/Sublime\ Text/Packages/User/
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_291.jdk/Contents/Home/
+export SUBLIME_HOME="/Applications/Sublime Text.app/Contents/SharedSupport/bin"
+export SUBLIME_DIR="$HOME/Library/Application Support/Sublime Text/Packages/User"
+export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_291.jdk/Contents/Home"
 # TeX root dir
 export TEXROOT=/usr/local/texlive
 # The main TeX directory
@@ -77,7 +77,7 @@ export TEXMFCONFIG="$(abspath $HOME/Library/texlive/2*/texmf-config 2>/dev/null)
 # Directory for user-specific files
 export TEXMFHOME="$HOME/Library/texmf"
 
-export PATH=$JAVA_HOME:$SUBLIME_HOME:$TEXBIN:/usr/local/bin:$HOME/bin:$_brewPathEntries:$PATH
+export PATH="$JAVA_HOME:$SUBLIME_HOME:$TEXBIN:/usr/local/bin:$HOME/bin:$_brewPathEntries:$PATH"
 
 
 # Colored terminal
