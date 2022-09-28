@@ -54,10 +54,12 @@ _brewPathEntries="$(echo "$BREW_PATHS" | sed -E 's/( |\t)+/:/g')" # /usr/local/s
 export PATH="$BREW_GNU_UTILS_HOMES:$PATH"
 
 ### Program paths ###
+# Note: The `abspath` calls using glob-stars need to be unquoted so the glob is executed rather than
+# interpreted as part of the filename/path.
 
 export SUBLIME_HOME="/Applications/Sublime Text.app/Contents/SharedSupport/bin"
 export SUBLIME_DIR="$HOME/Library/Application Support/Sublime Text/Packages/User"
-export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_291.jdk/Contents/Home"
+export JAVA_HOME="$(abspath /Library/Java/JavaVirtualMachines/jdk*/Contents/Home)"
 # TeX root dir
 export TEXROOT=/usr/local/texlive
 # The main TeX directory
