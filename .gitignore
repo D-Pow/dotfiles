@@ -4,6 +4,7 @@
 # IDE temp files
 *.sublime-project*
 *.sublime-workspace*
+.idea/
 
 # Code/compilation temp files
 .pyc
