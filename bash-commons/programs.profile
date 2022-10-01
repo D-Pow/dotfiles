@@ -366,17 +366,22 @@ dockerFindContainer() {
     # Enhanced `docker ps` that filters by any field instead of only by name, ID, image, etc.
     # and allows regex queries.
     # Docs: https://docs.docker.com/engine/reference/commandline/ps
-    declare _dockerPsArgs=("${argsArray[@]}")
-    declare _dockerPsOpts
-    declare _dockerPsQueryArray
+    declare -A _dockerFindContainerOpts=(
+        [':']=
+        ['?']=
+    )
+    declare argsArray
 
     parseArgs _dockerFindContainerOpts "$@"
     (( $? )) && return 1
 
+    declare _dockerPsOpts
+    declare _dockerPsQueryArray
+
     # All args before the last one
-    array.slice -r _dockerPsOpts _dockerPsArgs 0 -1
+    array.slice -r _dockerPsOpts argsArray 0 -1
     # Last arg is image name query string
-    array.slice -r _dockerPsQueryArray _dockerPsArgs -1
+    array.slice -r _dockerPsQueryArray argsArray -1
 
     declare _dockerPsQuery="${_dockerPsQueryArray[0]}"
 
