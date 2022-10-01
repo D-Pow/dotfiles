@@ -128,6 +128,40 @@ bytesReadable() {
 }
 
 
+mkdirs() {
+    declare _allDirs=("$@")
+
+    declare _dirToCreate
+
+    for _dirToCreate in "${_allDirs[@]}"; do
+        # Native implementation
+        mkdir -p "$_dirToCreate"
+
+        if ! (( $? )); then
+            # Successful nested-dir creation, continue to the next dir tree
+            continue
+        fi
+
+        # Manual implementation, iff native call fails
+        declare _dirsToCreate=
+
+        array.fromString -d '/' -r _dirsToCreate "$_dirToCreate"
+
+        # Use `=` to reset variable, avoiding carry-over from the previous iteration
+        #   Not sure why it's carry-over, but it is
+        declare _nestedParentDir=
+        declare _nestedDir=
+        for _nestedDir in "${_dirsToCreate[@]}"; do
+            mkdir "${_nestedParentDir}${_nestedParentDir:+/}${_nestedDir}" 2>/dev/null # ignore errors from dirs already existing
+
+            _nestedParentDir+="${_nestedParentDir:+/}${_nestedDir}"
+        done
+
+        echo "${_dirToCreate}"
+    done
+}
+
+
 aggregate() {
     # See: https://www.unix.com/shell-programming-and-scripting/51129-column-sum-group-uniq-records.html
     # TODO Allow aggregating by multiple columns
