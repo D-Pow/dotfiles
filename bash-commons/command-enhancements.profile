@@ -636,11 +636,23 @@ if ! isDefined tree; then
 
         shift $(( OPTIND - 1 ))
 
-        declare path="$1"
+        declare _pathsToDisplayArgs=("$@")
 
-        if [[ -z "$path" ]]; then
-            path='.'
+        if array.empty _pathsToDisplayArgs; then
+            _pathsToDisplayArgs=('.')
         fi
+
+        declare origIFS="$IFS"
+        declare IFS=$'\n'
+
+        declare _pathsToDisplay=()
+        declare _pathToDisplay=
+        for _pathToDisplay in "${_pathsToDisplayArgs[@]}"; do
+            # Convert all supplied paths to absolute paths for better resolution
+            _pathsToDisplay+=("$(abspath "$_pathToDisplay" | trim)")
+        done
+
+        IFS="$origIFS"
 
         declare _treeDepthFindOpts="${_treeDepth:+-maxdepth $_treeDepth}"
         declare _treeIgnoreDirsFindOpts=''
@@ -652,12 +664,26 @@ if ! isDefined tree; then
             _treeIgnoreDirsFindOpts="-i '`array.join -s _treeIgnoreDirs "' -i '"`'"
         fi
 
+        declare _numPathsToDisplay="$(array.length _pathsToDisplay)"
+
+        if (( $_numPathsToDisplay > 1 )); then
+            for _pathToDisplay in "${_pathsToDisplay[@]}"; do
+                tree $_treeIgnoreDirsFindOpts ${_treeDepth:+-d $_treeDepth} "$_pathToDisplay"
+
+                if [[ "$_pathToDisplay" != "${_pathsToDisplay[$(( _numPathsToDisplay - 1)) ]}" ]]; then
+                    echo  # Add extra spacing between path entries
+                fi
+            done
+
+            return
+        fi
+
         # `cd` into the directory to avoid extra slashes/nested `| ` text from appearing
         #   e.g. `tree ../dir/` would result in `find ../dir/` being called and resulting file/dir entries
         #   being printed as `../dir/file.txt` --> `| ├─file.txt` instead of `├─file.txt`
         # `find` doesn't add a trailing slash on directories by default, so add them manually via `printf`
         declare allEntriesWithTrailingSlashOnDirsDirs="$(
-            cd "$path"
+            cd "$_pathsToDisplay"
             findIgnoreDirs $_treeIgnoreDirsFindOpts . $_treeDepthFindOpts -type d -exec sh -c "'printf \"\$0/\n\"'" {} '\;' -or -print 2>/dev/null
         )"
         # Remove duplicate `//` when runing `tree someDir/` (no double slashes with `tree someDir`)
@@ -671,7 +697,7 @@ if ! isDefined tree; then
         #   e.g. `| | file.txt` --> `| ├─file.txt`
         declare parentDirsReplacedWithTreeDelimiters="`echo "$normalizedPaths" | sed -E 's#[^/]*/([^/]*/$)?#| \1#g; s#\| ([^|])#├─\1#g'`"
         # Replace first line of output with the user-specified path since it's erased in the sed commands above
-        declare firstLineReplacedWithParentPath="`echo "$parentDirsReplacedWithTreeDelimiters" | sed -E "1 s|^.*$|$path|"`"
+        declare firstLineReplacedWithParentPath="`echo "$parentDirsReplacedWithTreeDelimiters" | sed -E "1 s|^.*$|$_pathToDisplay|"`"
 
         echo "$firstLineReplacedWithParentPath"
     }
