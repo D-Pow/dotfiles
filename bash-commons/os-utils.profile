@@ -311,6 +311,56 @@ listopenports() {
     eval "${_listopenportsCmd[@]}"
 }
 
+listnetworkdevices() {
+    # -sL = List devices (don't execute any commands on them)
+    # --min-parallelism = Force `nmap` to be more performant via multithreading
+    #   See:
+    #       - https://stackoverflow.com/questions/32259953/how-to-make-nmap-command-steady-and-the-fastest-possible
+    #       - https://superuser.com/questions/261818/how-can-i-list-all-ips-in-the-connected-network-through-terminal-preferably
+    # egrep = Remove superfluous STDOUT info
+    declare _localIpAddress="$(getip -l)"
+    # e.g. `192.168.0.0/24` or `10.10.7.0/24`
+    declare _lanIpAddressRange="$(getip -l | sed -E 's/\.[0-9]+$/.0/')/24"
+
+    declare _listWithoutParentheses=
+    declare _listVerbose=
+    declare argsArray=
+    declare USAGE="[OPTIONS...] [nmap-options...]
+    Shows all devices on the same LAN network as the local computer.
+    "
+    declare -A _listNetworkOpts=(
+        ['q|quiet,_listWithoutParentheses']='List devices without parentheses and other info.'
+        ['v|verbose,_listVerbose']='Show performance stats from `nmap`'
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _listNetworkOpts "$@"
+    (( $? )) && return 1
+
+    declare _nmapOpts="${argsArray[@]}"
+
+    declare _allDevicesStdout="$(
+        nmap -sL --min-parallelism 100 $_nmapOpts "$_lanIpAddressRange" \
+            | egrep -iv '^(starting nmap)|(nmap scan report for (\d{1,3}\.){3}\d{1,3}$)'
+    )"
+
+    if [[ -n "$_listWithoutParentheses" ]]; then
+        # Strip parentheses from IP addresses, then remove all `nmap` performance output
+        _allDevicesStdout="$(
+            echo "$_allDevicesStdout" \
+                | esed 's/\((([0-9]{1,3}\.){3}[0-9]{1,3})\)$/\1/' \
+                | egrep -io --color=never '[^\s\t\n\r]+ [0-9.]+$'
+        )"
+    elif [[ -n "$_listVerbose" ]]; then
+        : # do nothing
+    else
+        # Remove final `nmap` performance output line
+        _allDevicesStdout="$(echo "$_allDevicesStdout" | trim -b 1)"
+    fi
+
+    echo "$_allDevicesStdout"
+}
+
 getParentPid() {
     ps -o ppid= ${1:-$$} | trim
 }
