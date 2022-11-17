@@ -1,3 +1,4 @@
+# git log --stat --graph --first-parent $(gitGetBranch) --after='2022-06-03' --before='2022-06-06'
 openGitMergeConflictFilesWithSublime() {
     subl -n $(gitGetBothModified)
 }
@@ -13,38 +14,36 @@ gitIgnorePathsArgs() {
     # For ignoring files:
     #   `:(top)` = git root (shorthand: `.` but only if in root dir)
     #   `:(exclude)myPath` = path to exclude (shorthand: `:!myPath`)
-    # Ref: https://stackoverflow.com/a/39937070/5771107
+    # See:
+    #   - https://css-tricks.com/git-pathspecs-and-how-to-use-them
+    #   - https://stackoverflow.com/a/39937070/5771107
     declare USAGE="[OPTIONS...] <paths...>
     Generates the args required to ignore certain paths in git commands, esp \`diff\`, \`status\`, etc.
     "
-    declare _gitIgnorePaths=()
-    declare argsArray
-    declare -A _gitIgnorePathsArgsOptions=(
-        ['i|ignore:,_gitIgnorePaths']="Ignore the specified paths in git commands."
+    declare _gitPathsToScan=()
+    declare argsArray=()
+    declare -A _gitPathsToIgnoreOptions=(
+        ['p|path:,_gitPathsToScan']="Add path to scan in Git."
         ['USAGE']="$USAGE"
     )
 
-    parseArgs _gitIgnorePathsArgsOptions "$@"
+    parseArgs _gitPathsToIgnoreOptions "$@"
     (( $? )) && return 1
-
-    declare _gitPathsToScan=("${argsArray[@]}")
 
     if array.empty _gitPathsToScan; then
         _gitPathsToScan=("':(top)'")
     fi
 
-    declare _gitIgnorePathsArgs
-    array.map -r _gitIgnorePathsArgs _gitIgnorePaths "echo \"':(exclude)\$value'\""
+    declare _gitPathsToIgnore=("${argsArray[@]}")
+    declare _gitPathsToIgnoreCommand=()
 
-    if [[ -z "$_gitIgnorePathsArgs" ]] || array.empty _gitIgnorePathsArgs; then
-        return
-    fi
+    array.map -r _gitPathsToIgnoreCommand _gitPathsToIgnore "echo \"':(exclude)\$value'\""
 
     # TODO Will likely require `eval $cmd -- <text below>` because
     # it doesn't currently work with ANY combination of quotes above, below,
     # in between, or a removal of `-r retArray` in the above `array.map` call.
     # TODO `:(top)` doesn't work
-    echo "${_gitPathsToScan[@]}" "${_gitIgnorePathsArgs[@]}"
+    echo "${_gitPathsToScan[@]}" "${_gitPathsToIgnoreCommand[@]}"
 }
 
 
@@ -200,6 +199,43 @@ gitGetIgnoredFiles() {
 
 
     "${_ignoredFilesCmd[@]}"
+}
+
+
+gitSubmodulesClone() (
+    declare _gitSubmodulesCloneUsage="${FUNCNAME[0]} [-n|--new URL] [-r|--recurse] [submodule-paths]...
+    Initializes submodules for use in your repo. Can be used both when newly cloning a root repo and when inside an existing root.
+
+    See:
+        Overview: https://git-scm.com/book/en/v2/Git-Tools-Submodules
+        Commands: https://git-scm.com/docs/git-submodule
+    "
+    declare _newRepo
+    declare _recurseThroughSubmodules
+    declare argsArray
+    declare -A optionConfig=(
+        ['n|new,_newRepo']="Clones a new repo, recursing through and cloning all containing submodules"
+        ['r|recurse,_recurseThroughSubmodules']=""
+        [':']=
+    )
+
+
+    declare submodulePaths=("$@")
+
+    if array.empty submodulePaths; then
+        echo
+    fi
+)
+# https://git-scm.com/book/en/v2/Git-Tools-Submodules#_working_on_a_submodule
+gitSubmodulesUpdate() {
+    # `update` is used for any non-commit-based operation (e.g. checkout, rebase, merge, set-url, etc.).
+    # `--init` makes both the submodule dir and `.gitmodules` file sync up (so remote/local changes to either are reflected in the other).
+    #   It'll also initialize `submodule/.git/` during initial root-repo cloning.
+    #   Thus, whenever calling `update`, it's recommended to add `--init`. See: https://git-scm.com/book/en/v2/Git-Tools-Submodules#:~:text=Note%20that%20to%20be%20on%20the%20safe%20side%2C%20you%20should%20run%20git%20submodule%20update%20with%20the%20%2D%2Dinit%20flag%20in%20case%20the%20MainProject%20commits%20you%20just%20pulled%20added%20new%20submodules%2C%20and%20with%20the%20%2D%2Drecursive%20flag%20if%20any%20submodules%20have%20nested%20submodules.
+    #
+    # See also:
+    #   - https://stackoverflow.com/questions/5542910/how-do-i-commit-changes-in-a-git-submodule
+    echo
 }
 
 
@@ -758,7 +794,7 @@ alias   gld='gl -p' # show diff in git log (i.e. detailed `git blame`). Choose s
 alias   glo='gl --oneline'
 alias   gla='gl --oneline --all'
 alias   glb='gl --first-parent $(gitGetBranch)' # only show this branch's commits
-alias   gls='gl --grep'
+alias   gls='gl --grep'  # See: https://stackoverflow.com/questions/7124914/how-to-search-a-git-repository-by-commit-message/7124949#7124949
 alias  glsd='gld --grep'
 alias    gp='git push'
 alias   gpu='git push -u origin $(gitGetBranch)'

@@ -73,6 +73,47 @@ filename() {
 }
 
 
+# _parentDir=node_modules
+# _dirFilterGlob='*cypress*'
+# -i node_modules
+filesContaining() {
+    declare _parentDir=
+    declare _dirFilterGlob=
+    declare _ignoredDirs=()
+    declare _fileToParse=
+    declare _parseJsonFile=
+    declare -A _filesContainingOptions=(
+        ['p|root-dir,_parentDir']='Top-level directory to search in (default: .).'
+        ['d|nested-dir,_dirFilterGlob']='Glob specifying a restricted set of nested directories to search in.'
+        ['i|ignore,_ignoredDirs']='Nested directories to ignore when searching.'
+        ['f|file,_fileToParse']='File within the nested directories to parse for specific string(s).'
+        ['j|json,_parseJsonFile']='Parse the files as JSON rather than plain text.'
+    )
+
+    declare _filteredDirs=($(find "$_parentDir" -type d ${_dirFilterGlob:+-iname "$_dirFilterGlob"}))
+    declare _ignoredDirsOptions
+
+    array.map -r _ignoredDirsOptions _ignoredDirs 'echo "-i \"$value\""'
+
+    declare _nestedDir
+    for _nestedDir in "${_filteredDirs[@]}"; do
+        declare _matchingFiles=($(findIgnoreDirs -i node_modules "$_nestedDir" -name package.json))
+
+        declare _matchingFile
+        for _matchingFile in "${_matchingFiles[@]}"; do
+            jq -r "try
+                [
+                    (.dependencies | to_entries[]),
+                    (.devDependencies | to_entries[])
+                ][]
+                | select(.key | test(\"cypress\"))
+                | .value
+            " $_matchingFile
+        done
+    done
+}
+
+
 timestamp() {
     # Creates a readable timestamp using all the useful fields and none of the useless ones.
     # e.g. `12/31/2020-15:31:05_(EST)`
@@ -80,6 +121,11 @@ timestamp() {
     # Refs:
     #   https://stackoverflow.com/questions/17066250/create-timestamp-variable-in-bash-script/69400542#69400542
     date '+%m/%d/%Y-%H:%M:%S_(%Z)'
+}
+
+setLogLevel() {
+    echo 'TODO'
+    # See: https://stackoverflow.com/questions/36002654/create-quiet-mode-by-supress-stdout-bash-script
 }
 
 
@@ -101,11 +147,11 @@ bytesReadable() {
     declare USAGE="[OPTIONS...] <input-or-stdin...>
     Converts numbers from bytes to readable sizes (B, KB, MB, GB, etc.).
     "
-    declare _bytesReadableDecimalPlaces
+    declare _bytesReadableDecimalPlaces=
     declare _bytesReadableDecimalPlacesDefault=2
-    declare _bytesReadableRemoveSpace
-    declare argsArray
-    declare stdin
+    declare _bytesReadableRemoveSpace=
+    declare argsArray=
+    declare stdin=
     declare -A _bytesReadableOptions=(
         ['d|decimals:,_bytesReadableDecimalPlaces']="Number of decimal places to round to (default: $_bytesReadableDecimalPlacesDefault)."
         ['s|no-spaces,_bytesReadableRemoveSpace']="Remove the space between file size and unit."
@@ -159,6 +205,12 @@ mkdirs() {
 
         echo "${_dirToCreate}"
     done
+}
+
+
+accumulate() {
+    # TODO - Look at `zipSizeAfterGzipped`
+    echo
 }
 
 
@@ -250,6 +302,7 @@ listprocesses() {
     declare _psResults="$(echo "$_psOutput" | tail -n +2)"
     # Options for `grep -[PE]`
     declare _egrepOptions="${argsArray[@]}"
+    # array.toString _psCommand >&2
 
     if [[ -n "$_egrepOptions" ]]; then
         # Print info for the desired search query.
@@ -277,6 +330,9 @@ listopenports() {
         case "$opt" in
             s)
                 _listopenportsCmd+=('sudo')
+                ;;
+            ?)
+                continue
                 ;;
         esac
     done
@@ -358,7 +414,25 @@ listnetworkdevices() {
         _allDevicesStdout="$(echo "$_allDevicesStdout" | trim -b 1)"
     fi
 
+    _allDevicesStdout="$(echo "$_allDevicesStdout" | trim)"
+
+    if echo "$_allDevicesStdout" | egrep -q '\S'; then
+        echo "$_allDevicesStdout"
+    else
+        : # Don't print anything if only whitespace is emitted
+    fi
+
     echo "$_allDevicesStdout"
+}
+
+
+findPids() {
+    # TODO Remove PPID from output, i.e. searching for `111` will return both bottom entries
+    #   USER  PID  PPID  COMMAND
+    #   me    000     1  -bash
+    #   me    111   000  setup_project.sh
+    #   me    222   111  npm install
+    listprocesses "$@" | awk '{ print $2 }'
 }
 
 getParentPid() {
@@ -397,11 +471,13 @@ ancestorProcesses() {
 
     while (( _currentPid != 1 )) && (( _numGenerations != 0 )); do
         _ancestorPids+=("$_currentPid")
+        # --cols $_ancestorProcessesHeaderLength
         _ancestorProcessesDetails+="$(
             listprocesses -a "-o pid= $_currentPid" \
             | trim -t 1 \
             | awk '{ $NF=""; print $0 }' # Remove trailing `-o pid` output since it duplicates the PID column. Only needed b/c primitive Mac doesn't support `--pid 123,456,789` format even with Brew's newest Bash v5
         )\n"
+        # echo -e "_ancestorProcessesDetails: $_ancestorProcessesDetails"
         _currentPid="$(getParentPid $_currentPid)"
         _numGenerations=$(( _numGenerations - 1 ))
     done
@@ -409,6 +485,19 @@ ancestorProcesses() {
     if (( ${#_ancestorPids[@]} < 1 )); then
         return 1
     fi
+
+    # echo "$_ancestorProcessesHeader" | column -t -c "$_ancestorProcessesHeaderLength"
+
+    # declare _ancestorPid
+    # for _ancestorPid in "${_ancestorPids[@]}"; do
+    #     echo "_ancestorPid: $_ancestorPid"
+    #     # listprocesses -a "-o pid= $_ancestorPid" | trim -t 1 | column -t -c "$_ancestorProcessesHeaderLength"
+    # done
+
+    declare _ancestorPidsRegex="$(printf '(%s)|' "${_ancestorPids[@]}" | sed -E 's/.$//')"
+
+    # echo "PID hierarchy (${#_ancestorPids[@]}): ${_ancestorPids[@]}"
+    # echo "_ancestorPidsRegex: $_ancestorPidsRegex"
 
     # `-l columnLength` ensures `column` only formats the entries before the specified column length
     # in `-c` such that entries beyond the length are printed as-is (i.e. not spaced evenly).
@@ -565,7 +654,7 @@ readEnvFile() {
     done < "$_envFile"
 }
 
-
+# ( declare allJavaPaths=($(whereis java)); declare path; for path in "${allJavaPaths[@]}"; do if [[ -d "$path" ]]; then find "$path" -type f -iwholename '*/tools.jar*'; fi; done; )
 getEnvEntries() {
     declare USAGE="[OPTIONS...] <grep-options>
     Gets the entry from \`env\`.
@@ -971,6 +1060,114 @@ getBgCmdJobId() {
 }
 
 
+_parallel() (
+    # TODO - Finish this. This was the starter code that's very incomplete but is a good launchpad
+    declare tmpFile="$(mktemp)"
+    declare FD=
+
+    exec {FD}<>"$tmpFile"
+
+    closeCmd="eval \"exec $FD>&-\""
+
+    trap "$closeCmd && lah /dev/fd" EXIT QUIT INT TERM
+
+    echo blah >> "$tmpFile"
+    lah /dev/fd
+    echo "FD: $FD - tmpFile: $tmpFile - FileContents: $(cat "$tmpFile")"
+    echo "closeCmd: $closeCmd"
+    lah /dev/fd
+    echo "tmpFile: $(lah "$tmpFile")"
+)
+parallel() (
+    # See: https://stackoverflow.com/questions/965053/extract-filename-and-extension-in-bash
+    declare USAGE="[OPTION]... <cmdStrings>...
+    Runs all terminal commands separately in parallel, and returns the total exit code of each of them
+    summed together.
+
+    Outputs all STD(OUT|ERR) to the respective receiving pipe as normal.
+    "
+    declare argsArray
+    declare stdin
+    declare -A _parallelOptions=(
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _parallelOptions "$@"
+    (( $? )) && return 1
+
+    declare _parallelCmds=("${stdin[@]}" "${argsArray[@]}")
+
+    declare _parallelPids=()
+
+    declare _parallelCmd
+    for _parallelCmd in "${_parallelCmds[@]}"; do
+        echo "COMMAND: $_parallelCmd"
+        eval "$_parallelCmd" &
+
+        _parallelPids+=($!)
+    done
+
+    declare _parallelSubProcsExitCodesTotal=0
+
+    declare _parallelSubProcPid=
+    for _parallelSubProcPid in "${_parallelPids[@]}"; do
+        # Wait for each individual PID in order to get its exit code
+        wait "$_parallelSubProcPid"
+
+        declare _parallelSubProcExitCode="$?"
+
+        (( _parallelSubProcsExitCodesTotal += $_parallelSubProcExitCode ))
+    done
+
+    # return $_parallelSubProcExitCode
+    exit $_parallelSubProcExitCode
+
+    declare _parallelSubProcExitCode
+    for _parallelSubProcExitCode in "${_parallelPids[@]}"; do
+        (( _parallelCmdsExitCodeTotal += $_parallelSubProcExitCode ))
+    done
+
+    wait "${_parallelPids[@]}"
+
+    echo "_parallelCmdsExitCodeTotal=$_parallelCmdsExitCodeTotal"
+
+    exit $_parallelCmdsExitCodeTotal
+
+
+    exit 2 &
+
+    # wait $!
+    _parallelPids+=($?)
+
+    exit 7 &
+
+    # wait $!
+    _parallelPids+=($?)
+
+    exit 3 &
+
+    # wait $!
+    _parallelPids+=($?)
+
+    echo "$(jobs -l)"
+
+    wait
+
+    echo "$(jobs -l)"
+
+    declare exitCodeTotal=0
+
+    declare subProcExitCode=
+    for subProcExitCode in "${_parallelPids[@]}"; do
+        (( exitCodeTotal += $subProcExitCode ))
+    done
+
+    echo "exitCodeTotal=$exitCodeTotal"
+
+    exit $exitCodeTotal
+)
+
+
 
 zipSizeAfterUnzipped() {
     # See: https://unix.stackexchange.com/questions/229931/how-to-know-how-much-space-an-uncompressed-zip-will-take/229936#229936
@@ -1073,6 +1270,12 @@ zipSizeAfterGzipped() {
 
     echo "Total: $_zipSizeTotal"
 }
+
+
+
+# TODO: https://askubuntu.com/questions/442997/how-can-i-convert-audio-from-ogg-to-mp3
+# ( IFS=$'\n'; for file in $(find . -iname '*.ogg'); do fullPath="$file"; path=$(echo "$file" | awk '{ print $1 }' | sed -E 's|/[^/]+$||'); file=$(echo "$file" | sed -E 's|(^.*/)([^/]+)\.ogg$|\2|g'); echo "Path: ($path) File: ($file)"; done; )
+# Use --parents to make `mv` create nested dirs: https://stackoverflow.com/a/547927/5771107
 
 
 
@@ -1498,4 +1701,3 @@ _autocompleteRepos() {
 # The easiest way to handle this would have been `-o filenames`, except that caused the issues above
 # where the last word in a directory with spaces would be swapped out unexpectedly.
 complete -F _autocompleteRepos -o nospace 'repos'
-

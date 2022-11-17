@@ -60,6 +60,7 @@ export PATH="$BREW_GNU_UTILS_HOMES:$PATH"
 export SUBLIME_HOME="/Applications/Sublime Text.app/Contents/SharedSupport/bin"
 export SUBLIME_DIR="$HOME/Library/Application Support/Sublime Text/Packages/User"
 export JAVA_HOME="$(abspath /Library/Java/JavaVirtualMachines/jdk*/Contents/Home)"
+export ANDROID_ADB_CLI_HOME="$HOME/android-skd-cli-platform-tools"
 # TeX root dir
 export TEXROOT=/usr/local/texlive
 # The main TeX directory
@@ -78,8 +79,16 @@ export TEXMFVAR="$(abspath $HOME/Library/texlive/2*/texmf-var 2>/dev/null)"  # N
 export TEXMFCONFIG="$(abspath $HOME/Library/texlive/2*/texmf-config 2>/dev/null)"  # Not always present on Mac
 # Directory for user-specific files
 export TEXMFHOME="$HOME/Library/texmf"
+# Ruby
+export PATH="/usr/local/opt/ruby/bin:$PATH"
+export LDFLAGS="-L/usr/local/opt/ruby/lib ${LDFLAGS}"
+export CPPFLAGS="-I/usr/local/opt/ruby/include ${CPPFLAGS}"
+# OpenSSL
+export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
+export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib ${LDFLAGS}"
+export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include ${CPPFLAGS}"
 
-export PATH="$JAVA_HOME:$SUBLIME_HOME:$TEXBIN:/usr/local/bin:$HOME/bin:$_brewPathEntries:$PATH"
+export PATH="$JAVA_HOME:$SUBLIME_HOME:$TEXBIN:$ANDROID_ADB_CLI_HOME:/usr/local/bin:$HOME/bin:$_brewPathEntries:$PATH"
 
 
 # Colored terminal
@@ -132,7 +141,7 @@ cf() {
 
 alias getAllApps=`mdfind "kMDItemKind == 'Application'"`
 
-getAppInfo() {
+getMacAppInfo() {
     declare USAGE="${FUNCNAME[0]} [-f] <app-name>
     Gets information about an app on Mac.
     Helps address some pain points about Mac's shortcomings when compared to Linux,
@@ -207,7 +216,7 @@ getAppInfo() {
     #     or `mdfind -name lsregister`
     declare appId="$(osascript -e "id of app \"$app\"")"
 
-    if ! [[ -z "${appId}" ]]; then
+    if [[ -n "${appId}" ]]; then
         declare appPath="$(mdfind "kMDItemCFBundleIdentifier == $appId" | head -n 1)"
 
         if ! [[ -z "${appPath}" ]]; then
@@ -244,14 +253,14 @@ getAppInfo() {
     return 1  # can't do `exit 1` since this is in .profile (instead of a script file) and `exit` would close the terminal
 }
 
-getAppBinaryPath() {
-    getAppInfo "$1" 'binary'
+getMacAppBinaryPath() {
+    getMacAppInfo "$1" 'binary'
 }
 
 getMacAppDomains() {
     declare _appNameOrDomainToSearch="${1:-\w}"
 
-    defaults domains | egrep -io "\b[^ ]*${_appDomainToSearch}[^ ]*\b"
+    defaults domains | egrep -io "\b[^ ]*${_appNameOrDomainToSearch}[^ ,]*\b"
 }
 
 getMacAppPath() {
@@ -265,12 +274,41 @@ getMacAppPath() {
     mdfind -name '.app' | egrep -i '\.(plist|app)$' | egrep -i "$_appNameToSearch"
 }
 
+getMacSleepTime() {
+    # " Sleep" = A sleep action initiated by the user rather than the computer
+    # "lid" = A sleep action initiated by the user
+    # "Assertions" = A sleep action initiated by the computerThe super short times the computer will wake from sleep to check for notifications
+    pmset -g log \
+        | grep -v Assertions \
+        | egrep '( Sleep)|([lL]id)' \
+        | {
+            [[ "$1" =~ [0-9-] ]] \
+                && date '+%m/%d/%Y %H:%M:%S' ${1:+--date="$1"} \
+                || cat
+        }
+}
+
 
 
 resetJetbrains() {
-    cd ~/Library/Preferences/
-    rm jetbrains.* com.jetbrains.*
-    rm -rf WebStorm*/eval/ WebStorm*/options/other.xml IntelliJIdea*/eval/ IntelliJIdea*/options/options.xml
+    declare _jetbrainsDomains=($(defaults domains | egrep -io "\b[^ ]*com.jetbrains[^ ,]*\b"))
+
+    declare _domain
+    for _domain in "${_jetbrainsDomains[@]}"; do
+        defaults delete "$_domain"
+    done
+
+    # Remove .plist files *after* deleting them from `defaults` so the command can find them initially
+    rm -rf \
+        $HOME/Library/Preferences/jetbrains.*.plist \
+        $HOME/Library/Preferences/com.jetbrains.*.plist
+
+    # Delete JetBrains' evaluation-info dirs and trial-date files (legacy = options.xml)
+    # Century '2xxx' or version 'xxxx.y'
+    rm -rf \
+        $HOME/Library/Application\ Support/JetBrains/*[2.]*/eval \
+        $HOME/Library/Application\ Support/JetBrains/*[2.]*/options/other.xml \
+        $HOME/Library/Application\ Support/JetBrains/*[2.]*/options/options.xml
 }
 
 
@@ -285,6 +323,29 @@ _autocompleteWithJiraTicket() {
 # Requires alias because spaces aren't allowed
 complete -F _autocompleteWithJiraTicket -P \" "gc"
 complete -F _autocompleteWithJiraTicket -P \" "gac"
+
+
+
+if ! defaults read com.apple.desktopservices DSDontWriteNetworkStores | egrep -iq '(TRUE|1)'; then
+    # Finder (file explorer) will create annoying `.DS_Store` files everywhere it visits,
+    # which are akin to Windows' `desktop.ini` files.
+    # All they do is tell Finder how to view the current directory (e.g. list-view, icon-view, etc.)
+    # so they don't serve much purpose.
+    # Thus, delete them and disable their creation.
+    #
+    # See:
+    #   - https://www.techrepublic.com/article/how-to-disable-the-creation-of-dsstore-files-for-mac-users-folders/
+    #   - https://support.apple.com/en-us/HT208209
+    #   - `.plist` reloading: https://apple.stackexchange.com/questions/205596/reload-modified-system-plist
+    #   - https://iboysoft.com/wiki/ds-store.html
+
+    # Delete all current `.DS_Store` files (in HOME dir, ignore root dir for now)
+    sudo find "$HOME" -iname '*\.DS_Store*' 2>/dev/null -delete &
+    # Change OS settings to stop creating `.DS_Store` files
+    defaults write com.apple.desktopservices DSDontWriteNetworkStores true
+    # Reload all settings for Finder and related processes
+    killall cfprefsd Finder finder
+fi
 
 
 

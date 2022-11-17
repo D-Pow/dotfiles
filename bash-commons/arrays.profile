@@ -152,6 +152,7 @@ array.fromString() {
 
     shift $(( OPTIND - 1 ))
 
+    # declare _arrFromStr="$@"
     declare _arrFromStr="$1"
 
     # Local means we don't overwrite global IFS.
@@ -422,6 +423,7 @@ array.map() {
     declare argsArray
 
     parseArgs optsConfig "$@"
+    (( $? )) && return 1
 
     declare -n _arrMapArrOrig="${argsArray[0]}"
     declare _arrMapCmd="${argsArray[1]}"

@@ -484,6 +484,16 @@ modifyFileLinesInPlace() {
 }
 
 
+findRegex() {
+    # See: https://stackoverflow.com/questions/5249779/how-to-search-filenames-by-regex-with-find/5249797#5249797
+    declare _findDirToSearch="$1"
+
+    shift
+
+    "$(which find)" "$_findDirToSearch" -regextype posix-extended "$@"
+}
+
+
 findIgnoreDirs() {
     declare USAGE="[OPTIONS...] [PATH] [\`find\` OPTIONS...]
     Calls \`find\`, ignoring the specified directories.
@@ -507,13 +517,38 @@ findIgnoreDirs() {
 
     declare _findOpts=("${argsArray[@]}")
 
+    declare _debug=
+
+    if [[ -n "$_debug" ]]; then
+        echo "Before:
+        _findToSearchIn: $_findToSearchIn
+        $(array.toString argsArray)
+        $(array.toString _findIgnoreDirs)
+        $(array.toString _findOpts)
+    " >&2
+    fi
+
     if [[ -z "$_findToSearchIn" ]] && [[ -d "${argsArray[0]}" ]]; then
         # If the dir to search through with `find` was passed as positional arg 1,
         # then pop it out from the positional args
         _findToSearchIn="${argsArray[0]}"
+        # findIgnoreDirs=()
+        # argsArray=
+
+        # shift
+
         _findOpts=()
 
         array.slice -r _findOpts argsArray 1
+    fi
+
+    if [[ -n "$_debug" ]]; then
+    echo "After:
+    _findToSearchIn: $_findToSearchIn
+    $(array.toString argsArray)
+    $(array.toString _findIgnoreDirs)
+    $(array.toString _findOpts)
+    " >&2
     fi
 
     declare _findIgnoreDirsOptionName=' -o -name '
@@ -554,6 +589,19 @@ findIgnoreDirs() {
     # Ignored dirs are already quoted, but still need to quote the search query
     declare _findFinalCmd="find $_findToSearchIn $_findIgnoreDirsOption ${_findOpts[@]}"
 
+    if [[ -n "$_debug" ]]; then
+        echo "
+    \$@: $@
+    argsArray: ${argsArray[@]}
+    _findToSearchIn: $_findToSearchIn
+    _findOpts: ${_findOpts[@]}
+    _findIgnoreDirsOptionOrig: $_findIgnoreDirsOptionOrig
+    _findIgnoreDirs: ${_findIgnoreDirs[@]}
+    _findIgnoreDirsOption: $_findIgnoreDirsOption
+    _findFinalCmd: $_findFinalCmd
+    " >&2
+    fi
+
     # Silence the annoying warnings about `-maxdepth` is a global option that needs to be before
     # others since it's not easily removed during arg-parsing without extra complex logic
     eval "$_findFinalCmd" 2> >(awk '{ if (! /.*find: warning:/) { print($0); } }')
@@ -576,8 +624,8 @@ tarremovepathprefix() {
     #   |-- ../../compress/a.file
     #   |-- ../../compress/b.file
     #
-    # This can be fixed by using the `-C/--cd` option, which essentially runs `tar` in the specified
-    # directory rather than the cwd, essentially the equivalent of `(cd /dir/to/compress && tar [options] .)`
+    # This can be fixed by using the `-C/--cd` option, which will run `tar` in the specified directory
+    # rather than the cwd, essentially the equivalent of `(cd /dir/to/compress && tar [options] .)`
 
     # Net result (where [] represents what's added by the user):
     #   tar [-czf with-spaces.tar.gz] -C ['../../dir/with spaces/dir[/file.ext]'] '.'
@@ -602,6 +650,21 @@ tarremovepathprefix() {
     fi
 
     tar "${_tarOpts[@]}" -C "$_tarContainingDir" "$_tarToArchive"
+}
+
+tarzip() {
+    # See:
+    #   - Listing file contents of .zip file (-l = list files, -p = list file contents): https://superuser.com/questions/462788/read-the-contents-of-a-zipped-file-without-extraction/462796#462796
+    echo 'TODO'
+}
+
+isZipFile() {
+    # See: https://stackoverflow.com/questions/50220100/how-to-check-if-file-is-tar-file-in-bash-shell/50220269#50220269
+    file "$1" | egrep -io ': [^,]+data,' | sed -E 's/(^: )|(,$)//g' | egrep -iq '\bzip\b'
+}
+
+isTarFile() {
+    ! isZipFile
 }
 
 
@@ -702,3 +765,9 @@ if ! isDefined tree; then
         echo "$firstLineReplacedWithParentPath"
     }
 fi
+
+
+diffDirs() {
+    # From: https://stackoverflow.com/questions/4997693/given-two-directory-trees-how-can-i-find-out-which-files-differ-by-content/4997724#4997724
+    diff --brief --recursive "$1" "$2"
+}

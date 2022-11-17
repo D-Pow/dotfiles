@@ -24,7 +24,7 @@ task fatJar(type: Jar) {
 
     manifest {
         attributes(
-            'Main-Class':'<package.mainClass>',
+            'Main-Class': '<package.mainClass>',
             // TODO - Fill out the rest of the fields needed for a fully valid manifest.json
             //  See:
             //      - https://stackoverflow.com/questions/39406822/change-file-permission-by-gradle

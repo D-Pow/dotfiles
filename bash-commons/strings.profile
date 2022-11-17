@@ -147,9 +147,9 @@ str.join() {
     #   https://tldp.org/LDP/abs/html/parameter-substitution.html
     #   https://stackoverflow.com/questions/28256178/how-can-i-match-spaces-with-a-regexp-in-bash/28256343#28256343
     if ! [[ "$(echo -e \$\'$_strJoinStr\')" =~ [[:space:]] ]]; then
-        echo "${_strJoinOutput/%$_strJoinStr}"
+        echo -e "${_strJoinOutput/%$_strJoinStr}"
     else
-        echo "$_strJoinOutput"
+        echo -e "$_strJoinOutput"
     fi
 }
 
@@ -162,8 +162,10 @@ str.unique() {
     \`delimiter\` should be quoted, e.g. \`-d '\\\\n' <string>\`
     "
     declare _strUniqueDelim=
+    declare _strUniqueJoinDelim=
     declare -A _strUniqueOptions=(
         ['d|delimiter:,_strUniqueDelim']='Delimiter used to separate strings being read'
+        ['j|join-str:,_strUniqueJoinDelim']='Delimiter to use when joining strings'
         [':']=
         ['USAGE']="$USAGE"
     )
@@ -178,6 +180,7 @@ str.unique() {
     declare _strUniqueInput="${_strUniqueInputArray[@]}"
 
     _strUniqueDelim="${_strUniqueDelim:-\n}"
+    _strUniqueJoinDelim="${_strUniqueJoinDelim:-\n}"
 
 
     declare _strUniqueOutput="$_strUniqueInput"
@@ -203,7 +206,10 @@ str.unique() {
     #   https://stackoverflow.com/questions/30232973/list-the-uniq-lines-based-on-delimiter
     _strUniqueOutput="$(echo "$_strUniqueOutput" | awk '!u[$NF]++')"
 
-    str.join -d '\n' -j "$_strUniqueDelim" "$_strUniqueOutput"
+    str.join -d '\n' -j "$_strUniqueDelim" "$_strUniqueOutput" \
+        | cat
+        # | str.join -d
+        # | $([[ -n "$_strUniqueJoinDelim" ]] && echo "tr -s \"\n\" \"$_strUniqueJoinDelim\"" || echo "cat")
 }
 
 

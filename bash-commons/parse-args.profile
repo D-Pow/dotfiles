@@ -88,6 +88,7 @@ parseArgs() {
     Options:
         -c  |   Allow reading options placed after positional args.
         -i  |   Don't capture/read from STDIN.
+        -s  |   Read from STDIN live, setting a file descriptor in \`stdin\` instead of an array.
 
     Returns:
         0/1 on success/failure.
@@ -112,6 +113,7 @@ parseArgs() {
     # Custom options for `parseArgs()` itself
     declare _allowOptsAfterArgs=
     declare _parseStdin=true
+    declare _liveStdin=
 
     declare opt=
     declare OPTIND=1
@@ -126,7 +128,7 @@ parseArgs() {
     #       esac
     #       shift # <-- Manually shift by one arg
     #   done
-    while getopts 'ic' opt; do
+    while getopts 'sic' opt; do
         # OPTIND = Arg index (equivalent to $1, $2, etc.)
         # OPTARG = Variable set to the flag (e.g. `-i myArgValue` makes OPTARG=myArgValue)
         # ${!OPTIND} = Actual flag (e.g. `-i myArgValue` makes ${!OPTIND}='-d')
@@ -136,6 +138,10 @@ parseArgs() {
                 ;;
             i)
                 _parseStdin=
+                _liveStdin=
+                ;;
+            s)
+                _liveStdin=true
                 ;;
             *)
                 echo -e "$USAGE"
@@ -174,6 +180,8 @@ parseArgs() {
     # Mark if an unknown-flag handler has been set, even if it's blank;
     # `${var+word}` will return `word` if the value is set or blank (e.g. `declare var=`),
     # but not if it is null (e.g. `declare var`)
+    # declare unknownFlagHandlerConfig="${_parentOptionsConfig['?']}${_parentOptionsConfig['*']}"  # Check for both `?` and `#`
+    # if [[ -n "${unknownFlagHandlerConfig:+true}" ]]; then
     if [[ -n "${_parentOptionsConfig['?']+hasHandler}" ]]; then
         hasUnknownFlagHandler=true
     fi
@@ -289,6 +297,7 @@ parseArgs() {
     #       cat /dev/stdin | myCommand
     #   See:
     #       http://manpages.ubuntu.com/manpages/trusty/en/man1/bash.1.html#:~:text=Bash%20handles%20several%20filenames%20specially%20when%20they%20are%20used%20in%20redirections%2C%20as%20%20described%0A%20%20%20%20%20%20%20in%20the%20following%20table%3A
+    # if [[ -n "$_parseStdin" ]] && [[ -z "$_liveStdin" ]] && [[ -p /dev/stdin ]]; then
     if [[ -n "$_parseStdin" ]] && [[ -p /dev/stdin ]]; then
         # We must check if /dev/stdin is open with `test -p` first.
         # Otherwise, `readarray` will block indefinitely.
@@ -304,6 +313,16 @@ parseArgs() {
         #   https://www.baeldung.com/linux/reading-output-into-array
         #   https://www.reddit.com/r/commandline/comments/iev25m/how_can_i_timeout_a_readarray_in_bash/
         readarray -t _stdin
+    elif [[ -n "$_liveStdin" ]]; then
+        # TODO This kind of works but requires redirecting from FD 1 to $FD and then the
+        # calling parent still has to do `while read <&$FD; do x; done`
+        # See: https://stackoverflow.com/questions/2087188/how-to-read-using-read-from-file-descriptor-3-in-bash-script/2087218#2087218
+        declare -n _stdin='stdin'
+        declare FD=
+
+        makeTempPipe >/dev/null
+
+        _stdin="$FD"
     fi
 
 
@@ -431,6 +450,15 @@ parseArgs() {
             declare nextFlagMaybeIndex=$(( OPTIND + 1 ))
             declare nextFlagMaybe="${!nextFlagMaybeIndex}"
 
+            # TODO
+            # if [[ "$unknownFlagMaybeValue" == '--' ]]; then
+            #     # `--` signifies to stop parsing options and forward args as positional ones, usually
+            #     # to an underlying process/command.
+            #     # Since `OPTIND` is the *next* arg after the current one but the current one was
+            #     # already processed by `getopts`, we can safely follow the standard procedure
+            #     # at the end of this function.
+            #     # $(( OPTIND++ ))
+            #     break
             if [[ -n "$_allowOptsAfterArgs" ]]; then
                 # If trying to parse args after an unknown one, then chances are, the parent function
                 # is trying to wrap another function and allow forwarding its flags to said function.

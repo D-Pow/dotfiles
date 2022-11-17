@@ -83,6 +83,39 @@ npmConfigGetFile() {
     fi
 }
 
+# TODO
+# npmConfigScopedPackage() {
+#     # Run `npm config [options] <command> <args>` for scoped packages requiring the
+#     # format `prefix:configKey=configVal`
+#     declare configPrefix
+#     declare configKey
+#     declare configVal
+#     declare OPTIND=1
+#
+#     while getopts ':p:k:v:' opt; do
+#         case "$opt" in
+#             p)
+#                 configPrefix="$OPTARG"
+#                 ;;
+#             k)
+#                 configKey="$OPTARG"
+#                 ;;
+#             v)
+#                 configVal="$OPTARG"
+#                 ;;
+#             *)
+#                 break
+#                 ;;
+#         esac
+#     done
+#
+#     shift $(( OPTIND - 1 ))
+#
+#     # npm config "${@:---location project}" "${configPrefix}:${configKey}" "$configVal"
+#     echo "npm config $@ \"${configPrefix}:${configKey}\" \"$configVal\""
+#     npm config $@ "${configPrefix}:${configKey}" "$configVal"
+# }
+
 npmConfigScopedPackageFormatUrl() {
     # Strip out the protocol (usually `https:`) from the given URL to match the format
     # required for specific packages' auth tokens and related configs.
@@ -366,15 +399,20 @@ dockerFindContainer() {
     # Enhanced `docker ps` that filters by any field instead of only by name, ID, image, etc.
     # and allows regex queries.
     # Docs: https://docs.docker.com/engine/reference/commandline/ps
+    declare USAGE="Finds a container given any search criteria (name, ID, image, etc.) via \`docker ps -a\`"
+    declare _getLocation=
+    declare argsArray=
     declare -A _dockerFindContainerOpts=(
+        ['p|path,_getLocation']="Outputs the path to the container rather than information about it"
         [':']=
-        ['?']=
+        ['?']= # Don't do anything if option flag is unrecognized since it will be forwarded to `docker ps`
+        ['USAGE']="$USAGE"
     )
-    declare argsArray
 
     parseArgs _dockerFindContainerOpts "$@"
     (( $? )) && return 1
 
+    declare _dockerPsArgs=("${argsArray[@]}")
     declare _dockerPsOpts
     declare _dockerPsQueryArray
 
@@ -395,6 +433,7 @@ dockerFindContainer() {
     # To call it a second time, remove the headers from this initial filter call so it doesn't
     # interfere with the second call.
     declare _dockerPsMatches="$(docker ps -a | egrep -iv 'CONTAINER\s*ID\s*IMAGE' | egrep -i "$_dockerPsQuery")"
+    # echo "_dockerPsMatches: $_dockerPsMatches"
 
     if [[ -z "$_dockerPsMatches" ]]; then
         return 1
@@ -403,13 +442,26 @@ dockerFindContainer() {
     # Get only the container IDs so we can add our own custom `--filter` query to the `ps` options.
     # Works with any other option, including other `--filter` entries, `-q`, etc.
     declare _dockerPsMatchesContainerIds=($(echo "$_dockerPsMatches" | cut -d ' ' -f 1))
+    # echo "_dockerPsMatchesContainerIds (${#_dockerPsMatchesContainerIds[@]}): ${_dockerPsMatchesContainerIds[@]}"
     declare _containerId
 
-    for _containerId in "${_dockerPsMatchesContainerIds[@]}"; do
-        _dockerPsOpts+=('--filter' "id=$_containerId")
-    done
+    if [[ -n "$_getLocation" ]]; then
+        declare _dockerContainerIdsForJsonParsingArray=()
 
-    docker ps -a "${_dockerPsOpts[@]}"
+        for _containerId in "${_dockerPsMatchesContainerIds[@]}"; do
+            _dockerContainerIdsForJsonParsingArray+=("startswith(\"$_containerId\")")
+        done
+
+        declare _dockerContainerIdsForJsonParsingJq="$(array.join -s _dockerContainerIdsForJsonParsingArray ' or ')"
+        # echo ".[] | select(.GraphDriver.Data.LowerDir | $_dockerContainerIdsForJsonParsingJq) | .Id"
+        docker ps -a -q | xargs docker inspect | jq ".[] | select(.Id | $_dockerContainerIdsForJsonParsingJq) | .Id"
+    else
+        for _containerId in "${_dockerPsMatchesContainerIds[@]}"; do
+            _dockerPsOpts+=('--filter' "id=$_containerId")
+        done
+
+        docker ps -a "${_dockerPsOpts[@]}"
+    fi
 }
 
 dockerIsContainerRunning() {
@@ -491,6 +543,28 @@ dockerShowDockerfileForImage() (
     docker run --rm -i -v /var/run/docker.sock:/var/run/docker.sock chenzj/dfimage "$_imageId"
 )
 
+dockerContainerInfo() {
+    # Inspired by: https://stackoverflow.com/questions/38946683/how-to-test-dockerignore-file
+    declare _dockerfilePath="${1:-"$(pwd)"}"
+
+    declare _utilImageName='docker-show-context'
+    declare _utilImageRepo='https://github.com/pwaller/docker-show-context.git'
+    declare _utilImageExists="$(docker image ls -q "$_utilImageName")"
+
+    if [[ -z "$_utilImageExists" ]]; then
+        # Pull/build image only if it hasn't been pulled before
+        #
+        # Note that building separately from running the Docker image is necessary for
+        # Git repos when they don't deploy the image itself somewhere
+        #
+        # See:
+        #   - https://stackoverflow.com/questions/26753030/how-to-build-docker-image-from-github-repository/39194765#39194765
+        docker build -t "$_utilImageName" "$_utilImageRepo"
+    fi
+
+    docker run --rm -v "$_dockerfilePath":/data docker-show-context
+}
+
 dockerShowRunCommandForContainers() (
     (( $# )) || { echo "Please specify container ID(s)/name(s)" >&2; return 1; }
 
@@ -513,6 +587,10 @@ dockerShowRunCommandForContainers() (
         (( $i < ($# - 1) )) && echo -e '\n-----\n'
     done
 )
+
+dockerShowImageVersions() {
+    echo TODO
+}
 
 dockerGetLogs() {
     declare _dockerLogOutputFile
