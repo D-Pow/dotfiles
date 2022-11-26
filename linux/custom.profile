@@ -397,29 +397,17 @@ remoteDriveLs() {
 
 
     # Wait till after all processing is done to output file names
+    # Easier to just join by newlines than change IFS + add to new arrays + iterate over each separately
     declare _remoteDriveFileNamesStr="$(array.join _remoteDriveFileNames '\n')"
     # Sort by name
     # Note: `gio list -l | sort -Vk 2` would normally work but we want our sort to put
     # dirs above files, and neither `gio` nor `sort` offer this type of complex functionality
     _remoteDriveFileNamesStr="$(echo -e "$_remoteDriveFileNamesStr" | sort -V)"
 
-    # Put back in arrays
-    declare _remoteDriveLsOrigIFS="$IFS"
-    declare IFS=$'\n'
-    declare _remoteDriveFileNameDirs=($(echo -e "$_remoteDriveFileNamesStr" | egrep --color=never '/$'))
-    declare _remoteDriveFileNameFiles=($(echo -e "$_remoteDriveFileNamesStr" | egrep --color=never '[^/]$'))
-    IFS="$_remoteDriveLsOrigIFS"
-
     # Output dirs before files
-    declare _remoteDriveFileName
-
-    for _remoteDriveFileName in "${_remoteDriveFileNameDirs[@]}"; do
-        echo -e "$_remoteDriveFileName"
-    done
-
-    for _remoteDriveFileName in "${_remoteDriveFileNameFiles[@]}"; do
-        echo -e "$_remoteDriveFileName"
-    done
+    echo -e "$_remoteDriveFileNamesStr" | egrep --color=never '/$'
+    # Output files
+    echo -e "$_remoteDriveFileNamesStr" | egrep --color=never '[^/]$'
 }
 
 
