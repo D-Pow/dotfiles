@@ -2,7 +2,9 @@
 export JAVA_HOME="/usr/java/current"
 export GRADLE_HOME="/opt/gradle"
 export LATEX_HOME="$HOME/texlive/*/bin/*linux*/"
-export PATH="$JAVA_HOME/bin:$GRADLE_HOME/bin:$LATEX_HOME:$PATH"
+export ANDROID_HOME="$HOME/Android/Sdk"
+export ANDROID_TOOLS="$HOME/Android/Sdk/tools"
+export PATH="$JAVA_HOME/bin:$GRADLE_HOME/bin:$LATEX_HOME:$ANDROID_HOME:$ANDROID_TOOLS:$PATH"
 
 if ! [[ -f /usr/local/bin/pdflatex ]] && realpath $LATEX_HOME &>/dev/null; then
     sudo ln -s $LATEX_HOME/* /usr/local/bin/
