@@ -1461,7 +1461,7 @@ window.SlackInBrowserService = SlackInBrowserService;
 /************************************************
  ********    Video manipulation tools    ********
  ***********************************************/
-window.getVolumeThatCanSurpass1 = function(video = window.video || document.querySelector('video')) {
+window.getVolumeThatCanSurpass1 = function getVolumeThatCanSurpass1(video = window.video || document.querySelector('video')) {
     /* https://stackoverflow.com/a/43794379/5771107 */
     const audioCtx = new AudioContext();
     const audioSource = audioCtx.createMediaElementSource(video);
@@ -1471,7 +1471,7 @@ window.getVolumeThatCanSurpass1 = function(video = window.video || document.quer
     video.gain = audioGain.gain;
 };
 
-window.videoArrowKeyListenerExec = function(video = window.video || document.querySelector('video')) {
+window.videoArrowKeyListenerExec = function videoArrowKeyListenerExec(video = window.video || document.querySelector('video')) {
     /* useful video seek arrow functionality for video players that don't include it automatically */
 
     const isHboMax = !!location.origin.match(/hbomax/i);
