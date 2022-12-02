@@ -1471,6 +1471,14 @@ function videoArrowKeyListener(event, {
     };
 
     switch(event.key) {
+        case ' ':
+            if (video.paused) {
+                video.play();
+            } else {
+                video.pause();
+            }
+
+            break;
         case 'ArrowLeft':
             video.currentTime -= seekSpeed;
             break;
