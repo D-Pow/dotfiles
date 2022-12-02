@@ -951,16 +951,18 @@ window.bac = function bac(drinkVolume, drinkPercentage, bodyWeight, {
         const fullConfig = drinkVolume;
 
         /* Options with fallback to default values */
+        drinkPercentage = drinkPercentage || fullConfig.drinkPercentage;
+        bodyWeight = bodyWeight || fullConfig.bodyWeight;
         isMale = fullConfig.isMale || isMale;
         isDrinkVolumeOunces = fullConfig.isDrinkVolumeOunces || isDrinkVolumeOunces;
         isBodyWeightPounds = fullConfig.isBodyWeightPounds || isBodyWeightPounds;
 
-        return fullConfig.drinks.reduce((totalBac, { drinkVolume, drinkPercentage, hoursElapsed }) => (
-            totalBac + bac(drinkVolume, drinkPercentage, fullConfig.bodyWeight, {
+        return fullConfig.drinks.reduce((totalBac, { drinkVolume, drinkPercentage: customDrinkPercentage, hoursElapsed }) => (
+            totalBac + bac(drinkVolume, customDrinkPercentage || fullConfig.drinkPercentage, bodyWeight, {
                 hoursElapsed,
-                isMale: fullConfig.isMale,
-                isDrinkVolumeOunces: fullConfig.isDrinkVolumeOunces,
-                isBodyWeightPounds: fullConfig.isBodyWeightPounds,
+                isMale,
+                isDrinkVolumeOunces,
+                isBodyWeightPounds,
             })
         ), 0);
     }
