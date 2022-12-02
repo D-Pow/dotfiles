@@ -1462,13 +1462,17 @@ window.SlackInBrowserService = SlackInBrowserService;
  ********    Video manipulation tools    ********
  ***********************************************/
 window.getVolumeThatCanSurpass1 = function getVolumeThatCanSurpass1(video = window.video || document.querySelector('video')) {
-    /* https://stackoverflow.com/a/43794379/5771107 */
-    const audioCtx = new AudioContext();
-    const audioSource = audioCtx.createMediaElementSource(video);
-    const audioGain = audioCtx.createGain();
-    audioSource.connect(audioGain);
-    audioGain.connect(audioCtx.destination);
-    video.gain = audioGain.gain;
+    try {
+        /* https://stackoverflow.com/a/43794379/5771107 */
+        const audioCtx = new AudioContext();
+        const audioSource = audioCtx.createMediaElementSource(video);
+        const audioGain = audioCtx.createGain();
+        audioSource.connect(audioGain);
+        audioGain.connect(audioCtx.destination);
+        video.gain = audioGain.gain;
+    } catch (e) {
+        console.error('Error creating volume that could surpass 100%:', e);
+    }
 };
 
 window.videoArrowKeyListenerExec = function videoArrowKeyListenerExec(video = window.video || document.querySelector('video')) {
