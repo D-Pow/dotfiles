@@ -1512,7 +1512,7 @@ function videoArrowKeyListener(event, {
             if (document.fullscreen || document.fullscreenElement || window.fullscreen || window.fullscreenElement) {
                 exitFullScreen();
             } else {
-                self?.video?.requestFullscreen?.();
+                video?.requestFullscreen?.();
             }
             break;
         case 'Enter':
