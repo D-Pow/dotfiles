@@ -1461,6 +1461,73 @@ window.SlackInBrowserService = SlackInBrowserService;
 /************************************************
  ********    Video manipulation tools    ********
  ***********************************************/
+function videoArrowKeyListener(event, {
+    video = window.video || document.querySelector('video'),
+} = {}) {
+    let seekSpeed = 5;
+
+    const exitFullScreen = () => {
+        document.exitFullscreen?.() ?? window.exitFullscreen?.();
+    };
+
+    switch(event.key) {
+        case 'ArrowLeft':
+            video.currentTime -= seekSpeed;
+            break;
+        case 'ArrowRight':
+            video.currentTime += seekSpeed;
+            break;
+        case 'ArrowUp':
+            if (event.shiftKey) {
+                seekSpeed++;
+            } else if (event.ctrlKey && video.gain) {
+                video.gain.value++;
+            }
+            break;
+        case 'ArrowDown':
+            if (event.shiftKey) {
+                seekSpeed--;
+            } else if (event.ctrlKey && video.gain) {
+                video.gain.value--;
+            }
+            break;
+        case 'Escape':
+            exitFullScreen();
+            break;
+        case 'f':
+            /* See: https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API#methods_on_the_document_interface */
+            if (document.fullscreen || document.fullscreenElement || window.fullscreen || window.fullscreenElement) {
+                exitFullScreen();
+            } else {
+                self?.video?.requestFullscreen?.();
+            }
+            break;
+        case 'Enter':
+            /* TODO Press "Skip intro" button.
+             * We'd have to find an element where any attribute it contains either has a name or value of
+             * /Skip(?!\s*\d+\s*(ms|sec|forward|backward|rewind))/i
+             * so we can grab "Skip intro" or just "Skip" without grabbing "Skip 10 sec forward" or similar.
+             *
+             * See:
+             * - getElementAttributes()
+             * - findElementsByAnything()
+             */
+            const { origin } = new URL(self.location.href);
+            let skipIntroButton;
+
+            if (origin.match(/hulu\.com/i)) {
+                skipIntroButton = findElementsByAnything(node => (
+                    node.tagName.match(/button/i)
+                    && node.innerText?.match(/skip intro/i)
+                ))?.[0];
+
+                skipIntroButton.click();
+            }
+            break;
+    }
+}
+;
+
 window.getVolumeThatCanSurpass1 = function getVolumeThatCanSurpass1(video = window.video || document.querySelector('video')) {
     try {
         /* https://stackoverflow.com/a/43794379/5771107 */
@@ -1484,70 +1551,10 @@ window.videoArrowKeyListenerExec = function videoArrowKeyListenerExec(video = wi
         getVolumeThatCanSurpass1();
     }
 
-    let seekSpeed = 5;
-    const video = window.video || document.querySelector('video');
-
-    const exitFullScreen = () => {
-        document.exitFullscreen?.() ?? window.exitFullscreen?.();
-    };
-
-    document.onkeydown = event => {
-        switch(event.key) {
-            case 'ArrowLeft':
-                video.currentTime -= seekSpeed;
-                break;
-            case 'ArrowRight':
-                video.currentTime += seekSpeed;
-                break;
-            case 'ArrowUp':
-                if (event.shiftKey) {
-                    seekSpeed++;
-                } else if (event.ctrlKey && video.gain) {
-                    video.gain.value++;
-                }
-                break;
-            case 'ArrowDown':
-                if (event.shiftKey) {
-                    seekSpeed--;
-                } else if (event.ctrlKey && video.gain) {
-                    video.gain.value--;
-                }
-                break;
-            case 'Escape':
-                exitFullscreen();
-                break;
-            case 'f':
-                /* See: https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API#methods_on_the_document_interface */
-                if (document.fullscreen || document.fullscreenElement || window.fullscreen || window.fullscreenElement) {
-                    exitFullscreen();
-                } else {
-                    self?.video?.requestFullscreen?.();
-                }
-                break;
-            case 'Enter':
-                /* TODO Press "Skip intro" button.
-                 * We'd have to find an element where any attribute it contains either has a name or value of
-                 * /Skip(?!\s*\d+\s*(ms|sec|forward|backward|rewind))/i
-                 * so we can grab "Skip intro" or just "Skip" without grabbing "Skip 10 sec forward" or similar.
-                 *
-                 * See:
-                 * - getElementAttributes()
-                 * - findElementsByAnything()
-                 */
-                const { origin } = new URL(self.location.href);
-                let skipIntroButton;
-
-                if (origin.match(/hulu\.com/i)) {
-                    skipIntroButton = findElementsByAnything(node => (
-                        node.tagName.match(/button/i)
-                        && node.innerText?.match(/skip intro/i)
-                    ))?.[0];
-
-                    skipIntroButton.click();
-                }
-                break;
-        }
-    }
+    window.addEventListener('keydown', videoArrowKeyListener);
+    /* Adding the event listener to `window` means that the keys work even if the `<video/>` isn't focused by the user.
+     * Though, in case the above doesn't work, you could try adding it to (a child of) `document`. */
+    /* document.body.addEventListener('keydown', videoArrowKeyListener); */
 };
 
 window.setInnerHtmlToVideoWithSrc = function(src = null, removeReferrerHeader = false) {
