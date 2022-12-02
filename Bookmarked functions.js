@@ -1465,6 +1465,7 @@ function videoArrowKeyListener(event, {
     video = window.video || document.querySelector('video'),
 } = {}) {
     let seekSpeed = 5;
+    let volumeSpeed = 0.05;
 
     const exitFullScreen = () => {
         document.exitFullscreen?.() ?? window.exitFullscreen?.();
@@ -1490,6 +1491,8 @@ function videoArrowKeyListener(event, {
                 seekSpeed++;
             } else if (event.ctrlKey && video.gain) {
                 video.gain.value++;
+            } else {
+                video.volume += volumeSpeed;
             }
             break;
         case 'ArrowDown':
@@ -1497,6 +1500,8 @@ function videoArrowKeyListener(event, {
                 seekSpeed--;
             } else if (event.ctrlKey && video.gain) {
                 video.gain.value--;
+            } else {
+                video.volume -= volumeSpeed;
             }
             break;
         case 'Escape':
