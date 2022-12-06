@@ -918,6 +918,72 @@ window() {
 }
 
 
+reconnectBluetoothMouse() {
+    # Mouse only allows one connection so switching OSes/computers results in it
+    # not being able to reconnect to Linux. To simplify the disconnect/reconnect
+    # process such that you can avoid the annoying GUI, run this command.
+    declare USAGE="[OPTIONS...]
+    Reconnects the Bluetooth mouse.
+    "
+    declare _onlyReconnect=
+    declare -A _reconnectBluetoothMouseOptions=(
+        ['r|reconnect-only,_onlyReconnect']="Reconnect without disconnecting first."
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _reconnectBluetoothMouseOptions "$@"
+    (( $? )) && return 1
+
+    declare _bluetoothMouseAlreadyConnectedUuid="$(
+        bluetoothctl paired-devices \
+            | egrep -i 'Bluetooth.*Mouse' \
+            | awk '{ print $2 }'
+    )"
+
+    if [[ -z "$_onlyReconnect" ]] && [[ -n "$_bluetoothMouseAlreadyConnectedUuid" ]]; then
+        bluetoothctl remove "$_bluetoothMouseAlreadyConnectedUuid"
+
+        # Give the Bluetooth-disconnect command some time to run
+        sleep 3
+    fi
+
+    # Scanning is required before discovering new Bluetooth devices, so ensure the OS knows the device exists
+    ( bluetoothctl scan on ) &
+    sleep 4
+    kill "$!" 2>/dev/null
+
+    declare _bluetoothMouseAvailableUuid="$(
+        bluetoothctl devices \
+            | egrep -i 'Bluetooth.*Mouse' \
+            | awk '{ print $2 }'
+    )"
+    declare _bluetoothMouseInfo=
+
+    if [[ -n "$_bluetoothMouseAvailableUuid" ]]; then
+        _bluetoothMouseInfo="$(bluetoothctl info "$_bluetoothMouseAvailableUuid")"
+    fi
+
+    if [[ -n "$_bluetoothMouseAvailableUuid" ]]; then
+        # Sometimes the mouse is considered as "already paired" so run the `pair`
+        # command in the background to avoid the function breaking upon error
+        ( bluetoothctl pair "$_bluetoothMouseAvailableUuid" ) &
+
+        sleep 2
+
+        kill "$!" 2>/dev/null
+    fi
+
+    # Likewise, sometimes the `connect` command will often continue searching for devices
+    # and outputting their info indefinitely, so kill the remaining process if present
+    ( echo "$_bluetoothMouseAvailableUuid"; bluetoothctl connect "$_bluetoothMouseAvailableUuid" ) &
+
+    sleep 3
+
+    kill "$!" 2>/dev/null
+    # kill "$(listprocesses -i "$_bluetoothMouseAvailableUuid" | trim -t 1 | awk '{ print $2 }')" 2>/dev/null
+}
+
+
 
 _checkPythonVersion() {
     # EDIT: DO NOT CHANGE THE python3 SYMLINK!!! Nor use update-alternatives
