@@ -17,6 +17,10 @@
     ```
     dconf write /path/to/settings/key value
     ```
+* Delete ([ref](https://askubuntu.com/questions/457175/how-to-remove-element-from-gsettings-array-in-script), [related](https://askubuntu.com/questions/1090244/dconf-database-how-to-remove-duplicate-triplicates)):
+    ```
+    dconf write /path/to/settings/key '@as []'
+    ```
 
 ## Settings Paths
 

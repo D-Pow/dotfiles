@@ -10,6 +10,8 @@ The correct steps are:
     - Note: The command below is only needed over the command they provided on their website if using an Ubuntu offshoot, like Linux Mint.
         + Similarly, `xenial` should be replaced with the respective version that the Linux Mint version branched from.
     - `sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"`
+    - If necessary, downgrade Docker's OS version to the previous version.
+        + See: [StackOverflow answer to Linux Mint's issue with Docker not supporting Una (i.e. `lsb_release -cs` issue)](https://unix.stackexchange.com/questions/707420/docker-repo-isnt-adding-correctly-on-linux-mint-20-3-una/724222#724222).
 * Prevent Docker from running on startup:
     - `sudo systemctl disable docker.service`
     - `sudo systemctl disable containerd.service`
