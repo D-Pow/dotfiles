@@ -1,0 +1,20 @@
+# Title: Custom uBlock/AdBlock list
+# Homepage: https://raw.githubusercontent.com/D-Pow/dotfiles/master/Programs/adblock_list.txt
+# Syntax: Domains
+# Last modified: 2000-12-31T00:01:00+0000
+# Expires: 1 days (update frequency)
+#
+# Biggest list I've found so far is https://oisd.nl/
+#   Full AdBlock/uBlock list: https://abp.oisd.nl/
+#   Another full ad list: https://dbl.oisd.nl/
+#   From: https://www.reddit.com/r/pihole/comments/bppug1/introducing_the/
+
+
+# Crunchyroll
+# ! v.vrv.co/*/assets/*
+# 127.0.0.1 vrv.co
+# 127.0.0.1 v.vrv.co
+# 127.0.0.1 fy.v.vrv.co
+127.0.0.1 litix.io
+# 127.0.0.1 static.vrv.co
+# 127.0.0.1 pl.crunchyroll.com
