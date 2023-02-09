@@ -422,6 +422,7 @@ array.map() {
     declare argsArray
 
     parseArgs optsConfig "$@"
+    (( $? )) && return 1
 
     declare -n _arrMapArrOrig="${argsArray[0]}"
     declare _arrMapCmd="${argsArray[1]}"
