@@ -491,6 +491,28 @@ dockerShowDockerfileForImage() (
     docker run --rm -i -v /var/run/docker.sock:/var/run/docker.sock chenzj/dfimage "$_imageId"
 )
 
+dockerContainerInfo() {
+    # Inspired by: https://stackoverflow.com/questions/38946683/how-to-test-dockerignore-file
+    declare _dockerfilePath="${1:-"$(pwd)"}"
+
+    declare _utilImageName='docker-show-context'
+    declare _utilImageRepo='https://github.com/pwaller/docker-show-context.git'
+    declare _utilImageExists="$(docker image ls -q "$_utilImageName")"
+
+    if [[ -z "$_utilImageExists" ]]; then
+        # Pull/build image only if it hasn't been pulled before
+        #
+        # Note that building separately from running the Docker image is necessary for
+        # Git repos when they don't deploy the image itself somewhere
+        #
+        # See:
+        #   - https://stackoverflow.com/questions/26753030/how-to-build-docker-image-from-github-repository/39194765#39194765
+        docker build -t "$_utilImageName" "$_utilImageRepo"
+    fi
+
+    docker run --rm -v "$_dockerfilePath":/data docker-show-context
+}
+
 dockerShowRunCommandForContainers() (
     (( $# )) || { echo "Please specify container ID(s)/name(s)" >&2; return 1; }
 
