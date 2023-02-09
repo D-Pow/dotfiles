@@ -1184,6 +1184,55 @@ hashDir() {
 
 
 
+watchFile() {
+    # See:
+    #   - https://stackoverflow.com/questions/6475252/bash-script-watch-folder-execute-command
+    declare USAGE="[OPTION]... <cmd>
+    Re-runs a CLI command upon change to a file or directory.
+    "
+    declare _filesOrDirsToWatch=
+    declare _runCmdInitially=
+    declare _sleepTime=
+    declare argsArray=()
+    declare stdin=()
+    declare -A _runCmdOnChangeOptions=(
+        ['p|path:,_filesOrDirsToWatch']='File or directory to watch for changes (default: .).'
+        ['i|initial-run,_runCmdInitially']='Run the CLI command initially before reactive runs (default: false).'
+        ['s|sleep:,_sleepTime']='Number of seconds to wait before checking for changes (default: 1 sec).'
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _runCmdOnChangeOptions "$@"
+    (( $? )) && return 1
+
+    declare _cmdToRun="${stdin[@]} ${argsArray[@]}"
+
+    _filesOrDirsToWatch=("${_filesOrDirsToWatch[@]:-.}")
+    _sleepTime="${_sleepTime:-1}"
+
+
+    if [[ -n "$_runCmdInitially" ]]; then
+        bash -lic "$_cmdToRun"
+    fi
+
+    declare _fileHashPrev="$(hashDir "${_filesOrDirsToWatch[@]}")"
+    declare _fileHashNext=
+
+    while true; do
+        _fileHashNext="$(hashDir "${_filesOrDirsToWatch[@]}")"
+
+        if [[ "$_fileHashPrev" != "$_fileHashNext" ]]; then
+            bash -lic "$_cmdToRun"
+
+            _fileHashPrev="$_fileHashNext"
+        fi
+
+        sleep $_sleepTime
+    done
+}
+
+
+
 _copyCommand=
 _pasteCommand=
 
