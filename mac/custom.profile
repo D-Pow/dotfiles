@@ -266,6 +266,21 @@ getMacAppPath() {
 }
 
 
+getMacSleepTime() {
+    # " Sleep" = A sleep action initiated by the user rather than the computer
+    # "lid" = A sleep action initiated by the user
+    # "Assertions" = A sleep action initiated by the computerThe super short times the computer will wake from sleep to check for notifications
+    pmset -g log \
+        | grep -v Assertions \
+        | egrep '( Sleep)|([lL]id)' \
+        | {
+            [[ "$1" =~ [0-9-] ]] \
+                && date '+%m/%d/%Y %H:%M:%S' ${1:+--date="$1"} \
+                || cat
+        }
+}
+
+
 
 resetJetbrains() {
     declare _jetbrainsDomains=($(defaults domains | egrep -io "\b[^ ]*com.jetbrains[^ ,]*\b"))
