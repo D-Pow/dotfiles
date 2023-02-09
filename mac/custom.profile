@@ -288,4 +288,30 @@ complete -F _autocompleteWithJiraTicket -P \" "gac"
 
 
 
+_disableDsstoreFileCreation() {
+    if ! defaults read com.apple.desktopservices DSDontWriteNetworkStores | egrep -iq '(TRUE|1)'; then
+        # Finder (file explorer) will create annoying `.DS_Store` files everywhere it visits,
+        # which are akin to Windows' `desktop.ini` files.
+        # All they do is tell Finder how to view the current directory (e.g. list-view, icon-view, etc.)
+        # so they don't serve much purpose.
+        # Thus, delete them and disable their creation.
+        #
+        # See:
+        #   - https://www.techrepublic.com/article/how-to-disable-the-creation-of-dsstore-files-for-mac-users-folders/
+        #   - https://support.apple.com/en-us/HT208209
+        #   - `.plist` reloading: https://apple.stackexchange.com/questions/205596/reload-modified-system-plist
+        #   - https://iboysoft.com/wiki/ds-store.html
+
+        # Delete all current `.DS_Store` files (in HOME dir, ignore root dir for now)
+        sudo find "$HOME" -iname '*\.DS_Store*' 2>/dev/null -delete &
+        # Change OS settings to stop creating `.DS_Store` files
+        defaults write com.apple.desktopservices DSDontWriteNetworkStores true
+        # Reload all settings for Finder and related processes
+        killall cfprefsd Finder finder
+    fi
+}
+_disableDsstoreFileCreation
+
+
+
 source "$_macSpecificProfile"
