@@ -13,7 +13,7 @@ npms() {
 #   https://nodejs.org/api/cli.html#cli_node_options_options
 NODE_OPTIONS='--experimental-modules --experimental-json-modules --experimental-top-level-await --experimental-import-meta-resolve'
 
-npmvalidatePackageLockResolvedUrls() {
+npmValidatePackageLockResolvedUrls() {
     declare _nonNpmRegistryPackages="$(cat package-lock.json \
         | egrep -i '^\s*"resolved":' \
         | grep -v 'resolved": "https://registry.npmjs.org'
