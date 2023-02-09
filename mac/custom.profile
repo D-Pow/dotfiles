@@ -60,6 +60,7 @@ export PATH="$BREW_GNU_UTILS_HOMES:$PATH"
 export SUBLIME_HOME="/Applications/Sublime Text.app/Contents/SharedSupport/bin"
 export SUBLIME_DIR="$HOME/Library/Application Support/Sublime Text/Packages/User"
 export JAVA_HOME="$(abspath /Library/Java/JavaVirtualMachines/jdk*/Contents/Home)"
+export ANDROID_ADB_CLI_HOME="$HOME/android-skd-cli-platform-tools"
 # TeX root dir
 export TEXROOT=/usr/local/texlive
 # The main TeX directory
@@ -78,8 +79,16 @@ export TEXMFVAR="$(abspath $HOME/Library/texlive/2*/texmf-var 2>/dev/null)"  # N
 export TEXMFCONFIG="$(abspath $HOME/Library/texlive/2*/texmf-config 2>/dev/null)"  # Not always present on Mac
 # Directory for user-specific files
 export TEXMFHOME="$HOME/Library/texmf"
+# Ruby
+export PATH="/usr/local/opt/ruby/bin:$PATH"
+export LDFLAGS="-L/usr/local/opt/ruby/lib ${LDFLAGS}"
+export CPPFLAGS="-I/usr/local/opt/ruby/include ${CPPFLAGS}"
+# OpenSSL
+export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
+export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib ${LDFLAGS}"
+export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include ${CPPFLAGS}"
 
-export PATH="$JAVA_HOME:$SUBLIME_HOME:$TEXBIN:/usr/local/bin:$HOME/bin:$_brewPathEntries:$PATH"
+export PATH="$JAVA_HOME:$SUBLIME_HOME:$TEXBIN:$ANDROID_ADB_CLI_HOME:/usr/local/bin:$HOME/bin:$_brewPathEntries:$PATH"
 
 
 # Colored terminal
