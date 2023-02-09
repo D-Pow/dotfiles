@@ -484,6 +484,16 @@ modifyFileLinesInPlace() {
 }
 
 
+findRegex() {
+    # See: https://stackoverflow.com/questions/5249779/how-to-search-filenames-by-regex-with-find/5249797#5249797
+    declare _findDirToSearch="$1"
+
+    shift
+
+    "$(which find)" "$_findDirToSearch" -regextype posix-extended "$@"
+}
+
+
 findIgnoreDirs() {
     declare USAGE="[OPTIONS...] [PATH] [\`find\` OPTIONS...]
     Calls \`find\`, ignoring the specified directories.
