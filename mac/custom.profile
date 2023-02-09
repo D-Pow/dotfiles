@@ -132,7 +132,7 @@ cf() {
 
 alias getAllApps=`mdfind "kMDItemKind == 'Application'"`
 
-getAppInfo() {
+getMacAppInfo() {
     declare USAGE="${FUNCNAME[0]} [-f] <app-name>
     Gets information about an app on Mac.
     Helps address some pain points about Mac's shortcomings when compared to Linux,
@@ -174,7 +174,7 @@ getAppInfo() {
     if [[ -n "$result" ]] && [[ -z "$_fullAppInfo" ]]; then
         # App is running, so we have safely found correct property values, e.g. absolute path to binary vs just the binary name
 
-        if ! [[ -z "${property}" ]]; then
+        if [[ -n "${property}" ]]; then
             if [ "$property" = "binary" ]; then
                 property='CFBundleExecutablePath'
             fi
@@ -207,11 +207,11 @@ getAppInfo() {
     #     or `mdfind -name lsregister`
     declare appId="$(osascript -e "id of app \"$app\"")"
 
-    if ! [[ -z "${appId}" ]]; then
+    if [[ -n "${appId}" ]]; then
         declare appPath="$(mdfind "kMDItemCFBundleIdentifier == $appId" | head -n 1)"
 
-        if ! [[ -z "${appPath}" ]]; then
-            if ! [[ -z "${property}" ]]; then
+        if [[ -n "${appPath}" ]]; then
+            if [[ -n "${property}" ]]; then
                 declare binaryKey='CFBundleExecutable'
 
                 if [ "$property" = "binary" ]; then
@@ -244,8 +244,8 @@ getAppInfo() {
     return 1  # can't do `exit 1` since this is in .profile (instead of a script file) and `exit` would close the terminal
 }
 
-getAppBinaryPath() {
-    getAppInfo "$1" 'binary'
+getMacAppBinaryPath() {
+    getMacAppInfo "$1" 'binary'
 }
 
 getMacAppDomains() {
