@@ -586,8 +586,8 @@ tarremovepathprefix() {
     #   |-- ../../compress/a.file
     #   |-- ../../compress/b.file
     #
-    # This can be fixed by using the `-C/--cd` option, which essentially runs `tar` in the specified
-    # directory rather than the cwd, essentially the equivalent of `(cd /dir/to/compress && tar [options] .)`
+    # This can be fixed by using the `-C/--cd` option, which will run `tar` in the specified directory
+    # rather than the cwd, essentially the equivalent of `(cd /dir/to/compress && tar [options] .)`
 
     # Net result (where [] represents what's added by the user):
     #   tar [-czf with-spaces.tar.gz] -C ['../../dir/with spaces/dir[/file.ext]'] '.'
