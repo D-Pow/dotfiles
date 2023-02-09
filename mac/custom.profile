@@ -268,9 +268,24 @@ getMacAppPath() {
 
 
 resetJetbrains() {
-    cd ~/Library/Preferences/
-    rm jetbrains.* com.jetbrains.*
-    rm -rf WebStorm*/eval/ WebStorm*/options/other.xml IntelliJIdea*/eval/ IntelliJIdea*/options/options.xml
+    declare _jetbrainsDomains=($(defaults domains | egrep -io "\b[^ ]*com.jetbrains[^ ,]*\b"))
+
+    declare _domain
+    for _domain in "${_jetbrainsDomains[@]}"; do
+        defaults delete "$_domain"
+    done
+
+    # Remove .plist files *after* deleting them from `defaults` so the command can find them initially
+    rm -rf \
+        $HOME/Library/Preferences/jetbrains.*.plist \
+        $HOME/Library/Preferences/com.jetbrains.*.plist
+
+    # Delete JetBrains' evaluation-info dirs and trial-date files (legacy = options.xml)
+    # Century '2xxx' or version 'xxxx.y'
+    rm -rf \
+        $HOME/Library/Application\ Support/JetBrains/*[2.]*/eval \
+        $HOME/Library/Application\ Support/JetBrains/*[2.]*/options/other.xml \
+        $HOME/Library/Application\ Support/JetBrains/*[2.]*/options/options.xml
 }
 
 
