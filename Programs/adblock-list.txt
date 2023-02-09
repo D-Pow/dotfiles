@@ -11,6 +11,7 @@
 
 
 # Crunchyroll
+# pihole regex 'fy.v.vrv.co/[^\/]*/[^\/]*/assets/[^\/]{2,}'
 # ! v.vrv.co/*/assets/*
 # 127.0.0.1 vrv.co
 # 127.0.0.1 v.vrv.co
