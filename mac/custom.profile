@@ -251,7 +251,7 @@ getAppBinaryPath() {
 getMacAppDomains() {
     declare _appNameOrDomainToSearch="${1:-\w}"
 
-    defaults domains | egrep -io "\b[^ ]*${_appDomainToSearch}[^ ]*\b"
+    defaults domains | egrep -io "\b[^ ]*${_appNameOrDomainToSearch}[^ ,]*\b"
 }
 
 getMacAppPath() {
