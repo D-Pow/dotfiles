@@ -147,9 +147,9 @@ str.join() {
     #   https://tldp.org/LDP/abs/html/parameter-substitution.html
     #   https://stackoverflow.com/questions/28256178/how-can-i-match-spaces-with-a-regexp-in-bash/28256343#28256343
     if ! [[ "$(echo -e \$\'$_strJoinStr\')" =~ [[:space:]] ]]; then
-        echo "${_strJoinOutput/%$_strJoinStr}"
+        echo -e "${_strJoinOutput/%$_strJoinStr}"
     else
-        echo "$_strJoinOutput"
+        echo -e "$_strJoinOutput"
     fi
 }
 
