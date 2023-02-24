@@ -355,6 +355,13 @@ ghLoginToGitHubPackagesNpmRegistry() {
     fi
 }
 
+ghActionsValidate() {
+    # See: https://github.com/rhysd/actionlint/blob/main/docs/usage.md#docker
+    declare _ghActionsValidateRepoDir="${1:-$(pwd)}"
+
+    docker run --rm -v ${_ghActionsValidateRepoDir}:/repo --workdir /repo rhysd/actionlint:latest -color
+}
+
 
 
 ################
