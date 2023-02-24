@@ -78,16 +78,20 @@
 
 ## [Here Documents/Here Strings](https://www.gnu.org/software/bash/manual/bash.html#Here-Documents)
 
-* Generally, you'll want to use here documents (`<<`) instead of here strings (`<<<`).
+* Generally, you'll want to use here documents (`<<-`) instead of here strings (`<<<`) unless you **want your command on one line**.
 * Add a hyphen (`<<-`) to strip leading Tab characters (NOT spaces) so you can indent as you please.
-* Quoting the `DelimiterText` will make the containing string be read literally, i.e. variables/commands won't be parsed.
+* Use an extra input redirection instead of a hyphen (`<<<`) for single-line input strings.
+* To quote `DelimiterText` or not to quote:
+    - Quoting will make the containing string (`here-document`) be read literally, i.e. variables/commands from the containing parent function block won't be parsed.
+    - Not quoting will allow parent variables/commands to be expanded before passing to `cmd`.
 * The closing `DelimiterText` CANNOT have leading spaces before it; See: https://stackoverflow.com/questions/19986541/error-when-using-a-bash-here-doc-unexpected-end-of-file
 * e.g.
     ```bash
     cmd <<- DelimiterText
-      text
-      $var
-      $(command)
+        # here-document
+        text
+        $var
+        $(command)
     DelimiterText
     ```
 
