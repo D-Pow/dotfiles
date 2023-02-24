@@ -130,7 +130,7 @@ complete -F _autocompleteNpmr -o default "npmr" # default shell autocomplete for
 complete -F _autocompleteNpmr -o default "yarn"
 
 
-export NVM_DIR="$HOME/.nvm"
+export NVM_DIR="$([[ -n "$XDG_CONFIG_HOME" ]] && echo "$XDG_CONFIG_HOME/nvm" || echo "$HOME/.nvm")"
 [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"  # Load nvm
 [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"  # Load nvm bash_completion
 export NVM_SYMLINK_CURRENT=true # Makes a symlink at ~/.nvm/current/bin/node so you don't have to change IDEs' configurations when changing node versions
