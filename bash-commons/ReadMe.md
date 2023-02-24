@@ -14,6 +14,12 @@
 * [`complete` vs `compgen`](https://unix.stackexchange.com/questions/250262/how-to-use-bashs-complete-or-compgen-c-command-option)
 * [`complete` example](https://www.gnu.org/software/bash/manual/html_node/A-Programmable-Completion-Example.html)
 
+## Processes
+
+* `$$` = Current process' PID.
+* `$!` = PID of most recent background process.
+    - See [StackOverflow post about them](https://stackoverflow.com/questions/13671750/what-does-mean-or-in-bash/13671768#13671768).
+
 ## [IO/redirection](https://www.gnu.org/software/bash/manual/bash.html#Redirections)
 
 * Great explanation: https://unix.stackexchange.com/questions/159513/what-are-the-shells-control-and-redirection-operators/159514#159514
