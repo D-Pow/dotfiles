@@ -803,8 +803,8 @@ window() {
         -l \t\t| Lists all windows and desktops (workspaces).
         -w <ID|Name> \t| Target window to interact with (defaults to active window).
         -m <s,x,y,w,h> \t| Move window to screen,x,y,w,h (Note: Screen != desktop/workspace).
-        -s <max|min> \t| Resize window to maximize/minimize.
-        -u \t\t| Undoes the \`-s\` command.
+        -r <max|min> \t| Resize window to maximize/minimize.
+        -u \t\t| Undoes the \`-r\` command.
     " | column -t -s$'\t') #
 
     declare _window=':ACTIVE:'
@@ -814,7 +814,7 @@ window() {
     declare _moveCmd=
     declare OPTIND=1
 
-    while getopts "lw:m:r:uh" opt; do
+    while getopts "hlw:m:r:u" opt; do
         case "$opt" in
             l)
                 # wmctrl doesn't include headers, so add them manually.
@@ -867,18 +867,22 @@ window() {
                     _windowSelectorFlag='-F'
                 fi
                 ;;
+            m)
+                array.fromString -d , -r _moveCmd "$OPTARG"
+                ;;
             r)
                 case "$OPTARG" in
                     max)
                         _resizeCmd="maximized_vert,maximized_horz"
                         ;;
                     min)
-                        _resizeCmd=
-                        echo "Minimize has not been implemented yet. Install xdotool."
-                        return
+                        # TODO - Not sure why this doesn't work but it's suggested to use xdotool
+                        # See: https://askubuntu.com/questions/4876/can-i-minimize-a-window-from-the-command-line
+                        _resizeDirection="toggle"
+                        _resizeCmd="hidden"
                         ;;
                     *)
-                        echo "Invalid option for -s" >&2
+                        echo "Invalid option for -r" >&2
                         echo -e "$USAGE"
                         return
                         ;;
@@ -887,9 +891,7 @@ window() {
             u)
                 # Undoes the maximize/minimize
                 _resizeDirection=remove
-                ;;
-            m)
-                array.fromString -d , -r _moveCmd "$OPTARG"
+                _resizeCmd="maximized_vert,maximized_horz"
                 ;;
             *)
                 echo -e "$USAGE"
