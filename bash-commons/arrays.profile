@@ -122,14 +122,23 @@ array.toString() {
     declare -n _arrToString="$1"
     declare _arrToStringLength="$(array.length _arrToString)"
     declare _arrToStringQuotes="$_toStringQuotes"
-    declare _arrToStringCmd='printf "${_arrToStringQuotes}%s${_toStringDelim:-}${_arrToStringQuotes} " "${_arrToString[@]}"'
+    declare _arrToStringEntries="$(printf "${_arrToStringQuotes}%s${_toStringDelim:-}${_arrToStringQuotes} " "${_arrToString[@]}")"
 
     if [[ -n "$_entriesOnly" ]]; then
-        eval "$_arrToStringCmd"
+        echo -e "$_arrToStringEntries"
     elif [[ -n "$lengthOnly" ]]; then
         echo "$1 (length=$_arrToStringLength)"
     else
-        echo "$1 (length=$_arrToStringLength): $(eval "$_arrToStringCmd")"
+        # Prefix for stringified array
+        echo -n "$1 (length=$_arrToStringLength): "
+
+        if declare -p "$1" | egrep -q '^(declare|local) -A'; then
+            # Print matrix keys as well
+            # Quoting is taken care of automatically with matrices in `declare -p`
+            declare -p "$1" | esed 's/^[^=]+=(.*)$/\1/; s/(^\()|(\s*\)$)//g'
+        else
+            echo "$_arrToStringEntries"
+        fi
     fi
 }
 
