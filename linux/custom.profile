@@ -899,33 +899,39 @@ window() {
 
     shift $(( OPTIND - 1 ))
 
-    # TODO - Use monitor function
+
     # Format:
-    # array[screenIndex]=(width height x-offset y-offset)
+    # array[monitorName]=(width height x-offset y-offset)
     # where offset is what pixel that screen's x/y begins.
     # i.e. For default multi-monitor setups using X11/Xorg, there is only 1 "desktop"
     # even if it has multiple screens.
     # This means that `wmctrl` and `xprop` only see one giant screen, and the offset is how
     # they determine where each screen starts/ends.
-    # e.g. screen 1 = 1000x2000, screen 2 = 3000x4000, then
+    # e.g. monitor-1 = 1000x2000, monitor-2 = 3000x4000, then
     # arr=(
-    #   1000 2000 0 0
-    #   3000 4000 1000 2000
+    #   [monitor-1]="1000 2000 0 0"
+    #   [monitor-2]="3000 4000 1000 2000"
     # )
-    # Also, add a space before 'connected' to exclude 'disconnected'
-    declare _screensAndDimensionsArray=($(xrandr | grep ' connected' | egrep -o '\d+x\d+\+\d+\+\d+'))
-    declare -A _screensAndDimensionsMatrix=()
-    declare _numScreens="${#_screensAndDimensionsArray[@]}"
+    declare _monitorDimensionsArray=($(monitors -s))
+    declare -A _monitorsAndDimensionsMatrix=()
 
-    for i in "${!_screensAndDimensionsArray[@]}"; do
-        declare _dimsWithSeparators="${_screensAndDimensionsArray[i]}"
-        declare _dimsSeparated=($(echo "$_dimsWithSeparators" | sed -E 's|[^0-9.]| |g'))
+    monitors -a _monitorsAndDimensionsMatrix
 
-        _screensAndDimensionsArray["$i"]="${_dimsSeparated[@]}"
-        _screensAndDimensionsMatrix["$i,w"]="${_dimsSeparated[0]}"
-        _screensAndDimensionsMatrix["$i,h"]="${_dimsSeparated[1]}"
-        _screensAndDimensionsMatrix["$i,x"]="${_dimsSeparated[2]}"
-        _screensAndDimensionsMatrix["$i,y"]="${_dimsSeparated[3]}"
+    declare _numMonitors="${#_monitorDimensionsArray[@]}"
+
+    declare _monitorName=
+    for _monitorName in "${!_monitorsAndDimensionsMatrix[@]}"; do
+        # Remove any punctuation, e.g. WxH or x,y
+        declare _monitorDims=($(
+            echo "${_monitorsAndDimensionsMatrix["$_monitorName"]}" \
+            | sed -E 's/[^0-9.]/ /g'
+        ))
+
+        _monitorDimensionsArray["$_monitorName"]="${_monitorDims[@]}"
+        _monitorsAndDimensionsMatrix["$_monitorName,w"]="${_monitorDims[0]}"
+        _monitorsAndDimensionsMatrix["$_monitorName,h"]="${_monitorDims[1]}"
+        _monitorsAndDimensionsMatrix["$_monitorName,x"]="${_monitorDims[2]}"
+        _monitorsAndDimensionsMatrix["$_monitorName,y"]="${_monitorDims[3]}"
     done
 
     # If wanting to get a window other than the active one, these will be handy
@@ -941,14 +947,14 @@ window() {
     declare _windowCmdPrefix="wmctrl $_windowSelectorFlag -r $_window"
 
     if ! array.empty _moveCmd; then
-        declare _toScreen="${_moveCmd[0]}"
+        declare _toMonitor="${_moveCmd[0]}"
         declare _toX="${_moveCmd[1]}"
         declare _toY="${_moveCmd[2]}"
         declare _toWidth="${_moveCmd[3]}"
         declare _toHeight="${_moveCmd[4]}"
 
-        if (( _toScreen >= _numScreens )); then
-            echo "Selected screen index ($_toScreen) too high. Please choose between [0,$(( _numScreens - 1 ))]." >&2
+        if (( _toMonitor >= _numMonitors )); then
+            echo "Selected monitor index ($_toMonitor) too high. Please choose between [0,$(( _numMonitors - 1 ))]." >&2
             return 1
         fi
 
@@ -967,11 +973,11 @@ window() {
             _toHeight='-1'
         fi
 
-        declare _toScreenOffsetX=${_screensAndDimensionsMatrix[$_toScreen,x]}
-        declare _toScreenOffsetY=${_screensAndDimensionsMatrix[$_toScreen,y]}
+        declare _toMonitorOffsetX=${_monitorsAndDimensionsMatrix[$_toMonitor,x]}
+        declare _toMonitorOffsetY=${_monitorsAndDimensionsMatrix[$_toMonitor,y]}
 
-        declare _correctX=$(( _toX + _toScreenOffsetX ))
-        declare _correctY=$(( _toY + _toScreenOffsetY ))
+        declare _correctX=$(( _toX + _toMonitorOffsetX ))
+        declare _correctY=$(( _toY + _toMonitorOffsetY ))
 
         $_windowCmdPrefix -e "0,$_correctX,$_correctY,$_toWidth,$_toHeight"
     fi
