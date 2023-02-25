@@ -580,6 +580,7 @@ monitors() {
                         # Move "primary" to the end of the line to match format of external monitors
                         $2 = ""
                         $(NF + 1) = "primary"
+
                         primaryMonitor = $0
                     } else {
                         externalMonitors = externalMonitors "\n" $0
@@ -588,11 +589,22 @@ monitors() {
                 END {
                     # Show the primary monitor first, then the other monitors
                     printf("%s", primaryMonitor)
-                    # Sort all other monitors in order from left to right
+                    # Sort all other monitors in order from left to right (x-pos value)
                     # We need `printf` above to avoid double-newlines in the output
                     print(externalMonitors) | "sort -n -k 4"
                 }
             ' \
+            | awk '{
+                # Remove rotation info since we dont need it
+                # See: https://unix.stackexchange.com/a/667523/203387
+                $6 = $7 = $8 = $9 = $10 = $11 = $12 = $13 = ""
+
+                # Remove monitor physical mm size info, too
+                $14 = $15 = $16 = ""
+
+                print($0)
+            }' \
+            | tr -s ' ' \
             | sed -E 's/\s{2,}/ /g'
     )"
 
@@ -626,23 +638,47 @@ monitors() {
     done
 
 
-    if [[ -n "$_monitorsList" ]]; then
-        echo "$_monitorsAllInfo"
-    elif [[ -n "$_monitorsNamesOnly" ]]; then
-        # echo "$_monitorsAllInfo" | awk '{ print $1 }'
-        echo "${!_monitorsDimsAndPos[@]}"
-    elif [[ -n "$_monitorsOnlyDimensions" ]]; then
-        echo "${_monitorsDimsAndPos[@]}"
-    elif [[ -n "$_monitorsReturnArrayName" ]]; then
-        declare -n _retMonitorsList="$_monitorsReturnArrayName"
+    # Pretty-print via `column` (see `parseArgs()` for usage info)
+    declare _monitorsAllInfoNumColumns="$(echo "$_monitorsAllInfo" | grep -i primary | wc -w)"
+    declare _monitorName=
 
-        declare _monitorName
+    if [[ -n "$_monitorsList" ]]; then
+        # Alternative: `xrandr --listactivemonitors` outputs:
+        #   [index]: +[name] [width-pixels]/[width-physical]x[height-pixels]/[height-physical]+[x]+[y]
+        {
+            echo "Name Res(WxH) Pos(x,y)"
+            echo -e "$_monitorsAllInfo" | awk '{
+                # Match the above header format
+                condensedDisplay = sprintf("%s %sx%s %s,%s", $1, $2, $3, $4, $5);
+
+                # Get any additional trailing info and remove leading/trailing whitespace
+                # Note: `substr($0, index($0, $6))` doesnt work because awk string commands
+                # work by characters, not words, and $6 might exist earlier in the $0 string
+                $1 = $2 = $3 = $4 = $5 = "";
+                trimmedRemainingColumns = gensub(/^\s*(.+)\s*$/, "\\1", "g", $0);
+
+                print(condensedDisplay, trimmedRemainingColumns);
+            }'
+        } | column -t -c $_monitorsAllInfoNumColumns
+    elif [[ -n "$_monitorsNamesOnly" ]]; then
         for _monitorName in "${!_monitorsDimsAndPos[@]}"; do
-            _retMonitorsList["$_monitorName"]="${_monitorsDimsAndPos["$_monitorName"]}"
+            echo "$_monitorName"
+        done
+    elif [[ -n "$_monitorsOnlyDimensions" ]]; then
+        for _monitorName in "${!_monitorsDimsAndPos[@]}"; do
+            echo "${_monitorsDimsAndPos["$_monitorName"]}"
         done
     elif [[ -n "$_monitorDisplayDesktopWindowId" ]]; then
         echo "TODO"
         # windows -l | egrep '^\S+ -1' | awk '{ print $1 }'
+    fi
+
+    if [[ -n "$_monitorsReturnArrayName" ]]; then
+        declare -n _retMonitorsList="$_monitorsReturnArrayName"
+
+        for _monitorName in "${!_monitorsDimsAndPos[@]}"; do
+            _retMonitorsList["$_monitorName"]="${_monitorsDimsAndPos["$_monitorName"]}"
+        done
     fi
 }
 
