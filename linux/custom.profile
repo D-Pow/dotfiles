@@ -818,10 +818,38 @@ window() {
         case "$opt" in
             l)
                 # wmctrl doesn't include headers, so add them manually.
-                # TODO Header spacing is manually set so won't work for all screen
-                # resolutions, but low priority so fix later.
-                echo -e "WinID Desktop x    y \tw    h    user WinName"
-                wmctrl -lG
+                #
+                # The second column for monitors is -1, and 0 for application windows.
+                # To only show monitors rather than windows, add this after `wmctrl` but before `sort`:
+                # egrep -i '^\S+ -1'
+                declare _windowListHeader="WinID\tMonitor\tPID\tx\ty\tw\th\tMachine\tWinName"
+                # x-offset, y-offset, width, height
+                declare _windowListInfo="$(wmctrl -lGp | sort -n -k 4 -k 3)"
+
+                declare _windowListInfoFormatted="$(
+                    echo -e "$_windowListInfo" \
+                    | awk '{
+                        outputWithTabsSeparatingCols = $1;
+                        $1 = "";
+
+                        # Separate columns defined by the above header by tabs since window
+                        # names might have spaces in them
+                        for (i = 2; i < 9; i++) {
+                            outputWithTabsSeparatingCols = outputWithTabsSeparatingCols "\t" $i;
+
+                            # Delete the header-specified entry so we can print long window
+                            # names afterwards
+                            $i = "";
+                        }
+
+                        trimmedRemainingColumns = gensub(/^\s*(.+)\s*$/, "\\1", "g", $0);
+
+                        printf("%s\t%s\n", outputWithTabsSeparatingCols, trimmedRemainingColumns);
+                    }'
+                )"
+
+                echo -e "$_windowListHeader\n$_windowListInfoFormatted" | column -t -c 9 -s $'\t'
+
                 return
                 ;;
             w)
