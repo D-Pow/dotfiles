@@ -1,3 +1,14 @@
+// Declare main class here for automatic usage everywhere else
+application {
+    mainClass = "org.mycompany.Main";
+}
+
+/**
+ * Note: Gradle <= v6 use `configurations.compile` just like their `dependencies block uses.
+ * Gradle >= 7 uses `configurations.runtimeClasspath` since `compile` was deprecated.
+ */
+
+
 /**
  * {@inheritDoc}
  *
@@ -24,7 +35,7 @@ task fatJar(type: Jar) {
 
     manifest {
         attributes(
-            'Main-Class': '<package.mainClass>',
+            'Main-Class':  application.mainClass,
             // TODO - Fill out the rest of the fields needed for a fully valid manifest.json
             //  See:
             //      - https://stackoverflow.com/questions/39406822/change-file-permission-by-gradle
@@ -37,43 +48,51 @@ task fatJar(type: Jar) {
 
     // Copy dependencies into jar
     from {
-        configurations.compile.collect {
+        configurations.runtimeClasspath.collect {
             it.isDirectory() ? it : zipTree(it)
         }
     }
 
     // Exclude signature files
-    exclude('META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA')
+    exclude('META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA');
 }
 
 
 /* Libs separate from jar */
-task libJar(type: Jar) {
+tasks.register('libJar', Jar) {
     // Include sources from built-in Jar task
     from sourceSets.main.output
 
     // Set destination locations (optional)
-    def jarDir = file("$rootDir/dist")
-    def libName = "libs"
-    def libDir = file("$jarDir/$libName")
-    destinationDir = jarDir
+    def jarDir = file("${project.buildDir}/${project.libsDirName}");
+    def libName = "lib";
+    def libDir = file("$jarDir/$libName");
 
-    // Copy dependencies to 'libName' folder
-    copy {
-        from configurations.compile
-        into libDir
+    doLast {
+        // Copy dependencies to `libDir`
+        // Using `libName` in `manifest.attributes.Class-Path` means the lib
+        // folder *must* be in the same dir as the .jar file.
+        copy {
+            from configurations.runtimeClasspath.files.collect {
+                // Since dependencies are .jar files, no need to call `zipTree()`
+                it
+            }
+            into libDir
+        }
     }
 
     // Include all libraries in classpath
     manifest {
         attributes (
-            'Main-Class':'<package.mainClass>',
-            'Class-Path': configurations.compile.files.collect { "$libName/$it.name" }.join(' ')
+            'Main-Class': application.mainClass,
+            'Class-Path': configurations.runtimeClasspath.files.collect {
+                "$libName/$it.name"
+            }.join(' ')
         )
     }
 
     // Exclude signature files
-    exclude('META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA')
+    exclude('META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA');
 }
 
 
