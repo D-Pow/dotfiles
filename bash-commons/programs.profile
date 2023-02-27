@@ -8,21 +8,26 @@ resetJetbrains() {
 
         declare _domain
         for _domain in "${_jetbrainsDomains[@]}"; do
+            echo "Deleting domain ${_domain} using \`defaults\`..."
+
             defaults delete "$_domain"
         done
 
         # Remove .plist files *after* deleting them from `defaults` so the command can find them initially
+        echo "Deleting JetBrains \`.plist\` files from '$HOME/Library/Preferences/'..."
         rm -rf \
             $HOME/Library/Preferences/jetbrains.*.plist \
             $HOME/Library/Preferences/com.jetbrains.*.plist
 
         # Delete JetBrains' evaluation-info dirs and trial-date files (legacy = options.xml)
         # Century '2xxx' or version 'xxxx.y'
+        echo "Deleting trial evaluation files from '$HOME/Library/Application Support/JetBrains/'..."
         rm -rf \
-            $HOME/Library/Application\ Support/JetBrains/*[2.]*/eval \
-            $HOME/Library/Application\ Support/JetBrains/*[2.]*/options/other.xml \
-            $HOME/Library/Application\ Support/JetBrains/*[2.]*/options/options.xml
+            $HOME/Library/Application\ Support/JetBrains/*[0-9.]*/eval \
+            $HOME/Library/Application\ Support/JetBrains/*[0-9.]*/options/other.xml \
+            $HOME/Library/Application\ Support/JetBrains/*[0-9.]*/options/options.xml
     elif isLinux; then
+        echo "Deleting trial evaluation files from '$HOME/.config/JetBrains/'..."
         rm -rf \
             $HOME/.config/JetBrains/*/options/other.xml \
             $HOME/.config/JetBrains/*/options/eval* \
