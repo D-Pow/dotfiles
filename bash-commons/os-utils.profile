@@ -101,30 +101,112 @@ bytesReadable() {
     declare USAGE="[OPTIONS...] <input-or-stdin...>
     Converts numbers from bytes to readable sizes (B, KB, MB, GB, etc.).
     "
-    declare _bytesReadableDecimalPlaces
+    declare _bytesReadableDecimalPlaces=
     declare _bytesReadableDecimalPlacesDefault=2
-    declare _bytesReadableRemoveSpace
-    declare argsArray
-    declare stdin
+    declare _bytesReadableRemoveSpace=
+    declare _bytesReadableHeaderLinesToSkip=
+    declare _bytesReadableColumn=
+    declare argsArray=()
+    declare stdin=()
     declare -A _bytesReadableOptions=(
         ['d|decimals:,_bytesReadableDecimalPlaces']="Number of decimal places to round to (default: $_bytesReadableDecimalPlacesDefault)."
         ['s|no-spaces,_bytesReadableRemoveSpace']="Remove the space between file size and unit."
+        ['h|header:,_bytesReadableHeaderLinesToSkip']="Number of leading lines (e.g. headers) to skip when converting."
+        ['c|column:,_bytesReadableColumn']="Column to convert if lines contain more than just byte values."
         ['USAGE']="$USAGE"
     )
 
     parseArgs _bytesReadableOptions "$@"
     (( $? )) && return 1
 
-    declare _bytesReadableNumbersArray=(${stdin[@]} ${argsArray[@]})
+    declare _bytesReadableIfsOrig="$IFS"
+    declare IFS=$'\n'
+
+    # if [[ -n "$_bytesReadableHeaderLinesToSkip" ]] || [[ -n "$_bytesReadableColumn" ]]; then
+    #     IFS=$'\n'
+    # fi
+    # declare _bytesReadableInputArray=("${stdin[@]}" "${argsArray[@]}")
+    # declare _bytesReadableInput="$(echo -e "${stdin[@]} ${argsArray[@]}" | decolor)"
+
+    # Handle both inline and multi-line byte-value inputs
+    declare _bytesReadableInputArray=(${stdin[@]} ${argsArray[@]})
+    IFS="$_bytesReadableIfsOrig"
+    # declare _bytesReadableInput="$(echo "${_bytesReadableInputArray[@]}" | decolor)"
+    declare _bytesReadableInput=${_bytesReadableInputArray[@]}
+
     declare _bytesReadablePrintfFormat="%.${_bytesReadableDecimalPlaces:-$_bytesReadableDecimalPlacesDefault}f"
+    # Show `GB`, `MB`, `KB`, or `B`
+    declare _bytesReadableOutputFormat='--to=iec'
+    declare _bytesReadableCmdArray=(
+        # numfmt
+        # --to=iec
+        --suffix=B
+        --format="'$_bytesReadablePrintfFormat'"
+    )
 
-    declare _bytesReadableString="$(numfmt --to=iec --suffix=B --format="$_bytesReadablePrintfFormat" "${_bytesReadableNumbersArray[@]}")"
-
-    if [[ -n "$_bytesReadableRemoveSpace" ]]; then
-        echo "$_bytesReadableString"
-    else
-        echo "$_bytesReadableString" | sed -E 's/([0-9])([a-zA-Z])/\1 \2/'
+    if [[ -n "$_bytesReadableColumn" ]]; then
+        _bytesReadableCmdArray+=(--field=${_bytesReadableColumn})
     fi
+
+    # Since we resulted to processing input line-by-line instead of all at once, `--header` is no longer needed
+    # if [[ -n "$_bytesReadableHeaderLinesToSkip" ]]; then
+    #     _bytesReadableCmdArray+=(--header=${_bytesReadableHeaderLinesToSkip})
+    # fi
+
+    declare _bytesReadableEntry=
+
+    if (
+        echo "${_bytesReadableInputArray[${_bytesReadableHeaderLinesToSkip:-0}]}" \
+            | trim -t ${_bytesReadableHeaderLinesToSkip:-0} \
+            | awk "{ print(\$${_bytesReadableColumn:-0}) }" \
+            | egrep -iq '[0-9][kgm]$'
+    ); then
+        # The input string/lines chose a column that is already (at least partially) human readable, e.g. `ls -h`
+        # Thus, convert to exact number of bytes before converting from said bytes-value to human-readable values
+        declare _bytesReadableCmdStringTempConvert="${_bytesReadableCmdArray[@]} --from=iec"
+        declare _bytesReadableInputArrayToConvertFromReadableToBytes=("${_bytesReadableInputArray[@]}")
+
+        # Reset input array to be filled with raw-byte formatted lines
+        _bytesReadableInputArray=()
+        IFS=$'\n'
+
+        for _bytesReadableEntry in "${_bytesReadableInputArrayToConvertFromReadableToBytes[@]}"; do
+            declare _bytesReadableFormattedEntry="$(echo -e "$_bytesReadableEntry" | numfmt $_bytesReadableCmdStringTempConvert 2>/dev/null)"
+
+            # If line can't be parsed, use original line instead
+            if [[ -z "$_bytesReadableFormattedEntry" ]]; then
+                _bytesReadableFormattedEntry="$_bytesReadableEntry"
+            fi
+
+            _bytesReadableInputArray+=("$_bytesReadableFormattedEntry")
+        done
+
+        IFS="$_bytesReadableIfsOrig"
+    fi
+
+    # Add after parsing input in case `iec` needs to be converted to raw Bytes first
+    _bytesReadableCmdArray+=("$_bytesReadableOutputFormat")
+
+    # declare _bytesReadableCmdString="${_bytesReadableCmdArray[@]}"
+    # declare _bytesReadableOutput="$(
+    #     echo -e "$(array.join _bytesReadableInputArray '\n')" \
+    #         | numfmt ${_bytesReadableCmdArray[@]}
+    # )"
+
+    for _bytesReadableEntry in "${_bytesReadableInputArray[@]}"; do
+        declare _bytesReadableOutputLine="$(echo "$_bytesReadableEntry" | numfmt ${_bytesReadableCmdArray[@]} 2>/dev/null)"
+
+        if [[ -z "$_bytesReadableOutputLine" ]]; then
+            # Line can't be converted, likely text not adhering to the general format of the input, like headers in the
+            # middle of the input lines (e.g. think `ls -FlAh ./*/*.txt` where the directory is printed before the
+            # `ls` contents)
+            echo -e "$_bytesReadableEntry"
+        elif [[ -n "$_bytesReadableRemoveSpace" ]]; then
+            echo -e "$_bytesReadableOutputLine"
+        else
+            echo -e "$_bytesReadableOutputLine" | sed -E 's/([0-9])([GMK]B|B)/\1 \2/'
+        fi
+    done
 }
 
 
