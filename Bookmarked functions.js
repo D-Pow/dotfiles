@@ -1457,6 +1457,126 @@ class SlackInBrowserService {
 window.SlackInBrowserService = SlackInBrowserService;
 
 
+window.tinderExportChat = function tinderExportChat(convertToSmsXml = true) {
+    const name = document.querySelector('nav span:not(.hidden):not(.Hidden)').innerText;
+    const chat = [...
+        [ ...document.querySelector('[id*="SC.chat"]').querySelectorAll('div[class*=Pos]') ].map(elem => {
+            const dateTime = elem?.querySelector('time')?.dateTime;
+            const utc = dateTime ? Date.parse(dateTime) : null;
+            let fromMe = false;
+            let msg;
+
+            if (utc) {
+                msg = elem.querySelector('[class*="C($c-ds-text-chat-bubble-receive)"]')?.innerText;
+
+                if (!msg) {
+                    fromMe = true;
+                    msg = elem.querySelector('[class*="C($c-ds-text-chat-bubble-send)"]')?.innerText;
+                }
+            }
+
+            return utc ? { dateTime, utc, fromMe, msg, name } : null;
+        })
+            .filter(Boolean)
+            .reduce((map, nextObj) => {
+                const key = `${nextObj.utc}-${nextObj.msg}`;
+
+                if (!map.has(key)) {
+                    map.set(key, nextObj);
+                }
+
+                return map;
+            }, new Map())
+            .values()
+    ];
+
+    function createXmlFromJsonChat(arr, {
+        asString = false,
+    } = {}) {
+        /* Alternative:
+         *  xml.createProcessingInstruction('xml', `version="1.0" encoding="UTF-8" standalone="yes"`)
+         *
+         * See:
+         *  - https://stackoverflow.com/questions/68801002/add-xml-declaration-to-xml-document-programmatically/68801446#68801446
+         */
+        const xml = new DOMParser().parseFromString(
+            `<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>`,
+            'application/xml',
+        );
+
+        xml.body.replaceChildren();  /* Remove <parseerror/> element if present */
+
+        function appendXmlChild(elem) {
+            xml.body.appendChild(elem);
+
+            return xml;
+        }
+
+        function createSmsElement({
+            name = '',
+            number = '',
+            msg = '',
+            utc = '',
+            fromMe = false,
+        } = {}) {
+            const dateSent = new Date(utc);
+            const dateParts = {
+                month: `${dateSent.getMonth() + 1}`.padStart(2, '0'),  /* Month range is [0,11]. Force 2 digits in numbers. */
+                day: `${dateSent.getDate()}`.padStart(2, '0'),
+                year: dateSent.getFullYear(),
+                hours: `${dateSent.getHours()}`.padStart(2, '0'),
+                minutes: `${dateSent.getMinutes()}`.padStart(2, '0'),
+                seconds: `${dateSent.getSeconds()}`.padStart(2, '0'),
+            };
+            const readableDate = `${dateParts.month}/${dateParts.day}/${dateParts.year} ${dateParts.hours}:${dateParts.minutes}:${dateParts.seconds}`;
+
+            const sms = xml.createElement('sms');
+
+            sms.setAttribute('contact_name', name);
+            sms.setAttribute('address', number || '15555555555');
+            sms.setAttribute('date', dateSent.valueOf());
+            sms.setAttribute('body', msg);
+            sms.setAttribute('type', fromMe ? '2' : '1');
+            sms.setAttribute('subject', 'null');
+            sms.setAttribute('date_sent', fromMe ? '0' : utc);
+            sms.setAttribute('readable_date', readableDate);
+            sms.setAttribute('read', '1');
+            sms.setAttribute('status', '-1');
+            sms.setAttribute('protocol', '0');
+            sms.setAttribute('toa', 'null');
+            sms.setAttribute('sc_toa', 'null');
+            sms.setAttribute('service_center', 'null');
+            sms.setAttribute('locked', '0');
+
+            return sms;
+        }
+
+        arr.forEach(message => appendXmlChild(createSmsElement(message)));
+
+        if (asString) {
+            return new XMLSerializer().serializeToString(xml)
+                .replace(/xmlns=""( )?/g, '')  /* Remove superfluous empty namespace attributes */
+                .replace(/<\/?(html|body)[^>]*>/g, '')  /* Remove HTML-specific tags since this is XML */
+                .replace(/(?<=[/?]>)(?=<\w+ )/g, '\n    ');  /* Add newlines and indentation between elements */
+        }
+
+        return xml;
+    }
+
+    if (convertToSmsXml) {
+        const xml = createXmlFromJsonChat(chat);
+
+        self.copy?.(createXmlFromJsonChat(chat, { asString: true }));
+
+        return xml;
+    }
+
+    self.copy?.(chat);
+
+    return chat;
+};
+
+
 
 /************************************************
  ********    Video manipulation tools    ********
