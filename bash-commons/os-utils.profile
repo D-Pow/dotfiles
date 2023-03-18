@@ -1377,6 +1377,8 @@ parallel() {
     # preserves said total-exit-code value.
     return $_parallelCmdsExitCodeTotal
 }
+# Tests: Run below with and without `&` after `parallel` command
+# parallel 'a() { sleep 1; echo a; return 4; }; a' 'sleep 2; echo b; exit 3' 'sleep 3 && echo c;' & echo "ExitCode: $?"; echo $!; jobs -l; listprocesses $!; wait $!; echo "ExitCode 2: $?"
 
 
 
