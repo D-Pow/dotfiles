@@ -1322,6 +1322,9 @@ parallel() {
     summed together.
 
     Outputs all STD(OUT|ERR) to the respective pipes as normal.
+
+    Run in this function itself in the background via: \`${FUNCNAME[0]} <args> & wait \$!\`
+    Note: The background process ID is REQUIRED in \`wait \$!\`.
     "
     declare argsArray=
     declare stdin=
