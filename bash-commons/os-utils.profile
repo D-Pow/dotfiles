@@ -1694,4 +1694,3 @@ _autocompleteRepos() {
 # The easiest way to handle this would have been `-o filenames`, except that caused the issues above
 # where the last word in a directory with spaces would be swapped out unexpectedly.
 complete -F _autocompleteRepos -o nospace 'repos'
-
