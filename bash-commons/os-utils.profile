@@ -1315,6 +1315,71 @@ watchFile() {
 
 
 
+parallel() {
+    # Note: Run `set -m` if not already done so if copying this function to elsewhere
+    declare USAGE="[OPTION]... <cmdStrings>...
+    Runs all terminal commands separately in parallel, and returns the total exit code of each of them
+    summed together.
+
+    Outputs all STD(OUT|ERR) to the respective pipes as normal.
+    "
+    declare argsArray=
+    declare stdin=
+    declare -A _parallelOptions=(
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _parallelOptions "$@"
+    (( $? )) && return 1
+
+    declare _parallelCmds=("${stdin[@]}" "${argsArray[@]}")
+    array.toString _parallelCmds
+    # declare _parallelCmds=("$@")
+
+    declare _parallelCmdsExitCodeTotal=0
+    declare _parallelChildPids=()
+
+    declare _parallelCmd=
+    for _parallelCmd in "${_parallelCmds[@]}"; do
+        if [[ -z "$_parallelCmd" ]]; then
+            # If empty entry, then skip over it.
+            # Causes of empty entries include if STDIN is empty, making the `_parallelCmds` array
+            # have an empty starting string
+            continue
+        fi
+
+        # Can't use `( eval "$cmd" ) &` because `eval` doesn't return/exit with the exit code
+        # of the command passed to it.
+        # Thus, execute the command with parentheses added inside the string passed to `eval`.
+        # See: https://unix.stackexchange.com/questions/414740/return-value-from-eval
+        eval "( $_parallelCmd ) &"
+
+        # PID of executing shell, e.g. `bash -c`, since the `eval` above creates a new shell via parentheses.
+        # NOT the PID of the underlying command string passed by the user.
+        declare _parallelParentShellPID="$!"
+
+        _parallelChildPids+=("$_parallelParentShellPID")
+    done
+
+    declare _parallelChildPid=
+    for _parallelChildPid in "${_parallelChildPids[@]}"; do  # Alternative: `for _childPid in $(jobs -p); do`
+        wait "$_parallelChildPid"
+
+        declare _parallelChildExitCode="$?"
+
+        (( _parallelCmdsExitCodeTotal += _parallelChildExitCode ))
+    done
+
+    # Declare this function with `{... return $totalExitCode }` instead of as a subshell with `(... exit $totalExitCode )`
+    # because the subshell masks the total-exit-code value from the parent if the parent puts this function
+    # call itself in the background via `parallel cmd1 cmd2 &`.
+    # Running it as a function in the same shell as the parent (i.e. using `{... return $totalExitCode }`)
+    # preserves said total-exit-code value.
+    return $_parallelCmdsExitCodeTotal
+}
+
+
+
 _copyCommand=
 _pasteCommand=
 
