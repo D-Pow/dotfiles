@@ -1336,8 +1336,6 @@ parallel() {
     (( $? )) && return 1
 
     declare _parallelCmds=("${stdin[@]}" "${argsArray[@]}")
-    array.toString _parallelCmds
-    # declare _parallelCmds=("$@")
 
     declare _parallelCmdsExitCodeTotal=0
     declare _parallelChildPids=()
