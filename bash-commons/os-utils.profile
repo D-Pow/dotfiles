@@ -1554,7 +1554,7 @@ dirsize() {
     # sort -reverse -human-numeric-sort - sorts based on size number (taking into account
     #   human-readable sizes like KB, MB, GB, etc.) in descending order
     # Manually add '/' at the end of output to show they are directories
-    du -h -d $_depth $_actualDiskSpaceUsed "${_ignoredPathsFlags[@]}" "$_path" | sort -rh | sed -E 's|(.)$|\1/|'
+    du $_actualDiskSpaceUsed -h -d $_depth "${_ignoredPathsFlags[@]}" "$_path" | sort -rh | sed -E 's|(.)$|\1/|'
 
     if [[ -n "$_showFiles" ]]; then
         echo -e "\nFiles:"
