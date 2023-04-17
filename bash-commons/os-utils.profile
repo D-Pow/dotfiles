@@ -1524,7 +1524,7 @@ dirsize() {
     declare _path="${argsArray[0]:-.}"
     _depth="${_depth:-1}"
 
-    if [[ -z "$_actualDiskSpaceUsed" ]]; then
+    if [[ -n "$_actualDiskSpaceUsed" ]]; then
         _actualDiskSpaceUsed="-b"  # `du [-b|--bytes]` means "apparent size" i.e. block size == 1 byte
     else
         _actualDiskSpaceUsed=''
