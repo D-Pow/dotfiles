@@ -1521,10 +1521,6 @@ dirsize() {
     parseArgs _dirsizeOptions "$@"
     (( $? )) && return 1
 
-    if [[ -n "$_showFiles" ]]; then
-        echo -e "Directories:"
-    fi
-
     declare _path="${argsArray[0]:-.}"
     _depth="${_depth:-1}"
 
@@ -1544,6 +1540,10 @@ dirsize() {
         for _ignoredPath in "${_ignoredPaths[@]}"; do
             _ignoredPathsFlags+=('--exclude' "$_ignoredPath")
         done
+    fi
+
+    if [[ -n "$_showFiles" ]]; then
+        echo -e "Directories:"
     fi
 
     # ls -lah has a max size display of 4.0K or 1G, so it doesn't show sizes bigger than that,
