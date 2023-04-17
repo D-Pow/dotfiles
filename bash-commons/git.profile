@@ -97,7 +97,7 @@ gitGetRepoName() {
 
 
 gitGetBothModified() {
-    git status | grep both | sed -E 's|.*modified:||; s|^\s*||'
+    git status | grep both | sed -E 's|.*both *\w+:||; s|^\s*||'
 }
 
 
