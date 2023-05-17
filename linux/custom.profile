@@ -200,6 +200,15 @@ apt-show-package-repo() {
     done
 }
 
+apt-package-sizes() {
+    # See:
+    #   - https://linuxopsys.com/topics/list-installed-packages-by-size-on-ubuntu
+    dpkg-query -Wf '${Installed-Size}\t${Package}\n' \
+        | sort -n \
+        | egrep -i "$@" \
+        | bytesReadable -c 1
+}
+
 
 # systemctl commands:
 #   status              =  shows service status
