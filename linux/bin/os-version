@@ -6,19 +6,24 @@ USAGE="$(basename "${BASH_SOURCE[0]}") [-s] [-o]
     Options:
         -s      |   Simple - Output a shorter OS summary instead of the full one.
         -o      |   OS-only - Output only the generic version of your OS (Linux, Darwin, etc.).
+        -v      |   Verbose - Output all information from various sources (/etc/os-release, uname, etc.).
 "
 
 simplifiedOnly=
 osOnly=
+verbose=
 OPTIND=1
 
-while getopts ':so' opt; do
+while getopts ':sov' opt; do
     case "$opt" in
         s)
             simplifiedOnly=true
             ;;
         o)
             osOnly=true
+            ;;
+        v)
+            verbose=true
             ;;
         *)
             echo -e "$USAGE"
@@ -88,4 +93,16 @@ elif [[ -f "$allBranchedFromOsInfoFile" ]]; then
     done < $allBranchedFromOsInfoFile
 
     echo "Branched from: $osBranchedFrom"
+fi
+
+
+if [[ -z "$verbose" ]]; then
+    exit
+fi
+
+
+echo -e "\n${allSysInfo}\n"
+
+if [[ -f "$allOsInfoFile" ]]; then
+    cat "$allOsInfoFile"
 fi
