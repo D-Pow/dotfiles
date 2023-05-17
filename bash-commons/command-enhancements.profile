@@ -485,7 +485,16 @@ modifyFileLinesInPlace() {
 
 
 findRegex() {
-    # See: https://stackoverflow.com/questions/5249779/how-to-search-filenames-by-regex-with-find/5249797#5249797
+    # Sets the default type of regex to `posix-extended` to get as close as possible to
+    # high-level languages' regex engines vs Bash's old-fashioned one (which doesn't
+    # support e.g. `\s` without configuring it in the command specifically).
+    #
+    # Still requires passing either `-(i)name` or `-(i)regex` since the search query
+    # is an arg of those flags, and thus must be directly after them.
+    # e.g. `find /path -regextype posix-extended -regex -maxdepth 2 searchQuery` would fail.
+    #
+    # See:
+    #   - https://stackoverflow.com/questions/5249779/how-to-search-filenames-by-regex-with-find/5249797#5249797
     declare _findDirToSearch="$1"
 
     shift
