@@ -679,6 +679,35 @@ gitGetMergeBaseForCurrentBranch() {
 }
 
 
+gitResetFilesWhereOnlyAccessPermissionsChanged() {
+    declare filesToKeep=($(git diff | egrep -i '\+\+\+\s+b/' | esed 's/^\S+\s*b/./'))
+    declare filesChanged=($(git diff | egrep -i 'old mode \d+' -B 1 -A 0 | egrep -io 'a/\S+' | esed 's/^a/./'))
+    declare filesToReset=()
+
+    # Manual double-parsing of array. Not used since `array.join` can automatically
+    # remove the trailing delimiter, but the logic was kept here as a comment for
+    # reference.
+    #
+    # declare filesToKeepRegex=()
+    # array.map -r filesToKeepRegex filesToKeep 'echo "($value)|"'
+    # filesToKeepRegex="$(array.join -s filesToKeepRegex '')"
+    # filesToKeepRegex="$(echo "$filesToKeepRegex" | esed 's/\|$//')"
+    #
+    # Add `(` to first array entry and `)` to last array entry, joining with `)|(`
+    # to result in `(file1)|(file2)`.
+    declare filesToKeepRegex="($(array.join -s filesToKeep ')|('))"
+
+    declare fileChanged=
+    for fileChanged in "${filesChanged[@]}"; do
+        if echo "$fileChanged" | egrep -vq "$filesToKeepRegex"; then
+            filesToReset+=("$fileChanged")
+        fi
+    done
+
+    git checkout -- "${filesToReset[@]}"
+}
+
+
 alias     g='git'
 alias    gs='git status'
 alias   gsi='gitGetIgnoredFiles'
