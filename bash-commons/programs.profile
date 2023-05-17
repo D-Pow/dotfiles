@@ -647,6 +647,18 @@ dockerShowDockerfileForImage() (
     docker run --rm -i -v /var/run/docker.sock:/var/run/docker.sock chenzj/dfimage "$_imageId"
 )
 
+dockerImageInfoRemote() (
+    # This is one of the most reliable ways to get info about a Docker image
+    # since some registries (e.g. GitHub's ghcr.io) are still in development.
+    #
+    # See:
+    #   - skopeo docs: https://github.com/containers/skopeo
+    #   - StackOverflow about ghcr.io: https://stackoverflow.com/a/75727915/5771107
+    declare _dockerRegistryAndImage="$1"
+
+    docker run --rm quay.io/skopeo/stable:latest inspect "docker://${1}"
+)
+
 dockerContainerInfo() {
     # Inspired by: https://stackoverflow.com/questions/38946683/how-to-test-dockerignore-file
     declare _dockerfilePath="${1:-"$(pwd)"}"
