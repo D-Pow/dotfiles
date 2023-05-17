@@ -1066,6 +1066,28 @@ reconnectBluetoothMouse() {
 
 
 
+recoverDeletedFileContents() {
+    # See:
+    #   - https://unix.stackexchange.com/questions/149342/can-overwritten-files-be-recovered/150423#150423
+    declare searchRegex="$1"
+    # e.g. `sda1` or `nvme0n1p1`
+    declare drivesToSearch="$(
+        lsblk \
+        | egrep 'part\s+/' \
+        | awk '{ print $1 }' \
+        | egrep -o --color=never '[a-zA-Z0-9]+'
+    )"
+    # e.g. `/dev/sda1` or `/dev/nvme0n1p1`
+    declare drivesToSearchFormattedWithDevPath="$(
+        echo "$drivesToSearch" \
+        | awk '{ printf("/dev/%s ", $1) }'
+    )"
+
+    egrep -i -a -B100 -A100 "$searchRegex" "$drivesToSearchFormattedWithDevPath"
+}
+
+
+
 _checkPythonVersion() {
     # EDIT: DO NOT CHANGE THE python3 SYMLINK!!! Nor use update-alternatives
     # Doing so will break your system, just like overwriting `python --> python3` would.
