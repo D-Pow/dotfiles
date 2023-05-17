@@ -91,8 +91,12 @@ gitGetBranch() {
 gitGetRepoName() {
     # get remote URL for 'origin'
     # | filter out '/repo-name.git' -o-onlyReturnMatch -m-getNmatches
+    #   Note: `-m` functions similarly to `uniq`, so we could pass STDOUT through `uniq` or
+    #   `grep -m 1` for similar results.
     # | sed -rEgex substitute~(/|.git)~['']~globally (apply to all matches, not just 1)
-    git remote -v | grep origin | egrep -o -m 1 "/[^/]+\.git" | sed -E 's~(/|.git)~~g'
+    #   Remove leading `/` and trailing `.git` but only the `.git` text if it's at the end
+    #   of the line (to avoid conflicting with `user.github.io` and similar).
+    git remote -v | grep origin | awk '{ print $2 }' | uniq | egrep -o '/[^/]+$' | sed -E 's~(^/|.git$)~~g'
 }
 
 
