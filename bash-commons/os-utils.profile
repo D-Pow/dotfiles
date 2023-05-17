@@ -1156,6 +1156,22 @@ zipSizeAfterGzipped() {
     echo "Total: $_zipSizeTotal"
 }
 
+zipExtract() {
+    # unzip:
+    # -u = Update existing files if any.
+    # -o = Overwrite existing files without prompting.
+    # -q = Quiet; Don't print files-extracted list.
+    # -d = Directory to extract output to.
+    declare _zipPaths=("$@")
+    declare _zipPath=
+
+    for _zipPath in "${_zipPaths[@]}"; do
+        declare _zipPathWithoutExtension="$(echo "$_zipPath" | esed 's/\.[^.]+$//')"
+
+        unzip -uoq "$_zipPath" -d "$_zipPathWithoutExtension"
+    done
+}
+
 
 
 hashDir() {
@@ -1380,6 +1396,17 @@ parallel() {
 }
 # Tests: Run below with and without `&` after `parallel` command
 # parallel 'a() { sleep 1; echo a; return 4; }; a' 'sleep 2; echo b; exit 3' 'sleep 3 && echo c;' & echo "ExitCode: $?"; echo $!; jobs -l; listprocesses $!; wait $!; echo "ExitCode 2: $?"
+
+
+
+urldecode() {
+    # Replaces URL-encoded `%NN` content with Bash-parse-able `\xNN` strings,
+    # then prints them in a human-readable way via `echo -e`.
+    #
+    # See:
+    #   - https://stackoverflow.com/questions/6250698/how-to-decode-url-encoded-string-in-shell/6265305#6265305
+    echo -e "$(sed 's/+/ /g; s/%\(..\)/\\x\1/g;')"
+}
 
 
 
