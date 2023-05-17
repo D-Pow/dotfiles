@@ -394,6 +394,65 @@ ghLoginToGitHubPackagesNpmRegistry() {
     fi
 }
 
+ghPrShow() {
+    # Shows PRs and their info, whether created by you or requesting your review.
+    #
+    # TODO - Add more commands/options like `closed` PRs, `closed reviewed-by:@D-Pow`, etc.
+    #
+    # See:
+    #   GitHub issue about `gh` formatting: https://github.com/cli/cli/issues/846#issuecomment-1142104190
+    #   `gh pr list` docs: https://cli.github.com/manual/gh_pr_list
+    #   `gh pr status` docs: https://cli.github.com/manual/gh_pr_status
+    #   `gh` API: https://cli.github.com/manual/gh_api
+    #   `awk` docs: https://www.gnu.org/software/gawk/manual/gawk.html#String-Functions
+    #   SO post - how to split lines from vars in awk: https://stackoverflow.com/questions/41591828/use-bash-variable-as-array-in-awk-and-filter-input-file-by-comparing-with-array/41591888#41591888
+    #   SO post - how to handle arrays/matrices in awk: https://stackoverflow.com/questions/50658752/use-awk-to-match-store-append-the-pattern-and-also-split-the-line-having-a-de
+    #   SO post - creating matrices from strings in awk: https://stackoverflow.com/questions/19606816/bash-awk-split-string-into-array
+    #   SO post - how to check if key exists in matrix: https://stackoverflow.com/questions/26746361/check-if-an-awk-array-contains-a-value/41604944#41604944
+    #   Forum question about awk matrices: https://www.unix.com/shell-programming-and-scripting/157424-two-column-data-matrix-awk.html
+    #   Printing matrices in awk (since they can't be done natively): https://www.unix.com/shell-programming-and-scripting/203159-need-have-output-awk-array-one-line.html
+    declare _prStatuses="$(gh pr status | egrep -i 'created|requesting|#')" #  | esed 's/^[ \t]*//'
+    declare _prNumbers=$(echo "$_prStatuses" | egrep -o '^[ \t]*#\d+' | egrep -o '\d+' | tr -s '\n' ' ')
+    declare _prInfo="$(gh pr list \
+        --json number,title,headRefName,author \
+        --template '{{range .}}{{tablerow (printf "#%v" .number | autocolor "green") .title (.headRefName | color "cyan") (.author.login | color "yellow") }}{{end}}' \
+        --search "$_prNumbers"
+    )"
+
+    echo "$_prStatuses" | awk -v prInfo="$_prInfo" '
+        BEGIN {
+            # Splits PR info lines from `gh pr list` into separate array entries
+            split(prInfo, prInfoArrayFlat, "\n")
+
+            for (line in prInfoArrayFlat) {
+                # Get the text itself
+                prInfoLine=prInfoArrayFlat[line]
+
+                # Strip leading/trailing spaces in-place
+                gsub(/(^[ \t]+)|([ \t]+$)/, "", prInfoLine)
+
+                # Split the line itself into an array to get the first entry (the PR number)
+                split(prInfoLine, prInfoLineArray)
+
+                prNumber=prInfoLineArray[1]
+
+                # Set the PR number as a key in an associative array: { prNumber: prInfoLine }
+                # This is easier than iterating through a standard array and/or using `NR`
+                prInfoArray[prNumber]=prInfoLine
+            }
+        }
+        {
+            if ($1 in prInfoArray) {
+                # Print the PR info from the more descriptive text than the `gh pr status` text
+                print prInfoArray[$1]
+            } else if ($1 ~ /^\w/) {
+                # Print the `Created by you`/`Requesting review` lines themselves
+                printf("\n%s\n", $0)
+            }
+        }
+    '
+}
+
 ghActionsValidate() {
     # See: https://github.com/rhysd/actionlint/blob/main/docs/usage.md#docker
     declare _ghActionsValidateRepoDir="${1:-$(pwd)}"
