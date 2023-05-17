@@ -453,6 +453,57 @@ ghPrShow() {
     '
 }
 
+_ghRunParseOpts() {
+    declare -n parentUsage="USAGE"
+    declare _USAGE="
+
+    [OPTIONS...]
+    Executes \`gh run <cmd>\`, casting partial options to correct ones.
+
+    e.g. \`--repo\` will inject owner/repoName if both are not specified by the parent.
+        (correct format of \`gh run --repo <str>\` is \`[HOST/]owner/repository\`)
+    "
+    declare _repoName=
+    declare _repoOwner=
+    declare -A _ghRunOpts=(
+        ['r|repo:,_repoName']="Repository name (default: \$(gitGetRepoName))."
+        ['o|owner:,_repoOwner']="Owner of the repository (default: \`git config user.name\`)."
+        ['USAGE']="${parentUsage}${_USAGE}"
+        [':']=
+    )
+    declare argsArray=
+
+    parseArgs _ghRunOpts "$@"
+    (( $? )) && return 1
+
+    declare ghCmdOpts=()
+
+    if [[ -n "$_repoName" ]] || [[ -n "$_repoOwner" ]]; then
+        _repoName="${_repoName:-$(gitGetRepoName)}"
+        _repoOwner="${_repoOwner:-$(git config user.name)}"
+
+        ghCmdOpts+=("--repo" "${_repoOwner}/${_repoName}")
+    fi
+
+    gh run ${ghCmdOpts[@]} ${argsArray[@]}
+}
+
+ghPipelineLs() {
+    declare USAGE="[OPTIONS...]
+    Lists the status of all GitHub pipelines.
+    "
+
+    _ghRunParseOpts "$@" list
+}
+
+ghPipelineWatch() {
+    declare USAGE="[OPTIONS...]
+    Watches the progress of a single GitHub pipeline.
+    "
+
+    _ghRunParseOpts "$@" watch
+}
+
 ghActionsValidate() {
     # See: https://github.com/rhysd/actionlint/blob/main/docs/usage.md#docker
     declare _ghActionsValidateRepoDir="${1:-$(pwd)}"
