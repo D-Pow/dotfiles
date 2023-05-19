@@ -301,7 +301,7 @@ window.hash = async function hash(str, {
     const hashAsciiHex = byteArrayToHexString(new Uint8Array(hashBuffer));
 
     return hashAsciiHex;
-}
+};
 hash.ALGOS = {
     Sha1: 'SHA-1',
     Sha256: 'SHA-256',
