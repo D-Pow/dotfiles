@@ -708,6 +708,32 @@ gitResetFilesWhereOnlyAccessPermissionsChanged() {
 }
 
 
+gitChangeCommitDate() {
+    declare USAGE="<date=now>
+    Formats a commit date, both author (original commit) and committer (original, unless
+    amended or rebased).
+
+    If no date specified, will use the current date-time.
+
+    Example:
+        # Latest commit
+        ${FUNCNAME[0]} 'Mon May 3 13:49:32 2023 -0600'
+
+        # Commit within a rebase
+        # After: \`git rebase -i 'HEAD~5'\`
+        ${FUNCNAME[0]} 'date-from-above'
+        git rebase --continue
+    "
+    declare newDate="${1:-now}"
+
+    GIT_COMMITTER_DATE="$newDate" git commit \
+        --amend \
+        --no-edit \
+        --date="$newDate"
+}
+
+
+
 alias     g='git'
 alias    gs='git status'
 alias   gsi='gitGetIgnoredFiles'
