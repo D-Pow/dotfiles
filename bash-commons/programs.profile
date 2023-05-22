@@ -176,7 +176,9 @@ export NVM_SYMLINK_CURRENT=true # Makes a symlink at ~/.nvm/current/bin/node so 
 export NVM_CURRENT_HOME="$NVM_DIR/current"
 export PATH="$NVM_CURRENT_HOME/bin:$PATH"
 
-alias node="$(which node) --experimental-top-level-await --experimental-json-modules --experimental-import-meta-resolve"
+if ! isWindows; then
+    alias node="$(which node) --experimental-top-level-await --experimental-json-modules --experimental-import-meta-resolve"
+fi
 
 # Make NODE_PATH always include the `node_modules/` directory of the currently selected NodeJS.
 # While not advised (see refs), this is helpful for e.g. individual NodeJS scripts placed in
