@@ -1495,7 +1495,12 @@ _setClipboardCopyAndPasteCommands() {
         _copyCommand='pbcopy'
         _pasteCommand='pbpaste'
     elif isWindows; then
-        echo "TODO - Find copy/paste commands for Windows (git-bash, Linux subsystem, etc.)"
+        # C:/Windows/System32/clip.exe
+        _copyCommand='clip'
+        # Note: `powershell -command "Get-Clipboard"` works when typed directly in the terminal
+        # but not when executed from a string (which is done in our custom `paste` function).
+        # See: https://stackoverflow.com/questions/17819814/how-can-you-get-the-clipboard-contents-with-a-windows-command
+        _pasteCommand="powershell Get-Clipboard"
     else
         eval "$_printCopyPasteError"
     fi

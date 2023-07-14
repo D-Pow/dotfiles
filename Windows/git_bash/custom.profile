@@ -91,7 +91,3 @@ testargs() {
 
     subl -n "${argArray[@]}"
 }
-
-clip() {
-    echo "$1" | cmd clip
-}
