@@ -1462,7 +1462,6 @@ copy() {
 
 paste() {
     $_pasteCommand
-    echo
 }
 
 _setClipboardCopyAndPasteCommands() {
