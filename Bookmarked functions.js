@@ -923,9 +923,11 @@ window.inchesMillimeters = function ({
  */
 /**
  * @typedef BacDrink
+ * @extends BacConfig
  * @property {number} drinkVolume - Volume of the drink.
  * @property {number} drinkPercentage - Alcohol percentage of the drink
  * @property {number} hoursElapsed - Number of hours elapsed while drinking.
+ * @property {number} bodyWeight - Person's body weight (defaults to lbs, modify {@code BacConfig.isBodyWeightPounds} options object for kg).
  */
 /**
  * Estimates the blood alcohol concentration (BAC) after drinking over a period of time.
@@ -933,9 +935,9 @@ window.inchesMillimeters = function ({
  * Not 100% accurate due to differences in bodies' metabolism and other factors, but gives
  * a reasonable rough estimate.
  *
- * @param {(number | ({ drinks: Array<BacDrink>; } & BacConfig))} drinkVolume - Volume of the drink or drinks/options config object.
- * @param {number} drinkPercentage - Alcohol percentage of the drink.
- * @param {number} bodyWeight - Person's body weight (defaults to lbs; use option to use kg).
+ * @param {(number | ({ drinks: Array<BacDrink>; }))} drinkVolume - Volume of the drink/drinks, or options config object.
+ * @param {number} drinkPercentage - Alcohol percentage of the drink(s).
+ * @param {number} bodyWeight - Person's body weight (defaults to lbs, modify {@code BacConfig.isBodyWeightPounds} options object for kg).
  * @param {BacConfig} [options]
  * @returns {number} - Estimated BAC.
  *
