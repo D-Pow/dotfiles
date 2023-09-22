@@ -330,3 +330,11 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         + Uncheck "Secure Boot" (secure boot was disabled above)
         + Uncheck "Repair Windows boot loader" (Windows data should be totally fine, only GRUB is messed up)
     - Reboot into Linux on hard drive and re-run GrubCustomizer to customize as desired.
+
+
+* If running into `apt` PPA key issues after upgrading OS version with `Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.`, follow the instructions [here](https://softhints.com/linux-mint-w-key-is-stored-in-legacy-trusted-gpg-keyring-etc-apt-trusted-gpg-see-the-deprecation-section-in-apt-key-8-for-details). The gist:
+    - Get the PPA repo's name from the error message, `W: http://ppa.launchpad.net/<name>/some/path: Key is stored...`.
+    - Run `sudo apt-key list` and look in the top of the output for the top-level `/etc/apt/trusted.gpg` that lacks a subpath after it for the PPA we want.
+    - Get the last 8 characters from the `pub rsa` output hash string (will have a space in the middle, e.g. `A1B2 C3D4`).
+    - Run `sudo apt-key export <8-chars-without-space> | sudo gpg --dearmour -o /etc/apt/trusted.gpg.d/<repo-name>.gpg` to add the key from top-level `/etc/apt/trusted.gpg` to its own `/etc/apt/trusted.gpg.d/<repo-name>.gpg`.
+    - Run `sudo apt-key --keyring /etc/apt/trusted.gpg del <8-chars-without-space>` to remove the key from the top-level `/etc/apt/trusted.gpg`.
