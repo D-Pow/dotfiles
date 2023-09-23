@@ -1110,7 +1110,7 @@ _checkPythonVersion() {
     declare executableDir="$(dirname "$pythonExecutablePath")"
     # TODO Could also just use `basename "$pythonExecutablePath"`
     declare currentPythonVersion="$(echo "$pythonExecutablePath" | sed -E 's|.*/([^/]*)$|\1|')"
-    declare allAvailableVersions="$(ls "$executableDir" | egrep -o 'python\d\.\d' | sort -ru)"
+    declare allAvailableVersions="$(ls "$executableDir" | egrep -o 'python\d\.\d+' | sort -ru)"
     declare allPython3Versions="$(echo "$allAvailableVersions" | grep 3)"
     declare latestVersion="$(echo "$allPython3Versions" | head -n 1)"
     declare oldestVersion="$(echo "$allPython3Versions" | tail -n 1)"
