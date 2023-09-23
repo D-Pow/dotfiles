@@ -307,10 +307,12 @@ listprocesses() {
         $_psOptsDefault
     "
     declare _psOpts=
+    declare _psSudo=
     declare argsArray=
     declare -A _lsPsOptions=(
-        ['a|append:,_psOptsDefault']='`ps` options to append to the default options (before calling `grep`); e.g. `-a "-U root"`'
-        ['o|overwrite:,_psOpts']='`ps` options to overwrite the default options (before calling `grep`); e.g. `-o "-o ppid= 1234"`'
+        ['a|append:,_psOptsDefault']='`ps` options to append to the default options (before calling `grep`); e.g. `-a "-U root"`.'
+        ['o|overwrite:,_psOpts']='`ps` options to overwrite the default options (before calling `grep`); e.g. `-o "-o ppid= 1234"`.'
+        ['S|sudo,_psSudo']="Run \`sudo ps\` instead of just \`ps\`."
         [':']=
         ['?']=
         ['USAGE']="$USAGE"
@@ -323,7 +325,12 @@ listprocesses() {
     _psOpts="${_psOpts:-${_psOptsDefault[@]}}"
 
 
-    declare _psCommand=(ps ${_psOpts[@]}) # Don't quote to preserve spaces from input string
+    declare _psCommand=()
+    if [[ -n "$_psSudo" ]]; then
+        _psCommand+=('sudo')
+    fi
+    _psCommand+=(ps ${_psOpts[@]}) # Don't quote to preserve spaces from input string
+
     # Actual `ps` command
     declare _psOutput=$(${_psCommand[@]})
     # Include header info for what each column means
