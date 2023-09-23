@@ -420,6 +420,77 @@ remoteDriveLs() {
 }
 
 
+gdriveMountRclone() {
+    # See:
+    #   - Rclone docs: https://rclone.org/docs/
+    #   - Rclone docs on Google Drive (outdated but still helpful): https://rclone.org/drive/
+    #   - Example with new Rclone API: https://ostechnix.com/mount-google-drive-using-rclone-in-linux/
+    declare USAGE="[OPTION...]
+    Mounts a previously-configured remote Google Drive filesystem named "google-drive"
+    using Rclone to \`\$HOME/google-drive/\`.
+
+    Ideally, Gnome Online Accounts should be used, but in the event it fails due to
+    SSO or similar, Rclone is a great fallback solution.
+    In fact, Rclone is more CLI friendly in that you can use standard Bash built-ins,
+    like \`cd\` and \`ls\`, to traverse the file tree rather than having to use \`gio\`;
+    however, it requires some manual configuration, e.g. a startup script to mount the drive.
+    "
+    declare _remoteDriveName=
+    declare _localMountPath=
+    declare argsArray
+    declare -A _gdriveMountRcloneOptions=(
+        ['r|remote-drive-name:,_remoteDriveName']="Name of the remote drive from \`rclone config\`."
+        ['p|local-path:,_localMountPath']="Path to mount the remote drive contents."
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _gdriveMountRcloneOptions "$@"
+    (( $? )) && return 1
+
+    if [[ -z "$_remoteDriveName" ]]; then
+        _remoteDriveName="google-drive"
+    fi
+
+    if [[ -z "$_localMountPath" ]]; then
+        _localMountPath="$HOME/$_remoteDriveName"
+    fi
+
+
+    declare _rcloneRemoteDrives=($(rclone listremotes 2>/dev/null))
+
+    if array.empty _rcloneRemoteDrives || echo "${_rcloneRemoteDrives[@]}" | egrep -vq "$_remoteDriveName"; then
+        echo "Either \`rclone\` is not installed or no remote drives matching \"$_remoteDriveName\" found."
+        return 1
+    fi
+
+    if ! [[ -d "$_localMountPath" ]]; then
+        mkdir -p "$_localMountPath"
+    fi
+
+
+    if (( $(ls "$_localMountPath" | wc -l) > 0 )); then
+        # Mount path already exists and is populated, so assume the remote
+        # drive has already been mounted
+        return 0
+    fi
+
+
+    # `rclone mount --vfs-cache-mode writes [...]` makes reads pull from the source (remote)
+    # drive every time but batches writes (caching them to disk before submitting the
+    # network request). `rclone-browser` uses it by default.
+    #
+    # `rclone --fast-list [...]` attempts to use fewer network requests to display files within
+    # a directory since many hosts offer this as a feature. However, it disables
+    # parallelization and uses more memory b/c it tries to get all the dir's details
+    # in one request. It is another `rclone-browser` default, but don't use it since
+    # Google Drive doesn't have said restrictions as of now.
+    rclone \
+        mount \
+        --vfs-cache-mode writes \
+        "$_remoteDriveName:/" \
+        "$_localMountPath"
+}
+
 gdriveLocation() {
     # TODO
     # ls ~/.local/share/gvfs-metadata/ | grep -i google-drive | egrep -v '\.log$'
