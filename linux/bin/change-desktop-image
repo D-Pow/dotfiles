@@ -1,7 +1,34 @@
 #!/usr/bin/env -S bash
 
-#Changes desktop background randomly
-DIR="/media/storage/Pictures/Wallpapers/**"
-PIC=$(ls $DIR/*.jpg | shuf -n1)
-#Line below will change based on Cinnamon vs Ubuntu
-gsettings set org.cinnamon.desktop.background picture-uri  "file://$PIC"
+changeDesktopImage() {
+    # Changes desktop background randomly
+
+    declare wallpapersDir="$HOME/google-drive/Everything/Pictures/Wallpapers"
+
+    if echo "$@" | grep -Pvq "\-r" || ! [[ -d "$wallpapersDir" ]]; then
+        # Fallback to local-drive path instead of remote-drive path
+        wallpapersDir="$HOME/Pictures/Wallpapers"
+    fi
+
+    echo $wallpapersDir
+
+    # Alternative with globs instead of regex (doesn't filter out only Windows/Linux files):
+    #   declare randomPic=$(ls $wallpapersDir/**/*.jpg | shuf -n1)
+
+    declare origIFS="$IFS"
+    declare IFS=$'\n'
+    declare pics=($(
+        find "$wallpapersDir" \
+            -regextype posix-extended \
+            -regex "$wallpapersDir/(Windows|linux[^/]*)/.*\.jpg"
+    ))
+    IFS="$origIFS"
+
+    declare randomPic="$(printf '%s\n' "${pics[@]}" | shuf -n1)"
+
+
+    #Line below will change based on Cinnamon vs Ubuntu
+    gsettings set org.cinnamon.desktop.background picture-uri  "file://$randomPic"
+}
+
+changeDesktopImage "$@"
