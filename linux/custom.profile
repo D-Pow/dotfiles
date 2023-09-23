@@ -258,18 +258,81 @@ remoteDriveIsPathDirectory() {
     gio info "$1" | egrep -i '^type' | grep -iq directory
 }
 
-remoteDriveGetFilename() {
-    declare _remoteDriveFilePath="$1"
-    declare _remoteDriveFilenameAttribute='standard::display-name'
+remoteDriveAttr() {
+    declare _remoteDriveFileAttribute="$1"
+    declare _remoteDriveFilePath="$2"
 
-    declare _remoteDriveFileName="$(
-        gio info -a "$_remoteDriveFilenameAttribute" "$_remoteDriveFilePath" \
-            | grep "$_remoteDriveFilenameAttribute" \
+    declare _remoteDriveFileAttributeValue="$(
+        gio info -a "$_remoteDriveFileAttribute" "$_remoteDriveFilePath" \
+            | grep "$_remoteDriveFileAttribute" \
             | awk '{ $1 = ""; print $0; }' \
             | trim
     )"
 
+    echo "$_remoteDriveFileAttributeValue"
+}
+
+remoteDrivePathNormalize() {
+    declare _rdPath="$1"
+
+    # Remove duplicate slashes that aren't a protocol (e.g. `drive-path//sub-path` but not `drive-url://drive-path/sub-path`)
+    # and slashes at the end of the path (e.g. `drive-path/sub-path/`)
+    echo "${_rdPath}" \
+        | esed 's|([^:])//+|\1/|g' \
+        | esed 's|/$||'
+}
+
+remoteDriveHostFromPath() {
+    # Requires host (protocol-esque syntax) to be in remote-drive's path string
+    declare _rdPath="$1"
+
+    declare _remoteDrive=
+    for _remoteDrive in $(remoteDrivesListAll); do
+        if [[ "$_rdPath" =~ ^$_remoteDrive ]]; then
+            # Short-circuit the remote-drive name-processing by using the same
+            # variable name in the for-loop, defining it as the loop executes
+            break
+        fi
+    done
+
+    declare _rdAbsPath="$(echo "$(remoteDriveAttr uri "$_rdPath")" | urldecode)"
+    declare _rdRelPath="$(remoteDriveAttr 'standard::symlink-target' "$_rdPath")"
+    # Remove trailing relative path from absolute path, leaving only the host behind
+    declare _rdHost="$(echo "${_rdAbsPath%%$_rdRelPath}")"
+
+    echo "$_rdHost"
+}
+
+remoteDriveGetFilename() {
+    declare _remoteDriveFilePath="$1"
+    declare _remoteDriveFilenameAttribute='standard::display-name'
+
+    declare _remoteDriveFileName="$(remoteDriveAttr "$_remoteDriveFilenameAttribute" "$_remoteDriveFilePath")"
+
     if remoteDriveIsPathDirectory "$_remoteDriveFilePath"; then
+        echo "${_remoteDriveFileName}/"
+    else
+        echo "$_remoteDriveFileName"
+    fi
+}
+
+remoteDriveGetPathPhysical() {
+    declare _remoteDriveFilePath="$1"
+    # Alternative:
+    #   Gets URL-encoded (e.g. %20 instead of spaces) sub-path, excluding remote-drive URI protocol
+    #   declare _remoteDriveFilenameAttribute='uri'
+    declare _remoteDriveFilenameAttribute='standard::symlink-target'
+
+    # Only allow double slashes in host/protocol portion of URI, not the sub-path
+    declare _remoteDriveFileName="$(remoteDriveHostFromPath "$_remoteDriveFilePath")/$(remoteDriveAttr "$_remoteDriveFilenameAttribute" "$_remoteDriveFilePath")"
+    _remoteDriveFileName="$(remoteDrivePathNormalize "$_remoteDriveFileName")"
+echo -e "\n-----remoteDriveGetPathPhysical
+    \$1: $1
+    $(remoteDriveHostFromPath "$_remoteDriveFileName")/
+    _remoteDriveFileName: $_remoteDriveFileName
+  -----\n"
+
+    if remoteDriveIsPathDirectory "$_remoteDriveFileName"; then
         echo "${_remoteDriveFileName}/"
     else
         echo "$_remoteDriveFileName"
@@ -315,11 +378,43 @@ remoteDriveGetPath() {
 
         declare _rdPathSegments=()
         array.fromString -d '/' -r _rdPathSegments "$_rdPath"
+echo -e "\n" >&2
+array.toString _rdPathSegments >&2
+
+        if [[ -n "$_convertReadableToId" ]]; then
+            # Convert from readable remote-drive path names to their respective IDs.
+            # Remote drive path ID entries never include spaces, so we can blindly join
+            # them with '/' to make them real paths.
+echo -e "\n\nconvertReadableToId: $(remoteDriveGetPath -d "$_remoteDrive" "$_rdPath")" >&2
+            declare _rdPathReadable="$(remoteDriveGetPath -d "$_remoteDrive" "$_rdPath")"
+            declare _rdFinalPathWithHost="$(remoteDriveGetPathPhysical "$_rdPathReadable")"
+echo -e "_rdPathReadable: $_rdPathReadable
+_rdFinalPathWithHost: $_rdFinalPathWithHost" >&2
+            # declare _rdFinalPathWithoutHost="$(
+            #     echo "$(
+            #         remoteDriveGetPathPhysical "$(remoteDriveGetPath -d "$_remoteDrive" "$_rdPath")"
+            #     )" \
+            #     | esed "s|${}"
+            # )"
+            _rdFinalPath+=("$_rdFinalPathWithHost")
+array.toString _rdFinalPath >&2
+            _rdFinalPaths+=("$_rdFinalPathWithHost")
+
+            continue
+        fi
 
         declare _rdSubPath
         for _rdSubPath in "${_rdPathSegments[@]}"; do
+echo -e "\n" >&2
             declare _rdSubPathAbsolute="${_remoteDrive}/$(array.join -s _rdFinalPathActual '/')"
 
+            # Remove duplicate slashes that aren't a protocol (e.g. `drive-path//sub-path` but not `drive-url://drive-path/sub-path`)
+            # and slashes at the end of the path (e.g. `drive-path/sub-path/`)
+            _rdSubPathAbsolute="$(remoteDrivePathNormalize "${_rdSubPathAbsolute}")"
+echo "_rdSubPath: $_rdSubPath" >&2
+echo "_rdSubPathAbsolute: $_rdSubPathAbsolute" >&2
+# echo "\${_rdSubPathOptionMap[\"\$_rdSubPath\"]}: ${_rdSubPathOptionMap["$_rdSubPath"]}" >&2
+array.toString _rdSubPathOptionMap >&2
             declare _rdSubPathEntry
 
             if [[ -n "${_rdSubPathOptionMap["$_rdSubPath"]}" ]]; then
@@ -329,35 +424,39 @@ remoteDriveGetPath() {
                 # Since the path is already in remote-drive ID format, we can simply
                 # emit the sub-path's name.
                 _rdFinalPathActual+=("$_rdSubPath")
-                _rdSubPathEntry="$(remoteDriveGetFilename "$(echo "$_rdSubPathAbsolute" | egrep -io ".*$_rdSubPath")")"
-
+                # _rdSubPathEntry="$(remoteDriveGetFilename "$(echo "$_rdSubPathAbsolute" | egrep -io ".*$_rdSubPath")")"
+                declare _rdSubPathEntryFilenameToGet="$(echo "$_rdSubPathAbsolute" | egrep -io ".*$_rdSubPath")"
+                _rdSubPathEntry="$(remoteDriveGetFilename "${_rdSubPathEntryFilenameToGet:-$_rdSubPath}" 2>/dev/null)"
+                _rdSubPathEntry="${_rdSubPathEntry:-$_rdSubPath}"
+array.toString _rdFinalPathActual >&2
+echo "_rdSubPath: $_rdSubPath" >&2
+echo "_rdFinalPathActual: $_rdFinalPathActual" >&2
+echo "_rdSubPathEntryFilenameToGet: $_rdSubPathEntryFilenameToGet" >&2
+echo "_rdSubPathAbsolute: $_rdSubPathAbsolute" >&2
+echo "_rdSubPathEntry: $_rdSubPathEntry" >&2
+echo "_rdSubPathEntry--filenameToGet: $(echo "$_rdSubPathAbsolute" | egrep -io ".*$_rdSubPath")" >&2
                 _rdSubPathOptionMap["$_rdSubPath"]="$_rdSubPathEntry"
-            else
-                # Convert from readable remote-drive path names to their respective IDs.
-                # Remote drive path ID entries never include spaces, so we can blindly join
-                # them with '/' to make them real paths.
-                declare _rdSubPathOptions=$(gio list "$_rdSubPathAbsolute")
-
-                declare _rdSubPathOption
-                for _rdSubPathOption in "${_rdSubPathOptions[@]}"; do
-                    declare _rdSubPathOptionReadableName="$(remoteDriveGetFilename "$_rdSubPathAbsolute")"
-
-                    _rdSubPathOptionMap["$_rdSubPathOptionReadableName"]="$_rdSubPathOption"
-
-                    if [[ "$_rdSubPath" =~ "$_rdSubPathOptionReadableName" ]]; then
-                        _rdSubPathEntry="$_rdSubPathOption"
-
-                        break
-                    fi
-                done
+            # else
+            #     # Convert from readable remote-drive path names to their respective IDs.
+            #     # Remote drive path ID entries never include spaces, so we can blindly join
+            #     # them with '/' to make them real paths.
+            #     remoteDriveGetPath -d "$_remoteDrive" ""
+            #     continue
+            #     _rdSubPathEntry="$(
+            #         remoteDriveAttr uri "$(
+            #             echo "$_remoteDrive/$(
+            #                 remoteDriveGetFilePathPhysical -d ""
+            #             )"
+            #         )"
+            #     )"
             fi
 
             _rdFinalPath+=("$_rdSubPathEntry")
         done
-
-        _rdFinalPaths+=("$(str.join -j '/' "${_rdFinalPath[@]}")")
+echo -e "\n\n" >&2
+        _rdFinalPaths+=("$(remoteDrivePathNormalize "${_remoteDrive}/$(array.join -s _rdFinalPath '/')")")
     done
-
+echo -e "\n\nResult:" >&2
     echo "${_rdFinalPaths[@]}"
 }
 
@@ -417,6 +516,12 @@ remoteDriveLs() {
     echo -e "$_remoteDriveFileNamesStr" | egrep --color=never '/$'
     # Output files
     echo -e "$_remoteDriveFileNamesStr" | egrep --color=never '[^/]$'
+}
+
+remoteDriveLah() {
+    # TODO Use the below command but parallelize it
+    # lah "$(gio info <drive> | grep 'local path')" | map-id-to-filename-and-sed-replace
+    :
 }
 
 
