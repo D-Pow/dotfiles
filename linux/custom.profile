@@ -708,6 +708,7 @@ brightness() {
         ['d|display:,_display']='Display whose brightness to change (default = external monitor 1). 0 = internal display, 1-n = external monitors.'
         ['r|reset,_resetValue']='Resets brightness setting back to 100% (only for `xrandr`)'
         ['USAGE']="$USAGE"
+        [':']=
     )
 
     parseArgs optsConfig "$@"
