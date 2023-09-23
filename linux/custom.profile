@@ -1176,6 +1176,64 @@ window() {
 }
 
 
+# I think the original purpose of this was to get PIDs, but Idr
+wind() {
+    # TODO Return array opt and USAGE
+
+    declare activeWindows="$(window -l | trim -t 1)"
+    declare activeWindowsPidsAndCommandsRegex="$(
+        echo "$activeWindows" \
+            | awk '{ print $3 }' \
+            | tr -s '\n' '|' \
+            | esed 's/\|$//'
+    )"
+    declare activeWindowsPidsAndCommands="$(
+        listprocesses "^\S+\s+(${activeWindowsPidsAndCommandsRegex})" \
+            | trim -t 1 \
+            | awk '{ print($2, $12) }'
+    )"
+    # See:
+    #   https://askubuntu.com/questions/269574/wmctrl-focus-most-recent-window-of-an-app/562191#562191
+    #   https://taquangtrung.github.io/linux/hacking/2021/09/04/tired-of-alt-tab-let-make-flying-shortcut-keys
+    declare mostRecentlyAccessedWindowIds=($(
+        xprop -root \
+            | grep "^_NET_CLIENT_LIST_STACKING" \
+            | tr ',' ' ' \
+            | esed 's/^[^#]*# ?//'
+    ))
+
+    array.reverse -i mostRecentlyAccessedWindowIds
+
+    declare origIFS="$IFS"
+    declare IFS=$'\n'
+    activeWindowsPidsAndCommands=(${activeWindowsPidsAndCommands})
+    IFS="${origIFS}"
+
+    declare -A activeWindowsCommandPidMap=()
+
+    declare activeWindowPidAndCommand=
+    for activeWindowPidAndCommand in "${activeWindowsPidsAndCommands[@]}"; do
+        declare pid=$(echo "$activeWindowPidAndCommand" | awk '{ print $1 }')
+        declare appCommand="$(echo "$activeWindowPidAndCommand" | awk '{ print $2 }')"
+
+        # Only store the latest running window of an app
+        if [[ -z "${activeWindowsCommandPidMap["$appCommand"]}" ]]; then
+            activeWindowsCommandPidMap["$appCommand"]="$pid"
+        fi
+    done
+
+    # See:
+    #   https://forums.linuxmint.com/viewtopic.php?p=2168656#p2168656
+    #   https://manpages.ubuntu.com/manpages/bionic/man1/gdbus.1.html
+    # TODO
+    # wmctrl -ia "$selectedAppMostRecentWindowId"
+    for i in ${!activeWindowsCommandPidMap[@]}; do
+        echo "$i: ${activeWindowsCommandPidMap["$i"]}"
+    done
+}
+
+
+
 reconnectBluetoothMouse() {
     # Mouse only allows one connection so switching OSes/computers results in it
     # not being able to reconnect to Linux. To simplify the disconnect/reconnect
