@@ -268,13 +268,28 @@ yarnRerunCommand() {
 ###  Python  ###
 ################
 
-
-if [[ -z "$VIRTUAL_ENV" ]] && ! echo "$(which python)" | grep -iq conda; then
+_setPythonAliases() {
     # If not in a virtual environment nor Conda environment,
     # then make Python v3 the default for `python` command
-    alias python='python3'
-    alias python2='/usr/bin/python'
-fi
+    if [[ -z "$VIRTUAL_ENV" ]] && ! echo "$(which python)" | grep -iq conda; then
+        declare _origPython="$(which python)"
+        declare _origPython2="$(which python2)"
+        declare _origPython3="$(which python3)"
+
+        declare _newPython="$_origPython"
+        declare _newPython2="$_origPython2"
+        declare _newPython3="$_origPython3"
+
+        if [[ -z "$_origPython2" ]] && [[ -n "$_origPython" ]]; then
+            _newPython2="$_origPython"
+        fi
+
+        _newPython="$_origPython3"
+
+        alias python="$_newPython"
+        alias python2="$_newPython2"
+    fi
+} && _setPythonAliases
 
 
 pipsearch() {
