@@ -1,5 +1,21 @@
 #!/usr/bin/env -S bash
 
-lspci | grep VGA;
-echo "";
-glxheads
+displayGraphicsCard() {
+
+    declare availableGpus="$(lspci | grep -P --color=never 'VGA')"
+
+    echo "Available GPUs:"
+    echo "${availableGpus[@]}"
+
+    echo -e "\nActive GPU info:"
+    # Note:
+    #   `glxheads` is another option that doesn't give as much useful info as `glxinfo`
+    #   and opens a GUI to run a graphics process so it's annoying to wait for
+    # Remove irrelevant info via `grep`
+    glxinfo | grep -Pv '(^\s|\d)|(:$)|(-----+)' | tr -s '\n'
+
+    # TODO: Do different displays use different GPUs?
+    declare availableScreens="$(xrandr | egrep --color=never '^\S+(?=\b\s*connected)')"
+}
+
+displayGraphicsCard "$@"
