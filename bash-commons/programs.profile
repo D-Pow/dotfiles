@@ -778,6 +778,326 @@ dockerGetLogs() {
 
 
 
+##################
+###  PostgeSQL  ##
+##################
+# Many times, PostgreSQL requires running as the `postgres` user,
+# e.g. `sudo -u postgres "$(pg_config --bindir)/pg_ctl" --pgdata="$PGDATA" start`.
+#
+# Show config file (default: /etc/postgresql/16/main/postgresql.conf) via:
+#   sudo -u postgres "$(pg_config --bindir)/psql" -c 'SHOW config_file;'
+# Show log file (default: /var/log/postgresql/postgresql-16-main.log) via:
+#   sudo -u postgres "$(pg_config --bindir)/psql" -c 'SHOW log_directory;'
+# Show DB cluster data directory via:
+#   sudo -u postgres psql -c 'SHOW data_directory;'
+
+_postgresPathSet() {
+    if ! type psql &>/dev/null; then
+        # PostgreSQL isn't installed, so skip configuration below
+        return
+    fi
+
+    if isLinux; then
+        # Linux automatically adds PostgreSQL executables to `/usr/bin/`.
+        # However, some executables aren't added to /usr/bin/ that exist on
+        # other OSes, so use `pg_config --bindir` to get the directory
+        # containing all of them.
+        export PATH="$PATH:$(pg_config --bindir)"
+        # Understandably (unlike Mac), the PostgreSQL DB data files are in a
+        # different location than the executables, so add the default, OS-wide
+        # DB dir in `PGDATA` to ensure at least some DB cluster is selected
+        # for `psql` and related commands.
+        export PGDATA="$(pg_lsclusters | tail -n +2 | sort -Vr | head -n 1 | awk '{ print $6 }')"
+
+        if ! ls -FlAh /var/run/ | grep postgresql | egrep -iq 'drwxr.[sx]rwx'; then
+            # Allow OS user to start/stop PostgreSQL server without `sudo -u postgres <...>`
+            sudo chmod -R a+rwx /var/run/postgresql/
+            sudo chmod -R g-w /var/run/postgresql/
+
+            # Add OS user to `postgres` group so they can do the same actions as `postgres` can
+            # Same as: sudo adduser $(whoami) postgres
+            sudo usermod -a -G postgres $(whoami)
+
+            # This creates a superuser as the OS username for the native
+            # OS-level PostgreSQL DB.
+            #
+            # sudo -u postgres createuser \
+            #     --superuser \
+            #     --createdb \
+            #     --createrole \
+            #     --inherit \
+            #     --login \
+            #     --replication \
+            #     --bypassrls \
+            #     "$(whoami)"
+            #
+            #
+            # This is the same as the below command except using Bash format instead of SQL.
+            # See: `createuser` comment within `postgresqlInit()`.
+            #
+            # sudo -u postgres psql --username=postgres -c "
+            #     CREATE ROLE $(whoami)
+            #     WITH
+            #         SUPERUSER
+            #         CREATEDB
+            #         CREATEROLE
+            #         INHERIT
+            #         LOGIN
+            #         REPLICATION
+            #         BYPASSRLS
+            #     -- ROLE role_name [, ...]
+            #     -- ADMIN role_name [, ...]
+            #     ;"
+        fi
+    elif isMac; then
+        declare _postgresPackageName="$(brew list | grep -Ei --color=never postgres)"
+
+        export PATH="$PATH:$(brew info "$_postgresPackageName" | grep 'export PATH' | grep -Eo '"[^"]*"' | sed -E 's/\$PATH|:|"//g')"
+        export PGDATA="$(dirname "$_postgresBinPath")"
+    else
+        echo "TODO: Setup PostgreSQL on OS" >&2
+        return 1
+    fi
+} && _postgresPathSet
+
+
+postgresInitNewDbCluster() {
+    # See:
+    #   - Best starter example: https://stackoverflow.com/a/30642050/5771107
+    declare USAGE="[OPTIONS...]
+    Initializes a new PostgreSQL DB cluster with a DB and root user.
+    "
+    declare _pgdataDir=
+    declare _postgresConf=
+    declare _dbName=
+    declare _dbUserRoot=
+    declare argsArray=
+    declare -A _postgresqlInitNewDbClusterOptions=(
+        ['d|pgdata:,_pgdataDir']="Directory for DB cluster files to exist."
+        ['c|conf:,_postgresConf']="Path of postgresql.conf file to append to cluster's config file."
+        ['b|dbname:,_dbName']="New DB name for cluster (default: postgres)."
+        ['U|username:,_dbUserRoot']="Superuser account for cluster (default $(whoami))."
+    )
+
+    parseArgs _postgresqlInitNewDbClusterOptions "$@"
+    (( $? )) && return 1
+
+    if [[ -z "$_pgdataDir" ]]; then
+        echo "Please specify a PGDATA directory." >&2
+        return 1
+    fi
+
+    if [[ -z "$_dbName" ]]; then
+        _dbName="postgres"
+    fi
+
+    if [[ -z "$_dbUserRoot" ]]; then
+        _dbUserRoot="$(whoami)"
+    fi
+
+    # Initializes a DB cluster (i.e. single server that can have multiple DBs).
+    # Setting `--username=(OS-user)` sets the superuser of that cluster to
+    # the current user, putting DB controls in userspace rather than superuserspace.
+    # Equivalent of:
+    #   pg_ctl -D "$_postgresDbDir" init
+    #   +
+    #   createuser [...] $(whoami)
+    initdb \
+        --pgdata="${_pgdataDir}" \
+        --encoding='UTF-8' \
+        --allow-group-access \
+        --username=$(whoami)
+
+    if [[ -n "$HOME/postgresql.conf" ]]; then
+        # Set default PostgreSQL server options
+        cat "$HOME/postgresql.conf" >> "${_pgdataDir}/postgresql.conf"
+    fi
+
+    if [[ -n "$_postgresConf" ]]; then
+        # Set default PostgreSQL server options
+        cat "${_postgresConf}" >> "${_pgdataDir}/postgresql.conf"
+    fi
+
+    # If the above doesn't change timezone to UTC, we can force it with this command:
+    #   psql \
+    #       --dbname="${_dbName}" \
+    #       -c "SET TIME ZONE 'UTC';"
+    #
+    # See:
+    #   - https://stackoverflow.com/a/6663848/5771107
+
+    # Start DB cluster so that we can create a DB and superuser account
+    pg_ctl --pgdata="$_pgdataDir" --log="${_pgdataDir}/postgresql.log" start
+
+    # Creates a DB.
+    # Alternative to `createdb` command:
+    #   psql \
+    #       --username=root \
+    #       -c "
+    #           CREATE DATABASE ${_dbName}
+    #           WITH ENCODING 'UTF8'
+    #           LC_COLLATE='C'
+    #           LC_CTYPE='en_US.UTF-8'
+    #           ;"
+    createdb "$_dbName"
+
+    # Creates a root-level user.
+    # To delete previous `root` user:
+    #   psql --dbname="${_dbName}" -c "DROP ROLE ${_dbName};"
+    # Alternative to `createuser` command:
+    #   psql \
+    #       --dbname="${_dbName}" \
+    #       -c "
+    #           CREATE ROLE root
+    #           WITH
+    #               SUPERUSER
+    #               CREATEDB
+    #               CREATEROLE
+    #               INHERIT
+    #               LOGIN
+    #               REPLICATION
+    #               BYPASSRLS
+    #           -- ROLE role_name [, ...]
+    #           -- ADMIN role_name [, ...]
+    #           ;"
+    #
+    # See:
+    #   - Docs about roles: https://www.postgresql.org/docs/current/sql-createrole.html
+    #   - Docs about creating users with specific roles (and deeper details about roles): https://www.postgresql.org/docs/current/sql-createrole.html
+    #   - Simple role/user creation example: https://stackoverflow.com/a/55428943/5771107
+    #   - Roles that don't exist: https://stackoverflow.com/questions/11919391/postgresql-error-fatal-role-username-does-not-exist
+    #   - Blog about all roles: https://www.postgresqltutorial.com/postgresql-administration/postgresql-grant/
+    createuser \
+        --superuser \
+        --createdb \
+        --createrole \
+        --inherit \
+        --login \
+        --replication \
+        --bypassrls \
+        "$_dbUserRoot"
+
+    pg_ctl --pgdata="$_pgdataDir" --log="${_pgdataDir}/postgresql.log" stop
+
+    echo "Created new PostgreSQL DB cluster at $_pgdataDir with initial DB \"$_dbName\" and superuser \"$_dbUserRoot\"."
+}
+
+postgresStart() {
+    declare USAGE="[OPTIONS...]
+    Starts a PostgreSQL DB cluster.
+    "
+    declare _pgdataDir=
+    declare _dbUserRoot=
+    declare argsArray=
+    declare -A _postgresqlInitNewDbClusterOptions=(
+        ['d|pgdata:,_pgdataDir']="Directory for DB cluster files to exist."
+        ['U|username:,_dbUserRoot']="Superuser account for cluster (default $(whoami))."
+    )
+
+    parseArgs _postgresqlInitNewDbClusterOptions "$@"
+    (( $? )) && return 1
+
+    if [[ -z "$_pgdataDir" ]]; then
+        _pgdataDir="$PGDATA"
+    fi
+
+    if [[ -z "$_dbUserRoot" ]]; then
+        if [[ "$_pgdataDir" == "$PGDATA" ]]; then
+            _dbUserRoot="postgres"
+        else
+            _dbUserRoot="$(whoami)"
+        fi
+    fi
+
+
+    if isLinux && [[ "$_pgdataDir" == "$PGDATA" ]]; then
+        sudo -u postgres "$(pg_config --bindir)/pg_ctl" --pgdata="$_pgdataDir" start
+    else
+        "$(pg_config --bindir)/pg_ctl" --pgdata="$_pgdataDir" start
+    fi
+}
+
+postgresStop() {
+    declare USAGE="[OPTIONS...]
+    Stops a PostgreSQL DB cluster.
+    "
+    declare _pgdataDir=
+    declare _dbUserRoot=
+    declare argsArray=
+    declare -A _postgresqlInitNewDbClusterOptions=(
+        ['d|pgdata:,_pgdataDir']="Directory for DB cluster files to exist."
+        ['U|username:,_dbUserRoot']="Superuser account for cluster (default $(whoami))."
+    )
+
+    parseArgs _postgresqlInitNewDbClusterOptions "$@"
+    (( $? )) && return 1
+
+    if [[ -z "$_pgdataDir" ]]; then
+        _pgdataDir="$PGDATA"
+    fi
+
+    if [[ -z "$_dbUserRoot" ]]; then
+        if [[ "$_pgdataDir" == "$PGDATA" ]]; then
+            _dbUserRoot="postgres"
+        else
+            _dbUserRoot="$(whoami)"
+        fi
+    fi
+
+
+    if isLinux && [[ "$_pgdataDir" == "$PGDATA" ]]; then
+        sudo -u postgres "$(pg_config --bindir)/pg_ctl" --pgdata="$_pgdataDir" stop
+    else
+        "$(pg_config --bindir)/pg_ctl" --pgdata="$_pgdataDir" stop
+    fi
+}
+
+postgresCli() {
+    declare USAGE="[OPTIONS...] [psql OPTIONS...]
+    Runs a TTY instance for executing SQL commands manually via CLI.
+
+    Postgres SQL commands (Most backslash commands below show more info if you add \`+\` at the end):
+        \q         -  Quit the TTY CLI session.
+        \l+        -  List all DBs.
+        \du+       -  List all roles (i.e. users and permissions).
+        \dt+       -  List all tables (https://www.postgresqltutorial.com/postgresql-administration/postgresql-show-tables/).
+        SHOW <x>;  -  Show DB server configuration value (or all of them with \`SHOW all;\`).
+    "
+    declare _pgUser=
+    declare _dbName=
+    declare -A _postgresqlCliOptions=(
+        ['U|username:_pgUser']="User to impersonate when executing PostgreSQL commands."
+        ['b|dbname:,_dbName']="DB name to run under (default: postgres)."
+        [':']=
+        ['?']=
+        ['USAGE']="$USAGE"
+    )
+
+    parseArgs _postgresqlCliOptions "$@"
+    if (( $? )); then
+        psql --help
+        return 1
+    fi
+
+    # Default DB name to `postgres` since that exists in almost every DB cluster
+    # made within PostgreSQL
+    if [[ -z "$_dbName" ]]; then
+        _dbName="postgres"
+    fi
+
+    # Default the PostgreSQL username to that of the first Superuser
+    if [[ -z "$_pgUser" ]]; then
+        _pgUser="$(psql --dbname="$_dbName" -c "\du;" | grep -i superuser | awk '{ print $1 }' | head -n 1)"
+    fi
+
+    # Log in to specific DB cluster rather than OS-level's.
+    # This allows all SQL commands to be executed in that cluster,
+    # which is useful for SQL commands used in specific apps.
+    psql --username="$_pgUser" --dbname="$_dbName" "$@"
+}
+
+
+
 ################
 ###  AWS CLI  ##
 ################
