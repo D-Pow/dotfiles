@@ -11,6 +11,11 @@ if ! [[ -f /usr/local/bin/pdflatex ]] && realpath $LATEX_HOME &>/dev/null; then
 fi
 
 
+# Delete dir supposedly meant to deal with autocompletions but always has
+# an empty SQLite DB
+rm -rf "$HOME/.presage/"
+
+
 # Change directory colors in `ls`
 # LS_COLORS="${LS_COLORS}di=01;35"
 # export $LS_COLORS
