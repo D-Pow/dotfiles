@@ -5,6 +5,7 @@ declare _linuxProfile="${_linuxDir}/custom.profile"
 source "$_linuxProfile" 2>/dev/null
 
 export _wslRootDir="C:/Users/$(whoami)/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs"
+export hostsfile="/mnt/c/Windows/System32/drivers/etc/hosts"
 
 
 # realpath: /usr/bin/java -> /etc/alternatives/jdk-X.Y.Z/bin/java
