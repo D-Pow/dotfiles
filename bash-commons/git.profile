@@ -81,6 +81,18 @@ ignoreFilesInGitDiffCached() {
 }
 
 
+ignoreFilesInGitLog() {
+    declare _toIgnoreFilePaths=("$@")
+    declare _toIgnoreFilePatterns=()
+
+    array.map -r _toIgnoreFilePatterns _toIgnoreFilePaths "echo \"':(exclude)\$value'\""
+
+    declare _toIgnoreFileArgsStr="${_toIgnoreFilePatterns[@]}"
+
+    eval "gld -- . $_toIgnoreFileArgsStr"
+}
+
+
 gitGetRootDir() {
     # See: https://stackoverflow.com/questions/957928/is-there-a-way-to-get-the-git-root-directory-in-one-command
     declare _showGitDir=
@@ -777,6 +789,7 @@ alias   gbd='git branch -d $(git branch | grep -v "*")'
 alias   gck='git checkout'
 alias    gl='gitLogIgnoreFileRenames'
 alias   gld='gl -p' # show diff in git log (i.e. detailed `git blame`). Choose single file with `gld -- <file>`
+alias  gldi='ignoreFilesInGitLog'
 alias   glo='gl --oneline'
 alias   gla='gl --oneline --all'
 alias   glb='gl --first-parent $(gitGetBranch)' # only show this branch's commits
