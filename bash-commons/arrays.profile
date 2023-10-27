@@ -462,7 +462,7 @@ array.map() {
     fi
 
 
-    declare key
+    declare key=
     for key in "${!_arrMapArrOrig[@]}"; do
         declare value="${_arrMapArrOrig[$key]}"
 
