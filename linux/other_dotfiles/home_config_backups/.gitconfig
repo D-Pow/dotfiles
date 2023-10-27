@@ -1,4 +1,7 @@
 [core]
+    # WSL: Use nested function to handle Linux-Windows paths correctly.
+    # See: https://stackoverflow.com/questions/66926718/git-opens-a-file-with-empty-buffer-in-vs-code-using-wsl/66933000#66933000
+    # editor = "handleWindowsFileInWsl() { printf '%s\\0' \"$@\" | xargs -0 -I{} wslpath -w {} | xargs -d'\\n' subl.exe -n -w; }; handleWindowsFileInWsl"
     editor = subl -n -w
     eol = lf
     autocrlf = false
@@ -88,3 +91,21 @@
     # Linux
     #   Legacy: helper = /usr/local/bin/git-credential-manager-core
     helper = /usr/local/share/gcm-core/git-credential-manager-core
+
+# How to change configs for specific directories.
+#
+# See:
+#   - https://git-scm.com/docs/git-config#_conditional_includes
+# [includeIf "gitdir:**/repositories/dotfiles/"]
+#     path = ~/repositories/personal/.gitconfig
+# [includeIf "gitdir:**/repositories/personal/**"]
+#     path = ~/repositories/personal/.gitconfig
+#
+# In this case, to auth for repos in different dirs, we will use a different
+# Git credential manager for the special directory.
+#
+# WSL Example:
+# WSL manager should be set to Windows' manager, i.e.
+#   git config --global credential.helper "/mnt/c/Program\ Files/Git/mingw64/bin/git-credential-manager.exe"
+# Thus, we can set the WSL manager to the default Linux manager via:
+#   git config --file /path/to/repositories/personal/.gitconfig credential.helper 'store --path=/path/to/repositories/personal/.git-credentials'
