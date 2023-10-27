@@ -46,6 +46,14 @@ export SHELL
 #   https://unix.stackexchange.com/questions/75341/specify-the-sort-order-with-lc-collate-so-lowercase-is-before-uppercase
 #   https://stackoverflow.com/questions/30479607/explain-the-effects-of-export-lang-lc-ctype-and-lc-all
 #   https://stackoverflow.com/questions/3222810/sorting-on-the-last-field-of-a-line/15677850#15677850
+#
+# If getting errors (esp on WSL where `en_US.UTF-8` isn't defined), try:
+#   sudo locale-gen en_US.UTF-8
+#   sudo update-locale LANG=en_US.UTF-8
+# See:
+#   - https://github.com/microsoft/WSL/issues/3569
+#   - https://askubuntu.com/questions/599808/cannot-set-lc-ctype-to-default-locale-no-such-file-or-directory
+#   - General info: https://unix.stackexchange.com/questions/503110/valid-values-for-lc-ctype/633128#633128
 export LC_CTYPE='en_US.UTF-8' # Allow characters with diacritics to group with normal/non-diacritic chars
 export LC_COLLATE='C' # Make symbols come before numbers before letters.
 

@@ -96,6 +96,10 @@ isWindows() {
     os-version -o | egrep -iq '(CYGWIN)|(MINGW)'
 }
 
+isWsl() {
+    os-version -s | egrep -iq 'wsl'
+}
+
 
 bytesReadable() {
     declare USAGE="[OPTIONS...] <input-or-stdin...>
@@ -398,6 +402,10 @@ listopenports() {
     # escape when trying to execute the array entries directly.
     # At least running it as an array instead of a string means spaces are maintained
     eval "${_listopenportsCmd[@]}"
+
+    if isWsl; then
+        netstat -a
+    fi
 }
 
 listnetworkdevices() {
@@ -608,13 +616,21 @@ getip() {
         _ipLocalDefault="$(ifconfig "$_ipDefaultNetworkInterface" | awk '/inet / {print $2}')"
     fi
 
+    declare _ipWindows=
+    if isWsl; then
+        _ipWindows="$(cat /etc/resolv.conf | grep -Pi '^nameserver' | awk '{ print $2 }')"
+    fi
+
     if [[ -n "$_getipNoOptions" ]]; then
-        # Default mode
+        # Default mode - Print info text along with IP addresses
         echo -e "\nYour local IP (default network interface = $_ipDefaultNetworkInterface):"
         echo "$_ipLocalDefault"
+
+        isWsl && echo -e "\nYour local IP (of Windows, not WSL):\n$_ipWindows"
     elif [[ -z "$_publicOnly" ]]; then
         # Quiet mode and local-only mode
         echo "$_ipLocalDefault"
+        isWsl && echo "$_ipWindows"
     fi
 
     if [[ -n "$_getipNoOptions" ]] || [[ -z "$_localOnly" ]]; then
@@ -1468,7 +1484,11 @@ copy() {
 }
 
 paste() {
-    $_pasteCommand
+    if isWsl; then
+        $_pasteCommand 2>/dev/null
+    else
+        $_pasteCommand
+    fi
 }
 
 _setClipboardCopyAndPasteCommands() {
@@ -1478,8 +1498,12 @@ _setClipboardCopyAndPasteCommands() {
         sudo apt-get install xclip"
     declare _printCopyPasteError='echo -e "$_copyPasteError" >&2'
 
+    # WSL (is handled as Linux but is actually Windows)
+    if isWsl; then
+        _copyCommand='cmd clip'
+        _pasteCommand='cmd powershell Get-Clipboard'
     # Linux OS
-    if isLinux; then
+    elif isLinux; then
         # `paste` is actually a handy tool to merge different files line-by-line
         # where resulting lines are the files' lines joined by <Tab>.
         # First, alias that to a more helpful name so it's not lost, then alias copy/paste.
