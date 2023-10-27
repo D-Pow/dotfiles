@@ -136,6 +136,38 @@ npmConfigIsRegistryAccessible() {
     npm ping --registry $(npm config get "${registryName}registry") &>/dev/null
 }
 
+npmInstallInDirs() {
+    declare dirs=("$@")
+
+    if (( ${#dirs[@]} == 0 )); then
+        dirs+=('.')
+    fi
+
+    declare dir=
+    for dir in "${dirs[@]}"; do
+        echo "Searching $dir for package.json files..."
+
+        declare parallelProcessCmds=()
+
+        declare packageJson=
+        for packageJson in $(findIgnoreDirs -i 'node_modules' "$dir" -iname 'package.json'); do
+            declare npmDir="$(dirname "$packageJson")/"
+
+            parallelProcessCmds+=('
+                echo "Running \`npm install\` in $npmDir";
+                cd "$npmDir";
+                npm i;
+            ')
+        done
+
+        parallel "${parallelProcessCmds[@]}"
+
+        declare allExitCodes="$?"
+
+        return $allExitCodes
+    done
+}
+
 npmr() {
     npm run "$@"
 }
