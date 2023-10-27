@@ -1,4 +1,4 @@
-#!/usr/bin/env -S node --experimental-top-level-await --experimental-json-modules --experimental-import-meta-resolve --experimental-specifier-resolution=node
+#!/usr/bin/env -S node --no-warnings --experimental-top-level-await --experimental-json-modules --experimental-import-meta-resolve --experimental-specifier-resolution=node
 
 import fs from 'fs';
 import path from 'path';
