@@ -611,8 +611,8 @@ _notifyOfUninstalledPackages() {
         declare _pkgPurpose="${_pkgsToInstall[$_pkgName]}"
 
         if ! is-installed "$_pkgName" &>/dev/null; then
-            echo "Please install \`$_pkgName\` for the following purpose:"
-            echo -e "\t$_pkgPurpose"
+            echo "Please install \`$_pkgName\` for the following purpose:" >&2
+            echo -e "\t$_pkgPurpose" >&2
         fi
     done
 } && _notifyOfUninstalledPackages
