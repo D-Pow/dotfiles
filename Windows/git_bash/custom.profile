@@ -79,7 +79,7 @@ getProcessLockingFile() {
 
 # TODO make the command below work
 # subl -n `towindowspath '/mnt/d/file with spaces.txt' /home/file`
-testargs() {
+_testargs() {
     declare argArray=()
 
     # $@ is all args
