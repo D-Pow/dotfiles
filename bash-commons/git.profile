@@ -48,13 +48,36 @@ gitIgnorePathsArgs() {
 }
 
 
-ignoreFileInGitDiff() {
-    git diff -- . ":!$1"
+ignoreFilesInGitDiff() {
+    # Dirs: myDir or myDir/
+    # Files: myFile.txt
+    # Nested files: */myFile.txt
+    # Note: Don't use `**` for paths.
+    declare _toIgnoreFilePaths=("$@")
+    declare _toIgnoreFilePatterns=()
+
+    # Shorthand of `:(exclude)path` == `:!path`
+    # Note: `:!` is an event in Bash, so avoid errors by using long-hand notation of `:(exclude)`
+    array.map -r _toIgnoreFilePatterns _toIgnoreFilePaths "echo \"':(exclude)\$value'\""
+
+    declare _toIgnoreFileArgsStr="${_toIgnoreFilePatterns[@]}"
+
+    # For some reason, even though we map the array to `':(exclude)path1' ':(exclude)path2`,
+    # it still doesn't work with `git diff -- . <args>`.
+    # Thus, make a hacky fix to work around it with `eval`
+    eval "git diff -- . $_toIgnoreFileArgsStr"
 }
 
 
-ignoreFileInGitDiffCached() {
-    git diff --cached -- . ":!$1"
+ignoreFilesInGitDiffCached() {
+    declare _toIgnoreFilePaths=("$@")
+    declare _toIgnoreFilePatterns=()
+
+    array.map -r _toIgnoreFilePatterns _toIgnoreFilePaths "echo \"':(exclude)\$value'\""
+
+    declare _toIgnoreFileArgsStr="${_toIgnoreFilePatterns[@]}"
+
+    eval "git diff --cached -- . $_toIgnoreFileArgsStr"
 }
 
 
@@ -741,8 +764,8 @@ alias    gd='git diff'
 alias   gds='gitGetDiffOfFilesContaining'
 alias   gdc='git diff --cached'
 alias   gdl='git diff -R'  # show line endings - CRLF or CR; any CR removed will be a red `^M` in green lines
-alias   gdi='ignoreFileInGitDiff'
-alias  gdci='ignoreFileInGitDiffCached'
+alias   gdi='ignoreFilesInGitDiff'
+alias  gdci='ignoreFilesInGitDiffCached'
 alias    ga='git add'
 alias   gap='git add -p'
 alias    gc='git commit -m'
