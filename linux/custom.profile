@@ -19,7 +19,11 @@ rm -rf "$HOME/.presage/"
 # Change directory colors in `ls`
 # LS_COLORS="${LS_COLORS}di=01;35"
 # export $LS_COLORS
-# [green]\username[white]:[teal]\working_directory[white]$[space]
+
+# Change terminal colors
+# See:
+#   - https://stackoverflow.com/questions/56895735/what-does-export-ps1-03336m-u-033m-03332m-h-033331m-w/65477687#65477687
+# [green]\username[reset-styles]:[reset-styles][teal]\working_directory[reset-styles]$[space]
 export PS1="\[\033[01;32m\]\u\[\033[00m\]:\[\033[00m\]\[\033[01;34m\]\w\[\033[00m\]\$ "
 
 
