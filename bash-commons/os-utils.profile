@@ -1653,7 +1653,8 @@ memusage() {
 
 ### Directory traversal ###
 
-reposDir="`dirname "$dotfilesDir"`"  # use `dirname` instead of `realpath` to preserve symlinks/~ in path
+export reposDir="`dirname "$dotfilesDir"`"  # use `dirname` instead of `realpath` to preserve symlinks/~ in path
+
 repos() {
     # Path is relative to repositories directory.
     # Read all args via `$@` instead of `$1` in case spaces aren't escaped.
