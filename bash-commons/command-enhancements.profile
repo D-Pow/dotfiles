@@ -321,11 +321,13 @@ open() {
         _openCommand=gnome-open
     elif os-version | grep -iq MINGW; then
         _openCommand=start
+    elif isWsl; then
+        _openCommand='cmd start'
     else
         _openCommand=open
     fi
 
-    _openCommand="$(which "$_openCommand")"
+    _openCommand="$(which "$_openCommand" || echo "$_openCommand")"
 
     $_openCommand "$@"
 }
