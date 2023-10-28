@@ -1,3 +1,10 @@
+# If git commands are slow (e.g. for large repos), you can start a filesystem
+# monitor daemon to track and cache changes to files via:
+#   git config [--global] core.fsmonitor true
+# See:
+#   - https://github.blog/2022-06-29-improve-git-monorepo-performance-with-a-file-system-monitor
+
+
 openGitMergeConflictFilesWithSublime() {
     subl -n $(gitGetBothModified)
 }

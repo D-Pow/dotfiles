@@ -212,6 +212,7 @@ str.replace() {
     declare USAGE="[OPTION]... <PatternToReplace> <Replacement> [StringToAlter]...
     Replaces \`PatternToReplace\` occurrence(s) with \`Replacement\` within all \`StringToAlter\` arguments.
     Optionally, executes each \`StringToAlter\` replacement in the way specified by the (mutually exclusive) options.
+    Note: Patterns are globs, not regex.
     "
     declare _strReplaceGlobally=
     declare _strReplaceFirstMatch=
@@ -474,4 +475,33 @@ pqr   12  1
         }
     }
     '
+
+
+    ## Other ways to do things in `awk`
+
+    # Print all columns after a certain column example: Splitting by delimiter.
+    #
+    # Splitting by a delimiter (in this case, '=') to get a key/val pair,
+    # and re-joining occurrences of that delimiter in val.
+    # Sample use case is JS cookies where the values contain '=' such that
+    # we want the first '=' occurrence to split key from val, but all subsequent
+    # occurrences to be maintained within val.
+    #
+    # echo -e 'a=b\nc=d=e' | \
+    # awk -F '=' '{
+    #     key = $1;
+    #     val = "";
+    #
+    #     for (i = 2; i <= NF; i++) {
+    #         # Only prefix `val` with "=" if val was already set from a previous iteration
+    #         val = length(val) > 0
+    #             ? sprintf("%s=%s", val, $i)
+    #             : $i;
+    #     };
+    #
+    #     print(key, val);
+    # }'
+    # Note: Would be easier with two runs of `cut` (`N-` means all fields at and after N):
+    # declare key="$(echo "$myVar" | cut -d '=' -f 1)"
+    # declare val="$(echo "$myVar" | cut -d '=' -f 2-)"
 )
