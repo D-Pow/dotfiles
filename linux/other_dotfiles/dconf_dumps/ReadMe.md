@@ -2,6 +2,35 @@
 
 `dconf` is used to configure settings from the terminal for both the OS and most applications, particularly settings that are usually accessed via GUIs/top menu bars. This also includes the `Settings` GUI for the OS.
 
+<details>
+    <summary>
+        Filtering out lines that were only reordered and not changed
+    </summary>
+    <br />
+
+Find lines changed in Git that are weren't simply reordered via `git diff my-file.conf > diff.git`, opening it in your text editor, doing a regex search for `^[\+-].*$)(?=[\s\S]*\n[\+-]\1\n)`, and then manually deleting all lines with the matched text.
+
+This can't be done in Sublime Text b/c the look-ahead will either not capture the second matching text or it will capture everything in between the first and second matching texts.
+
+However, this can be done in JavaScript (optionally copying to the clipboard) via:
+
+```javascript
+copy(
+s.split('\n')
+    .filter(line =>
+        !line.match(/^\s+$/)
+        && ![...s.matchAll(
+            /(?<=\n)[\+-]([^\n]*(?=\n))(?=[\s\S]*\n[\+-]\1[\n|$])/g
+        )]
+            .filter(([ wholeStr, matchGroup ]) => !wholeStr.match(/^[\+-]$/))
+            .map(([ wholeStr, matchGroup ]) => matchGroup)
+            .includes(line.substring(1))
+    ).join('\n')
+)
+```
+
+</details>
+
 ## Usage
 
 * Note: **DO NOT USE SUDO**.
