@@ -1069,6 +1069,9 @@ postgresStart() {
     declare -A _postgresqlInitNewDbClusterOptions=(
         ['d|pgdata:,_pgdataDir']="Directory for DB cluster files to exist."
         ['U|username:,_dbUserRoot']="Superuser account for cluster (default $(whoami))."
+        [':']=
+        ['?']=
+        ['USAGE']="$USAGE"
     )
 
     parseArgs _postgresqlInitNewDbClusterOptions "$@"
@@ -1104,6 +1107,9 @@ postgresStop() {
     declare -A _postgresqlInitNewDbClusterOptions=(
         ['d|pgdata:,_pgdataDir']="Directory for DB cluster files to exist."
         ['U|username:,_dbUserRoot']="Superuser account for cluster (default $(whoami))."
+        [':']=
+        ['?']=
+        ['USAGE']="$USAGE"
     )
 
     parseArgs _postgresqlInitNewDbClusterOptions "$@"
@@ -1130,6 +1136,10 @@ postgresStop() {
 }
 
 postgresCli() {
+    declare postgresCliExample="rm -rf testdb/; postgresInitNewDbCluster -b mydb -d testdb -c linux/other_dotfiles/home_config_backups/postgresql.conf; postgresStart -d testdb; postgresCli -b mydb < <(echo \"CREATE TABLE IF NOT EXISTS user_profile ( id SERIAL PRIMARY KEY, name VARCHAR ); INSERT INTO user_profile(name) VALUES ('Bob'), ('Alice'); INSERT INTO user_profile VALUES (DEFAULT, 'Jack'), (DEFAULT, 'Jill'); SELECT * FROM user_profile;\"); postgresStop -d testdb;"
+    # Note: \c is a special escape character, especially when used with `echo -e`.
+    # Thus, in order to print the string '\c', we must split it up and print the '\' and 'c'
+    # characters separately. An easy way to do this is to use `printf`.
     declare USAGE="[OPTIONS...] [psql OPTIONS...]
     Runs a TTY instance for executing SQL commands manually via CLI.
 
@@ -1138,7 +1148,11 @@ postgresCli() {
         \l+        -  List all DBs.
         \du+       -  List all roles (i.e. users and permissions).
         \dt+       -  List all tables (https://www.postgresqltutorial.com/postgresql-administration/postgresql-show-tables/).
-        SHOW <x>;  -  Show DB server configuration value (or all of them with \`SHOW all;\`).
+        SHOW <x>;  -  Show DB server configuration value (or all of them with 'SHOW all;').
+        $(printf "%s%s" '\\' 'c') <db>   -  Connect to a DB.
+
+    Example:
+        $postgresCliExample
     "
     declare _pgUser=
     declare _dbName=
