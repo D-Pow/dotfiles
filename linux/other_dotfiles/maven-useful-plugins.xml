@@ -1,0 +1,57 @@
+<project>
+    <build>
+        <plugins>
+            <!--
+                Print properties upon Maven `validate` phase
+
+                See:
+                    - https://stackoverflow.com/a/77145811/5771107
+                    - https://stackoverflow.com/questions/59841097/how-to-execute-a-maven-plugin-only-with-custom-command
+                    - https://stackoverflow.com/questions/3491937/i-want-to-execute-shell-commands-from-mavens-pom-xml
+            -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.4.0</version>
+                <executions>
+                    <execution>
+                        <id>list-properties</id>
+                        <phase>validate</phase>  <!-- Binds to the "validate" phase by default. -->
+                        <goals>
+                            <goal>bsh-property</goal>
+                        </goals>
+                        <configuration>
+                            <source>
+                                for (Map.Entry entry : project.getProperties().entrySet())  {
+                                    log.info(entry.getKey() + " = " + entry.getValue());
+                                }
+                            </source>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <!--
+                Run shell script at given phase
+                See: https://stackoverflow.com/a/3493919/5771107
+            -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>Custom Script</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${basedir}/my-script.sh</executable>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
