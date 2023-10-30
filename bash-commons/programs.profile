@@ -1077,9 +1077,7 @@ postgresStart() {
     parseArgs _postgresqlInitNewDbClusterOptions "$@"
     (( $? )) && return 1
 
-    if [[ -z "$_pgdataDir" ]]; then
-        _pgdataDir="$PGDATA"
-    fi
+    _pgdataDir="${_pgdataDir:-"$PGDATA"}"
 
     if [[ -z "$_dbUserRoot" ]]; then
         if [[ "$_pgdataDir" == "$PGDATA" ]]; then
