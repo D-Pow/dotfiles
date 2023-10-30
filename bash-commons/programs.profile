@@ -829,6 +829,10 @@ _postgresPathSet() {
         return
     fi
 
+    if ! [[ -f "$HOME/postgresql.conf" ]]; then
+        cp "$dotfilesDir/linux/other_dotfiles/home_config_backups/postgresql.conf" "$HOME/"
+    fi
+
     if isLinux; then
         # Linux automatically adds PostgreSQL executables to `/usr/bin/`.
         # However, some executables aren't added to /usr/bin/ that exist on
@@ -940,9 +944,9 @@ postgresInitNewDbCluster() {
         --allow-group-access \
         --username=$(whoami)
 
-    if [[ -n "$HOME/postgresql.conf" ]]; then
+    if [[ -f "$HOME/postgresql.conf" ]]; then
         # Set default PostgreSQL server options
-        cat "$HOME/postgresql.conf" >> "${_pgdataDir}/postgresql.conf"
+        cp "$HOME/postgresql.conf" "${_pgdataDir}/postgresql.conf"
     fi
 
     if [[ -n "$_postgresConf" ]]; then
