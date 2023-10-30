@@ -836,8 +836,8 @@ _postgresPathSet() {
     if isLinux; then
         # Linux automatically adds PostgreSQL executables to `/usr/bin/`.
         # However, some executables aren't added to /usr/bin/ that exist on
-        # other OSes, so use `pg_config --bindir` to get the directory
-        # containing all of them.
+        # other OSes (namely `pg_ctl` which is the primary executable), so
+        # use `pg_config --bindir` to get the directory containing all of them.
         export PATH="$PATH:$(pg_config --bindir)"
         # Understandably (unlike Mac), the PostgreSQL DB data files are in a
         # different location than the executables, so add the default, OS-wide
@@ -845,14 +845,55 @@ _postgresPathSet() {
         # for `psql` and related commands.
         export PGDATA="$(pg_lsclusters | tail -n +2 | sort -Vr | head -n 1 | awk '{ print $6 }')"
 
-        if ! ls -FlAh /var/run/ | grep postgresql | egrep -iq 'drwxr.[sx]rwx'; then
-            # Allow OS user to start/stop PostgreSQL server without `sudo -u postgres <...>`
-            sudo chmod -R a+rwx /var/run/postgresql/
-            sudo chmod -R g-w /var/run/postgresql/
+        declare _postgresRunningProcessPath="/var/run/postgresql"
+        declare _postgresGroupName="postgres"
 
-            # Add OS user to `postgres` group so they can do the same actions as `postgres` can
-            # Same as: sudo adduser $(whoami) postgres
+        if ! groups "$(whoami)" | egrep -iq 'postgres'; then
+            # Add OS user to `postgres` group if they aren't already in it
+            # so they can do the same actions as `postgres` can.
+            # Same as: `sudo adduser $(whoami) postgres`
             sudo usermod -a -G postgres $(whoami)
+        fi
+
+        # Allow OS user to start/stop local (not top-level in OS-install dir)
+        # PostgreSQL servers without `sudo -u postgres <...>`.
+        #
+        # See (only works for the current login session):
+        #   - https://stackoverflow.com/questions/50035569/how-to-enable-regular-linux-users-to-access-postgres-database-without-sudo-acces
+        # See (making the change permanent):
+        #   - https://askubuntu.com/questions/290099/how-to-run-a-script-during-boot-as-root/290107#290107
+        #   - https://unix.stackexchange.com/questions/111611/what-does-the-rc-stand-for-in-etc-rc-d/111612#111612
+        #       - https://en.wikipedia.org/wiki/Runlevel#Linux
+        #       - https://unix.stackexchange.com/questions/49626/purpose-and-typical-usage-of-etc-rc-local/49635#49635
+        declare postgresModScriptName="allow-user-to-run-postgresql"
+        declare postgresModScriptInitPath="/etc/init.d/$postgresModScriptName"
+        declare postgresModScriptRunControlLevel="3"  # Multi-user mode with networking (see Wikipedia ref above)
+        declare postgresModScriptWhenToRun="S"  # S = Start
+        declare postgresModScriptPriority="01"  # Priority; higher number means higher priority/run queue spot compared to other scripts
+        # Results in "/etc/rc3.d/S01allow-user-to-run-postgresql"
+        declare postgresModScriptRunControlScriptPath="/etc/rc${postgresModScriptRunControlLevel}.d/${postgresModScriptWhenToRun}${postgresModScriptPriority}${postgresModScriptName}"
+
+        if \
+            ! [[ -d "$_postgresRunningProcessPath" ]] \
+            || ! [[ -f "$postgresModScriptInitPath" ]] \
+            || ! [[ -f "$postgresModScriptRunControlScriptPath" ]] \
+            || ! ls -FlAh /var/run/ | grep postgresql | egrep -iq 'drwxr.[sx]rwx'
+        then
+
+            # Since we don't have permission as a user to write to `/etc/`, spawn
+            # a shell process to do it for us.
+            # See: https://stackoverflow.com/questions/84882/sudo-echo-something-etc-privilegedfile-doesnt-work/84899#84899
+            sudo bash -c "echo '#!/usr/bin/env bash
+sudo mkdir \"$_postgresRunningProcessPath\"
+
+sudo chmod -R a+rwx \"$_postgresRunningProcessPath\"
+# The below command would be required if the path weren't executed at boot by /etc/init as root
+# sudo chmod -R g-w \"$_postgresRunningProcessPath\"
+' > \"$postgresModScriptInitPath\"
+                sudo chmod 755 \"$postgresModScriptInitPath\"  # rwxr-xr-x
+                sudo rm -f \"$postgresModScriptRunControlScriptPath\"
+                sudo ln -s \"$postgresModScriptInitPath\" \"$postgresModScriptRunControlScriptPath\"
+            "
 
             # This creates a superuser as the OS username for the native
             # OS-level PostgreSQL DB.
