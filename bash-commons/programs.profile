@@ -1129,9 +1129,9 @@ postgresStop() {
 
 
     if isLinux && [[ "$_pgdataDir" == "$PGDATA" ]]; then
-        sudo -u postgres "$(pg_config --bindir)/pg_ctl" --pgdata="$_pgdataDir" stop
+        sudo -u postgres "$(pg_config --bindir)/pg_ctl" --pgdata="$_pgdataDir" "${argsArray[@]}" stop
     else
-        "$(pg_config --bindir)/pg_ctl" --pgdata="$_pgdataDir" stop
+        "$(pg_config --bindir)/pg_ctl" --pgdata="$_pgdataDir" "${argsArray[@]}" stop
     fi
 }
 
@@ -1140,8 +1140,9 @@ postgresCli() {
     # Note: \c is a special escape character, especially when used with `echo -e`.
     # Thus, in order to print the string '\c', we must split it up and print the '\' and 'c'
     # characters separately. An easy way to do this is to use `printf`.
-    declare USAGE="[OPTIONS...] [psql OPTIONS...]
+    declare USAGE="[OPTIONS...] [psql OPTIONS...] [stdin]
     Runs a TTY instance for executing SQL commands manually via CLI.
+    If running a multi-query command, pass by STDIN rather than args (\`psql\` limitation).
 
     Postgres SQL commands (Most backslash commands below show more info if you add \`+\` at the end):
         \q         -  Quit the TTY CLI session.
@@ -1156,6 +1157,8 @@ postgresCli() {
     "
     declare _pgUser=
     declare _dbName=
+    declare stdin=
+    declare argsArray=
     declare -A _postgresqlCliOptions=(
         ['U|username:_pgUser']="User to impersonate when executing PostgreSQL commands."
         ['b|dbname:,_dbName']="DB name to run under (default: postgres)."
@@ -1181,10 +1184,12 @@ postgresCli() {
         _pgUser="$(psql --dbname="$_dbName" -c "\du;" | grep -i superuser | awk '{ print $1 }' | head -n 1)"
     fi
 
-    # Log in to specific DB cluster rather than OS-level's.
+    # Login to specific DB cluster rather than OS-level's.
     # This allows all SQL commands to be executed in that cluster,
-    # which is useful for SQL commands used in specific apps.
-    psql --username="$_pgUser" --dbname="$_dbName" "$@"
+    # which is useful for running on systems with multiple apps.
+    # Also, forward STDIN to `psql` since that's the only way to run
+    # multi-query commands.
+    echo "${stdin[@]}" | psql --username="$_pgUser" --dbname="$_dbName" "${argsArray[@]}"
 }
 
 
