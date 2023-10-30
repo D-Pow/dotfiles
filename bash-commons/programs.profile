@@ -1089,9 +1089,20 @@ postgresStart() {
 
 
     if isLinux && [[ "$_pgdataDir" == "$PGDATA" ]]; then
-        sudo -u postgres "$(pg_config --bindir)/pg_ctl" --pgdata="$_pgdataDir" start
+        $([[ "$_dbUserRoot" != "$(whoami)" ]] && echo "sudo -u $_dbUserRoot") \
+            "$(pg_config --bindir)/pg_ctl" \
+            $([[ "$_dbUserRoot" != "$(whoami)" ]] && echo "-U $_dbUserRoot") \
+            $([[ "$_pgdataDir" != "$PGDATA" ]] && echo "-l $_pgdataDir/postgresql.log") \
+            --pgdata="$_pgdataDir" \
+            "${argsArray[@]}" \
+            start
     else
-        "$(pg_config --bindir)/pg_ctl" --pgdata="$_pgdataDir" start
+        "$(pg_config --bindir)/pg_ctl" \
+            $([[ "$_dbUserRoot" != "$(whoami)" ]] && echo "-U $_dbUserRoot") \
+            $([[ "$_pgdataDir" != "$PGDATA" ]] && echo "-l $_pgdataDir/postgresql.log") \
+            --pgdata="$_pgdataDir" \
+            "${argsArray[@]}" \
+            start
     fi
 }
 
