@@ -7,6 +7,13 @@ DetectHiddenWindows false  ; Don't enumerate hidden windows
 #m:: {
     ; TODO - Enhance logic to move window to bottom of z-order
     ; minimizeWindowAndLowerZindex()
+    minimizeActiveWindow()
+}
+
+minimizeActiveWindow() {
+    local windowId := WinActive("A")
+
+    WinMinimize(windowId)
 }
 
 
