@@ -23,6 +23,9 @@ export GRADLE_PATH="$GRADLE_HOME/bin"
 export PATH="$JAVA_PATH:$GRADLE_PATH:$MAVEN_PATH:$PATH"
 
 
+# Linux's `netstat` doesn't work nicely when nested within WSL, so use Windows' instead
+alias netstat='/mnt/c/Windows/System32/NETSTAT.exe'
+
 # Stops WSL completely. Useful for when WSL lags and/or takes up too much RAM.
 alias wslStop="wsl.exe --shutdown"
 
@@ -109,7 +112,19 @@ _testargs() {
 }
 
 
-alias netstat='/mnt/c/Windows/System32/NETSTAT.exe'
+git() {
+    # WSL's Git is slower than Windows' Git, at least for repositories cloned to a Windows path rather than WSL path
+    declare nativeGit="$(which git)"
+    declare currentPath="$(towindowspath .)"
+
+    if echo "$currentPath" | grep -Piq '\\\\wsl'; then
+        # WSL dir, use native git
+        "$nativeGit" "$@"
+    else
+        # Windows dir, use Windows' git
+        cmd git "$@"
+    fi
+}
 
 
 
