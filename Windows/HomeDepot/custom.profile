@@ -15,6 +15,31 @@ NPM_TOKEN=${NPM_TOKEN}
 " >> "${reposDir}/.env"
 
 
+vpnIsActive() {
+    # See:
+    #   - Passing multi-line commands to PowerShell: https://stackoverflow.com/questions/2608144/how-to-split-long-commands-over-multiple-lines-in-powershell/2608186#2608186
+    #   - How to tell if GlobalProtect VPN is active on Windows: https://live.paloaltonetworks.com/t5/globalprotect-discussions/checking-if-globalprotect-status-is-active-connected-via-script/td-p/534841
+    #   - Native Linux - Tell if logged in via VPN: https://askubuntu.com/questions/219724/how-can-i-see-if-im-logged-in-via-vpn
+    powershell.exe -Command '
+        Get-NetAdapter `
+            | Where-Object { $_.InterfaceDescription -like "PANGP Virtual Ethernet Adapter*" } `
+            | Select-Object Status
+        ' \
+        | awk '{
+            lineToPrint = lineToPrint >= 0 ? lineToPrint : -1;
+
+            if ($1 ~ /\s*Status\s*/) {
+                lineToPrint = NR + 2;
+            };
+
+            if (NR == lineToPrint) {
+                print($0);
+            };
+        }' \
+        | grep -Piq 'Up'
+}
+
+
 # See:
 #   - Set properties, defaults, etc. in `<activation><property>` in settings.xml:
 #       - https://maven.apache.org/guides/introduction/introduction-to-profiles.html#property
@@ -62,7 +87,7 @@ mvn() {
     #   - Set default flags to run every time `mvn` is invoked (: https://stackoverflow.com/questions/61079389/maven-build-set-settings-xml-path-from-environment-variable/71676089#71676089
     declare mvnOrig="$(which mvn)"
 
-    if ! vpnIsActive.sh; then
+    if ! vpnIsActive; then
         declare shouldContinuePrompt='Y'
 
         read -p "VPN is not active but required for dependency downloads. Are you sure you want to continue? <Y/n> " shouldContinuePrompt
