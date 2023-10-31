@@ -93,6 +93,11 @@
     // { "keys": ["option+shift+t"], "command": "terminus_open", "args": { "cwd": "${file_path:${folder}}" } },
 
 
+    /* SideBarEnhancements: https://github.com/titoBouzout/SideBarEnhancements/blob/st3/Commands.sublime-commands */
+    // Locate file in side bar
+    { "keys": ["alt+f"], "command": "reveal_in_side_bar" },
+
+
     /* Tab selection */
     { "keys": ["ctrl+1"], "command": "select_by_index", "args": { "index": 0 } },
     { "keys": ["ctrl+2"], "command": "select_by_index", "args": { "index": 1 } },
