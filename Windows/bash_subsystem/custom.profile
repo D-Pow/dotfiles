@@ -37,13 +37,11 @@ topath() {
 towindowspath() {
     # See:
     #   - https://superuser.com/questions/1726309/convert-wsl-path-to-uri-compliant-wsl-localhost/1726340#1726340
-    declare argArray=()
+    declare parsedPaths=()
 
-    # $@ is all args
-    # Wrapping "$@" in double quotes preserves args that have spaces in them
-    declare i=
-    for i in "$@"; do
-        declare path=$(topath "$i")
+    declare path=
+    for path in "$@"; do
+        declare path=$(topath "$path")
 
         # sed -e (execute script that uses regex)
         #     Allows multiple sed executions instead of only one.
@@ -69,17 +67,17 @@ towindowspath() {
             parsedPath=`echo $path | sed -e "/^\/mnt\//! s|/|$_wslRootDir/|" -e "s|/mnt/\(.\)|\U\1:|"`
         fi
 
-        argArray+=("$parsedPath")
+        parsedPaths+=("$parsedPath")
     done
 
     # Return one single string with all parsed paths
-    echo "${argArray[@]}"
+    echo "${parsedPaths[@]}"
 
     # Return one single string with parsed paths wrapped by single quotes
-    # argsWithStrings=`printf "'%s' " "${argArray[@]}"`
+    # argsWithStrings=`printf "'%s' " "${parsedPaths[@]}"`
 
     # Return paths as array
-    # echo $argArray
+    # echo $parsedPaths
 }
 
 
