@@ -4,8 +4,8 @@ declare _linuxProfile="${_linuxDir}/custom.profile"
 # Silence "Please install `package`" errors that only exist for real Linux and not WSL
 source "$_linuxProfile" 2>/dev/null
 
-export _wslOsBasename="$(cat /etc/os-release | grep -E '^NAME=' | sed -E 's/[^"]+"([^"]+)"$/\1/')"
-export _wslWindowsPath="\\\\wsl.localhost/$_wslOsBasename"
+export wslOsBasename="$(cat /etc/os-release | grep -E '^NAME=' | sed -E 's/[^"]+"([^"]+)"$/\1/')"
+export wslWindowsPath="\\\\wsl.localhost/$wslOsBasename"
 export _wslRootDir="C:/Users/$(whoami)/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs"
 export hostsfile="/mnt/c/Windows/System32/drivers/etc/hosts"
 
@@ -32,12 +32,14 @@ topath() {
 }
 
 towindowspath() {
-    argArray=()
+    declare argArray=()
 
     # $@ is all args
     # Wrapping "$@" in double quotes preserves args that have spaces in them
+    declare i=
     for i in "$@"; do
-        path=$(topath "$i")
+        declare path=$(topath "$i")
+
         # sed -e (execute script that uses regex)
         #     Allows multiple sed executions instead of only one.
         #
@@ -53,12 +55,15 @@ towindowspath() {
         #         * Replace '/mnt/x' with uppercase letter and colon, i.e. 'X:'
         #         * Used for the case that path is in a native Windows directory,
         #           (e.g. /mnt/c or /mnt/d), so don't append $_wslRootDir.
+        declare parsedPath=
         if isWsl; then
             # Need to escape backslashes a bunch (see: https://unix.stackexchange.com/questions/379572/escaping-both-forward-slash-and-back-slash-with-sed/379573#379573)
-            parsedPath="$(echo $path | sed -e "/^\/mnt\//! s|/|\\\\\\$_wslWindowsPath/|" -e "s|/mnt/\(.\)|\U\1:|")"
+            parsedPath="$(echo $path | sed -e "/^\/mnt\//! s|/|\\\\\\$wslWindowsPath/|" -e "s|/mnt/\(.\)|\U\1:|")"
         else
+            # Deprecated "Bash subsystem" that isn't a full Linux installation
             parsedPath=`echo $path | sed -e "/^\/mnt\//! s|/|$_wslRootDir/|" -e "s|/mnt/\(.\)|\U\1:|"`
         fi
+
         argArray+=("$parsedPath")
     done
 
