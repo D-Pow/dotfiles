@@ -160,6 +160,13 @@ swapWindowsOfSameApp(swapDelta := 1) {
 
     ; while KeyWait("Alt") != 0 { ; Doesn't work since `KeyWait()` blocks execution of other lines
     while GetKeyState("Alt") {
+        if GetKeyState("Escape", "P") {
+            resetWindowZOrder(windowListOrig)
+
+            return
+        }
+
+
         ; KeyWait("``", "D")  ; This might work, it wasn't tested in conjunction with the `Sleep` call below
         ; MsgBox("Backtick pressed " windowToFocusIndex, "Info when Alt+Backtick was pressed")
 
