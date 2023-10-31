@@ -35,6 +35,8 @@ topath() {
 }
 
 towindowspath() {
+    # See:
+    #   - https://superuser.com/questions/1726309/convert-wsl-path-to-uri-compliant-wsl-localhost/1726340#1726340
     declare argArray=()
 
     # $@ is all args

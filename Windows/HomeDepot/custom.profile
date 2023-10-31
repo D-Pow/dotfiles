@@ -66,6 +66,12 @@ vpnIsActive() {
 # See:
 #   - https://stackoverflow.com/questions/47239084/maven-package-skip-successfully-built-sub-modules/47239996#47239996
 #
+# Make Maven build projects' dependencies if they aren't already built (if using `--projects`):
+#   -am,--also-make
+#
+# Make Maven build projects that depend on the projects being built (if using `--projects`):
+#   -amd,--also-make-dependents
+#
 # Download dependencies directly:
 #   mvn org.apache.maven.plugins:maven-dependency-plugin:2.1:get \
 #       -DrepoUrl=https://download.java.net/maven/2/ \
@@ -73,6 +79,7 @@ vpnIsActive() {
 # See:
 #   - https://stackoverflow.com/questions/1776496/a-simple-command-line-to-download-a-remote-maven2-artifact-to-the-local-reposito/1776544#1776544
 #   - https://stackoverflow.com/questions/1776496/a-simple-command-line-to-download-a-remote-maven2-artifact-to-the-local-reposito/1776808#1776808
+#   - Adding Maven repo via CLI: https://stackoverflow.com/questions/71030/can-i-add-maven-repositories-in-the-command-line/1193664#1193664
 #
 # Configuration (settings.xml, .mvn/maven.config, etc.):
 # See:

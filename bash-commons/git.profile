@@ -3,6 +3,7 @@
 #   git config [--global] core.fsmonitor true
 # See:
 #   - https://github.blog/2022-06-29-improve-git-monorepo-performance-with-a-file-system-monitor
+#   - fsmonitor on WSL: https://github.com/NixOS/nixpkgs/issues/236562
 
 
 openGitMergeConflictFilesWithSublime() {
