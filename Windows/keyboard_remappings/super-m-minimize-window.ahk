@@ -1,6 +1,18 @@
 ; #Requires AutoHotkey v2.0
 
+
 DetectHiddenWindows false  ; Don't enumerate hidden windows
+
+
+#m:: {
+    ; TODO - Enhance logic to move window to bottom of z-order
+    ; minimizeWindowAndLowerZindex()
+}
+
+
+;;
+; TODO
+;;
 
 ; Less reliable
 global WindowGui := Gui("+Resize", "Window List")
@@ -16,7 +28,7 @@ global output := ""
 
 
 ; Make Windows minimize action behave like Linux in that minimized windows drop to the
-; bottom of the z-index (i.e. Alt+Tab list)
+; bottom of the z-order (i.e. Alt+Tab list)
 ;
 ; See:
 ;   - https://www.autohotkey.com/board/topic/91577-taskbarnavigation-switch-windows-in-taskbar-order-alt-tab-replacement/
@@ -157,9 +169,4 @@ handleEnumWindowsProcess(windowId, something) {
     }
 
     return true
-}
-
-
-#m:: {
-    minimizeWindowAndLowerZindex()
 }

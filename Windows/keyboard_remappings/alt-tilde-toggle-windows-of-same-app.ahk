@@ -1,5 +1,74 @@
 ﻿#Requires AutoHotkey v2.0
 
+
+; Alt+` to switch between windows of the same app, but without
+; putting previously-selected windows at the bottom of the z-index.
+; This behaves like Ubuntu where pressing Alt+` once will swap between
+; the last two windows focused by the user.
+;
+; We could bind multiple key-combos, e.g.
+; !`::
+; !+`:: { <logic> }
+; but that would cause the `swapWindowsOfSameApp()` function to be called once with each key-combo if the
+; previous call didn't end.
+; i.e. Pressing "Alt+`, Alt+`, Alt+Shift+`, Alt+`" would result in `swapWindowsOfSameApp()` being called twice
+; (once for Alt+` and a second time for Alt+Shift+`).
+; Thus, to allow both of them to work in harmony, allow all key modifiers (Ctrl, Caps-lock, Super, etc.) to
+; be captured by the same block via the `*` prefix, and then filter out the cases where relevant modifiers (namely
+; Ctrl and Super) are being pressed to simulate only allowing Alt+` and Alt+Shift+`.
+; See:
+;   - https://www.autohotkey.com/docs/v2/Hotkeys.htm#Symbols
+;   - https://www.autohotkey.com/boards/viewtopic.php?t=81355
+*!`:: {
+    ; Don't run if another modifier besides Alt and Shift is used.
+    ; There is no single `Win` key, so specify both Left/Right Win buttons (https://www.autohotkey.com/docs/v1/KeyList.htm#modifier).
+    if (GetKeyState("Ctrl") || GetKeyState("LWin") || GetKeyState("RWin")) {
+        return
+    }
+
+    Send '{Blind}{Alt down}'  ; "Mask" the standard Alt-down event.
+    swapWindowsOfSameApp()
+}
+
+; Original
+; !+`:: {
+;     windowId := WinActive("A")
+;     windowClass := WinGetClass("A")
+;     activeProcessName := WinGetProcessName("A")
+;     ; We have to be extra careful about explorer.exe since that process is responsible for more than file explorer
+;     if (activeProcessName = "explorer.exe")
+;         windowList := WinGetList("ahk_exe" activeProcessName " ahk_class" windowClass)
+;     else
+;         windowList := WinGetList("ahk_exe" activeProcessName)
+;
+;     ; Take window from bottom of list
+;     lastWindowIndex := windowList.Length
+;     windowToFocusId := windowList[lastWindowIndex]
+;
+;     ; Activate the next window and send it to the top.
+;     WinMoveTop("ahk_id" windowToFocusId)
+;     WinActivate("ahk_id" windowToFocusId)
+; }
+
+; Alternative: Moves previous window from Alt+` to bottom of z-index stack
+; Would need to add !+` (Alt+Shift+`) as well
+; !`:: {
+;     OldClass := WinGetClass("A")
+;     ActiveProcessName := WinGetProcessName("A")
+;     WinClassCount := WinGetCount("ahk_exe" ActiveProcessName)
+;     IF WinClassCount = 1
+;         Return
+;     loop 2 {
+;         WinMoveBottom("A")
+;         WinActivate("ahk_exe" ActiveProcessName)
+;         NewClass := WinGetClass("A")
+;         if (OldClass != "CabinetWClass" or NewClass = "CabinetWClass")
+;             break
+;     }
+; }
+
+
+
 ; See: https://superuser.com/questions/1604626/easy-way-to-switch-between-two-windows-of-the-same-app-in-windows-10/1783158#1783158
 
 ; Other ideas:
@@ -31,6 +100,20 @@ arrayReverse(arr) {
     }
 
     return arrRev
+}
+
+resetWindowZOrder(windowList, windowToIgnoreId := 0) {
+    ; Iterate through the original window stack list to prevent our `WinActivate()` call above from modifying
+    ; the resulting stack list beyond only moving the selected window to the top.
+    ; Otherwise, the stack will be overwritten with the order we cycled through when choosing which window
+    ; we wanted even though those windows weren't chosen.
+
+    local i,v
+    for i,v in arrayReverse(windowList) {
+        if (v != windowToIgnoreId) {
+            WinMoveTop("ahk_id" v)
+        }
+    }
 }
 
 
@@ -75,7 +158,8 @@ swapWindowsOfSameApp(swapDelta := 1) {
 
     local windowToFocusId := windowList[windowToFocusIndex]
 
-    while GetKeyState("Alt") {  ; while KeyWait("Alt") != 0 { ; Doesn't work since `KeyWait()` blocks execution of other lines
+    ; while KeyWait("Alt") != 0 { ; Doesn't work since `KeyWait()` blocks execution of other lines
+    while GetKeyState("Alt") {
         ; KeyWait("``", "D")  ; This might work, it wasn't tested in conjunction with the `Sleep` call below
         ; MsgBox("Backtick pressed " windowToFocusIndex, "Info when Alt+Backtick was pressed")
 
@@ -111,16 +195,8 @@ swapWindowsOfSameApp(swapDelta := 1) {
         Sleep 100  ; Necessary to prevent the loop from being marked "idle" and the function exiting prematurely
     }
 
-    ; Iterate through the original window stack list to prevent our `WinActivate()` call above from modifying
-    ; the resulting stack list beyond only moving the selected window to the top.
-    ; Otherwise, the stack will be overwritten with the order we cycled through when choosing which window
-    ; we wanted even though those windows weren't chosen.
-    for i,v in arrayReverse(windowListOrig) {
-        if (v != windowToFocusId) {
-            ; Ignore chosen window since it will be moved to the top of the stack below
-            WinMoveTop("ahk_id" v)
-        }
-    }
+    ; Ignore chosen window since it will be moved to the top of the stack below
+    resetWindowZOrder(windowListOrig, windowToFocusId)
 
     ; MsgBox(arrayToString(log) "=" windowToFocusIndex, "Final window-to-focus index")
 
@@ -130,73 +206,3 @@ swapWindowsOfSameApp(swapDelta := 1) {
     ; Wait until Alt is released before ending execution of this function
     KeyWait("Alt")
 }
-
-
-
-; Alt+` to switch between windows of the same app, but without
-; putting previously-selected windows at the bottom of the z-index.
-; This behaves like Ubuntu where pressing Alt+` once will swap between
-; the last two windows focused by the user.
-;
-; We could bind multiple key-combos, e.g.
-; !`::
-; !+`:: { <logic> }
-; but that would cause the `swapWindowsOfSameApp()` function to be called once with each key-combo if the
-; previous call didn't end.
-; i.e. Pressing "Alt+`, Alt+`, Alt+Shift+`, Alt+`" would result in `swapWindowsOfSameApp()` being called twice
-; (once for Alt+` and a second time for Alt+Shift+`).
-; Thus, to allow both of them to work in harmony, allow all key modifiers (Ctrl, Caps-lock, Super, etc.) to
-; be captured by the same block via the `*` prefix, and then filter out the cases where relevant modifiers (namely
-; Ctrl and Super) are being pressed to simulate only allowing Alt+` and Alt+Shift+`.
-; See:
-;   - https://www.autohotkey.com/docs/v2/Hotkeys.htm#Symbols
-;   - https://www.autohotkey.com/boards/viewtopic.php?t=81355
-*!`:: {
-    ; Don't run if another modifier besides Alt and Shift is used.
-    ; There is no single `Win` key, so specify both Left/Right Win buttons (https://www.autohotkey.com/docs/v1/KeyList.htm#modifier).
-    if (GetKeyState("Ctrl") || GetKeyState("LWin") || GetKeyState("RWin")) {
-        return
-    }
-
-    Send '{Blind}{Alt down}'  ; "Mask" the standard Alt-down event.
-    swapWindowsOfSameApp()
-}
-
-
-
-; Original
-; !+`:: {
-;     windowId := WinActive("A")
-;     windowClass := WinGetClass("A")
-;     activeProcessName := WinGetProcessName("A")
-;     ; We have to be extra careful about explorer.exe since that process is responsible for more than file explorer
-;     if (activeProcessName = "explorer.exe")
-;         windowList := WinGetList("ahk_exe" activeProcessName " ahk_class" windowClass)
-;     else
-;         windowList := WinGetList("ahk_exe" activeProcessName)
-;
-;     ; Take window from bottom of list
-;     lastWindowIndex := windowList.Length
-;     windowToFocusId := windowList[lastWindowIndex]
-;
-;     ; Activate the next window and send it to the top.
-;     WinMoveTop("ahk_id" windowToFocusId)
-;     WinActivate("ahk_id" windowToFocusId)
-; }
-
-; Alternative: Moves previous window from Alt+` to bottom of z-index stack
-; Would need to add !+` (Alt+Shift+`) as well
-; !`:: {
-;     OldClass := WinGetClass("A")
-;     ActiveProcessName := WinGetProcessName("A")
-;     WinClassCount := WinGetCount("ahk_exe" ActiveProcessName)
-;     IF WinClassCount = 1
-;         Return
-;     loop 2 {
-;         WinMoveBottom("A")
-;         WinActivate("ahk_exe" ActiveProcessName)
-;         NewClass := WinGetClass("A")
-;         if (OldClass != "CabinetWClass" or NewClass = "CabinetWClass")
-;             break
-;     }
-; }
