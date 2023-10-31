@@ -7,3 +7,5 @@
 
 #Include "./alt-tilde-toggle-windows-of-same-app.ahk"
 #Include "./super-m-minimize-window.ahk"
+#Include "./super-c-center-window.ahk"
+#Include "./super-shift-up-maximize.ahk"
