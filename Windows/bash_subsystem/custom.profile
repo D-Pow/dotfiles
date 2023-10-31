@@ -130,6 +130,12 @@ git() {
 }
 
 
+getProcessLockingFile() {
+    # See: https://superuser.com/questions/117902/find-out-which-process-is-locking-a-file-or-folder-in-windows/1203347#1203347
+    cmd openfiles /query /fo table | cmd find /I "$1"
+}
+
+
 
 # Add Windows PATH to Ubuntu subsystem PATH
 # Replace Windows-specific directory syntax with Ubuntu's with sed:
