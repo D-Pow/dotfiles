@@ -118,3 +118,9 @@ mvn() {
 
     "$mvnOrig" "$@"
 }
+
+
+watchJavaProcs() {
+    # See: https://collectivegenius.wordpress.com/2013/09/19/troubleshooting-stuck-processes-on-linux
+    strace -p "$(listprocesses -i 'java|mvn' | awk '{ print $2 }' | tail -n +2)"
+}
