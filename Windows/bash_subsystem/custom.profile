@@ -112,6 +112,21 @@ _testargs() {
     subl -n "${argArray[@]}"
 }
 
+# Makes $HOME contain the normal Windows HOME directories.
+# Recommended to share the same dirs between Windows/WSL to avoid file conflict/confusion.
+_linkLibraryDirs() {
+    declare dirsToLink=(Desktop Documents)
+
+    if [[ -d "$HOME/${dirsToLink[0]}" ]]; then
+        return 0
+    fi
+
+    declare dir=
+    for dir in "${dirsToLink[@]}"; do
+        ln -s "$windowsHome/$dir" "$HOME/$dir"
+    done
+} && _linkLibraryDirs
+
 
 git() {
     # WSL's Git is slower than Windows' Git, at least for repositories cloned to a Windows path rather than WSL path
