@@ -90,10 +90,11 @@ windows-which() {
 
 
 cmd() {
-    # For some reason, flags aren't picked up in $@, $2, etc. so just parse out the command
-    commandToRun="$1"
-    rest=${@/$commandToRun/""}
-    /mnt/c/Windows/System32/cmd.exe "/C" "$commandToRun" $rest
+    declare commandToRun="$1"
+
+    shift
+
+    /mnt/c/Windows/System32/cmd.exe "/C" "$commandToRun" "$@"
 }
 
 # TODO make the command below work
