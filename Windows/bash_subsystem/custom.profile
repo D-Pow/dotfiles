@@ -23,6 +23,10 @@ export GRADLE_PATH="$GRADLE_HOME/bin"
 export PATH="$JAVA_PATH:$GRADLE_PATH:$MAVEN_PATH:$PATH"
 
 
+# Stops WSL completely. Useful for when WSL lags and/or takes up too much RAM.
+alias wslStop="wsl.exe --shutdown"
+
+
 topath() {
     readlink -m "$1"
 }
