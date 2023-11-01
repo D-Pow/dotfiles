@@ -56,8 +56,10 @@ vpnIsActive() {
 
 # Enhanced `mvn` command
 #
-# Include submodule1 in build but exclude submodule2:
-#   mvn --projects 'submodule1,!submodule2' install
+# Filter certain projects to include/exclude.
+# Syntax is `[groupId]:artifactId` in ONE string which is comma-separated.
+# e.g. To include submodule1 in build but exclude submodule2:
+#   mvn --projects ':submodule1,!:submodule2' install
 # See:
 #   - https://stackoverflow.com/questions/8304110/skip-a-submodule-during-a-maven-build/27177197#27177197
 #
