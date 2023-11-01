@@ -162,5 +162,18 @@ export PATH="$PATH:$WINDOWS_PATH"
 if ! echo $PATH | egrep -iq '\bsubl'; then
     echo "Add the 'Sublime Text' directory to 'Environment Variables -> PATH'" >&2
 else
-    alias subl="subl.exe"
+    alias subl="sublime_text.exe"
+
+    # alias subl="subl.exe"
+
+    # subl() {
+    #     declare pathsToOpen=("$@")
+    #     declare pathsAsWindowsPaths=()
+    #
+    #     array.toString pathsToOpen
+    #     array.map -r pathsAsWindowsPaths pathsToOpen "echo \"\$(towindowspath \"\$value\")\""
+    #     array.toString pathsAsWindowsPaths
+    #
+    #     subl.exe "${pathsAsWindowsPaths[@]}"
+    # }
 fi
