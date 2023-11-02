@@ -658,7 +658,8 @@ if ! isDefined tree; then
                     _treeDepth="$OPTARG"
                     ;;
                 *)
-                    echo -e "$_treeUsage"
+                    echo -e "$_treeUsage" >&2
+                    return 1
                     ;;
             esac
         done
