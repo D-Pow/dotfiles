@@ -95,7 +95,27 @@ mvn() {
     #   - Change which `settings.xml` file is loaded (default: `~/.m2/settings.xml`): https://stackoverflow.com/a/25279325/5771107
     #   - Set default flags to run every time `mvn` is invoked (: https://stackoverflow.com/questions/61079389/maven-build-set-settings-xml-path-from-environment-variable/71676089#71676089
     declare mvnOrig="$(which mvn)"
+    declare _runOnLinux=
+    declare _runOnWindows=
 
+    declare OPTIND=1
+    while getopts ":LW" opt; do
+        case "$opt" in
+            L)
+                _runOnLinux='true'
+                ;;
+            W)
+                _runOnWindows='true'
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+    shift $(( OPTIND - 1 ))
+
+
+    # Ensure VPN is running before attempting Maven commands since packages are hosted in private artifactory
     if ! vpnIsActive; then
         declare shouldContinuePrompt='Y'
 
@@ -112,13 +132,28 @@ mvn() {
         cp "${dotfilesDir}/Windows/HomeDepot/configs/toolchains.windows.xml" "$HOME/.m2/"
     fi
 
-    if isWsl; then
-        cp "$HOME/.m2/toolchains.linux.xml" "$HOME/.m2/toolchains.xml"
-    else
-        cp "$HOME/.m2/toolchains.windows.xml" "$HOME/.m2/toolchains.xml"
+    # If using WSL2, reading/writing Windows drives is slower than WSL1.
+    # Thus set default to "Windows" if using WSL2.
+    # See:
+    #   - https://stackoverflow.com/questions/68972448/why-is-wsl-extremely-slow-when-compared-with-native-windows-npm-yarn-processing
+    declare defaultMvnOs="Windows"
+
+    if [[ -z "${_runOnWindows}${_runOnLinux}" ]]; then
+        if echo "$defaultMvnOs" | grep -Piq 'Windows'; then
+            _runOnWindows='true'
+        elif echo "$defaultMvnOs" | grep -Piq 'Linux|WSL'; then
+            _runOnLinux='true'
+        fi
     fi
 
-    "$mvnOrig" "$@"
+
+    if [[ -n "$_runOnLinux" ]] || [[ -z "$_runOnWindows" ]] && isWsl; then
+        cp "$HOME/.m2/toolchains.linux.xml" "$HOME/.m2/toolchains.xml"
+        "$mvnOrig" "$@"
+    else
+        cp "$HOME/.m2/toolchains.windows.xml" "$HOME/.m2/toolchains.xml"
+        cmd mvn "$@"
+    fi
 }
 
 
