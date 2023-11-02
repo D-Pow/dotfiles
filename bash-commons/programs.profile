@@ -168,6 +168,11 @@ npmInstallInDirs() {
     done
 }
 
+npmCleanNodeModules() {
+    mv node_modules znode_modules
+    rm -rf znode_modules &
+}
+
 npmr() {
     npm run "$@"
 }
