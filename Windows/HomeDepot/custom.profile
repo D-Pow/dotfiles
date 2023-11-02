@@ -115,6 +115,12 @@ mvn() {
     shift $(( OPTIND - 1 ))
 
 
+    if [[ "$(readlink -e "$HOME/.m2")" != "$(readlink -e "/mnt/c/Users/${windowsUser}/.m2")" ]]; then
+        echo "Error: $HOME/.m2 needs to be a symlink to /mnt/c/Users/${windowsUser}/.m2 or else you'll experience difficulties." >&2
+        return 1
+    fi
+
+
     # Ensure VPN is running before attempting Maven commands since packages are hosted in private artifactory
     if ! vpnIsActive; then
         declare shouldContinuePrompt='Y'
