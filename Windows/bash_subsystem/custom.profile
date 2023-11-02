@@ -35,6 +35,10 @@ topath() {
 }
 
 towindowspath() {
+    # The reverse of this is `wslpath` to get the Windows path in Unix form
+    # See:
+    #   - https://stackoverflow.com/questions/53474575/how-to-translate-the-wslpath-home-user-to-windows-path/53548414#53548414
+
     # See:
     #   - https://superuser.com/questions/1726309/convert-wsl-path-to-uri-compliant-wsl-localhost/1726340#1726340
     declare parsedPaths=()
@@ -90,6 +94,13 @@ windows-which() {
 
 
 cmd() {
+    # If you need to set an alias before running a command, use
+    #   cmd "doskey myAlias=myTarget && my-command args"
+    #   e.g.
+    #   cmd "doskey docker=$(towindowspath "$(which docker)") \$\* && mvn $@"
+    #
+    # See:
+    #   - https://stackoverflow.com/a/20531778/5771107
     declare commandToRun="$1"
 
     shift
