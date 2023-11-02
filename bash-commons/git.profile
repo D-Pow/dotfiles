@@ -24,80 +24,70 @@ gitIgnorePathsArgs() {
     # Ref: https://stackoverflow.com/a/39937070/5771107
     declare USAGE="[OPTIONS...] <paths...>
     Generates the args required to ignore certain paths in git commands, esp \`diff\`, \`status\`, etc.
+
+    Note: DO NOT USE THIS WITH QUOTES.
+        This function already adds necessary quotes for spreading CLI args to the parent.
+        Adding your own when calling this will group all of them into a single arg string, which
+        will mess up the underlying/parents' \`git\` command.
+
+    See:
+        - Pathspec options for \`--conf\` option:
+            https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
     "
-    declare _gitIgnorePaths=()
-    declare argsArray
+    declare _gitFilterConf=()
+    declare _gitPathsAreRelativeToRoot=
+    declare argsArray=
     declare -A _gitIgnorePathsArgsOptions=(
-        ['i|ignore:,_gitIgnorePaths']="Ignore the specified paths in git commands."
+        ['c|conf:,_gitFilterConf']="Git configuration term (e.g. icase, glob, attr, etc.)."
+        ['r|root,_gitPathsAreRelativeToRoot']="Toggles all file paths to be relative to root rather than CWD."
         ['USAGE']="$USAGE"
     )
 
     parseArgs _gitIgnorePathsArgsOptions "$@"
     (( $? )) && return 1
 
-    declare _gitPathsToScan=("${argsArray[@]}")
-
-    if array.empty _gitPathsToScan; then
-        _gitPathsToScan=("':(top)'")
+    if [[ -n "$_gitPathsAreRelativeToRoot" ]]; then
+        _gitFilterConf+=("top")
     fi
 
-    declare _gitIgnorePathsArgs
-    array.map -r _gitIgnorePathsArgs _gitIgnorePaths "echo \"':(exclude)\$value'\""
+    # Dirs: myDir or myDir/
+    # Files: myFile.txt
+    # Nested files: */myFile.txt
+    # Note: Don't use `**` for paths.
+    declare _gitIgnorePaths=("${argsArray[@]}")
+
+    # Shorthand of `:(exclude)path` == `:!path`
+    # Note: `:!` is an event in Bash, so avoid errors by using long-hand notation of `:(exclude)`
+    # Result: ':(exclude)my-file.txt' if `_gitFilterConf` is empty
+    # or ':(conf1,conf2,exclude)my-file.txt' if not empty.
+    # That `:(A,B,C)` is prefixed to every file path entry.
+    declare _gitIgnorePathsArgs=()
+    array.map -r _gitIgnorePathsArgs _gitIgnorePaths "echo \":($(
+        # Note: Don't strip trailing comma so that a single conf entry has comma appended.
+        # e.g. If `root` specified, result is `:(top,exclude)path-to-file.txt`
+        array.empty _gitFilterConf || array.join _gitFilterConf ','
+    )exclude)\$value\""
 
     if [[ -z "$_gitIgnorePathsArgs" ]] || array.empty _gitIgnorePathsArgs; then
         return
     fi
 
-    # TODO Will likely require `eval $cmd -- <text below>` because
-    # it doesn't currently work with ANY combination of quotes above, below,
-    # in between, or a removal of `-r retArray` in the above `array.map` call.
-    # TODO `:(top)` doesn't work
-    echo "${_gitPathsToScan[@]}" "${_gitIgnorePathsArgs[@]}"
+    echo "${_gitIgnorePathsArgs[@]}"
 }
 
 
 ignoreFilesInGitDiff() {
-    # Dirs: myDir or myDir/
-    # Files: myFile.txt
-    # Nested files: */myFile.txt
-    # Note: Don't use `**` for paths.
-    declare _toIgnoreFilePaths=("$@")
-    declare _toIgnoreFilePatterns=()
-
-    # Shorthand of `:(exclude)path` == `:!path`
-    # Note: `:!` is an event in Bash, so avoid errors by using long-hand notation of `:(exclude)`
-    array.map -r _toIgnoreFilePatterns _toIgnoreFilePaths "echo \"':(exclude)\$value'\""
-
-    declare _toIgnoreFileArgsStr="${_toIgnoreFilePatterns[@]}"
-
-    # For some reason, even though we map the array to `':(exclude)path1' ':(exclude)path2`,
-    # it still doesn't work with `git diff -- . <args>`.
-    # Thus, make a hacky fix to work around it with `eval`
-    eval "git diff -- . $_toIgnoreFileArgsStr"
+    git diff -- $(gitIgnorePathsArgs "$@")
 }
 
 
 ignoreFilesInGitDiffCached() {
-    declare _toIgnoreFilePaths=("$@")
-    declare _toIgnoreFilePatterns=()
-
-    array.map -r _toIgnoreFilePatterns _toIgnoreFilePaths "echo \"':(exclude)\$value'\""
-
-    declare _toIgnoreFileArgsStr="${_toIgnoreFilePatterns[@]}"
-
-    eval "git diff --cached -- . $_toIgnoreFileArgsStr"
+    git diff --cached -- $(gitIgnorePathsArgs "$@")
 }
 
 
 ignoreFilesInGitLog() {
-    declare _toIgnoreFilePaths=("$@")
-    declare _toIgnoreFilePatterns=()
-
-    array.map -r _toIgnoreFilePatterns _toIgnoreFilePaths "echo \"':(exclude)\$value'\""
-
-    declare _toIgnoreFileArgsStr="${_toIgnoreFilePatterns[@]}"
-
-    eval "gld -- . $_toIgnoreFileArgsStr"
+    gld -- $(gitIgnorePathsArgs "$@")
 }
 
 
