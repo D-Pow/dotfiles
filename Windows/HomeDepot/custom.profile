@@ -167,3 +167,97 @@ watchJavaProcs() {
     # See: https://collectivegenius.wordpress.com/2013/09/19/troubleshooting-stuck-processes-on-linux
     strace -p "$(listprocesses -i 'java|mvn' | awk '{ print $2 }' | tail -n +2)"
 }
+
+
+
+hdStoreCheckoutComponentsFixPomXmlDependenciesVersionRange() (
+    git stash push -m "WIP - Right before trying to install with updated dependency versions."
+
+    declare repoRootDir="$(git rev-parse --show-toplevel)"
+
+    if isWsl; then
+        repoRootDir="$(wslpath "$repoRootDir")"
+    fi
+
+    cd "$repoRootDir"
+
+    declare minorVersion="$(
+        grep -Pio '^ {2,4}<version>([\d.]+)</version>' "$repoRootDir/pom.xml" \
+            | sed -E 's/.*>([.0-9]+)<.*/\1/' \
+            | grep -Po '(?<=\.)\d+(?=\.)'
+    )"
+
+    declare origIFS="$IFS"
+    declare IFS=$'\n'
+    declare pomXmlFiles=($(find . \( -name 'node_modules' \) -prune -false -o -type f -iname '*pom.xml'))
+    IFS="$origIFS"
+
+    # Running `sed` in the for-loop is the equivalent of running it in `find` via:
+    #   <find-command-above> -exec sed -Ei "s/\(2023.[89][0-9]*,/\(2023.${minorVersion},/g" "{}" ';'
+    # We run it separately in a for-loop here to maintain file paths of all files for executing other
+    # commands on them after this `sed` command is run.
+    declare pomXml=
+    for pomXml in "${pomXmlFiles[@]}"; do
+        sed -Ei "s/\(2023.[89][0-9]*,/\(2023.${minorVersion},/g" "$pomXml"
+    done
+
+    declare mvnInstallExitCode=0
+
+
+    # Cleanup `sed` changes above when this function ends, regardless of success or failure.
+    trap "hdStoreCheckoutComponentsExitCode=\$?; git reset --hard HEAD; git stash apply; return \$hdStoreCheckoutComponentsExitCode;" EXIT QUIT INT TERM
+
+
+    # Not sure why, but the CMS sub-apps always give me trouble when installing.
+    # Thus, ignore them all.
+    # `:register-components` requires access to Docker socket which is unavailable when running
+    # Windows' version of `mvn`, so ignore it as well and build it separately after this command.
+    # Also, ignore `update-checkout-applications` from module MOJO executions since it always errors out.
+    mvn \
+        -DskipTests \
+        -am \
+        --projects '!:CMSDataIntegration,!:CMSWeb,!:CMSRecognitionIntegration,!:register-components' \
+        -Dexec.skip='update-checkout-applications' \
+        clean \
+        install
+
+    (( mvnInstallExitCode += $? ))
+
+    # As described above, `:register-components` needs to be built in Linux, so build only it here.
+    mvn \
+        -L \
+        -DskipTests \
+        -am \
+        --projects '!:CMSDataIntegration,!:CMSWeb,!:CMSRecognitionIntegration,!:deployment' \
+        -Dexec.skip='update-checkout-applications' \
+        --resume-from ':register-components' \
+        clean \
+        install
+
+    (( mvnInstallExitCode += $? ))
+
+    for pomXml in "${pomXmlFiles[@]}"; do
+        git checkout -- "$pomXml"
+    done
+
+    return $mvnInstallExitCode
+
+    # TODO
+    #
+    # apps/pom.xml -> modules
+    # apps/payment/payment-service/pom.xml -> spring-oauth dep
+    #       <properties>
+    #           <!-- Dependencies -->
+    #           <dependency.security-libs.spring-oauth-jwt.version>(2023.100, ${project.version}]</dependency.security-libs.spring-oauth-jwt.version>
+    #       ...
+    #       <dependency>
+    #           <groupId>com.homedepot.sa.pt</groupId>
+    #           <artifactId>spring-oauth2-resource-jwt</artifactId>
+    #           <version>${dependency.security-libs.spring-oauth-jwt.version}</version> <!-- Inherited from parent -->
+    # apps/customer-lookup-service/pom.xml ->dependency.customer.lookup.client.version, and dependency.tokenization.client.version need end of range to be ${project.version}
+    # apps/register/checkout-applications/pom.xml -> Remove update-checkout-applications execution
+    #       <execution>
+    #           <id>update-checkout-applications</id>
+    # apps/suspend-resume-service/pom.xml -> May or may not need a version for their quarkus-resteasy-reactive and quarkus-smallrye-jwt deps
+    #       <version>${dependency.quarkus.platform.version}</version>
+)
