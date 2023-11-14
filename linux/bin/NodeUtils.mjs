@@ -2,6 +2,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import util from 'node:util';
 import childProcess from 'node:child_process';
 import { createRequire } from 'node:module';
 
@@ -26,6 +27,19 @@ const require = createRequire(import.meta.url);
 //
 //     return emitOrig.apply(name, data, ...args);
 // }
+
+
+export function log(...args) {
+    const stringsToLog = args.map(arg => (
+        util.inspect(arg, {
+            showHidden: true,
+            depth: null,
+            colors: true,
+        })
+    ));
+
+    console.log(...stringsToLog);
+}
 
 
 /**
