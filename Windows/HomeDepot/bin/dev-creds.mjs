@@ -14,7 +14,7 @@ const creds = {
         username: 'pos',
         password: 'buy4me',
     },
-    posRewrite: {
+    pos: {
         // Manager and/or ASM
         username: 'asm001',
         password: 'TestMe123!',
