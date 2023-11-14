@@ -29,6 +29,23 @@ const creds = {
             ],
         },
     },
+    website: {
+        url: 'https://hd-qa74.homedepotdev.com',
+        _sub: {
+            1: {
+                username: 'b2btestperksstaguser187@mailinator.com',
+                password: 'Test@1234',
+            },
+            2: {
+                username: 'b2btestperksstaguser216@mailinator.com',
+                password: 'Test54321',
+            },
+            3: {
+                username: 'b2btestperksstaguser209@mailinator.com',
+                password: 'Test1234',
+            },
+        },
+    },
 };
 
 
