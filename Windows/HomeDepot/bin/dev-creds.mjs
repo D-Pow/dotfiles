@@ -2,7 +2,7 @@
 
 import path from 'node:path';
 
-import { importGlobalModule } from '../../../linux/bin/NodeUtils';
+import { log, importGlobalModule } from '../../../linux/bin/NodeUtils';
 
 
 await importGlobalModule('isomorphic-fetch');
@@ -107,5 +107,5 @@ if (isMain) {
 
     const specifiedCreds = await getCreds(app, ...args);
 
-    console.log(specifiedCreds);
+    log(specifiedCreds);
 }
