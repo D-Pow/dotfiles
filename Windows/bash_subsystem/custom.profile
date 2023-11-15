@@ -93,6 +93,81 @@ windows-which() {
 }
 
 
+winGetProcess() {
+    # See:
+    #   - Docs: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-process
+    declare pids=("$@")
+    pids=("$(array.join -s pids ',')")
+
+    declare procInfo="$(powershell.exe "Get-Process -Id ${pids[@]}")"
+    procInfo="$(echo "$procInfo" | trim -t 1)"
+    declare numColumns="$(echo "$procInfo" | head -n 1 | awk '{ print(NF) }')"
+
+    echo "$procInfo" | column -tc "$numColumns"
+}
+
+winGetProcessByPort() {
+    # See:
+    #   - https://stackoverflow.com/questions/15463593/how-to-find-out-application-name-by-pid-process-id/15498195#15498195
+    declare ports=("$@")
+    declare portsAsPowershellPidCommand=()
+
+    array.map -r portsAsPowershellPidCommand ports "echo \"(Get-NetTCPConnection -LocalPort \$value).OwningProcess\""
+
+    # winGetProcess "${portsAsPowershellPidCommand[@]}"
+
+    declare allProcessInfo=''
+    declare portCmdIndex=
+    for portCmdIndex in "${!portsAsPowershellPidCommand[@]}"; do
+        declare portCmd="${portsAsPowershellPidCommand[$portCmdIndex]}"
+        declare procInfo="$(winGetProcess "$portCmd")"
+
+        if (( portCmdIndex != 0 )); then
+            procInfo="$(echo "$procInfo" | trim -t 3)"
+        fi
+
+        allProcessInfo+="$procInfo"
+    done
+
+    allProcessInfo="$(echo "$allProcessInfo" | trim -t 1)"
+
+    declare numColumns="$(echo "$allProcessInfo" | head -n 1 | awk '{ print(NF); }')"
+
+    echo "$allProcessInfo" | column -tc "$numColumns"
+}
+
+winGetCommandForPids() {
+    # See:
+    #   - How to get command from PID:
+    #       - https://serverfault.com/a/696465
+    #       - https://stackoverflow.com/a/17582576/5771107
+    #   - Get-WmiObject vs Get-CimInstance: https://stackoverflow.com/a/47801130/5771107
+    #   - Get-WmiObject docs: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-wmiobject
+    #   - Don't concat output with ellipses: https://stackoverflow.com/a/13735900/5771107
+    #   - Multiple filter args: https://stackoverflow.com/questions/28205132/powershell-filter-not-accepting-two-conditions
+    declare pids=("$@")
+    declare commands=""
+
+    declare pid=
+    for pid in "${pids[@]}"; do
+        declare command="$(powershell.exe "Get-CimInstance Win32_Process -Filter \"ProcessID = '$pid'\" | Select-Object CommandLine | fl")"
+
+        # Strip leading "CommandLine : " from "CommandLine : <cmd>"
+        command="$(echo "$command" | cut -d ' ' -f 3-)"
+        # Strip empty lines at top of output
+        command="$(echo "$command" | trim -t 2)"
+
+        if [[ "$pid" != "${pids[0]}" ]]; then
+            # Add spacing between PID command entries, but not for the first one
+            echo -e '\n\n'
+        fi
+
+        echo -e "PID: $pid\n----------"
+        echo "$command"
+    done
+}
+
+
 cmd() {
     # If you need to set an alias before running a command, use
     #   cmd "doskey myAlias=myTarget && my-command args"
