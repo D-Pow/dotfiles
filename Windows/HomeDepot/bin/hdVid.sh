@@ -77,7 +77,6 @@ hdVid() {
             -H "cust-acct-client-id: clientId" \
             -H "cust-acct-client-delay-token-validation: 444444" \
             -H "channelId: 1" \
-            -H "THD_CUSTOMER: $ARTIFACTORY_TOKEN" \
             -H "Content-Type: application/json" \
             -H "Accept: application/json" \
             -H "User-Agent: neoload" \
