@@ -12,7 +12,7 @@ echo "
 ARTIFACTORY_USER=${ARTIFACTORY_USER}
 ARTIFACTORY_TOKEN=${ARTIFACTORY_TOKEN}
 NPM_TOKEN=${NPM_TOKEN}
-" >> "${reposDir}/.env"
+" > "${reposDir}/.env"
 
 
 vpnIsActive() {
