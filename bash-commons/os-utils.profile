@@ -404,10 +404,71 @@ listopenports() {
     eval "${_listopenportsCmd[@]}"
 
     if isWsl; then
-        # -all, -numericalPortForm, -owningPIDs
+        # `netstat -all, -numericalPortForm, -owningPIDs`
         # See:
         #   - https://stackoverflow.com/a/21315794/5771107
-        netstat -ano
+        declare origIFS="$IFS"
+        declare IFS=$'\n'
+        declare procs=($(netstat -ano | grep --color=never LISTENING))
+        IFS="$origIFS"
+
+        # Get headers from `netstat` for headers and entry formatting in output.
+        # `awk` command after `head -n 4` could also be done more easily via `tail -n 1`
+        declare netstatHeaders=($(
+            netstat -ano \
+            | head -n 4 \
+            | awk '
+                BEGIN {
+                    maxCols = 0;
+                    maxColsLine = "";
+                }
+                {
+                    if (NF > maxCols) {
+                        maxCols = NF;
+                        maxColsLine = $0;
+                    }
+                }
+                END {
+                    print(maxColsLine);
+                }' \
+            | trim \
+            | sed -E 's/([^ \t])([ ])([^ \t])/\1-\3/g'
+            # Alternative: Replace all multi-whitespace with '_' and then split columns by that
+            # | sed -E 's/([ ]{2,})/_/g' \
+            # | awk -F '_' '{
+            #     if (NF > 1) {
+            #         for (i = 1; i <= NF; i++) {
+            #             print($i, "\n");
+            #         }
+            #     }
+            # }'
+        ))
+
+        # We're injecting the command used to run the process with the given PID into the table
+        netstatHeaders+=(Command)
+
+        declare allProcsInfo=''
+        declare -A procCommandNames=()
+        declare proc=
+        for proc in "${procs[@]}"; do
+            # Remove excess whitespace and leading/trailing lines
+            proc="$(echo "$proc" | trim)"
+
+            declare pid="$(echo "$proc" | awk '{ print($NF); }')"
+
+            if ! [[ -v 'procCommandNames[$pid]' ]]; then
+                declare procCommandName="$(winGetProcess "$pid" | awk '{ if (NR == 3) { print($NF); }; }')"
+                procCommandNames["$pid"]="$procCommandName"
+            fi
+
+            proc="${proc}  ${procCommandNames["$pid"]}"
+
+            # echo "$proc" | column -tc "${#netstatHeaders[@]}"
+
+            allProcsInfo+="$proc\n"
+        done
+
+        echo -e "${netstatHeaders[@]}\n$allProcsInfo" | column -tc "${#netstatHeaders[@]}"
     fi
 }
 
