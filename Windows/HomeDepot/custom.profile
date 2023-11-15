@@ -15,6 +15,22 @@ NPM_TOKEN=${NPM_TOKEN}
 " > "${reposDir}/.env"
 
 
+buildAllFrontends() {
+    declare origIFS="$IFS"
+    declare IFS=$'\n'
+    declare allPkgJsons=($(git ls-files | grep --color=never 'package.json'))
+    IFS="$origIFS"
+
+    declare pkgJson=
+    for pkgJson in "${allPkgJsons[@]}"; do
+        (
+            cd "$(dirname "$pkgJson")"
+            npm install
+        )
+    done
+}
+
+
 vpnIsActive() {
     # See:
     #   - Passing multi-line commands to PowerShell: https://stackoverflow.com/questions/2608144/how-to-split-long-commands-over-multiple-lines-in-powershell/2608186#2608186
@@ -270,4 +286,23 @@ hdStoreCheckoutComponentsFixPomXmlDependenciesVersionRange() (
     #           <id>update-checkout-applications</id>
     # apps/suspend-resume-service/pom.xml -> May or may not need a version for their quarkus-resteasy-reactive and quarkus-smallrye-jwt deps
     #       <version>${dependency.quarkus.platform.version}</version>
+)
+
+hdUpdateJavaInstallationPolicyFiles() (
+    declare javaInstallationDir="${1:-"/mnt/c/java"}"
+
+    cd "$javaInstallationDir"
+
+    declare jdkSecurityDir="conf/security"
+    declare jdkSecurityFile="$jdkSecurityDir/java.security"
+    declare jdkPolicyFile="$jdkSecurityDir/java.policy"
+
+    declare dir=
+    for dir in $(find . -maxdepth 1 -iname 'jdk-*'); do
+        mv "$dir/$jdkPolicyFile" "$dir/$jdkPolicyFile.bak"
+        mv "$dir/$jdkSecurityFile" "$dir/$jdkSecurityFile.bak"
+
+        cp "jdk11.0.16.1-ms/$jdkSecurityFile" "$dir/$jdkSecurityDir/"
+        cp "jdk11.0.16.1-ms/$jdkPolicyFile" "$dir/$jdkSecurityDir/"
+    done
 )
