@@ -208,33 +208,43 @@ hdStoreCheckoutComponentsFixPomXmlDependenciesVersionRange() (
     trap "hdStoreCheckoutComponentsExitCode=\$?; git reset --hard HEAD; git stash apply; return \$hdStoreCheckoutComponentsExitCode;" EXIT QUIT INT TERM
 
 
-    # Not sure why, but the CMS sub-apps always give me trouble when installing.
-    # Thus, ignore them all.
-    # `:register-components` requires access to Docker socket which is unavailable when running
-    # Windows' version of `mvn`, so ignore it as well and build it separately after this command.
-    # Also, ignore `update-checkout-applications` from module MOJO executions since it always errors out.
+    # Not sure why, but the CMS and Computer Vision sub-projects always give me trouble when installing, so ignore them all.
+    declare specificProjectsToBuildFilter="!:computer-vision-libs-parent,!:cv-service,!:cv-pos-client,!:CMSDataIntegration,!:CMSWeb,!:CMSRecognitionIntegration"
+
+    # Default to Windows' `mvn`
+    # mvn -DskipTests -am --projects '!:computer-vision-libs-parent,!:cv-service,!:cv-pos-client,!:CMSDataIntegration,!:CMSWeb,!:CMSRecognitionIntegration' clean install
     mvn \
         -DskipTests \
         -am \
-        --projects '!:CMSDataIntegration,!:CMSWeb,!:CMSRecognitionIntegration,!:register-components' \
-        -Dexec.skip='update-checkout-applications' \
+        --projects "$specificProjectsToBuildFilter" \
         clean \
         install
 
-    (( mvnInstallExitCode += $? ))
-
-    # As described above, `:register-components` needs to be built in Linux, so build only it here.
-    mvn \
-        -L \
-        -DskipTests \
-        -am \
-        --projects '!:CMSDataIntegration,!:CMSWeb,!:CMSRecognitionIntegration,!:deployment' \
-        -Dexec.skip='update-checkout-applications' \
-        --resume-from ':register-components' \
-        clean \
-        install
-
-    (( mvnInstallExitCode += $? ))
+    # # `:register-components` requires access to Docker socket which is unavailable when running
+    # # Windows' version of `mvn`, so ignore it as well and build it separately after this command.
+    # # Also, ignore `update-checkout-applications` from module MOJO executions since it always errors out.
+    # mvn \
+    #     -DskipTests \
+    #     -am \
+    #     --projects "$specificProjectsToBuildFilter,!:register-components" \
+    #     -Dexec.skip='update-checkout-applications' \
+    #     clean \
+    #     install
+    #
+    # (( mvnInstallExitCode += $? ))
+    #
+    # # As described above, `:register-components` needs to be built in Linux, so build only it here.
+    # mvn \
+    #     -L \
+    #     -DskipTests \
+    #     -am \
+    #     --projects "$specificProjectsToBuildFilter,!:deployment" \
+    #     -Dexec.skip='update-checkout-applications' \
+    #     --resume-from ':register-components' \
+    #     clean \
+    #     install
+    #
+    # (( mvnInstallExitCode += $? ))
 
     for pomXml in "${pomXmlFiles[@]}"; do
         git checkout -- "$pomXml"
