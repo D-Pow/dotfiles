@@ -404,7 +404,10 @@ listopenports() {
     eval "${_listopenportsCmd[@]}"
 
     if isWsl; then
-        netstat -a
+        # -all, -numericalPortForm, -owningPIDs
+        # See:
+        #   - https://stackoverflow.com/a/21315794/5771107
+        netstat -ano
     fi
 }
 
@@ -634,6 +637,19 @@ getip() {
     fi
 
     if [[ -n "$_getipNoOptions" ]] || [[ -z "$_localOnly" ]]; then
+        # curl
+        #   -s, --silent
+        #       Silent (don't show progress bar).
+        #   -S, --show-error
+        #       Show errors even if silent.
+        #   -f, --fail
+        #       Fail silently (don't show errors).
+        #   -L, --location
+        #       Follow redirects.
+        #   -c, --cookie-jar <file>
+        #       Store new cookies in cookie jar.
+        #   -b, --cookie <file>
+        #       Use cookies from cookie jar.
         declare _ipPublic="$(curl -sS ifconfig.me)" # --silent hides download progress details, --show-error for use with --silent
 
         if [[ -z "${_getipQuietMode}${_publicOnly}" ]]; then
@@ -923,9 +939,9 @@ getLargestAvailableFd() {
 }
 
 makeTempPipe() {
-    # Refs:
-    # https://stackoverflow.com/questions/8297415/in-bash-how-to-find-the-lowest-numbered-unused-file-descriptor/17030546#17030546
-    # https://superuser.com/questions/184307/bash-create-anonymous-fifo/633185#633185
+    # See:
+    #   - https://stackoverflow.com/questions/8297415/in-bash-how-to-find-the-lowest-numbered-unused-file-descriptor/17030546#17030546
+    #   - https://superuser.com/questions/184307/bash-create-anonymous-fifo/633185#633185
 
     declare USAGE="[OPTIONS...]
     Makes a temporary file for IO, and sets its file descriptor into \`\$FD\` for IO redirection.
