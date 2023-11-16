@@ -1,4 +1,4 @@
-export subsystemProfile="$dotfilesDir/Windows/bash_subsystem/custom.profile"
+export subsystemProfile="$dotfilesDir/Windows/wsl/custom.profile"
 
 # source "$subsystemProfile"
 

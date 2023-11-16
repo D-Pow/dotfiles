@@ -1,4 +1,4 @@
-declare _bashSubsystemDir="${dotfilesDir}/Windows/bash_subsystem"
+declare _bashSubsystemDir="${dotfilesDir}/Windows/wsl"
 declare _bashSubsystemProfile="${_bashSubsystemDir}/custom.profile"
 
 source "$_bashSubsystemProfile"
