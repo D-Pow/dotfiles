@@ -214,6 +214,12 @@ _linkLibraryDirs() {
 } && _linkLibraryDirs
 
 
+changeJavaVersion() {
+    sudo rm /usr/lib/jvm/current
+    sudo ln -s "/usr/lib/jvm/java-${1}-openjdk-amd64" "/usr/lib/jvm/current"
+}
+
+
 git() {
     # WSL's Git is slower than Windows' Git, at least for repositories cloned to a Windows path rather than WSL path
     declare nativeGit="$(which git)"

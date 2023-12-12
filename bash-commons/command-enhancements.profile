@@ -84,6 +84,15 @@ alias printpath='echo $PATH | sed -E "s|:|\n|g"'
 alias esed='sed -E'  # Note: -E is the same as -r, except undocumented since it's just for backward compatibility with BSD `sed`. Ref: https://stackoverflow.com/questions/3139126/whats-the-difference-between-sed-e-and-sed-e/3139925#3139925
 
 
+isEven() {
+    # Note: `(( x % 2 ))` is true if the number is even, but running a math command via `(( ... ))`
+    # returns 1 if true instead of 0, which is the opposite of how the rest of Bash operates with
+    # exit codes of 0 being true and non-zero is false.
+    # Thus, negate it to make `isEven` return true if the number is even.
+    ! (( "$1" % 2 ))
+}
+
+
 isDefined() {
     # Determines if the function or variable is defined
     # `type` could also work in place of `command`
