@@ -337,6 +337,25 @@ listprocesses() {
 
     # Actual `ps` command
     declare _psOutput=$(${_psCommand[@]})
+
+    if isWsl; then
+        declare _windowsProcessesInfo="$(powershell.exe "Get-Process" | trim -t 1)"
+        declare _windowsProcessesInfoNumColumns="$(echo "$_windowsProcessesInfo" | head -n 1 | awk '{ print(NF) }')"
+
+        _windowsProcessesInfo="$(echo "$_windowsProcessesInfo" | awk -v numCols=$_windowsProcessesInfoNumColumns '{
+            if (NF < numCols) {
+                # CPU usage probably is excluded due to insufficient permissions,
+                # so inject a placeholder "_" for that column value.
+                # See: https://stackoverflow.com/questions/30849906/cpu-usage-missing-from-log-for-some-processes
+                $4 = $4 " _"
+            }
+
+            print($0);
+        }')"
+
+        _psOutput+="\n\n$(echo "$_windowsProcessesInfo" | column -tc "$_windowsProcessesInfoNumColumns")"
+    fi
+
     # Include header info for what each column means
     declare _psHeaders="$(echo "$_psOutput" | head -n 1)"
     # Results to `grep` through - requires the headers be removed
@@ -352,13 +371,13 @@ listprocesses() {
         _psResults="$(echo "$_psResults" | grep -v grep | egrep $_egrepOptions)"
 
         if [[ -n "$_psResults" ]]; then
-            echo "$_psHeaders"
-            echo "$_psResults"
+            echo -e "$_psHeaders"
+            echo -e "$_psResults"
         fi
     elif [[ -n "$_psResults" ]]; then
         # Otherwise, standard command output includes headers,
         # so no manual interaction needed.
-        echo "$_psOutput"
+        echo -e "$_psOutput"
     fi
 }
 
