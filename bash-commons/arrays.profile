@@ -135,7 +135,7 @@ array.toString() {
         if declare -p "$1" | egrep -q '^(declare|local) -A'; then
             # Print matrix keys as well
             # Quoting is taken care of automatically with matrices in `declare -p`
-            declare -p "$1" | esed 's/^[^=]+=(.*)$/\1/; s/(^\()|(\s*\)$)//g'
+            declare -p "$1" | sed -E 's/^[^=]+=(.*)$/\1/; s/(^\()|(\s*\)$)//g'
         else
             echo "$_arrToStringEntries"
         fi

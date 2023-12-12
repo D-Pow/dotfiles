@@ -31,7 +31,7 @@ androidDevices() {
 
     devicesUnformatted=$(echo "$devicesUnformatted" \
         | egrep -iv 'devices found' \
-        | esed 's/^- ([^:\s]+): (\S+) .*/\1 \2/'
+        | sed -E 's/^- ([^:\s]+): (\S+) .*/\1 \2/'
     )
 
     declare device=
@@ -43,13 +43,13 @@ androidDevices() {
         fi
 
         deviceId=$(echo $device \
-            | esed 's/.*[\s\S]*\s(\S+)$/\1/' \
+            | sed -E 's/.*[\s\S]*\s(\S+)$/\1/' \
             | trim
         )
         deviceName=$(echo $device \
             | awk '{ $NF=""; print $0; }' \
             | trim \
-            | esed 's/\s+/_/g'
+            | sed -E 's/\s+/_/g'
         )
 
         devices["$deviceName"]="$deviceId"

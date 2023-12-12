@@ -467,7 +467,7 @@ ghPrShow() {
     #   SO post - how to check if key exists in matrix: https://stackoverflow.com/questions/26746361/check-if-an-awk-array-contains-a-value/41604944#41604944
     #   Forum question about awk matrices: https://www.unix.com/shell-programming-and-scripting/157424-two-column-data-matrix-awk.html
     #   Printing matrices in awk (since they can't be done natively): https://www.unix.com/shell-programming-and-scripting/203159-need-have-output-awk-array-one-line.html
-    declare _prStatuses="$(gh pr status | egrep -i 'created|requesting|#')" #  | esed 's/^[ \t]*//'
+    declare _prStatuses="$(gh pr status | egrep -i 'created|requesting|#')" #  | sed -E 's/^[ \t]*//'
     declare _prNumbers=$(echo "$_prStatuses" | egrep -o '^[ \t]*#\d+' | egrep -o '\d+' | tr -s '\n' ' ')
     declare _prInfo="$(gh pr list \
         --json number,title,headRefName,author \

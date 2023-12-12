@@ -279,8 +279,8 @@ gitGetFilesChangedFromRebase() {
     # `git diff --stat` only shows "filename  |  numLines +-" rather than full file diffs
     # Thus, strip out the trailing numLines (note: don't blindly use `(\S+)` b/c file renames use spaces, e.g. "old => new")
     declare _diffOnlyFileSedRegex='s/^\s*([^|]*)\|.*/\1/; s|\s+$||'
-    declare _diffFromPrimaryToHead="$(git diff --stat origin/$(gitGetPrimaryBranch)..HEAD | egrep "$_diffFileFilter" | esed "$_diffOnlyFileSedRegex")"
-    declare _diffFromRemoteToHead="$(git diff --stat origin/$(gitGetBranch)..HEAD | egrep "$_diffFileFilter" | esed "$_diffOnlyFileSedRegex")"
+    declare _diffFromPrimaryToHead="$(git diff --stat origin/$(gitGetPrimaryBranch)..HEAD | egrep "$_diffFileFilter" | sed -E "$_diffOnlyFileSedRegex")"
+    declare _diffFromRemoteToHead="$(git diff --stat origin/$(gitGetBranch)..HEAD | egrep "$_diffFileFilter" | sed -E "$_diffOnlyFileSedRegex")"
 
     echo -e "$_diffFromPrimaryToHead\n$_diffFromRemoteToHead" | sort | uniq -d
 }
@@ -713,8 +713,8 @@ gitGetMergeBaseForCurrentBranch() {
 
 
 gitResetFilesWhereOnlyAccessPermissionsChanged() {
-    declare filesToKeep=($(git diff | egrep -i '\+\+\+\s+b/' | esed 's/^\S+\s*b/./'))
-    declare filesChanged=($(git diff | egrep -i 'old mode \d+' -B 1 -A 0 | egrep -io 'a/\S+' | esed 's/^a/./'))
+    declare filesToKeep=($(git diff | egrep -i '\+\+\+\s+b/' | sed -E 's/^\S+\s*b/./'))
+    declare filesChanged=($(git diff | egrep -i 'old mode \d+' -B 1 -A 0 | egrep -io 'a/\S+' | sed -E 's/^a/./'))
     declare filesToReset=()
 
     # Manual double-parsing of array. Not used since `array.join` can automatically
@@ -724,7 +724,7 @@ gitResetFilesWhereOnlyAccessPermissionsChanged() {
     # declare filesToKeepRegex=()
     # array.map -r filesToKeepRegex filesToKeep 'echo "($value)|"'
     # filesToKeepRegex="$(array.join -s filesToKeepRegex '')"
-    # filesToKeepRegex="$(echo "$filesToKeepRegex" | esed 's/\|$//')"
+    # filesToKeepRegex="$(echo "$filesToKeepRegex" | sed -E 's/\|$//')"
     #
     # Add `(` to first array entry and `)` to last array entry, joining with `)|(`
     # to result in `(file1)|(file2)`.

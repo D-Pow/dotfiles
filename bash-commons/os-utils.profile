@@ -509,7 +509,7 @@ listnetworkdevices() {
         # Strip parentheses from IP addresses, then remove all `nmap` performance output
         _allDevicesStdout="$(
             echo "$_allDevicesStdout" \
-                | esed 's/\((([0-9]{1,3}\.){3}[0-9]{1,3})\)$/\1/' \
+                | sed -E 's/\((([0-9]{1,3}\.){3}[0-9]{1,3})\)$/\1/' \
                 | egrep -io --color=never '[^\s\t\n\r]+ [0-9.]+$'
         )"
     elif [[ -n "$_listVerbose" ]]; then
@@ -1120,7 +1120,7 @@ getFileFromDescriptor() {
     # lsof -d $_fdToSearch -p $_fdSearchingParentPid \
     #     | grep $_fdSearchingParentPid \
     #     | egrep "$_fdMatchRegex" \
-    #     | esed "s|$_fdFileMatchRegex|\1|"
+    #     | sed -E "s|$_fdFileMatchRegex|\1|"
 }
 
 
@@ -1266,7 +1266,7 @@ zipExtract() {
     declare _zipPath=
 
     for _zipPath in "${_zipPaths[@]}"; do
-        declare _zipPathWithoutExtension="$(echo "$_zipPath" | esed 's/\.[^.]+$//')"
+        declare _zipPathWithoutExtension="$(echo "$_zipPath" | sed -E 's/\.[^.]+$//')"
 
         unzip -uoq "$_zipPath" -d "$_zipPathWithoutExtension"
     done
