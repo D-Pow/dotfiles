@@ -5,14 +5,21 @@ source "$_bashSubsystemProfile"
 
 
 export ARTIFACTORY_USER="$(jq -r '.user' "${reposDir}/maven-token.json")"
+export ART_USER="${ARTIFACTORY_USER}"
 export ARTIFACTORY_TOKEN="$(jq -r '.access_token' "${reposDir}/maven-token.json")"
+export ART_TOKEN="${ARTIFACTORY_TOKEN}"
 export NPM_TOKEN="$(jq -r '.access_token' "${reposDir}/npm-token.json")"
 
 echo "
 ARTIFACTORY_USER=${ARTIFACTORY_USER}
+ART_USER=${ARTIFACTORY_USER}
 ARTIFACTORY_TOKEN=${ARTIFACTORY_TOKEN}
+ART_TOKEN=${ARTIFACTORY_TOKEN}
 NPM_TOKEN=${NPM_TOKEN}
 " > "${reposDir}/.env"
+
+
+alias gpl='git pull origin $(gitGetBranch)'
 
 
 buildAllFrontends() {
@@ -186,6 +193,53 @@ watchJavaProcs() {
 
 
 
+hdmvn() {
+    # Not sure why, but the CMS and Computer Vision sub-projects always give me trouble when installing, so ignore them all.
+    declare specificProjectsToBuildFilter="!:computer-vision-libs-parent,!:cv-client,!:cv-service,!:cv-pos-client,!:cv-contracts,!:CMSDataIntegration,!:CMSWeb,!:CMSRecognitionIntegration"
+
+    declare mvnArgs=("$@")
+    declare mvnArgsHasProjectsFlag=
+
+    declare mvnArgIndex=
+    for mvnArgIndex in "${!mvnArgs[@]}"; do
+        declare mvnArg="${mvnArgs[$mvnArgIndex]}"
+        if echo "$mvnArg" | grep -Piq '(-pl)|(--projects)'; then
+            mvnArgsHasProjectsFlag=true
+
+            # Don't increment since
+            (( mvnArgIndex++ ))
+
+            mvnArg="${mvnArgs["$mvnArgIndex"]}"
+            mvnArgs["$mvnArgIndex"]="$mvnArg,$specificProjectsToBuildFilter"
+            break
+        fi
+    done
+
+    if [[ -z "$mvnArgsHasProjectsFlag" ]]; then
+        mvnArgs+=(--projects "$specificProjectsToBuildFilter")
+    fi
+
+    # Default to Windows' `mvn`
+    mvn -Djacoco.skip=true "${mvnArgs[@]}"
+}
+
+hdStoreCheckoutComponentsTestCoverage() (
+    declare projectsList="${1:-:SelfServiceWebApp}"
+
+    repos store-checkout-components
+
+    mvn \
+        --projects "$projectsList" \
+        clean \
+        test \
+        jacoco:check \
+        -X 2>&1 \
+        | decolor \
+        > ./jacoco.log
+
+    echo "Tests and coverage report generated. View them at \`<path>/target/site/jacoco/index.html\`"
+)
+
 hdStoreCheckoutComponentsFixPomXmlDependenciesVersionRange() (
     git stash push -m "WIP - Right before trying to install with updated dependency versions."
 
@@ -224,17 +278,8 @@ hdStoreCheckoutComponentsFixPomXmlDependenciesVersionRange() (
     trap "hdStoreCheckoutComponentsExitCode=\$?; git reset --hard HEAD; git stash apply; return \$hdStoreCheckoutComponentsExitCode;" EXIT QUIT INT TERM
 
 
-    # Not sure why, but the CMS and Computer Vision sub-projects always give me trouble when installing, so ignore them all.
-    declare specificProjectsToBuildFilter="!:computer-vision-libs-parent,!:cv-service,!:cv-pos-client,!:CMSDataIntegration,!:CMSWeb,!:CMSRecognitionIntegration"
-
-    # Default to Windows' `mvn`
     # mvn -DskipTests -am --projects '!:computer-vision-libs-parent,!:cv-service,!:cv-pos-client,!:CMSDataIntegration,!:CMSWeb,!:CMSRecognitionIntegration' clean install
-    mvn \
-        -DskipTests \
-        -am \
-        --projects "$specificProjectsToBuildFilter" \
-        clean \
-        install
+    hdmvn -DskipTests -am clean install
 
     # # `:register-components` requires access to Docker socket which is unavailable when running
     # # Windows' version of `mvn`, so ignore it as well and build it separately after this command.
@@ -305,4 +350,75 @@ hdUpdateJavaInstallationPolicyFiles() (
         cp "jdk11.0.16.1-ms/$jdkSecurityFile" "$dir/$jdkSecurityDir/"
         cp "jdk11.0.16.1-ms/$jdkPolicyFile" "$dir/$jdkSecurityDir/"
     done
+)
+
+hduiRun() (
+    declare uiStoreCheckoutRepoPath="$reposDir/ui-store-checkout"
+
+    cd "$uiStoreCheckoutRepoPath"
+
+    declare runArgs=("$@")
+
+    if array.empty runArgs; then
+        runArgs=(
+            'start'
+        )
+    fi
+
+    cmd npm run "${runArgs[@]}"
+)
+
+hdParamsRun() (
+    declare runArgs=("$@")
+
+    if array.empty runArgs; then
+        runArgs=(
+            'bootRun'
+        )
+    fi
+
+    export ART_TOKEN="$ARTIFACTORY_TOKEN"
+    export ART_USER="$ARTIFACTORY_USER"
+
+    # cmd gradlew.bat "${runArgs[@]}"
+
+    declare javaHome="C:/java/jdk-11.0.2"
+
+    cmd.exe \
+        /V \
+        /C \
+        "set \"JAVA_HOME=$javaHome\" && set \"PATH=%JAVA_HOME%/bin:%PATH%\" && gradlew.bat -Djava.home=$javaHome ${runArgs[@]}"
+)
+
+hdParamsFix() (
+    # `cmd` doesn't exist in Gradle when running `commandLine 'cmd', '/C', 'actual-command'`
+    # like it does for these dotfiles.
+    # Thus, replace all instances of `'cmd', '/C'` with `'bash'`.
+    declare origIFS="$IFS"
+    declare IFS=$'\n'
+    declare files=($(grep -PiRl "['\"]cmd['\"], *['\"]/[cC]['\"]" .))
+
+    declare file=
+    for file in ${files[@]}; do
+        sed -Ei "s~['\"]cmd['\"],[ ]*['\"]/[cC]['\"]~'bash'~g" $file
+    done
+
+    IFS="$origIFS"
+)
+
+hdParamsGitClean() (
+    git clean \
+        -dx \
+        --exclude gradle/ \
+        --exclude 'gradlew*' \
+        --exclude '.idea' \
+        "$@"
+)
+
+hdParamsGitCleanShow() {
+    hdParamsGitClean --dry-run
+}
+
+hdParamsGitCleanForce() (
+    hdParamsGitClean -f
 )

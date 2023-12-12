@@ -34,6 +34,17 @@ hdVid() {
     done
     shift $(( OPTIND - 1 ))
 
+    declare -A logins=(
+        ['b2btestperksstaguser187@mailinator.com']='Test@1234'
+        ['b2btestperksstaguser216@mailinator.com']='Test54321'
+        ['b2btestperksstaguser209@mailinator.com']='Test1234'
+        ['b2btest50@gmail.com']='testqa01'
+    )
+    declare usernames=("${!logins[@]}")  # Stable array order, usually alphabetical
+    declare defaultLogin="${usernames[0]}"
+
+    declare username="${1:-"$defaultLogin"}"
+    declare password="${2:-"${logins["$username"]}"}"
 
     declare devApiDomain="hd-qa74.homedepotdev.com"
     declare cookieJar="$(pwd)/.cookie-jar.txt"
@@ -83,8 +94,8 @@ hdVid() {
             -X POST \
             --data "
                 {
-                    \"email\": \"b2btest50@gmail.com\",
-                    \"password\": \"testqa01\",
+                    \"email\": \"$username\",
+                    \"password\": \"$password\",
                     \"sessionId\": \"sessionId\"
                 }
             " \

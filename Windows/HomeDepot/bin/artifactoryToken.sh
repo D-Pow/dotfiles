@@ -7,9 +7,10 @@ getArtifactoryToken() {
 
     declare authJson="$(
         curl -sS \
-            -XPOST "https://token-generator.artifactory.homedepot.com/api/${buildToolType}/generateToken" \
+            -X POST \
             -d username="$username" \
-            -d password="$password"
+            -d password="$password" \
+            "https://token-generator.artifactory.homedepot.com/api/${buildToolType}/generateToken"
     )"
 
     if [[ "$authJson" != '{'* ]]; then
