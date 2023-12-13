@@ -19,9 +19,6 @@ NPM_TOKEN=${NPM_TOKEN}
 " > "${reposDir}/.env"
 
 
-alias gpl='git pull origin $(gitGetBranch)'
-
-
 buildAllFrontends() {
     declare origIFS="$IFS"
     declare IFS=$'\n'
