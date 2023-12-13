@@ -655,6 +655,10 @@ dockerStartContainer() {
     docker start "${_dockerStartContainerOpts}" "$_dockerStartContainerId"
 }
 
+dockerStopContainer() {
+    docker stop "$(dockerFindContainer -q "$@")"
+}
+
 dockerKillAll() {
     docker stop $(docker container ls -q)
 }
