@@ -1211,6 +1211,69 @@ postgresCli() {
     echo "${stdin[@]}" | psql --username="$_pgUser" --dbname="$_dbName" "${argsArray[@]}"
 }
 
+postgresLogPath() {
+    declare execDir="$(dirname "$(postgresCli -c "SHOW config_file;")")"
+    declare logRelPath="$(postgresCli -c "SELECT * FROM pg_current_logfile();")"
+    declare absPath=
+
+    declare logPathParts=
+    for logPathParts in {"$execDir","$logRelPath"}; do
+        # Join path parts with `/` and strip leading/trailing whitespace
+        absPath+="/$(
+            echo "$logPathParts" \
+            | awk '{
+                if (NR == 3) {
+                    print($0);
+                }
+            }' \
+            | sed -E 's/(^\s+)|(\s+$)//g'
+        )"
+    done
+
+    echo "$absPath";
+}
+
+postgresDump() {
+    declare USAGE="${FUNCNAME[0]} [DB name] [OPTIONS...] [pg_dump OPTIONS...]
+    Dumps the desired database information as SQL commands, including all management info (e.g. \`CREATE\`)
+    and content within tables (e.g. \`INSERT\`).
+
+    Options:
+        -b  -  Export as binary file for importing using \`pg_restore\`.
+
+    Underlying \`pg_dump\` command help:
+
+    "
+    declare _dbName="$1"
+
+    if echo "$_dbName" | grep -Evq '^-'; then
+        # First arg was the DB name, so skip over it to make forwarding the rest of the options easier
+        shift
+    else
+        # First arg was an option so default DB name to the specified default name
+        _dbName="$_dbNameDefault"
+    fi
+
+    pg_dump \
+        --dbname="$_dbName" \
+        --create \
+        --inserts \
+        --no-comments \
+        --no-publications \
+        --no-security-labels \
+        --no-subscriptions \
+        --no-table-access-method \
+        --no-tablespaces \
+        --no-toast-compression \
+        --no-unlogged-table-data \
+        --disable-dollar-quoting \
+        ${_exportAsBinary:+-Fc -f "$_exportAsBinary"} "$@"
+
+    if [[ -n "$_exportAsBinary" ]]; then
+        echo -e "Restore DB with \`pg_restore -d <DB-name> <dump-file-path>\`"
+    fi
+}
+
 
 
 ################
