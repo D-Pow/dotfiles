@@ -66,7 +66,7 @@ is-installed() {
         # `printf` has more reliable behavior across platforms and usages, so use it instead.
         # For arrays, it applies the specified pattern to each entry, effectively functioning as
         # the equivalent of `myArray.join('delimiter')`
-        echo "`array.join installedPackages '%s\n'`"
+        echo "`array.join -t installedPackages '%s\n'`"
         return
     fi
 
@@ -122,7 +122,7 @@ apt-get-repositories() {
         # part of the file content) and join them by colon to get the original file content.
         declare _aptRepoInfoWithoutColons
         array.slice -r _aptRepoInfoWithoutColons _aptRepoSplitStr 1
-        declare _aptRepoInfo="$(array.join -s _aptRepoInfoWithoutColons ':')"
+        declare _aptRepoInfo="$(array.join _aptRepoInfoWithoutColons ':')"
 
 
         # Official repositories are in this file specifically.
@@ -158,19 +158,19 @@ apt-get-repositories() {
 
     if ! array.empty _officialRepos; then
         echo "Official repositories:"
-        echo -e "$(array.join _officialRepos '\n')" | sort -u
+        echo -e "$(array.join -t _officialRepos '\n')" | sort -u
         echo
     fi
 
     if ! array.empty _ppas; then
         echo "Official PPAs:"
-        echo -e "$(array.join _ppas '\n')" | sort -u
+        echo -e "$(array.join -t _ppas '\n')" | sort -u
         echo
     fi
 
     if ! array.empty _additionalRepos; then
         echo "Additional repositories:"
-        echo -e "$(array.join _additionalRepos '\n')" | sort -u
+        echo -e "$(array.join -t _additionalRepos '\n')" | sort -u
         echo
     fi
 }
@@ -327,7 +327,7 @@ remoteDriveGetPath() {
 
         declare _rdSubPath
         for _rdSubPath in "${_rdPathSegments[@]}"; do
-            declare _rdSubPathAbsolute="${_remoteDrive}/$(array.join -s _rdFinalPathActual '/')"
+            declare _rdSubPathAbsolute="${_remoteDrive}/$(array.join _rdFinalPathActual '/')"
 
             declare _rdSubPathEntry
 
@@ -416,7 +416,7 @@ remoteDriveLs() {
 
     # Wait till after all processing is done to output file names
     # Easier to just join by newlines than change IFS + add to new arrays + iterate over each separately
-    declare _remoteDriveFileNamesStr="$(array.join _remoteDriveFileNames '\n')"
+    declare _remoteDriveFileNamesStr="$(array.join -t _remoteDriveFileNames '\n')"
     # Sort by name
     # Note: `gio list -l | sort -Vk 2` would normally work but we want our sort to put
     # dirs above files, and neither `gio` nor `sort` offer this type of complex functionality

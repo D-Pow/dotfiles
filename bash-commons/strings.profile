@@ -35,7 +35,7 @@ trim() {
     done
 
     # Re-join input lines by \n to maintain original input format
-    declare _trimOutput="$(array.join -s _trimOutputArray '\n')"
+    declare _trimOutput="$(array.join _trimOutputArray '\n')"
 
     if [[ -n "$_trimTop" ]]; then
         # `tail -n` accepts `numLinesToShowFromBottom` or `+(numLinesToRemoveFromTop + 1)`
@@ -456,7 +456,7 @@ pqr   12  1
     declare firstColFilterArray=('abc' 'jkl' 'pqr')
 
     # `awk` can't accept arrays as variables, so join them by some delimiter (comma in this example)
-    echo "$input" | awk -v firstColFilterString="$(array.join -s firstColFilterArray ',')" '
+    echo "$input" | awk -v firstColFilterString="$(array.join firstColFilterArray ',')" '
     # BEGIN runs before the rest of the program, END after
     BEGIN {
         # Split the external string variable into an awk array

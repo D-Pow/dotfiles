@@ -205,13 +205,13 @@ array.fromString() {
 
 
 array.join() {
-    declare _stripTrailingDelimiter
+    declare _keepTrailingDelimiter=
     declare OPTIND=1
 
-    while getopts "s" opt; do
+    while getopts "t" opt; do
         case "$opt" in
-            s)
-                _stripTrailingDelimiter=true
+            t)
+                _keepTrailingDelimiter=true
                 ;;
         esac
     done
@@ -231,7 +231,7 @@ array.join() {
     # Modify IFS and then just print all the args (Note: Must be "$*", cannot be "$@")
     # array.join() { local IFS="$1"; shift; echo "$*"; } # use $_joinDelim instead of $1
 
-    if [[ -n "$_stripTrailingDelimiter" ]]; then
+    if [[ -z "$_keepTrailingDelimiter" ]]; then
         # Remove final $_joinDelim from last array entry in the generated string,
         # i.e. "array,entries,joined,"  -->  "[...],joined"
         #

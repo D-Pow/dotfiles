@@ -193,7 +193,7 @@ bytesReadable() {
 
     # declare _bytesReadableCmdString="${_bytesReadableCmdArray[@]}"
     # declare _bytesReadableOutput="$(
-    #     echo -e "$(array.join _bytesReadableInputArray '\n')" \
+    #     echo -e "$(array.join -t _bytesReadableInputArray '\n')" \
     #         | numfmt ${_bytesReadableCmdArray[@]}
     # )"
 
@@ -1360,7 +1360,7 @@ hashDir() {
         done
 
         # Avoid another for-loop by just joining the "hash\tname" entries by newlines
-        declare _fileHashesStr="$(array.join -s _fileHashes '\n')"
+        declare _fileHashesStr="$(array.join _fileHashes '\n')"
         # Sort by "version" (i.e. alphanumeric) starting from the 2nd column onward
         # `-k start[,end][options]` means that not specifying an end causes `sort` to continue
         # checking subsequent columns if the previous ones were the same

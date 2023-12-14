@@ -351,7 +351,7 @@ fi
 
 _grepIgnoredDirs=('node_modules' '.git' '.idea' 'lcov-report')
 
-alias grep="grep --exclude-dir={`array.join -s _grepIgnoredDirs ','`} --color=auto"
+alias grep="grep --exclude-dir={`array.join _grepIgnoredDirs ','`} --color=auto"
 
 if [[ "$(type -t egrep)" == 'alias' ]]; then
     unalias egrep
@@ -396,8 +396,8 @@ gril() {
     # local pathGlobArr=("$@")
     # array.toString pathGlobArr
     # echo "${@:2:1}"
-    # echo "Filter: ^(.(?!`array.join -s _grepIgnoredDirs '|'`))*$"
-    # array.filter -er filteredPathGlob pathGlobArr "^(.(?!`array.join -s _grepIgnoredDirs '|'`))*$"
+    # echo "Filter: ^(.(?!`array.join _grepIgnoredDirs '|'`))*$"
+    # array.filter -er filteredPathGlob pathGlobArr "^(.(?!`array.join _grepIgnoredDirs '|'`))*$"
     # array.toString filteredPathGlob
     #
     # Problem is that both quoting and not quoting results in problems:
@@ -563,7 +563,7 @@ findIgnoreDirs() {
         # Note: Add single quotes around names in case they're using globs
         # e.g. Where injected strings are labeled with [], and array.join is labeled with ()
         # `-name '(first['][ -o -name ][']second)'
-        _findIgnoreDirsOption="\( -name '`array.join -s _findIgnoreDirs "'$_findIgnoreDirsOptionName'"`' \)  -prune -false -o "
+        _findIgnoreDirsOption="\( -name '`array.join _findIgnoreDirs "'$_findIgnoreDirsOptionName'"`' \)  -prune -false -o "
     fi
 
     # If called from another function which is forwarding globs surrounded by quotes,
@@ -700,7 +700,7 @@ if ! isDefined tree; then
             # Add single quotes around names in case they're using globs, like `findIgnoreDirs()` does.
             # e.g. Where injected strings are labeled with [], and array.join is labeled with ()
             # `-i '(first['][ -i ][']second)'
-            _treeIgnoreDirsFindOpts="-i '`array.join -s _treeIgnoreDirs "' -i '"`'"
+            _treeIgnoreDirsFindOpts="-i '`array.join _treeIgnoreDirs "' -i '"`'"
         fi
 
         declare _numPathsToDisplay="$(array.length _pathsToDisplay)"

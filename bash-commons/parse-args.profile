@@ -349,7 +349,7 @@ parseArgs() {
             array.slice -r _longOptionValArray _longOptionArray 1
 
             declare _longOptionKey="${_longOptionArray[0]}"
-            declare _longOptionVal="$(array.join -s _longOptionValArray '=')"
+            declare _longOptionVal="$(array.join _longOptionValArray '=')"
 
             if [[ -z "$_longOptionVal" ]]; then
                 # Handle long options with spaces:

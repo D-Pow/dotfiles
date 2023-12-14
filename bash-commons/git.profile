@@ -70,7 +70,7 @@ gitIgnorePathsArgs() {
     array.map -r _gitIgnorePathsArgs _gitIgnorePaths "echo \":($(
         # Note: Don't strip trailing comma so that a single conf entry has comma appended.
         # e.g. If `root` specified, result is `:(top,exclude)path-to-file.txt`
-        array.empty _gitFilterConf || array.join _gitFilterConf ','
+        array.empty _gitFilterConf || array.join -t _gitFilterConf ','
     )exclude)\$value\""
 
     if [[ -z "$_gitIgnorePathsArgs" ]] || array.empty _gitIgnorePathsArgs; then
@@ -162,7 +162,7 @@ gitGetModifiedContaining() {
     fi
 
     # All prefixes end with a colon
-    declare _gitModifiedFilesPrefix="($(array.join -s _gitModifiedFilesPrefixes '|')):"
+    declare _gitModifiedFilesPrefix="($(array.join _gitModifiedFilesPrefixes '|')):"
     declare _gitModifiedSearchQuery="${argsArray[@]}"
 
     git status | egrep "$_gitModifiedFilesPrefix" | sed -E 's|.*:||; s|^\s*||' | egrep --color=never "$_gitModifiedSearchQuery"
@@ -728,12 +728,12 @@ gitResetFilesWhereOnlyAccessPermissionsChanged() {
     #
     # declare filesToKeepRegex=()
     # array.map -r filesToKeepRegex filesToKeep 'echo "($value)|"'
-    # filesToKeepRegex="$(array.join -s filesToKeepRegex '')"
+    # filesToKeepRegex="$(array.join filesToKeepRegex '')"
     # filesToKeepRegex="$(echo "$filesToKeepRegex" | sed -E 's/\|$//')"
     #
     # Add `(` to first array entry and `)` to last array entry, joining with `)|(`
     # to result in `(file1)|(file2)`.
-    declare filesToKeepRegex="($(array.join -s filesToKeep ')|('))"
+    declare filesToKeepRegex="($(array.join filesToKeep ')|('))"
 
     declare fileChanged=
     for fileChanged in "${filesChanged[@]}"; do

@@ -97,7 +97,7 @@ winGetProcess() {
     # See:
     #   - Docs: https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-process
     declare pids=("$@")
-    pids=("$(array.join -s pids ',')")
+    pids=("$(array.join pids ',')")
 
     declare procInfo="$(powershell.exe "Get-Process -Id ${pids[@]}")"
     procInfo="$(echo "$procInfo" | trim -t 1)"

@@ -47,7 +47,7 @@ for (( i=0; i < "${#_brewGnuUtils[@]}"; i++ )); do
     _gnuApp="${_brewGnuUtils[i]}"
     _brewGnuUtils[i]="$_brewGnuUtilsHomePrefix/$_gnuApp/$_brewGnuUtilsHomeSuffix"
 done
-BREW_GNU_UTILS_HOMES="`array.join -s _brewGnuUtils ':'`"
+BREW_GNU_UTILS_HOMES="`array.join _brewGnuUtils ':'`"
 
 _brewPathEntries="$(echo "$BREW_PATHS" | sed -E 's/( |\t)+/:/g')" # /usr/local/sbin and some others
 
