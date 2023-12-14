@@ -1313,8 +1313,9 @@ hashDir() {
     declare -A _hashDirOptions=(
         ['f|filenames,_hashDirIncludeFiles']='Include individual file hashes in the output.'
         ['d|directory-names,_hashDirIncludeDirs']='Include top-level directory names in the output.'
-        ['h|hashes-first,_hashDirHashesFirst']='Prints hashes before names in output; No effect without `-d` and/or `-f`.'
+        ['s|hashes-first,_hashDirHashesFirst']='Prints hashes before names in output; No effect without `-d` and/or `-f`.'
         ['USAGE']="$USAGE"
+        [':']=
     )
 
     parseArgs _hashDirOptions "$@"
