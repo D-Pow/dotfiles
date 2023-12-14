@@ -8,6 +8,11 @@
 
 openGitMergeConflictFilesWithSublime() {
     subl -n $(gitGetBothModified)
+
+    # If `subl` failed, attempt reading alias/overridden function
+    if (( $? )); then
+        $(type subl) -n $(gitGetBothModified)
+    fi
 }
 
 
