@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
 changeVolumeForSoundSources() {
+    # See:
+    #   - https://unix.stackexchange.com/questions/208784/command-line-per-application-volume-maybe-amixer-or-pactl
+    #   - https://unix.stackexchange.com/questions/32206/set-volume-from-terminal
+    #   - https://www.geeksforgeeks.org/amixer-command-in-linux-with-examples
     declare USAGE="[...OPTIONS]
     Modifies volume for any/all application sources outputting sound.
     Defaults to changing all by 5%.
