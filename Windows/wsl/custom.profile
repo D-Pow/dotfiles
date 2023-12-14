@@ -1,3 +1,11 @@
+# To get rid of the `UNC paths aren't supported` error, mount the WSL root as a network drive in Windows.
+#
+# See:
+#   - GitHub issue: https://github.com/microsoft/WSL/issues/3854#issuecomment-465886991
+#   - StackOverflow answer referencing GitHub issue: https://superuser.com/questions/1738361/how-to-mount-a-wsl2-folder-as-a-network-drive-in-windows-10
+#   - Setting start dir of WSL: https://stackoverflow.com/questions/4895966/changing-default-startup-directory-for-command-prompt-in-windows-7
+
+
 declare _linuxDir="${dotfilesDir}/linux"
 declare _linuxProfile="${_linuxDir}/custom.profile"
 
