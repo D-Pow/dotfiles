@@ -296,6 +296,7 @@ parseArgs() {
         # See:
         #   https://unix.stackexchange.com/questions/33049/how-to-check-if-a-pipe-is-empty-and-run-a-command-on-the-data-if-it-isnt
         declare -n _stdin='stdin'
+        _stdin=()
 
         # Note: we can't use `read -r -d '' -t 0 [-a] _stdin` b/c for some reason
         # it doesn't capture STDIN for the parent function correctly.
