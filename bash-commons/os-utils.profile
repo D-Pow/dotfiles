@@ -1022,17 +1022,30 @@ makeTempPipe() {
     # See:
     #   - https://stackoverflow.com/questions/8297415/in-bash-how-to-find-the-lowest-numbered-unused-file-descriptor/17030546#17030546
     #   - https://superuser.com/questions/184307/bash-create-anonymous-fifo/633185#633185
+    #   - https://stackoverflow.com/questions/1987105/redirect-standard-input-dynamically-in-a-bash-script
 
     declare USAGE="[OPTIONS...]
     Makes a temporary file for IO, and sets its file descriptor into \`\$FD\` for IO redirection.
     Since outputting to a file descriptor auto-seeks it to the end, it cannot be read from directly;
     to read from it, use \`getFileFromDescriptor \$FD\` to get the temp file's path.
+
+    Example:
+        declare stdinFile=
+        declare trapCmd=
+        {
+            read -r stdinFile
+            read -r trapCmd
+        } < <(makeTempPipe)
+        eval "\$trapCmd"
+        [[ -t 0 ]] && exec 0>&\$FD
     "
 
+    declare _echoFileDescriptorInsteadOfFile=
     declare _tmpPipeSignals=()
     declare _tmpPipeNoAppendTraps=
     declare argsArray=
     declare -A _tmpPipeOptions=(
+        ['d|output-file-descriptor,_echoFileDescriptorInsteadOfFile']="Echos the file descriptor instead of temp file path (\`\$FD\` is set in this function)."
         ['s|signal:,_tmpPipeSignals']="Signals to use for \`trap\` call (defaults to: EXIT QUIT INT TERM)."
         ['t|no-append-traps,_tmpPipeNoAppendTraps']="Prevents preservation of calling parent's trap signals."
         [':']=
@@ -1077,9 +1090,14 @@ makeTempPipe() {
     # Ensure this call's `_tmpPipeFile` isn't overwritten by another call to
     # `makeTempPipe` by adding the filename directly into the call rather than
     # the variable name.
-    "$_tmpPipeTrapCmd" "rm -rf \"$_tmpPipeFile\" && eval \"exec $FD>&-\"" "${_tmpPipeSignals[@]}"
 
-    echo "$_tmpPipeFile"
+    if [[ -n "$_echoFileDescriptorInsteadOfFile" ]]; then
+        echo "$FD"
+    else
+        echo "$_tmpPipeFile"
+    fi
+
+    echo "$_tmpPipeTrapCmd" "'echo trap PID: \$\$ >&2; rm -rf \"$_tmpPipeFile\" && eval \"exec $FD>&-\"'" "${_tmpPipeSignals[@]}"
 }
 
 getFileFromDescriptor() {
