@@ -44,6 +44,10 @@ const creds = {
                 username: 'b2btestperksstaguser209@mailinator.com',
                 password: 'Test1234',
             },
+            4: {
+                username: 'b2btest50@gmail.com',
+                password: 'testqa01',
+            },
         },
     },
 };
