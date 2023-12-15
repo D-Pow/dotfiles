@@ -12,12 +12,10 @@ window.sortObjectByKeys = function(obj) {
     }, {});
 };
 
-window.getCookie = function getCookie({
-    key = '',
-    cookie = document.cookie,
+window.getCookie = function getCookie(cookieStr = document.cookie, key = '', {
     decodeBase64 = true,
 } = {}) {
-    const cookieObj = cookie.split('; ').reduce((obj, entry) => {
+    const cookieObj = cookieStr.split('; ').reduce((obj, entry) => {
         const keyVal = entry.split('=');
         const key = decodeURIComponent(keyVal[0]);
         let value = decodeURIComponent(keyVal.slice(1).join('='));
