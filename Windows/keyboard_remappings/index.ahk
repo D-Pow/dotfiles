@@ -9,3 +9,4 @@
 #Include "./super-m-minimize-window.ahk"
 #Include "./super-c-center-window.ahk"
 #Include "./super-shift-up-maximize.ahk"
+#Include "./ctrl-alt-t-open-terminal.ahk"
