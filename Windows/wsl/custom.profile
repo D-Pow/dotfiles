@@ -201,6 +201,7 @@ cmd() {
     "
     declare envEntries=()
     declare argsArray
+    declare stdin
     declare -A _getEnvEntriesOptions=(
         ['e|env:,envEntries']="Env vars to set for the underlying \`cmd.exe\` call."
         [':']=
@@ -242,7 +243,19 @@ cmd() {
     #
     # And this almost works, but doesn't respect positional args:
     # /mnt/c/Windows/System32/cmd.exe $cmdFlags ${argsArray[@]}
-    /mnt/c/Windows/System32/cmd.exe $cmdFlags "${argsArray[0]}" "${argsArray[@]:1}"
+    #
+    # This works for forwarding STDIN but removes colored terminal output:
+    # echo "${stdin[@]}" | /mnt/c/Windows/System32/cmd.exe $cmdFlags "${argsArray[0]}" "${argsArray[@]:1}"
+    #
+    # This also fails if using `makeTempPipe` for some reason:
+    # exec $FD>&1 | /mnt/c/Windows/System32/cmd.exe $cmdFlags "${argsArray[0]}" "${argsArray[@]:1}"
+    declare cmd='/mnt/c/Windows/System32/cmd.exe $cmdFlags "${argsArray[0]}" "${argsArray[@]:1}"'
+
+    if (( ${#stdin[@]} )); then
+        echo "${stdin[@]}" | eval "$cmd"
+    else
+        eval "$cmd"
+    fi
 }
 
 # TODO make the command below work
