@@ -85,6 +85,133 @@ export async function getCreds(app, ...args) {
 }
 
 
+export async function getVid({
+    username,
+    password,
+    devApiOrigin = 'https://hd-qa74.homedepotdev.com',
+    vidKey = false,
+} = {}) {
+    const logins = {
+        'b2btestperksstaguser187@mailinator.com': 'Test@1234',
+        'b2btestperksstaguser216@mailinator.com': 'Test54321',
+        'b2btestperksstaguser209@mailinator.com': 'Test1234',
+        'b2btest50@gmail.com': 'testqa01',
+    };
+
+    if (!username) {
+        username = Object.entries(logins)[0][0];
+    }
+
+    password = password || logins[username];
+
+    const utcInMillis = new Date().getTime();
+    const hmacCreationTime = utcInMillis;
+
+    function getCookie(cookieStr, key = '', {
+        decodeBase64 = true,
+    } = {}) {
+        const cookieObj = cookieStr.split('; ').reduce((obj, entry) => {
+            const keyVal = entry.split('=');
+            const key = decodeURIComponent(keyVal[0]);
+            let value = decodeURIComponent(keyVal.slice(1).join('='));
+
+            if (decodeBase64) {
+                try {
+                    value = atob(value);
+                } catch (e) {
+                    /* Not a Base64-encoded string */
+                }
+            }
+
+            obj[key] = value;
+
+            return obj;
+        }, {});
+
+        return key ? cookieObj[key] : cookieObj;
+    }
+
+    function headersToObj(headers) {
+        const headersObj = [ ...headers.entries() ].reduce((obj, [ key, val ]) => {
+            obj[key] = val;
+
+            return obj;
+        }, {});
+
+        return {
+            ...headersObj,
+            'set-cookie': headers.getSetCookie().map(entry => entry?.split(';')?.[0]).join('; '),
+        };
+    }
+
+    const resGetAuthToken = await fetch(`${devApiOrigin}/customer/account/v1/auth/getauthtoken`, {
+        headers: {
+            timestamp: new Date().getTime(),
+            clientId: 'clientId',
+        },
+    });
+    const headersGetAuthToken = headersToObj(resGetAuthToken.headers);
+    const { clientAuthToken } = await resGetAuthToken.json();
+
+    const resSignIn = await fetch(`${devApiOrigin}/customer/auth/v1/signin`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Accept': `application/json`,
+            'Content-Type': `application/json`,
+            'User-Agent': `neoload`,
+            Cookie: headersGetAuthToken['set-cookie'],
+            'cust-acct-client-token': `${clientAuthToken}`,
+            'cust-acct-client-timestamp': `${hmacCreationTime}`,
+            'cust-acct-client-id': `clientId`,
+            'cust-acct-client-delay-token-validation': `444444`,
+            'channelId': `1`,
+        },
+        body: JSON.stringify({
+            email: username,
+            password: password,
+            sessionId: 'sessionId',
+        }),
+    });
+    const headersSignIn = headersToObj(resSignIn.headers);
+    const { email, customerType, userID: userId, svocID: svocId } = await resSignIn.json();
+
+    const signinAuthTokenCookieName = customerType?.match?.(/B2C/i) ? 'THD_USER_SESSION' : 'THD_CUSTOMER';
+    const signinAuthToken = getCookie(typeof document !== 'undefined' && document.cookie['set-cookie'] || headersSignIn['set-cookie'])[signinAuthTokenCookieName];
+
+    const resGenerateVid = await fetch(`${devApiOrigin}/customer/auth/v1/vid`, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'User-Agent': 'neoload',
+            TMXProfileId: 'tmxProfileId',
+            Authorization: signinAuthToken,
+            // Cookie: Object.entries({
+            //     ...headersGetAuthToken['set-cookie'],
+            //     ...headersSignIn['set-cookie'],
+            // })
+            //     .map(([ key, val ]) => `${key}=${val}`)
+            //     .join('; '),
+            Cookie: headersSignIn['set-cookie'],
+        },
+        body: JSON.stringify({
+            userId,
+            svocId,
+        }),
+    });
+
+    const { token: vidToken, creationDate: vidCreationDate, ttl: vidTtl } = await resGenerateVid.json();
+    const vidTokenKey = vidToken.slice(4);
+
+    if (vidKey) {
+        return vidTokenKey;
+    } else {
+        return vidToken;
+    }
+}
+
+
 const thisFileUrl = import.meta.url;
 const thisFilePath = new URL(thisFileUrl).pathname;
 const thisFileName = path.basename(thisFilePath);
@@ -111,6 +238,8 @@ if (isMain) {
                 ))
                 .join('\n        ')
         }`}
+        vid
+        vidKey
     `;
 
     const [
@@ -126,7 +255,23 @@ if (isMain) {
         process.exit(1);
     }
 
-    const specifiedCreds = await getCreds(app, ...args);
+    log(args.reduce((obj, entry) => {
+        const [ key, val ] = entry.split('=');
 
-    log(specifiedCreds);
+        obj[key.replace(/^-+/, '')] = val;
+
+        return obj;
+    }, {}));
+
+    let output;
+
+    try {
+        output = await getCreds(app, ...args);
+    } catch(e) {
+        if (app.match(/vid/i)) {
+            output = await getVid(...args);
+        }
+    }
+
+    log(output);
 }
