@@ -40,3 +40,16 @@ ST4 might fix this.
 * For Japanese on Linux:
     - Run in Sublime Packages: `git clone https://github.com/yasuyuky/SublimeMozcInput.git`
     - Add in key bindings: ```{ "keys": ["ctrl+`"], "command": "toggle_mozc"},```
+
+
+## Remove "Please buy a license" Pop-up
+
+```bash
+(
+    declare _sublPath="$(which subl || which subl.exe)"
+    cp "$_sublPath" "${_sublPath}.bak"
+    sed -i 's/\x80\x78\x05\x00\x0f\x94\xc1/\xc6\x40\x05\x01\x48\x85\xc9/g' "$_sublPath"
+)
+```
+
+[Source](https://gist.github.com/skoqaq/3f3e8f28e23c881143cef9cf49d821ff)
