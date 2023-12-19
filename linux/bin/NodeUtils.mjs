@@ -30,6 +30,12 @@ const require = createRequire(import.meta.url);
 
 
 export function log(...args) {
+    if (args.length <= 1 && typeof args[0] !== typeof {}) {
+        console.log(args[0]);
+
+        return;
+    }
+
     const stringsToLog = args.map(arg => (
         util.inspect(arg, {
             showHidden: true,
