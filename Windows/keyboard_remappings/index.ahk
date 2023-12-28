@@ -10,3 +10,4 @@
 #Include "./super-c-center-window.ahk"
 #Include "./super-shift-up-maximize.ahk"
 #Include "./ctrl-alt-t-open-terminal.ahk"
+#Include "./media-home-back-forward-keys.ahk"
