@@ -338,3 +338,17 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
     - Get the last 8 characters from the `pub rsa` output hash string (will have a space in the middle, e.g. `A1B2 C3D4`).
     - Run `sudo apt-key export <8-chars-without-space> | sudo gpg --dearmour -o /etc/apt/trusted.gpg.d/<repo-name>.gpg` to add the key from top-level `/etc/apt/trusted.gpg` to its own `/etc/apt/trusted.gpg.d/<repo-name>.gpg`.
     - Run `sudo apt-key --keyring /etc/apt/trusted.gpg del <8-chars-without-space>` to remove the key from the top-level `/etc/apt/trusted.gpg`.
+
+
+* To allow Bluetooth pairing of a device on both Windows/Linux:
+    - Refs:
+        + https://unix.stackexchange.com/questions/255509/bluetooth-pairing-on-dual-boot-of-windows-linux-mint-ubuntu-stop-having-to-p
+        + https://gist.github.com/madkoding/f3cfd3742546d5c99131fd19ca267fd4
+    - Run:
+        ```bash
+        cd /mnt/c/Windows/System32/config
+        chntpw -e SYSTEM
+        cd \ControlSet001\Services\BTHPORT\Parameters\Keys
+        cd [ID]
+        hex [ID]
+        ```
