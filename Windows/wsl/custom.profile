@@ -249,7 +249,8 @@ cmd() {
     #
     # This also fails if using `makeTempPipe` for some reason:
     # exec $FD>&1 | /mnt/c/Windows/System32/cmd.exe $cmdFlags "${argsArray[0]}" "${argsArray[@]:1}"
-    declare cmd='/mnt/c/Windows/System32/cmd.exe $cmdFlags "${argsArray[0]}" "${argsArray[@]:1}"'
+    declare cmd="$(isWsl && echo '/mnt/c/Windows/System32/cmd.exe' || echo '/c/Windows/system32/cmd') "
+    cmd+='$cmdFlags "${argsArray[0]}" "${argsArray[@]:1}"'
 
     if (( ${#stdin[@]} )); then
         echo "${stdin[@]}" | eval "$cmd"
