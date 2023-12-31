@@ -101,6 +101,11 @@ isWsl() {
 }
 
 
+if isWindows; then
+    export LC_ALL=en_US.utf8
+fi
+
+
 bytesReadable() {
     declare USAGE="[OPTIONS...] <input-or-stdin...>
     Converts numbers from bytes to readable sizes (B, KB, MB, GB, etc.).
