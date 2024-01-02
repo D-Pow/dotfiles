@@ -58,6 +58,18 @@ window.getConfig = function getConfig(keyRegex, valRegex) {
     return config;
 };
 
+window.setConfig = function setConfig(configObj, key, val) {
+    if (key) {
+        configObj[key] = val;
+    }
+
+    const configArray = Object.entries(config).map(([ name, value ]) => ({ name, value }));
+
+    localStorage.setItem('config', JSON.stringify(configArray));
+
+    return configArray;
+};
+
 window.config = getConfig();
 
 window.fetchConfig = async function fetchConfig(keyRegex, valRegex) {
