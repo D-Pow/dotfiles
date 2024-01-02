@@ -192,7 +192,7 @@ watchJavaProcs() {
 
 hdmvn() {
     # Not sure why, but the CMS and Computer Vision sub-projects always give me trouble when installing, so ignore them all.
-    declare specificProjectsToBuildFilter="!:computer-vision-libs-parent,!:cv-client,!:cv-service,!:cv-pos-client,!:cv-contracts,!:CMSDataIntegration,!:CMSWeb,!:CMSRecognitionIntegration"
+    declare specificProjectsToBuildFilter="!:computer-vision-libs-parent,!:cv-client,!:cv-service,!:cv-pos-client,!:cv-contracts,!:CMSDataIntegration,!:CMSWeb,!:CMSRecognitionIntegration,!:CMS_Data_Access"
 
     declare mvnArgs=("$@")
     declare mvnArgsHasProjectsFlag=
