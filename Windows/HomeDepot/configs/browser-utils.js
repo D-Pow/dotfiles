@@ -26,7 +26,7 @@ window.mapConfigToObj = function mapConfigToObj(configAsArray) {
 };
 
 window.searchConfig = function searchConfig(configObj, keyRegex, valRegex) {
-    let config = configObj;
+    let config = configObj || getConfig();
 
     if (keyRegex) {
         config = Object.entries(config)
