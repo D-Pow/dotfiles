@@ -522,25 +522,27 @@ findRegex() {
 }
 
 
-findIgnoreDirs() {
+findIgnore() {
     declare USAGE="[OPTIONS...] [PATH] [\`find\` OPTIONS...]
-    Calls \`find\`, ignoring the specified directories.
+    Calls \`find\`, ignoring the specified directories or files.
     "
     # Net result (where [] represents what's added by the user):
     #   `find . -type d \( -name 'node_modules' -o -name '*est*' \) -prune -false -o` [-name '*.js']
     # See: https://stackoverflow.com/questions/4210042/how-to-exclude-a-directory-in-find-command/4210072#4210072
-    declare _findIgnoreDirs=()
+    #
+    # Alternative: Use `! -(i)?(name|wholename|path) <path>`
+    declare _findIgnorePaths=()
     declare _findToSearchIn=
     declare argsArray
-    declare -A _findIgnoreDirsOptions=(
-        ['i|ignore:,_findIgnoreDirs']="Directory to ignore; Don't use glob-stars."
+    declare -A _findIgnoreOptions=(
+        ['i|ignore:,_findIgnorePaths']="Path to ignore; Use glob-stars for nested directories/files."
         ['p|search-dir:,_findToSearchIn']="Path in which to run \`find\`; Use in place of positional arg for path; Helpful for custom functions calling ${FUNCNAME[0]}."
         [':']=
         ['?']=
         ['USAGE']="$USAGE"
     )
 
-    parseArgs -c _findIgnoreDirsOptions "$@"
+    parseArgs -c _findIgnoreOptions "$@"
     (( $? )) && return 1
 
     declare _findOpts=("${argsArray[@]}")
@@ -554,16 +556,21 @@ findIgnoreDirs() {
         array.slice -r _findOpts argsArray 1
     fi
 
-    declare _findIgnoreDirsOptionName=' -o -name '
-    declare _findIgnoreDirsOption=''
+    declare _findIgnoreOption=''
 
-    if ! array.empty _findIgnoreDirs; then
+    if ! array.empty _findIgnorePaths; then
         # TODO: Try the simpler method here: https://stackoverflow.com/questions/4210042/how-to-exclude-a-directory-in-find-command/66794381#66794381
 
         # Note: Add single quotes around names in case they're using globs
         # e.g. Where injected strings are labeled with [], and array.join is labeled with ()
         # `-name '(first['][ -o -name ][']second)'
-        _findIgnoreDirsOption="\( -name '`array.join _findIgnoreDirs "'$_findIgnoreDirsOptionName'"`' \)  -prune -false -o "
+        #
+        # Original implementation:
+        # _findIgnoreOption="\( -name '`array.join _findIgnorePaths "' -o -name '"`' \) -prune -false -o "
+
+        # `-path` is more resilient to glob-stars than `-name`.
+        # `!` is more resilient to directories than `\( -name "$dir" \) -prune -false -o`.
+        _findIgnoreOption="! -ipath '$(array.join _findIgnorePaths "' ! -ipath '")'"
     fi
 
     # If called from another function which is forwarding globs surrounded by quotes,
@@ -573,10 +580,10 @@ findIgnoreDirs() {
     # otherFunc() {
     #     local glob="$1"  # needs to be quoted, otherwise it will be expanded
     #     local opts="-i '$glob'"
-    #     findIgnoreDirs -i "$1" to/search/ -name '*hello*'
+    #     findIgnore -i "$1" to/search/ -name '*hello*'
     # }
     # otherFunc '*dir1*'
-    # > findIgnoreDirs gets `-i ''*dir1*''`
+    # > findIgnore gets `-i ''*dir1*''`
     #
     # This cannot be avoided b/c if the parent function doesn't wrap globs in quotes, then
     # it will be expanded and unusable by this function (causes duplicate quotes).
@@ -587,13 +594,13 @@ findIgnoreDirs() {
     #
     # Thus, remove all instances of duplicate quotes AFTER the array.join is called
     # so that any duplicates from either the parent's quotes or our internal quotes are removed.
-    _findIgnoreDirsOption="$(echo "$_findIgnoreDirsOption" | sed -E "s|(['\"])\1|\1|g")"
+    _findIgnoreOption="$(echo "$_findIgnoreOption" | sed -E "s|(['\"])\1|\1|g")"
 
     # Ignored dirs are already quoted, but still need to quote the search query
-    declare _findFinalCmd="find $_findToSearchIn $_findIgnoreDirsOption ${_findOpts[@]}"
+    declare _findFinalCmd="find $_findToSearchIn $_findIgnoreOption ${_findOpts[@]}"
 
-    # Silence the annoying warnings about `-maxdepth` is a global option that needs to be before
-    # others since it's not easily removed during arg-parsing without extra complex logic
+    # Silence the annoying warnings about '`-maxdepth` is a global option that needs to be before other options'
+    # since it's not easily removed during arg-parsing without extra complex logic
     eval "$_findFinalCmd" 2> >(awk '{ if (! /.*find: warning:/) { print($0); } }')
 }
 
@@ -697,7 +704,7 @@ if ! isDefined tree; then
         declare _treeIgnoreDirsFindOpts=''
 
         if ! array.empty _treeIgnoreDirs; then
-            # Add single quotes around names in case they're using globs, like `findIgnoreDirs()` does.
+            # Add single quotes around names in case they're using globs, like `findIgnore()` does.
             # e.g. Where injected strings are labeled with [], and array.join is labeled with ()
             # `-i '(first['][ -i ][']second)'
             _treeIgnoreDirsFindOpts="-i '`array.join _treeIgnoreDirs "' -i '"`'"
@@ -723,7 +730,7 @@ if ! isDefined tree; then
         # `find` doesn't add a trailing slash on directories by default, so add them manually via `printf`
         declare allEntriesWithTrailingSlashOnDirsDirs="$(
             cd "$_pathsToDisplay"
-            findIgnoreDirs $_treeIgnoreDirsFindOpts . $_treeDepthFindOpts -type d -exec sh -c "'printf \"\$0/\n\"'" {} '\;' -or -print 2>/dev/null
+            findIgnore $_treeIgnoreDirsFindOpts . $_treeDepthFindOpts -type d -exec sh -c "'printf \"\$0/\n\"'" {} '\;' -or -print 2>/dev/null
         )"
         # Remove duplicate `//` when runing `tree someDir/` (no double slashes with `tree someDir`)
         declare normalizedPaths="`echo "$allEntriesWithTrailingSlashOnDirsDirs" | sed -E "s#//#/#g"`"

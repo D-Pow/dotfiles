@@ -1326,13 +1326,13 @@ zipExtract() {
 
 
 hashDir() {
-    declare USAGE="[OPTIONS...] [path...] [-- \`findIgnoreDirs\` OPTIONS...]
+    declare USAGE="[OPTIONS...] [path...] [-- \`findIgnore\` OPTIONS...]
     Hashes directories with SHA-256 since native commands like \`sha256sum\` can only hash files.
 
     Does so by hashing all files in the directory, sorting them by name, and then
     hashing that final output string.
 
-    Optionally, specify custom \`findIgnoreDirs\` options after a double-hyphen arg, \`--\` in
+    Optionally, specify custom \`findIgnore\` options after a double-hyphen arg, \`--\` in
     order to fine-tune what files count towards the final hash.
     Useful for ignoring .git/node_modules, selectively finding the hash of only a subset of files
     in the directory (e.g. dist/), etc.
@@ -1381,7 +1381,7 @@ hashDir() {
         # Separate by newline for easier array creation
         declare _origIFS="$IFS"
         declare IFS=$'\n'
-        declare _filesToHash=($(findIgnoreDirs -p "$_hashDirPath" "${_hashDirFindOpts[@]}" -type f)) #  2>/dev/null
+        declare _filesToHash=($(findIgnore -p "$_hashDirPath" "${_hashDirFindOpts[@]}" -type f)) #  2>/dev/null
         IFS="$origIFS"
 
         declare _fileToHash
