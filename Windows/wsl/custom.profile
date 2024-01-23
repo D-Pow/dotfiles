@@ -37,7 +37,8 @@ alias netstat='/mnt/c/Windows/System32/NETSTAT.exe'
 # Stops WSL completely. Useful for when WSL lags and/or takes up too much RAM.
 alias wslStop="wsl.exe --shutdown"
 
-alias gcon='$(type subl) -n $(gitGetBothModified)'
+# type subl | sed -E "s/[^\`]+\`([^']+)'/\1/"
+alias gcon='subl.exe -n $(gitGetBothModified)'
 
 
 topath() {
