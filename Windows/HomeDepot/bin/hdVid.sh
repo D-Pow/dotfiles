@@ -36,12 +36,12 @@ hdVid() {
 
     declare -A logins=(
         ['b2btestperksstaguser187@mailinator.com']='Test@1234'
-        ['b2btestperksstaguser216@mailinator.com']='Test54321'
         ['b2btestperksstaguser209@mailinator.com']='Test1234'
+        ['b2btestperksstaguser216@mailinator.com']='Test54321'
         ['b2btest50@gmail.com']='testqa01'
     )
     declare usernames=("${!logins[@]}")  # Stable array order, usually alphabetical
-    declare defaultLogin="${usernames[0]}"
+    declare defaultLogin="${usernames[2]}"
 
     declare username="${1:-"$defaultLogin"}"
     declare password="${2:-"${logins["$username"]}"}"
