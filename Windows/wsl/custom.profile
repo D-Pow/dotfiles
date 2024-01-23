@@ -95,6 +95,26 @@ towindowspath() {
     # echo $parsedPaths
 }
 
+tobashpath() {
+    declare argsArray
+    declare stdin
+    declare -A tobashpathOptions=()
+
+    parseArgs tobashpathOptions "$@"
+    (( $? )) && exit 1
+
+    declare paths=("${stdin[@]}" "${argsArray[@]}")
+
+    declare path=
+    for path in "${paths[@]}"; do
+        if isWsl; then
+            wslpath "$path"
+        else
+            echo "$path" | sed -E 's|C:|/mnt/c|; s|\\|/|g'
+        fi
+    done
+}
+
 
 windows-which() {
     # See: https://stackoverflow.com/questions/304319/is-there-an-equivalent-of-which-on-the-windows-command-line/304392#304392
