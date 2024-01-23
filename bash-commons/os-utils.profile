@@ -1656,6 +1656,20 @@ _setClipboardCopyAndPasteCommands() {
 
 
 
+encodeBase64() {
+    # If input is passed via `echo` without the `-n` flag (to strip trailing newline), then
+    # `base64` ends strings with `o=` instead of `==`.
+    # Harden logic by using `sed` to always replace `o=` with `==`.
+    # Decoding works for both `o=` and `==`.
+    # See:
+    #   - https://stackoverflow.com/questions/58203270/ubuntu-base64-encoded-string-ends-with-o-instead-of-apparently-correct
+    base64 | sed -E 's/o=$/==/'
+}
+
+decodeBase64() {
+    base64 --decode
+}
+
 decodeUri() {
     # Replaces URL-encoded `%NN` content with Bash-parse-able `\xNN` strings,
     # then prints them in a human-readable way via `echo -e`.
