@@ -1551,17 +1551,6 @@ parallel() {
 
 
 
-urldecode() {
-    # Replaces URL-encoded `%NN` content with Bash-parse-able `\xNN` strings,
-    # then prints them in a human-readable way via `echo -e`.
-    #
-    # See:
-    #   - https://stackoverflow.com/questions/6250698/how-to-decode-url-encoded-string-in-shell/6265305#6265305
-    echo -e "$(sed 's/+/ /g; s/%\(..\)/\\x\1/g;')"
-}
-
-
-
 _copyCommand=
 _pasteCommand=
 
@@ -1668,7 +1657,11 @@ _setClipboardCopyAndPasteCommands() {
 
 
 decodeUri() {
-    # See: https://stackoverflow.com/questions/6250698/how-to-decode-url-encoded-string-in-shell
+    # Replaces URL-encoded `%NN` content with Bash-parse-able `\xNN` strings,
+    # then prints them in a human-readable way via `echo -e`.
+    #
+    # See:
+    #   - https://stackoverflow.com/questions/6250698/how-to-decode-url-encoded-string-in-shell/6265305#6265305
     declare argsArray
     declare stdin
     declare -A _decodeUriOptions=()
