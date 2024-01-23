@@ -178,7 +178,7 @@ shift $#
 alias this='echo "$([[ -n "${BASH_SOURCE[0]}" ]] && realpath -se "$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd)/$(basename "${BASH_SOURCE[0]}")" || realpath -es "$(pwd)")"'
 # Aliases for `this` except with absolute paths so calling parents have a choice between the two.
 # These two are recommended for use with `source` so the path is always guaranteed to be resolved.
-alias thisFile='echo "${BASH_SOURCE[0]}"'
+alias thisFile='echo "$(realpath "${BASH_SOURCE[0]}")"'
 alias thisDir='echo "$(realpath "$(dirname "$(thisFile)")")"'
 
 
