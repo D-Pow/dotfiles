@@ -91,4 +91,88 @@ window.fetchConfig = async function fetchConfig(keyRegex, valRegex) {
     return config;
 };
 
+window.searchArtifactory = async function searchArtifactory(pkgRegex = /.*/) {
+    const artifactoryMavenUrl = new URL('https://maven.artifactory.homedepot.com/ui/packages');
+
+    if (artifactoryMavenUrl.origin !== location.origin) {
+        alert(`This must be run on ${artifactoryMavenUrl.origin}. Opening new tab now...`);
+        self.open(artifactoryMavenUrl.toString(), '_blank');
+    }
+
+    const res = await fetch('https://maven.artifactory.homedepot.com/ui/api/v1/mds/packages?jfLoader=true', {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
+        headers: {
+            accept: 'application/json, text/plain, */*',
+            'accept-language': 'en-US,en;q=0.9',
+            'content-type': 'application/json',
+            'x-requested-with': 'XMLHttpRequest',
+        },
+        body: JSON.stringify({
+            graphQL: {
+                query: `query (
+                    $filter: PackageFilter!,
+                    $first: Int,
+                    $orderBy: PackageOrder
+                ) {
+                    packages (filter: $filter, first: $first, orderBy: $orderBy) {
+                        edges {
+                            node {
+                                id,
+                                name,
+                                created,
+                                modified,
+                                versionsCount,
+                                description,
+                                latestVersion,
+                                packageType,
+                                stats {
+                                    downloads,
+                                    followers
+                                },
+                                licenses {
+                                    name,
+                                    source
+                                },
+                                tags,
+                                vulnerabilities {
+                                    critical,
+                                    high,
+                                    medium,
+                                    low,
+                                    info,
+                                    unknown,
+                                    skipped
+                                }
+                            }
+                        },
+                        pageInfo {
+                            hasNextPage,
+                            endCursor
+                        }
+                    }
+                }`,
+                variables: {
+                    filter: {
+                        name: 'homedepot*'
+                    },
+                    first: 1000,
+                    orderBy: {
+                        field: 'NAME',
+                        direction: 'ASC'
+                    }
+                }
+            },
+        }),
+    });
+    const { data: { packages: { edges, pageInfo: { hasNextPage }}}} = await res.json();
+
+    const packagesInfo = edges
+        .map(({ node }) => node)
+        .filter(({ name }) => name.match(pkgRegex));
+
+    return packagesInfo;
+};
+
 })();
