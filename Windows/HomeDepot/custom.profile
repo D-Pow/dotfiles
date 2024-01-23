@@ -9,6 +9,10 @@ export ART_USER="${ARTIFACTORY_USER}"
 export ARTIFACTORY_TOKEN="$(jq -r '.access_token' "${reposDir}/maven-token.json")"
 export ART_TOKEN="${ARTIFACTORY_TOKEN}"
 export NPM_TOKEN="$(jq -r '.access_token' "${reposDir}/npm-token.json")"
+export DOCKER_TOKEN="$(jq -r '.access_token' "${reposDir}/docker-token.json")"
+
+export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock
+export DOCKER_HOST="unix://${HOME}/.rd/docker.sock"
 
 echo "
 ARTIFACTORY_USER=${ARTIFACTORY_USER}
@@ -16,7 +20,18 @@ ART_USER=${ARTIFACTORY_USER}
 ARTIFACTORY_TOKEN=${ARTIFACTORY_TOKEN}
 ART_TOKEN=${ARTIFACTORY_TOKEN}
 NPM_TOKEN=${NPM_TOKEN}
+DOCKER_USER=${ARTIFACTORY_USER}
+DOCKER_TOKEN=${DOCKER_TOKEN}
 " > "${reposDir}/.env"
+
+alias docker="docker.exe"
+
+
+loginToDockerRegistry() {
+    # See:
+    #   - https://thd.atlassian.net/wiki/spaces/PTM/pages/2111668535/New+Developer+Onboarding
+    cmd "docker.exe login docker.artifactory.homedepot.com -u $(str.lower $(whoami)) -p $DOCKER_TOKEN"
+}
 
 
 buildAllFrontends() {
