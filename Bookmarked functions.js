@@ -1063,7 +1063,7 @@ window.githubToggleAllFilesChangedCollapsedStatus = function() {
     githubToggleFilesByName();
 };
 window.githubToggleAllTestsCollapsedStatus = function() {
-    const testAndSnapshotRegex = /((test|spec)\.[jt]sx?)|(\.(snap|storyshot))$/i;
+    const testAndSnapshotRegex = /((snap|storyshot)\.)?(test|spec)\.((snap|storyshot)\.)?([jt]sx?|java|py)$/i;
     githubToggleFilesByName(testAndSnapshotRegex);
 };
 window.githubToggleAllSnapshotsViewedStatus = function() {
