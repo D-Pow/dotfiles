@@ -175,4 +175,126 @@ window.searchArtifactory = async function searchArtifactory(pkgRegex = /.*/) {
     return packagesInfo;
 };
 
+
+window.getPids = async function getPids(userEmail, {
+    svocId,
+    userId,
+    pidsOnly = false,
+} = {}) {
+    /* QA test user mod page (use SVOC ID): https://stage.customerprograms-np.homedepot.com/customers/0420509994FAB2280S/pro-xtra */
+    const users = {
+        'b2btestperksstaguser216@mailinator.com': {
+            password: 'Test54321',
+            userId: '042050999502B2280U',
+            svocId: '0420509994FAB2280S',
+        },
+        'b2btestperksstaguser209@mailinator.com': {
+            password: 'Test1234',
+            userId: '04201FA82A72E8F40U',
+            svocId: '04201FA82A6668F40S',
+        },
+        'b2btestperksstaguser187@mailinator.com': {
+            password: 'Test@1234',
+            userId: '041FD225FD3F55380U',
+            svocId: '041FD225FD33D5380S',
+        },
+        'b2btest50@gmail.com': {
+            password: 'testqa01',
+            userId: '041F59C53417BB670U',
+            svocId: '041F59C5340DBB670S',
+        },
+    };
+    const defaultUserEmail = 'b2btestperksstaguser209@mailinator.com';
+    const user = userEmail in users
+        ? users[userEmail]
+        : (svocId && userId)
+            ? { svocId, userId }
+            : users[defaultUserEmail];
+
+    const res = await fetch('https://stage.customerprograms-np.homedepot.com/loyaltyorch/graphql', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            "operationName": "retrieveRewards",
+            "variables": {
+                "svocid": user.svocId,
+                "userid": user.userId,
+            },
+            "query": `
+            query retrieveRewards($svocid: String!, $userid: String!) {
+                retrieveCustomerRewards(svocId: $svocid, userId: $userid) {
+                        ... on CustomerRewardsResponse {
+                        programId
+                        spendDetails {
+                            currentSpend
+                            progressPercent
+                            acceleratedProgressPercent
+                            spendForNextPerk
+                            acceleratedSpendForNextPerk
+                            currentTierMinThreshold
+                            currentTierMaxThreshold
+                            pxccQualifyingSpend
+                            pxccPerksSpend
+                            otherTenderPerksSpend
+                        }
+                        availableRewards {
+                            active {
+                                status
+                                offerType
+                                type
+                                triggerType
+                                rewardTitle
+                                tierName
+                                tierId
+                                tierRewardId
+                                perkId
+                                paymentId
+                                earnedDate
+                                expiredDate
+                                currentBalance
+                                lastFourDigits
+                                rewardDescription
+                                activeImageUrl
+                                canBeExchanged
+                                canBeRenewed
+                                options {
+                                  title
+                                  offerType
+                                  type
+                                  tierRewardId
+                                  amount
+                                }
+                            }
+                        }
+                    }
+                    ... on LoyaltyError {
+                        error {
+                            code
+                            errorCode
+                            message
+                            moreInfo
+                        }
+                    }
+                }
+            }
+            `
+        }),
+    });
+    const json = await res.json();
+
+    if (pidsOnly) {
+        return json
+            ?.data
+            ?.retrieveCustomerRewards
+            ?.availableRewards
+            ?.active
+            ?.map(reward => reward.paymentId)
+            ?.filter(Boolean);
+    }
+
+    return json;
+};
+
 })();

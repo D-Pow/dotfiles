@@ -255,13 +255,13 @@ if (isMain) {
         process.exit(1);
     }
 
-    log(args.reduce((obj, entry) => {
-        const [ key, val ] = entry.split('=');
-
-        obj[key.replace(/^-+/, '')] = val;
-
-        return obj;
-    }, {}));
+    // log(args.reduce((obj, entry) => {
+    //     const [ key, val ] = entry.split('=');
+    //
+    //     obj[key.replace(/^-+/, '')] = val;
+    //
+    //     return obj;
+    // }, {}));
 
     let output;
 

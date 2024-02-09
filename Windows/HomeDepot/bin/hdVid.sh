@@ -6,13 +6,18 @@ hdVid() {
 
     Options:
         -v <token>  |   Output if the token is valid (invalidates the token in the process).
+        -w          |   Append HD Wallet PIDs Base64 encoded string to VID.
         -h          |   Print this message.
     "
 
+    declare hdWalletAuthorized=
     declare verifyToken=
     declare OPTIND=1
-    while getopts ":v:h" opt; do
+    while getopts ":wv:h" opt; do
         case "$opt" in
+            w)
+                hdWalletAuthorized=true
+                ;;
             v)
                 # # Read next arg only if not a flag (prefixed with a hyphen).
                 # # Usually, this would be "$OPTARG" if we used `getopts "v:"`
@@ -170,7 +175,14 @@ hdVid() {
         echo "$vidTokenStatus"
     fi
 
-    echo "$vidToken"
+    declare hdWalletPids='{"p_ids":["P124F797A43BF07A80","P124B5F06900370620","P124DDDB8D29541E40"]}'
+    declare hdWalletPidsBase64="$(echo "$hdWalletPids" | base64 | sed -E 's/K$/=/')"
+
+    if [[ -n "$hdWalletAuthorized" ]]; then
+        echo "$vidToken,$hdWalletPidsBase64"
+    else
+        echo "$vidToken"
+    fi
 }
 
 

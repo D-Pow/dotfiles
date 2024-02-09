@@ -26,14 +26,14 @@ buildAndDeploySelfServiceWebApp() (
     echo "Building ':SelfServiceWebApp' (apps/register/app-self-service) version $VERSION_APP_SELF_SERVICE"
     echo -e "-----------------------------\n"
 
-    mvn clean install -DskipTests --projects ':engage-client'
+    mvn clean install -DskipTests -Djacoco.skip=true --projects ':engage-client'
     echo -e '\n\n'
-    ( mvn clean install -DskipTests --projects ':SelfServiceWebApp'; )
+    ( mvn clean install -DskipTests -Djacoco.skip=true --projects ':SelfServiceWebApp'; )
 
     if (( $? )); then
         echo -e "\n\nError installing SelfServiceWebApp module. Re-attempting with building sub-dependencies as needed..."
 
-        mvn install -DskipTests --projects ':SelfServiceWebApp,!:JettyServer,!:JettyServerJar' -am
+        mvn install -DskipTests -Djacoco.skip=true --projects ':SelfServiceWebApp,!:JettyServer,!:JettyServerJar' -am
     fi
 
     declare buildOutputWar="$HOME/.m2/repository/com/homedepot/sa/pt/SelfServiceWebApp/$VERSION_APP_SELF_SERVICE/SelfServiceWebApp-$VERSION_APP_SELF_SERVICE.war"
