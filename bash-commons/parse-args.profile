@@ -252,7 +252,7 @@ parseArgs() {
         for optionUsageKey in "${!parentUsageOptions[@]}"; do
             declare optionUsageDesc="${parentUsageOptions["$optionUsageKey"]}"
             # Use tab to separate key-value string for later `column` usage for auto-spacing columns
-            declare optionUsageEntry="$indentationAmount$optionUsageKey\t| $optionUsageDesc\n"
+            declare optionUsageEntry="$indentationAmount$optionUsageKey\t|\t$optionUsageDesc\n"
 
             optionUsageStr+="$optionUsageEntry"
         done
@@ -261,14 +261,24 @@ parseArgs() {
         # For our usage, this makes the space between option keys and
         # descriptions evenly spaced so that all descriptions line up.
         # `-t` = Convert to table (i.e. make it evenly spaced)
-        # `-c N` = Make N columns.
+        # `-c N` = Make N columns; Technically, is max-width in characters, but sometimes num-cols works
+        #   for some reason (I think it must be max-width if using `-W` or `-l`);
+        #   Try both `-c numCols` and `-c maxWidth` to find which one you need to use.
+        #   Could also use as max-width to make table less wide than the full terminal width.
         # `-s delim` = Use specified string as a delimiter rather than all whitespace.
         #   Specify tab since spaces are used in description strings.
+        # `-W colIndex` = Column index that is allowed to wrap text content into multi-line cells;
+        #   If using with `-c`,
+        # `-l maxNumCols` = Maximum number of columns; if more entries than num cols, all entries will be
+        #   concatenated into the last column.
+        #
+        # Alternative for wrapping text manually:
+        #   fold -s -w $(tput cols)
         #
         # TODO maybe just `printf` would do better by making wrapping of long description
         # strings remain flush with the description-start column.
         # See: https://www.linuxjournal.com/content/bashs-built-printf-function
-        parentUsageStr+="$(echo -e "$optionUsageStr" | column -t -c 2 -s $'\t')"
+        parentUsageStr+="$(echo -e "$optionUsageStr" | column -t -c $(tput cols) -s $'\t' -W 3)"
     fi
 
 
