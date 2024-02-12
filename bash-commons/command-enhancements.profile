@@ -542,7 +542,7 @@ findIgnore() {
         ['USAGE']="$USAGE"
     )
 
-    parseArgs -c _findIgnoreOptions "$@"
+    parseArgs _findIgnoreOptions "$@"
     (( $? )) && return 1
 
     declare _findOpts=("${argsArray[@]}")
