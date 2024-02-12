@@ -195,6 +195,7 @@
 
         for (let friend of friendNamesAndIds) {
             const friendOwnedGames = await getOwnedGamesNamesAndIds(friend.steamId);
+            console.log(`All games owned by "${friend.username}":`, friendOwnedGames);
             const friendMultiplayerGames = await getMultiplayerGames(...friendOwnedGames.map(game => game.appId));
 
             multiplayerGamesByUsername[friend.username] = friendMultiplayerGames;
