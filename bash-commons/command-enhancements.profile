@@ -536,7 +536,7 @@ findIgnore() {
     declare argsArray
     declare -A _findIgnoreOptions=(
         ['i|ignore:,_findIgnorePaths']="Path to ignore; Use glob-stars for nested directories/files."
-        ['p|search-dir:,_findToSearchIn']="Path in which to run \`find\`; Use in place of positional arg for path; Helpful for custom functions calling ${FUNCNAME[0]}."
+        ['p|search-dir:,_findToSearchIn']="Path in which to run \`find\`; Useful in place of positional arg for path if wanting to forward an array of args from a parent function to ${FUNCNAME[0]} in a simple way instead of manually finding the path and reordering the array before calling ${FUNCNAME[0]}."
         [':']=
         ['?']=
         ['USAGE']="$USAGE"
