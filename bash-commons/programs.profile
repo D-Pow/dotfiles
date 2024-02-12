@@ -150,7 +150,7 @@ npmInstallInDirs() {
         declare parallelProcessCmds=()
 
         declare packageJson=
-        for packageJson in $(findIgnore -i 'node_modules' "$dir" -iname 'package.json'); do
+        for packageJson in $(findIgnore -i '*node_modules*' "$dir" -iname 'package.json'); do
             declare npmDir="$(dirname "$packageJson")/"
 
             parallelProcessCmds+=('
