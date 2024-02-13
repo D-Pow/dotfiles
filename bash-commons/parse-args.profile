@@ -261,8 +261,7 @@ parseArgs() {
         # For our usage, this makes the space between option keys and
         # descriptions evenly spaced so that all descriptions line up.
         # `-t` = Convert to table (i.e. make it evenly spaced)
-        # `-c N` = Make N columns; Technically, is max-width in characters, but sometimes num-cols works
-        #   for some reason (I think it must be max-width if using `-W` or `-l`);
+        # `-c N` = Make N columns; On WSL, N is max-width in characters;
         #   Try both `-c numCols` and `-c maxWidth` to find which one you need to use.
         #   Could also use as max-width to make table less wide than the full terminal width.
         # `-s delim` = Use specified string as a delimiter rather than all whitespace.
@@ -278,7 +277,24 @@ parseArgs() {
         # TODO maybe just `printf` would do better by making wrapping of long description
         # strings remain flush with the description-start column.
         # See: https://www.linuxjournal.com/content/bashs-built-printf-function
-        parentUsageStr+="$(echo -e "$optionUsageStr" | column -t -c $(tput cols) -s $'\t' -W 3)"
+        declare _helpOptionsColumnWidth=3
+
+        if isWsl; then
+            _helpOptionsColumnWidth=$(tput cols)
+        fi
+
+        parentUsageStr+="$(
+            echo -e "$optionUsageStr" \
+                | column -t -c $_helpOptionsColumnWidth -s $'\t' -W $_helpOptionsColumnWidth \
+                2>/dev/null
+        )"
+
+        if (( $? )); then
+            parentUsageStr+="$(
+                echo -e "$optionUsageStr" \
+                    | column -t -c $_helpOptionsColumnWidth -s $'\t'
+            )"
+        fi
     fi
 
 
