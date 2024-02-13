@@ -144,6 +144,14 @@ array.toString() {
 
 
 array.fromString() {
+    # Alternatively, use `awk`:
+    #   - Set var in Bash from awk: https://stackoverflow.com/questions/14505026/set-variable-in-current-shell-from-awk
+    #       - We don't use the recommended `declare` because we're setting more than one var within awk
+    #   - Bash declaring multiple vars in one line: https://unix.stackexchange.com/questions/527356/can-one-declare-multiple-local-variables-in-one-line
+    #   - awk arrays: https://www.gnu.org/software/gawk/manual/html_node/Arrays.html
+    #   - awk print all elements of an array after the nth index: https://stackoverflow.com/questions/2961635/using-awk-to-print-all-columns-from-the-nth-to-the-last
+    #   - awk opposite of split: https://stackoverflow.com/questions/13641865/awk-opposite-of-split
+    #   - awk delimiter value in variable: https://www.unix.com/shell-programming-and-scripting/26262-set-variable-field-delimiter-using-awk.html
     declare _retArrFromStrName
     declare _arrFromDelim="$IFS"
     declare OPTIND=1
