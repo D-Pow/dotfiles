@@ -97,7 +97,7 @@ isWindows() {
 }
 
 isWsl() {
-    os-version -s | egrep -iq 'wsl'
+    os-version -s | egrep -iq 'wsl|Microsoft'
 }
 
 
