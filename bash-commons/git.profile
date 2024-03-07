@@ -92,7 +92,7 @@ ignoreFilesInGitDiffCached() {
 
 
 ignoreFilesInGitLog() {
-    gld -- $(gitIgnorePathsArgs "$@")
+    gitLogIgnoreFileRenames -p -- $(gitIgnorePathsArgs "$@")
 }
 
 
