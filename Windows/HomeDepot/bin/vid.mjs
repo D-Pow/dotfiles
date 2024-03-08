@@ -283,6 +283,7 @@ function parseArgs(args = process.argv) {
         userId: undefined,
         svocId: undefined,
         pids: defaultUser.pids ?? [],
+        copyToClipboard: false,
         help: false,
     }
     const parsedScriptArgs = scriptArgs.reduce((argMap, arg, argIndex, arr) => {
@@ -313,6 +314,10 @@ function parseArgs(args = process.argv) {
             case '--pids':
                 argMap.pids.push(nextArg);
                 break;
+            case '-c':
+            case '--copy':
+                argMap.copyToClipboard = true;
+                break;
             case '-h':
             case '--help':
                 argMap.help = true;
@@ -334,6 +339,7 @@ Options:
     -i, --userId <id>       The user ID to use for the VID (default: ${defaultUser.userId}).
     -s, --svocId <id>       The SVOC ID to use for the VID (default: ${defaultUser.svocId}).
     -p, --pids <pid>        PIDs to add to the VID (default for ${defaultUserEmail}: ${defaultUser.pids.join(', ')}).
+    -c, --copy              Copy the resulting VID to the clipboard.
     -h, --help              Print this message and exit.
 
 If using one of the following emails, then \`password\`, \`userId\`, and \`svocId\` aren't required:
@@ -353,20 +359,21 @@ async function main(argv = process.argv) {
         return;
     }
 
-    return await generateVid(args);
+    const res = await generateVid(args);
+    const vid = res?.hdWalletToken || res?.token;
+
+    if (vid) {
+        console.log(vid);
+
+        if (args.copyToClipboard) {
+            copyToClipboard(vid);
+        }
+    }
 }
 
 
 
 main()
-    .then(res => {
-        const vid = res?.hdWalletToken || res?.token;
-
-        if (vid) {
-            console.log(vid);
-            copyToClipboard(vid);
-        }
-    })
     .catch(err => {
         console.error('Could not generate vid. Are you using NodeJS >= v21? Were the arguments passed correct?');
         console.error('\n\n');
