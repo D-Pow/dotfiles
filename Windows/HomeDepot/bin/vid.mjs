@@ -1,5 +1,57 @@
 #!/usr/bin/env node
 
+import childProcess from 'node:child_process';
+
+
+function copyToClipboard(str) {
+    const osInfo = childProcess
+        .execSync('uname -a')
+        .toString()
+        .replace(/\n/g, '');
+
+    let copyCommand;
+    let pasteCommand;
+
+    if (!osInfo || osInfo.match(/microsoft/i) || osInfo.match(/not recognized as an internal or external command/i)) {
+        // Windows WSL or Command Prompt
+        copyCommand = '/mnt/c/Windows/System32/cmd.exe /C clip';
+        pasteCommand = '/mnt/c/Windows/System32/cmd.exe /C powershell Get-Clipboard';
+    } else if (osInfo.match(/^mingw/i)) {
+        // Windows Git Bash
+        copyCommand = '/c/Windows/System32/cmd /C clip';
+        pasteCommand = '/c/Windows/System32/cmd.exe /C powershell Get-Clipboard';
+    } else if (osInfo.match(/mac|darwin|osx/i)) {
+        // Mac
+        copyCommand = 'pbcopy';
+        pasteCommand = 'pbpaste';
+    } else {
+        // Linux
+        const xclipPath = childProcess
+            .execSync('which xclip')
+            .toString()
+            .replace(/\n/g, '');
+
+        if (xclipPath) {
+            // xclip is a user-friendly util for managing the clipboard, but isn't installed by default
+            copyCommand = 'xclip -sel clipboard';
+            pasteCommand = 'xclip -sel clipboard -o';
+        } else {
+            copyCommand = 'xsel --clipboard -i';
+            pasteCommand = 'xsel --clipboard -0';
+        }
+    }
+
+    if (copyCommand) {
+        const commandToExecute = `echo "${str}" | ${copyCommand}`;
+
+        return childProcess
+            .execSync(commandToExecute)
+            .toString()
+            .replace(/\n/g, '');
+    }
+}
+
+
 
 const hmacCreationTime = Date.now();
 
@@ -308,7 +360,12 @@ async function main(argv = process.argv) {
 
 main()
     .then(res => {
-        console.log(res?.hdWalletToken || res?.token);
+        const vid = res?.hdWalletToken || res?.token;
+
+        if (vid) {
+            console.log(vid);
+            copyToClipboard(vid);
+        }
     })
     .catch(err => {
         console.error('Could not generate vid. Are you using NodeJS >= v21? Were the arguments passed correct?');
