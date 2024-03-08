@@ -208,7 +208,8 @@ watchJavaProcs() {
 
 hdmvn() {
     # Not sure why, but the CMS and Computer Vision sub-projects always give me trouble when installing, so ignore them all.
-    declare specificProjectsToBuildFilter="!:computer-vision-libs-parent,!:cv-client,!:cv-service,!:cv-pos-client,!:cv-contracts,!:computer-vision-mock-service,!:CMSDataIntegration,!:CMSWeb,!:CMSRecognitionIntegration,!:CMS_Data_Access"
+    # !:CMSDataIntegration
+    declare specificProjectsToBuildFilter="!:computer-vision-libs-parent,!:cv-client,!:cv-service,!:cv-pos-client,!:cv-contracts,!:computer-vision-mock-service,!:CMSWeb,!:CMSRecognitionIntegration,!:CMS_Data_Access,!:checkout-applications,!:register-components,!:OCBAdmin,!:store-account-management-orchestration"
 
     declare mvnArgs=("$@")
     declare mvnArgsHasProjectsFlag=
@@ -234,6 +235,32 @@ hdmvn() {
 
     # Default to Windows' `mvn`
     mvn -Djacoco.skip=true "${mvnArgs[@]}"
+}
+
+hdmvnall() {
+    hdfixpoms
+    hdmvn clean install -DskipTests -Djacoco.skip=true -rf ':token-provider-spi'
+}
+
+hdfixpoms() {
+    declare origIFS="$IFS"
+    declare IFS=$'\n'
+    declare pomXmlFiles=($(find "${1:-.}" \( -name 'node_modules' \) -prune -false -o -type f -iname '*pom.xml'))
+    IFS="$origIFS"
+
+    declare pomXml=
+    for pomXml in "${pomXmlFiles[@]}"; do
+        # Replace "(2024.12.34,${project.version}]" with "${project.version}"
+        # in all `<version>` and `<my.dependency.version>` entries
+        sed -Ei 's/(\(|\[)[0-9]{4}\.[0-9]+\.?[0-9]*, *(\$\{project.version\})\]|\)/\2/g' "$pomXml"
+    done
+
+    # Comment out cms-data-integration since it causes issues in IntelliJ.
+    # Ensure it's only commented out once; for some reason `  <module>` doesn't work when trying to check if `<!-- <module>` is the
+    # text or not, so we must do a post-processing extra-comment-removal series of substitutions.
+    sed -Ei 's|<module>cms-data-integration</module>|<!-- <module>cms-data-integration</module> -->|; s/<!-- <!--/<!--/; s/--> -->/-->/' ./apps/pom.xml
+
+    git update-index --assume-unchanged ${pomXmlFiles[@]}
 }
 
 hdStoreCheckoutComponentsTestCoverage() (
