@@ -8,21 +8,25 @@ const users = {
         password: 'Test54321',
         userId: '042050999502B2280U',
         svocId: '0420509994FAB2280S',
+        pids: [ 'P125216B44975E7F80', 'P12521CD063DAE7F80', 'P124B5F12A9F970620' ],
     },
     'b2btestperksstaguser209@mailinator.com': {
         password: 'Test1234',
         userId: '04201FA82A72E8F40U',
         svocId: '04201FA82A6668F40S',
+        pids: [ 'P125216B44975E7F80' ],
     },
     'b2btestperksstaguser187@mailinator.com': {
         password: 'Test@1234',
         userId: '041FD225FD3F55380U',
         svocId: '041FD225FD33D5380S',
+        pids: [ 'P125216B44975E7F80' ],
     },
     'b2btest50@gmail.com': {
         password: 'testqa01',
         userId: '041F59C53417BB670U',
         svocId: '041F59C5340DBB670S',
+        pids: [ 'P125216B44975E7F80' ],
     },
 };
 
@@ -108,46 +112,67 @@ async function getHmacToken() {
 }
 
 
-async function signIn(email, password) {
-    password = password ?? users[email].password;
+async function signIn(email, password, {
+    logErrors = false,
+} = {}) {
+    password = password ?? users[email]?.password;
 
-    const { headers: { cookie }, body: { clientAuthToken }} = await getHmacToken();
-    const res = await hdFetch('/customer/auth/v1/signin', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            channelId: 1,
-            'cust-acct-client-token': clientAuthToken,
-            'cust-acct-client-timestamp': hmacCreationTime,
-            'cust-acct-client-id': 'clientId',
-            'cust-acct-client-delay-token-validation': '444444',
-            Cookie: cookie,
-        },
-        body: JSON.stringify({
-            email,
-            password,
-            sessionId: 'sessionId',
-        }),
-    });
+    const { headers, body: { clientAuthToken }} = await getHmacToken();
+    const headersToPersistBetweenRequests = {
+        'cust-acct-client-token': clientAuthToken,
+        'cust-acct-client-timestamp': hmacCreationTime,
+        'cust-acct-client-id': 'clientId',
+        'cust-acct-client-delay-token-validation': '444444',
+    };
+
+    let res;
+
+    try {
+        res = await hdFetch('/customer/auth/v1/signin', {
+            method: 'POST',
+            headers: {
+                ...headersToPersistBetweenRequests,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                channelId: 1,
+                Cookie: headers?.cookie,
+            },
+            body: JSON.stringify({
+                email,
+                password,
+                sessionId: 'sessionId',
+            }),
+        });
+    } catch (e) {
+        if (logErrors) {
+            console.error('Error signing in:', e);
+        }
+    }
 
     return {
-        headers: res.headers,
-        body: res.body,
-        persistHeaders: {
-            'cust-acct-client-token': clientAuthToken,
-            'cust-acct-client-timestamp': hmacCreationTime,
-            'cust-acct-client-id': 'clientId',
-            'cust-acct-client-delay-token-validation': '444444',
-        },
+        headers: res?.headers || headers,
+        body: res?.body,
+        persistHeaders: headersToPersistBetweenRequests,
     };
 }
 
 
-async function generateVid(email, {
+async function generateVid({
+    email,
+    password,
+    userId,
+    svocId,
     pids = [],
 } = {}) {
-    const { headers, body: { userID: userId, svocID: svocId }, persistHeaders } = await signIn(email);
+    const {
+        headers,
+        body,
+        persistHeaders,
+    } = await signIn(email, password)
+
+    if (!userId && !svocId) {
+        ({ userID: userId, svocID: svocId } = body);
+    }
 
     const res = await hdFetch('/customer/auth/v1/vid', {
         method: 'POST',
@@ -157,7 +182,7 @@ async function generateVid(email, {
             ...persistHeaders,
             Authorization: headers?.cookie?.THD_USER_SESSION ?? headers?.cookie?.THD_CUSTOMER,
             TMXProfileId: 'tmxProfileId',
-            Cookie: headers.cookie,
+            Cookie: headers?.cookie,
         },
         body: JSON.stringify({
             userId,
@@ -185,23 +210,112 @@ async function generateVid(email, {
 
 
 
-async function main(args = process.argv) {
-    const defaultUserEmail = Object.entries(users)[1][0];
-    const userEmail = args?.[2] ?? defaultUserEmail;
+function parseArgs(args = process.argv) {
+    const thisFileName = import.meta.url.match(/(?<=\/)[^\/]+$/)?.[0];
+    const argsIndexOfJsFile = process.argv.findIndex(cliArg => cliArg?.match(/\.[mc]?[tj]s[x]?$/));
 
-    return await generateVid(userEmail, { pids: [ 'P12514EBA89B035480', 'P125171CA5C74170E0' ]});
+    if (!(
+        argsIndexOfJsFile >= 0
+        && process.argv[argsIndexOfJsFile]?.includes(thisFileName)
+    )) {
+        // User didn't run this script directly, so exit without calling `main()`
+        return;
+    }
+
+    const scriptArgs = args.slice(argsIndexOfJsFile + 1);
+    const defaultUserEmail = Object.entries(users)[0][0];
+    const defaultUser = users[defaultUserEmail];
+    const defaultArgs = {
+        email: defaultUserEmail,
+        password: defaultUser.password,
+        userId: undefined,
+        svocId: undefined,
+        pids: defaultUser.pids ?? [],
+        help: false,
+    }
+    const parsedScriptArgs = scriptArgs.reduce((argMap, arg, argIndex, arr) => {
+        const nextArg = arr[argIndex + 1];
+
+        switch(arg) {
+            case '-u':
+            case '--user':
+                argMap.email = nextArg;
+                argMap.password = users[argMap.email]?.password;
+                argMap.userId = users[argMap.email]?.userId;
+                argMap.svocId = users[argMap.email]?.svocId;
+                argMap.pids = users[argMap.email]?.pids ?? [];
+                break;
+            case '-P':
+            case '--password':
+                argMap.password = nextArg;
+                break;
+            case '-i':
+            case '--userId':
+                argMap.userId = nextArg;
+                break;
+            case '-s':
+            case '--svocId':
+                argMap.svocId = nextArg;
+                break;
+            case '-p':
+            case '--pids':
+                argMap.pids.push(nextArg);
+                break;
+            case '-h':
+            case '--help':
+                argMap.help = true;
+                break;
+            default:
+                break;
+        }
+
+        return argMap;
+    }, defaultArgs);
+
+    if (parsedScriptArgs.help) {
+        console.log(`
+Usage: ${thisFileName} [options]
+
+Options:
+    -u, --user <email>      The email of the user to sign in as (default: ${defaultUserEmail}).
+    -P, --password <pass>   The password of the user to sign in as (default: ${defaultUser.password}).
+    -i, --userId <id>       The user ID to use for the VID (default: ${defaultUser.userId}).
+    -s, --svocId <id>       The SVOC ID to use for the VID (default: ${defaultUser.svocId}).
+    -p, --pids <pid>        PIDs to add to the VID (default for ${defaultUserEmail}: ${defaultUser.pids.join(', ')}).
+    -h, --help              Print this message and exit.
+
+If using one of the following emails, then \`password\`, \`userId\`, and \`svocId\` aren't required:
+    ${Object.keys(users).join('\n    ')}
+        `);
+
+        return;
+    }
+
+    return parsedScriptArgs;
+}
+
+async function main(argv = process.argv) {
+    const args = parseArgs(argv);
+
+    if (!args) {
+        return;
+    }
+
+    return await generateVid(args);
 }
 
 
 
-const argsIndexOfJsFile = process.argv.findIndex(cliArg => cliArg?.match(/\.[mc]?[tj]s[x]?$/));
-
-if (argsIndexOfJsFile >= 0 && process.argv[argsIndexOfJsFile]?.match(/vid/i)) {
-    // User ran this script directly, so call `main()`
-    main().then(res => {
-        console.log(res.hdWalletToken || res.token);
+main()
+    .then(res => {
+        console.log(res?.hdWalletToken || res?.token);
+    })
+    .catch(err => {
+        console.error('Could not generate vid. Are you using NodeJS >= v21? Were the arguments passed correct?');
+        console.error('\n\n');
+        console.error(err);
     });
-}
+
 
 
 export {
