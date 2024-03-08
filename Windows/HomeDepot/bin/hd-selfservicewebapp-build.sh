@@ -43,7 +43,9 @@ buildAndDeploySelfServiceWebApp() (
 
     cp "$buildOutputWar" "$posRegisterWar"
 
-    echo "Build successful!"
+    if ! (( $? )); then
+        echo "Build successful!"
+    fi
 )
 
 
