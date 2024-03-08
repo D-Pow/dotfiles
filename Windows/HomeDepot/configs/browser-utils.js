@@ -63,7 +63,7 @@ window.setConfig = function setConfig(configObj, key, val) {
         configObj[key] = val;
     }
 
-    const configArray = Object.entries(config).map(([ name, value ]) => ({ name, value }));
+    const configArray = Object.entries(configObj).map(([ name, value ]) => ({ name, value }));
 
     localStorage.setItem('config', JSON.stringify(configArray));
 
