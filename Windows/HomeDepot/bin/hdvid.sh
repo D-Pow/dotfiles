@@ -175,7 +175,8 @@ hdVid() {
         echo "$vidTokenStatus"
     fi
 
-    declare hdWalletPids='{"p_ids":["P124F797A43BF07A80","P124B5F06900370620","P124DDDB8D29541E40"]}'
+    # declare hdWalletPids='{"p_ids":["P124F797A43BF07A80","P124B5F06900370620","P124DDDB8D29541E40"]}'
+    declare hdWalletPids='{"p_ids":["P125216B44975E7F80","P1252174B07DCE7F80"]}'
     declare hdWalletPidsBase64="$(echo "$hdWalletPids" | base64 | sed -E 's/K$/=/')"
 
     if [[ -n "$hdWalletAuthorized" ]]; then
