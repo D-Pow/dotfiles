@@ -25,6 +25,7 @@ DOCKER_TOKEN=${DOCKER_TOKEN}
 " > "${reposDir}/.env"
 
 alias docker="docker.exe"
+alias cf="cf.exe"
 
 
 loginToDockerRegistry() {
