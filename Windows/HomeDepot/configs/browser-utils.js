@@ -290,6 +290,7 @@ window.getPids = async function getPids(userEmail, {
             ?.retrieveCustomerRewards
             ?.availableRewards
             ?.active
+            ?.filter(reward => reward?.rewardTitle?.match?.(/tier|coupon|xtra/i))
             ?.map(reward => reward.paymentId)
             ?.filter(Boolean);
     }
