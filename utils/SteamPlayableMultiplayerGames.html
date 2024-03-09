@@ -290,13 +290,15 @@
         titleElem.innerText = 'Who can I play with?';
 
         tableGamesMappings.forEach(({ elemId, userGamesMap, tableTitle }) => {
-            const usersWithGames = Object.entries(userGamesMap).reduce((withGames, [ username, games ]) => {
-                if (games.length) {
-                    withGames[username] = games;
-                }
+            const usersWithGames = Object.entries(userGamesMap)
+                .sort(([ usernameA, gamesA ], [ usernameB, gamesB ]) => gamesB.length - gamesA.length)
+                .reduce((withGames, [ username, games ]) => {
+                    if (games.length) {
+                        withGames[username] = games;
+                    }
 
-                return withGames;
-            }, {});
+                    return withGames;
+                }, {});
             const uniqueGameNames = Object.values(usersWithGames).reduce((gameNames, gamesForUser) => {
                 gamesForUser.forEach(gameName => gameNames.add(gameName));
 
@@ -330,7 +332,7 @@
             tableBody.setAttribute('id', `${elemId}-body`);
             tableElem.appendChild(tableBody);
 
-            uniqueGameNames.forEach(gameName => {
+            [ ...uniqueGameNames.keys() ].sort((a, b) => a.localeCompare(b)).forEach(gameName => {
                 const gameOwnershipRow = document.createElement('tr');
                 const gameNameCell = document.createElement('td');
                 gameNameCell.innerText = gameName;
