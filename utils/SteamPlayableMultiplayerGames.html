@@ -51,7 +51,7 @@
     // Steam store docs: https://wiki.teamfortress.com/wiki/User:RJackson/StorefrontAPI
     const steamApiKey = 'SECRET_TOKEN';
     const Urls = {
-        corsProxyUrl: 'https://anime-atsume.herokuapp.com/corsProxy?origin=' + encodeURIComponent('http://api.steampowered.com') + '&url=',
+        corsProxyUrl: 'http://ec2-3-133-135-144.us-east-2.compute.amazonaws.com/corsProxy?origin=' + encodeURIComponent('http://api.steampowered.com') + '&url=',
         getSteamId: 'http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/',
         getSteamProfileInfo: 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/',
         getFriendList: 'http://api.steampowered.com/ISteamUser/GetFriendList/v0001/',
