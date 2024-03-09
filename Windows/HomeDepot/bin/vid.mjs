@@ -12,8 +12,12 @@ function copyToClipboard(str) {
     let copyCommand;
     let pasteCommand;
 
-    if (!osInfo || osInfo.match(/microsoft/i) || osInfo.match(/not recognized as an internal or external command/i)) {
-        // Windows WSL or Command Prompt
+    if (!osInfo || osInfo.match(/not recognized as an internal or external command/i) || osInfo.match(/^MSYS_/i)) {
+        // Windows Command Prompt or Powershell
+        copyCommand = 'C:\Windows\System32\cmd.exe /C clip';
+        pasteCommand = 'C:\Windows\System32\cmd.exe /C powershell Get-Clipboard'
+    } else if (osInfo.match(/microsoft/i)) {
+        // Windows WSL
         copyCommand = '/mnt/c/Windows/System32/cmd.exe /C clip';
         pasteCommand = '/mnt/c/Windows/System32/cmd.exe /C powershell Get-Clipboard';
     } else if (osInfo.match(/^mingw/i)) {
