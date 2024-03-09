@@ -20,10 +20,10 @@ function copyToClipboard(str) {
         // Windows WSL
         copyCommand = '/mnt/c/Windows/System32/cmd.exe /C clip';
         pasteCommand = '/mnt/c/Windows/System32/cmd.exe /C powershell Get-Clipboard';
-    } else if (osInfo.match(/^mingw/i)) {
+    } else if (osInfo.match(/^MINGW/i)) {
         // Windows Git Bash
-        copyCommand = '/c/Windows/System32/cmd /C clip';
-        pasteCommand = '/c/Windows/System32/cmd.exe /C powershell Get-Clipboard';
+        copyCommand = 'clip';
+        pasteCommand = 'powershell Get-Clipboard';
     } else if (osInfo.match(/mac|darwin|osx/i)) {
         // Mac
         copyCommand = 'pbcopy';
