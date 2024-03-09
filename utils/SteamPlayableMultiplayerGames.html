@@ -183,6 +183,7 @@
         const ownedGames = await getOwnedGamesNamesAndIds(userSteamId);
         const ownedMultiplayerGames = await getMultiplayerGames(...ownedGames.map(game => game.appId));
         const ownedMultiplayerGameIds = new Set(ownedMultiplayerGames.map(game => game.steam_appid));
+        const friendGames = {};
 
         multiplayerGamesByUsername[username] = ownedMultiplayerGames;
 
@@ -195,10 +196,14 @@
 
         for (let friend of friendNamesAndIds) {
             const friendOwnedGames = await getOwnedGamesNamesAndIds(friend.steamId);
-            console.log(`All games owned by "${friend.username}":`, friendOwnedGames);
             const friendMultiplayerGames = await getMultiplayerGames(...friendOwnedGames.map(game => game.appId));
 
             multiplayerGamesByUsername[friend.username] = friendMultiplayerGames;
+
+            friendGames[friend.username] = {
+                all: friendOwnedGames,
+                multiplayer: friendMultiplayerGames,
+            };
         }
 
         const gamesPlayableWithEachUser = Object.entries(multiplayerGamesByUsername).reduce((multiplayerGames, [ gamerTag, games ]) => {
@@ -233,16 +238,39 @@
             Object.keys(gameType).forEach(user => gameType[user].sort())
         );
 
-        return gamesPlayableWithEachUser;
+        return {
+            playableGames: gamesPlayableWithEachUser,
+            multiplayerGamesByUsername,
+            userSteamId,
+            ownedGames,
+            ownedMultiplayerGames,
+            friendGames,
+        };
     }
 </script>
 
 <script>
     (async () => {
+        const res = await getMultiplayerGamesPlayableWithFriends('DextreBeDextre');
+        const {
+            playableGames,
+            multiplayerGamesByUsername,
+            userSteamId,
+            ownedGames,
+            ownedMultiplayerGames,
+            friendGames,
+        } = res;
         const {
             sharedMultiplayerGames,
-            remotePlayGames
-        } = await getMultiplayerGamesPlayableWithFriends('DextreBeDextre');
+            remotePlayGames,
+        } = playableGames;
+
+        Object.keys(res).forEach(varName => {
+            window[varName] = res[varName];
+        });
+
+        console.log('Details can be viewed in the folloing vars:', Object.keys(res));
+
         const titleElem = document.getElementById('title');
         const remotePlayGamesTableId = 'remote-play-games';
         const sharedGamesTableId = 'shared-multiplayer-games';
