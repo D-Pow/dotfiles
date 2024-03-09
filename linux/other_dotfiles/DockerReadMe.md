@@ -8,7 +8,7 @@ The correct steps are:
     - `curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -`
 * Add the apt repository PPA
     - Note: The command below is only needed over the command they provided on their website if using an Ubuntu offshoot, like Linux Mint.
-        + Similarly, `xenial` should be replaced with the respective version that the Linux Mint version branched from.
+        + Similarly, `$(lsb_release -cs)` should be replaced with the respective version that the Linux Mint version branched from.
     - `sudo add-apt-repository "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"`
     - If necessary, downgrade Docker's OS version to the previous version.
         + See: [StackOverflow answer to Linux Mint's issue with Docker not supporting Una (i.e. `lsb_release -cs` issue)](https://unix.stackexchange.com/questions/707420/docker-repo-isnt-adding-correctly-on-linux-mint-20-3-una/724222#724222).
