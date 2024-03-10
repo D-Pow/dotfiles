@@ -29,6 +29,7 @@
     "ignored_packages": [
         "Vintage",
     ],
+    "index_files": true,
     // Markdown bullet-point style
     "mde.list_indent_auto_switch_bullet": true,
     "mde.list_indent_bullets": [ "*", "-", "+" ],
