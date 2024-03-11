@@ -239,6 +239,7 @@ async function generateVid({
     svocId,
     pids = [],
 } = {}) {
+    pids = [ ...new Set(pids) ];
     const {
         headers,
         body,
