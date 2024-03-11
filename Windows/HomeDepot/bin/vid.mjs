@@ -4,10 +4,14 @@ import childProcess from 'node:child_process';
 
 
 function copyToClipboard(str) {
-    const osInfo = childProcess
-        .execSync('uname -a')
-        .toString()
-        .replace(/\n/g, '');
+    let osInfo;
+
+    try {
+        osInfo = childProcess
+            .execSync('uname -a', { stdio: 'pipe' })
+            .toString()
+            .replace(/\n/g, '');
+    } catch (unameNotDefinedError) {}
 
     let copyCommand;
     let pasteCommand;
