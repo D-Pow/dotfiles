@@ -267,6 +267,13 @@ async function generateVid({
     });
 
     const { token } = res.body;
+
+    if (!token) {
+        console.error('Failed to generate VID token! Response:', res.body);
+
+        return;
+    }
+
     const authKey = token?.substr(4);
 
     const pidsToAppend = pids.length
