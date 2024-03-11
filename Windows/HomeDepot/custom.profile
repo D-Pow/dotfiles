@@ -4,12 +4,12 @@ declare _bashSubsystemProfile="${_bashSubsystemDir}/custom.profile"
 source "$_bashSubsystemProfile"
 
 
-export ARTIFACTORY_USER="$(jq -r '.user' "${reposDir}/maven-token.json")"
+export ARTIFACTORY_USER="$(jq -r '.user' "${reposDir}/token-maven.json")"
 export ART_USER="${ARTIFACTORY_USER}"
-export ARTIFACTORY_TOKEN="$(jq -r '.access_token' "${reposDir}/maven-token.json")"
+export ARTIFACTORY_TOKEN="$(jq -r '.access_token' "${reposDir}/token-maven.json")"
 export ART_TOKEN="${ARTIFACTORY_TOKEN}"
-export NPM_TOKEN="$(jq -r '.access_token' "${reposDir}/npm-token.json")"
-export DOCKER_TOKEN="$(jq -r '.access_token' "${reposDir}/docker-token.json")"
+export NPM_TOKEN="$(jq -r '.access_token' "${reposDir}/token-npm.json")"
+export DOCKER_TOKEN="$(jq -r '.access_token' "${reposDir}/token-docker.json")"
 
 export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock
 export DOCKER_HOST="unix://${HOME}/.rd/docker.sock"
