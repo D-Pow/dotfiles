@@ -308,7 +308,9 @@ _linkLibraryDirs() {
 
     declare dir=
     for dir in "${dirsToLink[@]}"; do
-        ln -s "$windowsHome/$dir" "$HOME/$dir"
+        if ! [[ -L "$HOME/$dir" ]]; then
+            ln -s "$windowsHome/$dir" "$HOME/$dir"
+        fi
     done
 } && _linkLibraryDirs
 
