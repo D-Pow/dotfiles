@@ -97,6 +97,12 @@ const users = {
         svocId: '041F59C5340DBB670S',
         pids: [ 'P125216B44975E7F80' ],
     },
+    'platformstage@yopmail.com': {
+        password: 'TestMe123!',
+        userId: '0527960EE66BB5BB0U',
+        svocId: '0527960EE66135BB0S',
+        pids: [ 'P12522C5CB16DE7BC0', 'P125217B41470E7F80' ],
+    }
 };
 
 
