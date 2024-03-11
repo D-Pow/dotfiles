@@ -194,18 +194,24 @@ export function runCmd(cmd, {
 
 
 function copyToClipboard(str) {
-    const osInfo = childProcess
-        .execSync('uname -a')
-        .toString()
-        .replace(/\n/g, '');
+    let osInfo;
+
+    try {
+        osInfo = childProcess
+            .execSync('uname -a', { stdio: 'pipe' })
+            .toString()
+            .replace(/\n/g, '');
+    } catch (unameNotDefinedError) {}
 
     let copyCommand;
     let pasteCommand;
+    let isWindows = false;
 
     if (!osInfo || osInfo.match(/not recognized as an internal or external command/i) || osInfo.match(/^MSYS_/i)) {
         // Windows Command Prompt or Powershell
-        copyCommand = 'C:\Windows\System32\cmd.exe /C clip';
-        pasteCommand = 'C:\Windows\System32\cmd.exe /C powershell Get-Clipboard'
+        copyCommand = 'C:\\Windows\\System32\\cmd.exe /C clip';
+        pasteCommand = 'C:\\Windows\\System32\\cmd.exe /C powershell Get-Clipboard'
+        isWindows = true;
     } else if (osInfo.match(/microsoft/i)) {
         // Windows WSL
         copyCommand = '/mnt/c/Windows/System32/cmd.exe /C clip';
@@ -236,7 +242,14 @@ function copyToClipboard(str) {
     }
 
     if (copyCommand) {
-        const commandToExecute = `echo "${str}" | ${copyCommand}`;
+        let echoPipePrefix = `echo -n "${str}" | `;
+
+        if (isWindows) {
+            // Remove quotes since CMD doesn't parse them in a user-friendly way
+            echoPipePrefix = `echo -n ${str} | `
+        }
+
+        const commandToExecute = `${echoPipePrefix} ${copyCommand}`;
 
         return childProcess
             .execSync(commandToExecute)

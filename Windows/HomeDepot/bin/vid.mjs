@@ -52,11 +52,11 @@ function copyToClipboard(str) {
     }
 
     if (copyCommand) {
-        let echoPipePrefix = `echo "${str}" | `;
+        let echoPipePrefix = `echo -n "${str}" | `;
 
         if (isWindows) {
             // Remove quotes since CMD doesn't parse them in a user-friendly way
-            echoPipePrefix = `echo ${str} | `
+            echoPipePrefix = `echo -n ${str} | `
         }
 
         const commandToExecute = `${echoPipePrefix} ${copyCommand}`;
