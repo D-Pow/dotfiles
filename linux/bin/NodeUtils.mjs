@@ -8,6 +8,7 @@ import { createRequire } from 'node:module';
 
 
 const require = createRequire(import.meta.url);
+const thisFile = import.meta.filename;
 
 /**
  * Silence NodeJS warnings for experimental flags.
