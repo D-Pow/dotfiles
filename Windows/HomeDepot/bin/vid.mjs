@@ -265,6 +265,13 @@ async function generateVid({
         ({ userID: userId, svocID: svocId } = body);
     }
 
+    if (!headers?.cookie?.hasOwnProperty('THD_CUSTOMER')) {
+        const defaultUserEmail = Object.keys(users)[0];
+        const tmpRes = await signIn(defaultUserEmail, users[defaultUserEmail].password);
+
+        headers.cookie = tmpRes.headers.cookie;
+    }
+
     const res = await hdFetch('/customer/auth/v1/vid', {
         method: 'POST',
         headers: {
