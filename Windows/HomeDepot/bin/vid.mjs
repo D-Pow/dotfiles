@@ -101,7 +101,12 @@ const users = {
         password: 'TestMe123!',
         userId: '0527960EE66BB5BB0U',
         svocId: '0527960EE66135BB0S',
-        pids: [ 'P12522C5CB16DE7BC0', 'P125217B41470E7F80' ],
+        pids: [
+            'P12522C5CB16DE7BC0', // CC
+            'P125217B5407DE7F80', // Free snack
+            'P125217B41470E7F80', // PXD
+
+        ],
     }
 };
 
