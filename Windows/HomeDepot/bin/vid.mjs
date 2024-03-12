@@ -233,7 +233,14 @@ async function signIn(email, password, {
     }
 
     return {
-        headers: res?.headers || headers,
+        headers: {
+            ...(res?.headers || headers),
+            cookie: {
+                ...res?.headers?.cookie,
+                ...headers?.cookie,
+
+            },
+        },
         body: res?.body,
         persistHeaders: headersToPersistBetweenRequests,
     };
