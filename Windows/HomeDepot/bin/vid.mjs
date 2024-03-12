@@ -259,7 +259,7 @@ async function generateVid({
         headers,
         body,
         persistHeaders,
-    } = await signIn(email, password)
+    } = await signIn(email, password);
 
     if (!userId && !svocId) {
         ({ userID: userId, svocID: svocId } = body);
