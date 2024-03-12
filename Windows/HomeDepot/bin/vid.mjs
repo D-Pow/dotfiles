@@ -120,7 +120,10 @@ function headersToObj(headersEntriesArray) {
                 [newCookieKey]: newCookieVals.join('='),
             };
 
-            headersObj.cookie = cookie;
+            headersObj.cookie = {
+                ...headersObj.cookie,
+                ...cookie,
+            };
 
             return headersObj;
         }
