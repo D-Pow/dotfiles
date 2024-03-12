@@ -236,12 +236,12 @@ async function signIn(email, password, {
 
 
 async function generateVid({
-    email,
+    email = Object.keys(users)[0],
     password,
     userId,
     svocId,
     pids = [],
-} = {}) {
+} = users[Object.keys(users)[0]]) {
     pids = [ ...new Set(pids) ];
     const {
         headers,
