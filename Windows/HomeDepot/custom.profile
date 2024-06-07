@@ -24,8 +24,13 @@ DOCKER_USER=${ARTIFACTORY_USER}
 DOCKER_TOKEN=${DOCKER_TOKEN}
 " > "${reposDir}/.env"
 
+alias sqlite3="/mnt/c/sqlite/sqlite3.exe"
 alias docker="docker.exe"
 alias cf="cf.exe"
+# alias gcloud="/mnt/c/Program\ Files\ \(x86\)/Google/Cloud\ SDK/google-cloud-sdk/bin/gcloud"
+alias gcloud="cmd gcloud.cmd"
+alias gcloud-refresh='gcloud auth application-default login'
+alias kubectl="/mnt/c/Program\ Files\ \(x86\)/Google/Cloud\ SDK/google-cloud-sdk/bin/kubectl.exe"
 
 
 loginToDockerRegistry() {
