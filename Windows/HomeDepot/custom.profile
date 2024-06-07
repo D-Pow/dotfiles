@@ -214,7 +214,7 @@ watchJavaProcs() {
 hdmvn() {
     # Not sure why, but the CMS and Computer Vision sub-projects always give me trouble when installing, so ignore them all.
     # !:CMSDataIntegration
-    declare specificProjectsToBuildFilter="!:computer-vision-libs-parent,!:cv-client,!:cv-service,!:cv-pos-client,!:cv-contracts,!:computer-vision-mock-service,!:CMSWeb,!:CMSRecognitionIntegration,!:CMS_Data_Access,!:checkout-applications,!:register-components,!:OCBAdmin,!:store-account-management-orchestration"
+    declare specificProjectsToBuildFilter="!:computer-vision-libs-parent,!:cv-client,!:cv-service,!:cv-pos-client,!:cv-contracts,!:computer-vision-mock-service,!:CMSWeb,!:CMSRecognitionIntegration,!:CMS_Data_Access,!:checkout-applications,!:register-components,!:OCBAdmin,!:store-account-management-orchestration,!:ItemService,!:store-config,!:check-endorsement,!:ocb_remediation,!:ocb-remediation"
 
     declare mvnArgs=("$@")
     declare mvnArgsHasProjectsFlag=
@@ -238,13 +238,12 @@ hdmvn() {
         mvnArgs+=(--projects "$specificProjectsToBuildFilter")
     fi
 
-    # Default to Windows' `mvn`
-    mvn -Djacoco.skip=true "${mvnArgs[@]}"
+    mvn -Dmaven.test.skip=true -DskipTests -Djacoco.skip=true "${mvnArgs[@]}"
 }
 
 hdmvnall() {
     hdfixpoms
-    hdmvn clean install -DskipTests -Djacoco.skip=true -rf ':token-provider-spi'
+    hdmvn clean install -rf ":${1:-token-provider-spi}"
 }
 
 hdfixpoms() {
@@ -257,15 +256,21 @@ hdfixpoms() {
     for pomXml in "${pomXmlFiles[@]}"; do
         # Replace "(2024.12.34,${project.version}]" with "${project.version}"
         # in all `<version>` and `<my.dependency.version>` entries
-        sed -Ei 's/(\(|\[)[0-9]{4}\.[0-9]+\.?[0-9]*, *(\$\{project.version\})\]|\)/\2/g' "$pomXml"
+        sed -Ei 's/(\(|\[)+[0-9]{4}\.[0-9]+\.?[0-9]*, *(\$\{project.version\})(\]|\))+/\2/g' "$pomXml"
     done
 
     # Comment out cms-data-integration since it causes issues in IntelliJ.
     # Ensure it's only commented out once; for some reason `  <module>` doesn't work when trying to check if `<!-- <module>` is the
     # text or not, so we must do a post-processing extra-comment-removal series of substitutions.
     sed -Ei 's|<module>cms-data-integration</module>|<!-- <module>cms-data-integration</module> -->|; s/<!-- <!--/<!--/; s/--> -->/-->/' ./apps/pom.xml
+    # `masker-service` is not versioned the same as everything else, and rarely changes, so choose current latest
+    sed -Ei 's|<dependency.masker.service.version>\$\{project.version\}</dependency.masker.service.version>|<dependency.masker.service.version>2024.7.81</dependency.masker.service.version>|' ./apps/customer-lookup-service/pom.xml
 
     git update-index --assume-unchanged ${pomXmlFiles[@]}
+
+    if (( $? )); then
+        git update-index --assume-unchanged $(gitGetModifiedContaining 'pom.xml')
+    fi
 }
 
 hdStoreCheckoutComponentsTestCoverage() (
