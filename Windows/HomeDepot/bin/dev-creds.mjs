@@ -1,11 +1,11 @@
-#!/usr/bin/env -S node --no-warnings --experimental-top-level-await --experimental-json-modules --experimental-import-meta-resolve --experimental-specifier-resolution=node
+#!/usr/bin/env -S node --no-warnings --experimental-top-level-await --experimental-json-modules
 
 import path from 'node:path';
 
-import { log, importGlobalModule } from '../../../linux/bin/NodeUtils';
+import { log, importGlobalModule } from '../../../linux/bin/NodeUtils.mjs';
 
 
-await importGlobalModule('isomorphic-fetch');
+// await importGlobalModule('isomorphic-fetch');
 
 
 const creds = {
