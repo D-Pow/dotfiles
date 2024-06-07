@@ -58,7 +58,11 @@ window.getConfig = function getConfig(keyRegex, valRegex) {
     return config;
 };
 
-window.setConfig = function setConfig(configObj, key, val) {
+window.setConfig = function setConfig(key, val, configObj) {
+    if (!configObj) {
+        configObj = getConfig();
+    }
+
     if (key) {
         configObj[key] = val;
     }
@@ -176,10 +180,9 @@ window.searchArtifactory = async function searchArtifactory(pkgRegex = /.*/) {
 };
 
 
-window.getPids = async function getPids(userEmail, {
+window.getUser = function getUser(userEmail, {
     svocId,
     userId,
-    pidsOnly = false,
 } = {}) {
     /* QA test user mod page (use SVOC ID): https://stage.customerprograms-np.homedepot.com/customers/0420509994FAB2280S/pro-xtra */
     const users = {
@@ -203,6 +206,11 @@ window.getPids = async function getPids(userEmail, {
             userId: '041F59C53417BB670U',
             svocId: '041F59C5340DBB670S',
         },
+        'platformstage@yopmail.com': {
+            password: 'TestMe123!',
+            userId: '0527960EE66BB5BB0U',
+            svocId: '0527960EE66135BB0S',
+        }
     };
     const defaultUserEmail = 'b2btestperksstaguser216@mailinator.com';
     const user = userEmail in users
@@ -211,6 +219,17 @@ window.getPids = async function getPids(userEmail, {
             ? { svocId, userId }
             : users[defaultUserEmail];
 
+    return user;
+};
+
+window.getPids = async function getPids(userEmail, {
+    svocId,
+    userId,
+    pidsOnly = false,
+} = {}) {
+    const user = getUser(userEmail, { svocId, userId });
+
+    /* maybe try https://hd-qa74.homedepotdev.com like vid generation uses? */
     const res = await fetch('https://stage.customerprograms-np.homedepot.com/loyaltyorch/graphql', {
         method: 'POST',
         headers: {
@@ -283,19 +302,46 @@ window.getPids = async function getPids(userEmail, {
         }),
     });
     const json = await res.json();
-
-    if (pidsOnly) {
-        return json
+    const pids = json
             ?.data
             ?.retrieveCustomerRewards
             ?.availableRewards
             ?.active
-            ?.filter(reward => reward?.rewardTitle?.match?.(/tier|coupon|xtra/i))
-            ?.map(reward => reward.paymentId)
-            ?.filter(Boolean);
+            ?.map(({ rewardTitle, paymentId }) => ({ rewardTitle, paymentId }))
+            ?.sort((a, b) => a.rewardTitle?.localeCompare(b.rewardTitle))
+            ?.filter(({ paymentId }) => Boolean(paymentId));
+
+    if (pidsOnly) {
+        return pids?.filter(reward => reward?.rewardTitle?.match?.(/tier|coupon|xtra|pxd/i));
     }
 
-    return json;
+    return pids;
+};
+
+window.getCards = async function getCards(userEmail, {
+    svocId,
+    userId,
+    hdPassOnly = false,
+} = {}) {
+    const user = getUser(userEmail, { svocId, userId });
+
+    const res = await fetch(`https://hd-qa74.homedepotdev.com/b2b/user/account/${user.userId}/customer/${user.svocId}/payment/retrieve?typecd=cc&ps=1000&pn=1&sb=lastedited&asc=false`, {
+        headers: {
+            Accept: 'application/json',
+            channelid: '1',
+        },
+    });
+    const json = await res.json();
+
+    let cards = json
+        ?.paymentCards
+        ?.paymentCard;
+
+    if (hdPassOnly) {
+        cards = cards?.filter(({ hdWalletAuthorized }) => hdWalletAuthorized?.match(/y/i));
+    }
+
+    return cards;
 };
 
 })();
