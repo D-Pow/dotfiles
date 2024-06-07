@@ -287,6 +287,7 @@ async function generateVid({
     userId,
     svocId,
     pids = [],
+    longVid,
 } = users[Object.keys(users)[0]]) {
     pids = [ ...new Set(pids) ];
     const {
@@ -310,7 +311,8 @@ async function generateVid({
         headers.cookie = tmpRes.headers.cookie;
     }
 
-    const res = await hdFetch('/customer/auth/v1/vid', {
+    const queryForShortVids = longVid ? '' : `?pattern=v2vid`; /* userId=${userId}&svocId=${svocId}& */
+    const res = await hdFetch(`/customer/auth/v1/vid${queryForShortVids}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -324,6 +326,20 @@ async function generateVid({
             userId,
             svocId,
         }),
+    });
+
+    const payments =
+    // await
+    getPayments({
+        userId,
+        svocId,
+        headers: {
+            ...persistHeaders,
+            cookie: `THD_CUSTOMER=${headers?.cookie?.THD_CUSTOMER}`,
+            // Cookie: {
+            //     THD_CUSTOMER: headers?.cookie?.THD_CUSTOMER,
+            // },
+        },
     });
 
     const { token } = res.body;
@@ -348,19 +364,78 @@ async function generateVid({
         authKey,
         pidsBase64,
         hdWalletToken,
+        payments,
+    };
+}
+
+
+async function getPayments({
+    userId,
+    svocId,
+    headers,
+}) {
+    let typeCd = 'cc';
+    const resCreditCards = await hdFetch(`/b2b/user/account/${userId}/customer/${svocId}/payment/retrieve?typecd=${typeCd}&ps=100&pn=1&sb=lastedited&asc=false`, {
+        headers: {
+            'channelId': '1',
+            ...headers,
+        },
+    });
+    const creditCards = resCreditCards.body.paymentCards.paymentCard
+        ?.filter(({ cardStatus, hdWalletAuthorized }) => hdWalletAuthorized?.match(/y/i) && cardStatus?.match(/(?<!in)Active/i))
+        ?.map(({ cardNickName, paymentId, paymentType, isDefault }) => ({ cardNickName, paymentId, paymentType, isDefault }));
+    const primaryCreditCard = creditCards?.find(({ isDefault }) => isDefault) || creditCards?.[0];
+console.log(resCreditCards.body.paymentCards.paymentCard?.filter(({ paymentId }) => paymentId?.match(/P124F797A7AEE07A80|P124F797AB98607A80/i)))
+
+    typeCd = 'pgc';
+    const resPxds = await hdFetch(`/b2b/user/account/${userId}/customer/${svocId}/payment/retrieve?typecd=${typeCd}&ps=100&pn=1&sb=lastedited&asc=false`, {
+        headers: {
+            'channelId': '1',
+            ...headers,
+        },
+    });
+    const pxds = resPxds.body.paymentCards.paymentCard
+        ?.filter(({ gcBalance, rewardExpDate, perkTypeStatus }) => (
+            Number(gcBalance) > 0
+            && new Date() < new Date(rewardExpDate)
+            && perkTypeStatus?.match(/(?<!in)Active/i)
+        ))
+        ?.map(({ cardNickName, paymentId, paymentType, gcBalance }) => ({ cardNickName, paymentId, paymentType, gcBalance }));
+
+    // TODO - Could remove query param to get both PXDs and coupons
+    const resCoupons = await hdFetch(`/b2b/user/account/${userId}/customer/${svocId}/perks/info?offerType=offer`, {
+        headers: {
+            'channelId': '1',
+            ...headers,
+        },
+    });
+    const coupons = resCoupons.body.nonProgramPerks
+        ?.filter(({ perkStatus, perkType, expirationTime }) => (
+            perkStatus?.match(/(?<!in)Active/i)
+            && new Date() < new Date(expirationTime)
+            && !perkType?.match(/TOOL_RENTAL/i)
+        ))
+        ?.map(({ perkTitle, paymentId, perkType, availableBalance }) => ({ perkTitle, paymentId, perkType, availableBalance }));
+
+console.log(primaryCreditCard, pxds, coupons);
+
+    return {
+        primaryCreditCard,
+        creditCards,
     };
 }
 
 
 
 function parseArgs(args = process.argv) {
-    const thisFileName = import.meta.url.match(/(?<=\/)[^\/]+$/)?.[0];
+    const thisFileName = import.meta.url.match(/(?<=[\/\\])[^\/]+$/)?.[0];
     const argsIndexOfJsFile = process.argv.findIndex(cliArg => cliArg?.match(/\.[mc]?[tj]s[x]?$/));
-
-    if (!(
+    const isMain = (
         argsIndexOfJsFile >= 0
         && process.argv[argsIndexOfJsFile]?.includes(thisFileName)
-    )) {
+    );
+
+    if (!isMain) {
         // User didn't run this script directly, so exit without calling `main()`
         return;
     }
@@ -374,6 +449,7 @@ function parseArgs(args = process.argv) {
         userId: undefined,
         svocId: undefined,
         pids: defaultUser.pids ?? [],
+        longVid: false,
         copyToClipboard: false,
         help: false,
     }
@@ -384,9 +460,9 @@ function parseArgs(args = process.argv) {
             case '-u':
             case '--user':
                 argMap.email = nextArg;
-                argMap.password = users[argMap.email]?.password;
-                argMap.userId = users[argMap.email]?.userId;
-                argMap.svocId = users[argMap.email]?.svocId;
+                argMap.password = argMap.password ?? users[argMap.email]?.password;
+                argMap.userId = argMap.userId ?? users[argMap.email]?.userId;
+                argMap.svocId = argMap.svocId ?? users[argMap.email]?.svocId;
                 argMap.pids = users[argMap.email]?.pids ?? [];
                 break;
             case '-P':
@@ -404,6 +480,10 @@ function parseArgs(args = process.argv) {
             case '-p':
             case '--pids':
                 argMap.pids.push(nextArg);
+                break;
+            case '-l':
+            case '--long':
+                argMap.longVid = true;
                 break;
             case '-c':
             case '--copy':
@@ -430,6 +510,7 @@ Options:
     -i, --userId <id>       The user ID to use for the VID (default: ${defaultUser.userId}).
     -s, --svocId <id>       The SVOC ID to use for the VID (default: ${defaultUser.svocId}).
     -p, --pids <pid>        PIDs to add to the VID (default for ${defaultUserEmail}: ${defaultUser.pids.join(', ')}).
+    -l, --long              Generate long, v1 VID instead of short, v2 VID.
     -c, --copy              Copy the resulting VID to the clipboard.
     -h, --help              Print this message and exit.
 
@@ -469,7 +550,8 @@ main()
         console.error('Could not generate vid. Are you using NodeJS >= v21? Were the arguments passed correct?');
         console.error('\n\n');
         console.error(err);
-    });
+    })
+    .finally(() => process.exit());
 
 
 
