@@ -77,7 +77,16 @@ const users = {
         password: 'Test54321',
         userId: '042050999502B2280U',
         svocId: '0420509994FAB2280S',
-        pids: [ 'P125216B44975E7F80', 'P12521CD063DAE7F80', 'P124B5F12A9F970620' ],
+        pids: [
+            // 'P1352A745A584B8780', // CC - 9702 - Local CLS, CustomerInfoV3ResponseTransformer.java line 352, spoof hdWalletAuthorized to always true
+            // "P1352A7DD71E5B8780", // CC
+
+            // 'P124F797A7AEE07A80', // Pro Allowance CC?
+            'P124F797AB98607A80',
+
+            // 'P12529749F7A49CF60', // Coupon: $1 St9307 HD Wallet 1% Off
+            // 'P1252974C39EB9CF60', // Coupon: $1 St9307 HD Wallet 1% Off
+        ],
     },
     'b2btestperksstaguser209@mailinator.com': {
         password: 'Test1234',
@@ -89,25 +98,50 @@ const users = {
         password: 'Test@1234',
         userId: '041FD225FD3F55380U',
         svocId: '041FD225FD33D5380S',
-        pids: [ 'P125216B44975E7F80' ],
+        pids: [
+            // 'P125216B44975E7F80',
+        ],
     },
     'b2btest50@gmail.com': {
         password: 'testqa01',
         userId: '041F59C53417BB670U',
         svocId: '041F59C5340DBB670S',
-        pids: [ 'P125216B44975E7F80' ],
+        pids: [
+            'P125216B44975E7F80',
+        ],
     },
     'platformstage@yopmail.com': {
         password: 'TestMe123!',
         userId: '0527960EE66BB5BB0U',
-        svocId: '0527960EE66135BB0S',
+        svocIdAdmin: '0527960EE66135BB0S',
+        svocIdRunner: '0420509994FAB2280S',
+        get svocId() {
+            return this.svocIdRunner;
+        },
         pids: [
-            'P12522C5CB16DE7BC0', // CC
-            'P125217B5407DE7F80', // Free snack
-            'P125217B41470E7F80', // PXD
-
+            // 'P12522C5CB16DE7BC0', // CC
+            // 'P125217B5407DE7F80', // Free snack
+            // 'P125217B41470E7F80', // PXD
+            // "P13528CF6B85F78E00", // PXD
+            // 'P125217B38B3FE7F80',
+            // 'P12526A4F62F4087C0', // $1 off
+            // "P125217B658C9E7F80", // $5
+            // "P125217B658C9E7F80"
+            // "P12525F8BB08B087C0", // $5
         ],
-    }
+    },
+    'platformstagerunner@yopmail.com': {
+        password: 'TestMe123!',
+        userId: '052941539C1B2DE60U',
+        svocId: '052941539C102DE60S',
+        pids: [],
+    },
+    'platformstage3@yopmail.com': {
+        password: 'TestMe123!',
+        userId: '05279610D85A35BB0U',
+        svocId: '05279610D850B5BB0S',
+        pids: [],
+    },
 };
 
 
@@ -263,6 +297,10 @@ async function generateVid({
 
     if (!userId && !svocId) {
         ({ userID: userId, svocID: svocId } = body);
+
+        if (!userId && !svocId && email in users) {
+            ({ userID: userId, svocID: svocId } = users[email]);
+        }
     }
 
     if (!headers?.cookie?.hasOwnProperty('THD_CUSTOMER')) {
