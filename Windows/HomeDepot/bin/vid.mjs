@@ -70,15 +70,15 @@ const users = {
         password: 'TestMe123!',
         userId: '0527960EE66BB5BB0U',
         svocIdAdmin: '0527960EE66135BB0S',
-        svocIdRunner: '0420509994FAB2280S',
+        svocIdPurchaser: '0420509994FAB2280S',
         get svocId() {
-            return this.svocIdRunner;
+            return this.svocIdAdmin;
         },
         pids: [
             // 'P12522C5CB16DE7BC0', // CC
-            // 'P125217B5407DE7F80', // Free snack
             // 'P125217B41470E7F80', // PXD
             // "P13528CF6B85F78E00", // PXD
+            // 'P125217B5407DE7F80', // Free snack
             // 'P125217B38B3FE7F80',
             // 'P12526A4F62F4087C0', // $1 off
             // "P125217B658C9E7F80", // $5
