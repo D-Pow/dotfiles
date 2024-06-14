@@ -102,7 +102,7 @@ const users = {
 
 
 
-function headersToObj(headersEntriesArray) {
+export function headersToObj(headersEntriesArray) {
     return headersEntriesArray.reduce((headersObj, [ key, val ]) => {
         if (key.match(/(set-)?cookie/i)) { // or Headers.prototype.getSetCookie()
             const [ newCookieKeyVal, ...newCookieConfigs ] = val.split(';');
@@ -138,7 +138,7 @@ function headersToObj(headersEntriesArray) {
 }
 
 
-async function hdFetch(url, opts, {
+export async function hdFetch(url, opts, {
     domain = 'https://hd-qa74.homedepotdev.com',
 } = {}) {
     const cookies = opts?.headers?.Cookie;
@@ -175,7 +175,7 @@ async function hdFetch(url, opts, {
 }
 
 
-async function getHmacToken() {
+export async function getHmacToken() {
     return await hdFetch('/customer/account/v1/auth/getauthtoken', {
         headers: {
             timestamp: hmacCreationTime,
@@ -185,7 +185,7 @@ async function getHmacToken() {
 }
 
 
-async function signIn(email, password, {
+export async function signIn(email, password, {
     logErrors = false,
 } = {}) {
     password = password ?? users[email]?.password;
@@ -237,7 +237,7 @@ async function signIn(email, password, {
 }
 
 
-async function generateVid({
+export async function generateVid({
     email = Object.keys(users)[0],
     password,
     userId,
@@ -363,7 +363,7 @@ async function generateVid({
 }
 
 
-async function getPayments({
+export async function getPayments({
     userId,
     svocId,
     headers,
@@ -565,14 +565,3 @@ main()
         console.error(err);
     })
     .finally(() => process.exit());
-
-
-
-export {
-    headersToObj,
-    hdFetch,
-    getHmacToken,
-    signIn,
-    generateVid,
-    getPayments,
-};
