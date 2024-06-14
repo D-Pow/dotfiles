@@ -92,6 +92,7 @@ const users = {
         password: 'Test54321',
         userId: '042050999502B2280U',
         svocId: '0420509994FAB2280S',
+        phoneNumber: '4346468756',
         pids: [
             // 'P1352A745A584B8780', // CC - 9702 - Local CLS, CustomerInfoV3ResponseTransformer.java line 352, spoof hdWalletAuthorized to always true
             // "P1352A7DD71E5B8780", // CC
@@ -123,6 +124,24 @@ const users = {
         svocId: '041F59C5340DBB670S',
         pids: [
             'P125216B44975E7F80',
+        ],
+    },
+    // admin
+    'otpoverridetest1294@yopmail.com': {
+        password: 'TestMe123',
+        userId: '0529D925EE6C37A60U',
+        svocId: '0529D925EE6037A60S',
+        pids: [
+            //
+        ],
+    },
+    // purchaser
+    'otpoverridetest1295@yopmail.com': {
+        password: 'TestMe123',
+        userId: '0529D9271EB6B7A60U',
+        svocId: '0529D925EE6037A60S',
+        pids: [
+            //
         ],
     },
     'platformstage@yopmail.com': {
