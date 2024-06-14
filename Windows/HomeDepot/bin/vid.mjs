@@ -68,6 +68,21 @@ function copyToClipboard(str) {
     }
 }
 
+async function cliPrompt(query) {
+    const readline = await import('node:readline/promises');
+    // Can only have one interface per prompt, otherwise input will be duplicated on subsequent prompts.
+    // See: https://stackoverflow.com/questions/48494624/node-readline-interface-repeating-each-character-multiplicatively
+    const terminal = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+    const cliInput = await terminal.question(query);
+
+    terminal.close();
+
+    return cliInput;
+}
+
 
 
 const hmacCreationTime = Date.now();
@@ -287,6 +302,7 @@ async function generateVid({
     userId,
     svocId,
     pids = [],
+    selectPids,
     longVid,
 } = users[Object.keys(users)[0]]) {
     pids = [ ...new Set(pids) ];
@@ -328,19 +344,56 @@ async function generateVid({
         }),
     });
 
-    const payments =
-    // await
-    getPayments({
-        userId,
-        svocId,
-        headers: {
-            ...persistHeaders,
-            cookie: `THD_CUSTOMER=${headers?.cookie?.THD_CUSTOMER}`,
-            // Cookie: {
-            //     THD_CUSTOMER: headers?.cookie?.THD_CUSTOMER,
-            // },
-        },
-    });
+    let payments;
+
+    if (selectPids) {
+        payments = await getPayments({
+            userId,
+            svocId,
+            headers: {
+                ...persistHeaders,
+                cookie: `THD_CUSTOMER=${headers?.cookie?.THD_CUSTOMER}`,
+                // Cookie: {
+                //     THD_CUSTOMER: headers?.cookie?.THD_CUSTOMER,
+                // },
+            },
+        });
+
+        const pidPrompts = [
+            [ payments.creditCards, 'credit card', false ],
+            [ payments.pxds, 'PXD', false ],
+            [ payments.coupons, 'coupons (comma-separated)', true ],
+        ]
+            .filter(([ arr ]) => arr?.length);
+
+        for (const [ pidsArray, prompt, multi ] of pidPrompts) {
+            // Maintain order via Map
+            const pidsMap = new Map(pidsArray.map(({ paymentId, cardNickName, gcBalance, perkTitle, availableBalance }, i) => [
+                i,
+                {
+                    cardNickName: cardNickName ?? perkTitle, // perkTitle only used for coupons
+                    paymentId,
+                    availableBalance,
+                },
+            ]));
+            const pidsNames = [ ...pidsMap.values() ].map(({ cardNickName }) => cardNickName);
+            const chosenPidIndex = await cliPrompt(`Choose ${prompt}:\n${pidsNames.map((cardNickName, i) => `\t${i}: ${cardNickName}`).join('\n')}\n > `);
+
+            if (chosenPidIndex !== '-') {
+                if (multi) {
+                    const chosenPids = chosenPidIndex
+                        .split(',')
+                        .map(chosenPid => pidsMap.get(Number(chosenPid))?.paymentId);
+
+                    pids.push(...chosenPids);
+                } else {
+                    const chosenPid = pidsMap.get(Number(chosenPidIndex));
+
+                    pids.push(chosenPid.paymentId);
+                }
+            }
+        }
+    }
 
     const { token } = res.body;
 
@@ -382,10 +435,21 @@ async function getPayments({
         },
     });
     const creditCards = resCreditCards.body.paymentCards.paymentCard
-        ?.filter(({ cardStatus, hdWalletAuthorized }) => hdWalletAuthorized?.match(/y/i) && cardStatus?.match(/(?<!in)Active/i))
-        ?.map(({ cardNickName, paymentId, paymentType, isDefault }) => ({ cardNickName, paymentId, paymentType, isDefault }));
-    const primaryCreditCard = creditCards?.find(({ isDefault }) => isDefault) || creditCards?.[0];
-console.log(resCreditCards.body.paymentCards.paymentCard?.filter(({ paymentId }) => paymentId?.match(/P124F797A7AEE07A80|P124F797AB98607A80/i)))
+        ?.filter(({ cardStatus, hdWalletAuthorized, t2cPrimary }) => (
+            cardStatus?.match(/(?<!in)Active/i)
+            && (
+                hdWalletAuthorized?.match(/y/i)
+                || t2cPrimary
+            )
+        ))
+        ?.map(({ cardNickName, paymentId, paymentType, hdWalletAuthorized, t2cPrimary, isDefault }) => ({ cardNickName, paymentId, paymentType, hdWalletAuthorized, t2cPrimary, isDefault }));
+    // Get primary CC and move it to first in the array
+    const primaryCreditCardIndex = creditCards?.findIndex(({ isDefault }) => isDefault) || 0;
+    const primaryCreditCard = creditCards?.splice(primaryCreditCardIndex, 1)?.[0];
+
+    if (primaryCreditCard) {
+        creditCards?.splice(0, 0, primaryCreditCard);
+    }
 
     typeCd = 'pgc';
     const resPxds = await hdFetch(`/b2b/user/account/${userId}/customer/${svocId}/payment/retrieve?typecd=${typeCd}&ps=100&pn=1&sb=lastedited&asc=false`, {
@@ -417,11 +481,11 @@ console.log(resCreditCards.body.paymentCards.paymentCard?.filter(({ paymentId })
         ))
         ?.map(({ perkTitle, paymentId, perkType, availableBalance }) => ({ perkTitle, paymentId, perkType, availableBalance }));
 
-console.log(primaryCreditCard, pxds, coupons);
-
     return {
         primaryCreditCard,
         creditCards,
+        pxds,
+        coupons,
     };
 }
 
@@ -449,6 +513,7 @@ function parseArgs(args = process.argv) {
         userId: undefined,
         svocId: undefined,
         pids: defaultUser.pids ?? [],
+        selectPids: false,
         longVid: false,
         copyToClipboard: false,
         help: false,
@@ -481,6 +546,11 @@ function parseArgs(args = process.argv) {
             case '--pids':
                 argMap.pids.push(nextArg);
                 break;
+            case '-S':
+            case '--select':
+                argMap.selectPids = true;
+                argMap.pids = [];
+                break;
             case '-l':
             case '--long':
                 argMap.longVid = true;
@@ -510,6 +580,7 @@ Options:
     -i, --userId <id>       The user ID to use for the VID (default: ${defaultUser.userId}).
     -s, --svocId <id>       The SVOC ID to use for the VID (default: ${defaultUser.svocId}).
     -p, --pids <pid>        PIDs to add to the VID (default for ${defaultUserEmail}: ${defaultUser.pids.join(', ')}).
+    -S, --select            Prompt for PIDs to add (type "-" without quotes to not select a PID from the prompt).
     -l, --long              Generate long, v1 VID instead of short, v2 VID.
     -c, --copy              Copy the resulting VID to the clipboard.
     -h, --help              Print this message and exit.
