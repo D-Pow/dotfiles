@@ -432,19 +432,8 @@ async function getPayments({
 
 
 
-function parseArgs(args = process.argv) {
-    const thisFileName = import.meta.url.match(/(?<=[\/\\])[^\/]+$/)?.[0];
+function parseArgs(args = process.argv, scriptName = import.meta.url.match(/(?<=[\/\\])[^\/]+$/)?.[0]) {
     const argsIndexOfJsFile = process.argv.findIndex(cliArg => cliArg?.match(/\.[mc]?[tj]s[x]?$/));
-    const isMain = (
-        argsIndexOfJsFile >= 0
-        && process.argv[argsIndexOfJsFile]?.includes(thisFileName)
-    );
-
-    if (!isMain) {
-        // User didn't run this script directly, so exit without calling `main()`
-        return;
-    }
-
     const scriptArgs = args.slice(argsIndexOfJsFile + 1);
     const defaultUserEmail = Object.entries(users)[0][0];
     const defaultUser = users[defaultUserEmail];
@@ -513,7 +502,7 @@ function parseArgs(args = process.argv) {
 
     if (parsedScriptArgs.help) {
         console.log(`
-Usage: ${thisFileName} [options]
+Usage: ${scriptName} [options]
 
 Options:
     -u, --user <email>      The email of the user to sign in as (default: ${defaultUserEmail}).
@@ -537,6 +526,18 @@ If using one of the following emails, then \`password\`, \`userId\`, and \`svocI
 }
 
 async function main(argv = process.argv) {
+    const thisFileName = import.meta.url.match(/(?<=[\/\\])[^\/]+$/)?.[0];
+    const argsIndexOfJsFile = process.argv.findIndex(cliArg => cliArg?.match(/\.[mc]?[tj]s[x]?$/));
+    const isMain = (
+        argsIndexOfJsFile >= 0
+        && process.argv[argsIndexOfJsFile]?.includes(thisFileName)
+    );
+
+    if (!isMain) {
+        // User didn't run this script directly, so exit without calling `main()`
+        return;
+    }
+
     const args = parseArgs(argv);
 
     if (!args) {
