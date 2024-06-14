@@ -241,6 +241,8 @@ hdmvn() {
     mvn -Dmaven.test.skip=true -DskipTests -Djacoco.skip=true "${mvnArgs[@]}"
 }
 
+alias mvnt="mvn -Dmaven.test.skip=true -DskipTests -Djacoco.skip=true"
+
 hdmvnall() {
     hdfixpoms
     hdmvn clean install -rf ":${1:-token-provider-spi}"
