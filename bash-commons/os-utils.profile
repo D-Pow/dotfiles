@@ -1,3 +1,87 @@
+# Make ** recursive, i.e. dir/**/*.txt will find all .txt files between
+# /dir/(0-infinity subdirs)/*.txt instead of it only searching dir/(subdir)/*.txt
+# See: https://unix.stackexchange.com/questions/49913/recursive-glob/49917#49917
+shopt -s globstar
+# Activate advanced glob patterns (often enabled by default but set it here just in case).
+#   ?(pattern-list) - Matches zero or one occurrence of the given patterns.
+#   *(pattern-list) - Matches zero or more occurrences of the given patterns.
+#   +(pattern-list) - Matches one or more occurrences of the given patterns.
+#   @(pattern-list) - Matches one of the given patterns.
+#   !(pattern-list) - Matches anything except one of the given patterns.
+# See: https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Pattern-Matching
+shopt -s extglob
+# Allow both uppercase and lowercase files/directories to be co-located together
+# i.e. [ A.md, b.md, B.txt ] will retain that order instead of [ A.md, B.txt, b.md ]
+shopt -u globasciiranges
+
+# Jobs = Executions that are sent to the background, including running and paused processes.
+# Apparently, `job` control isn't enabled by default (WTF???).
+# This allows `(fg|bg) $jobId`, etc. job-related commands to work.`
+# See: https://stackoverflow.com/questions/11821378/what-does-bashno-job-control-in-this-shell-mean/46829294#46829294
+set -m
+
+if [[ -z "$SHELL" ]] || [[ "$SHELL" =~ ^/bin/(bash|sh) ]]; then
+    # If `$0` is empty or matches `/bin/(bash|sh)`, then get the "real" SHELL from the running process.
+    # This helps for e.g. Mac where the default shell is determined by a system setting rather than
+    # `ps -p $$ -o comm=`
+    #   ProcessStatus -Pid $$-this-shell-pid -Only-key-prefix-case-insensitive comm[and]=[remove key prefix]
+    #       See: https://unix.stackexchange.com/questions/9501/how-to-test-what-shell-i-am-using-in-a-terminal/9504#9504
+    SHELL="$(which "$(ps -p $$ -o comm= | sed -E 's/^-//')")"
+fi
+
+export SHELL
+
+# Sort with dotfiles/directories listed before the rest.
+# LC_COLLATE - Only affects collation (grouping), e.g. sorting upper/lower-case before/after each other.
+# LANG - Language to use for output sorting, time/calendar/phone number/address formats, etc.
+# LC_CTYPE - Defines the character set to use/recognize without affecting the language.
+# LC_ALL - Overrides Everything.
+#
+# Setting it to `C` means "C-style character comparison" == symbols before uppercase before lowercase.
+# This means dotfiles or those starting with symbols will come before numbers which come before letters.
+#
+# See:
+#   http://teaching.idallen.org/net2003/06w/notes/character_sets.txt
+#   https://superuser.com/questions/448291/how-can-i-make-ls-show-dotfiles-first
+#   https://unix.stackexchange.com/questions/75341/specify-the-sort-order-with-lc-collate-so-lowercase-is-before-uppercase
+#   https://stackoverflow.com/questions/30479607/explain-the-effects-of-export-lang-lc-ctype-and-lc-all
+#   https://stackoverflow.com/questions/3222810/sorting-on-the-last-field-of-a-line/15677850#15677850
+#
+# If getting errors (esp on WSL where `en_US.UTF-8` isn't defined), try:
+#   sudo locale-gen en_US.UTF-8
+#   sudo update-locale LANG=en_US.UTF-8
+# See:
+#   - https://github.com/microsoft/WSL/issues/3569
+#   - https://askubuntu.com/questions/599808/cannot-set-lc-ctype-to-default-locale-no-such-file-or-directory
+#   - General info: https://unix.stackexchange.com/questions/503110/valid-values-for-lc-ctype/633128#633128
+export LC_COLLATE='C' # Make symbols come before numbers before letters.
+
+isLinux() {
+    os-version -o | grep -iq 'Linux'
+}
+
+isMac() {
+    # TODO Find out how to distinguish M1 macs from normal macs
+    os-version -o | egrep -iq 'mac|darwin|osx'
+}
+
+isWindows() {
+    os-version -o | egrep -iq '(CYGWIN)|(MINGW)'
+}
+
+isWsl() {
+    os-version -s | egrep -iq 'wsl|Microsoft'
+}
+
+if ! isWsl; then
+    # Allow characters with diacritics to group with normal/non-diacritic chars for all OSes except WSL
+    export LC_CTYPE='en_US.UTF-8'
+fi
+
+if isWindows; then
+    export LC_ALL=en_US.utf8
+fi
+
 abspath() {
     declare _path="${1:-.}"
 
@@ -81,29 +165,6 @@ timestamp() {
     #   https://stackoverflow.com/questions/17066250/create-timestamp-variable-in-bash-script/69400542#69400542
     date '+%m/%d/%Y-%H:%M:%S_(%Z)'
 }
-
-
-isLinux() {
-    os-version -o | grep -iq 'Linux'
-}
-
-isMac() {
-    # TODO Find out how to distinguish M1 macs from normal macs
-    os-version -o | egrep -iq 'mac|darwin|osx'
-}
-
-isWindows() {
-    os-version -o | egrep -iq '(CYGWIN)|(MINGW)'
-}
-
-isWsl() {
-    os-version -s | egrep -iq 'wsl|Microsoft'
-}
-
-
-if isWindows; then
-    export LC_ALL=en_US.utf8
-fi
 
 
 bytesReadable() {
