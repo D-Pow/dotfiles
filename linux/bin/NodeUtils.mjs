@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import util from 'node:util';
 import childProcess from 'node:child_process';
+import readline from 'node:readline/promises';
 import { createRequire } from 'node:module';
 
 
@@ -194,7 +195,22 @@ export function runCmd(cmd, {
 // console.log(runCmd(`echo $PATH`, { runInShell: false }));
 
 
-function copyToClipboard(str) {
+export async function cliPrompt(query) {
+    // Can only have one interface per prompt, otherwise input will be duplicated on subsequent prompts.
+    // See: https://stackoverflow.com/questions/48494624/node-readline-interface-repeating-each-character-multiplicatively
+    const terminal = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+    const cliInput = await terminal.question(query);
+
+    terminal.close();
+
+    return cliInput;
+}
+
+
+export function copyToClipboard(str) {
     let osInfo;
 
     try {
