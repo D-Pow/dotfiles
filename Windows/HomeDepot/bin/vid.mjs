@@ -455,7 +455,7 @@ function parseArgs(args = process.argv, scriptName = import.meta.url.match(/(?<=
             case '-u':
             case '--user':
                 argMap.email = nextArg;
-                argMap.password = argMap.password ?? users[argMap.email]?.password;
+                argMap.password = users[argMap.email]?.password ?? argMap.password;
                 argMap.userId = argMap.userId ?? users[argMap.email]?.userId;
                 argMap.svocId = argMap.svocId ?? users[argMap.email]?.svocId;
                 argMap.pids = users[argMap.email]?.pids ?? [];
@@ -474,6 +474,10 @@ function parseArgs(args = process.argv, scriptName = import.meta.url.match(/(?<=
                 break;
             case '-p':
             case '--pids':
+                if (argMap.pids === defaultUser.pids) {
+                    argMap.pids = [];
+                }
+
                 argMap.pids.push(nextArg);
                 break;
             case '-S':
