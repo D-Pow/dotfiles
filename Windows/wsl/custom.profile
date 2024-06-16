@@ -251,6 +251,12 @@ cmd() {
         cmdFlags="/V:ON /C $setEnvVarCommands"
     fi
 
+    if isWindows && ! isWsl; then
+        # Git Bash is particularly weird with escaping slashes.
+        # See: https://stackoverflow.com/questions/21357813/bash-in-git-for-windows-weirdness-when-running-a-command-with-cmd-exe-c-with-a/21907301#21907301
+        cmdFlags="$(echo "$cmdFlags" | sed -E 's|/|//|g')"
+    fi
+
     # Quoting \`\${argsArray[@]}\` is tricky. It usually works if the first command from
     # the array is separated from the subsequent commands but it can still cause issues
     # occasionally depending on the command string.
