@@ -352,3 +352,20 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         cd [ID]
         hex [ID]
         ```
+
+* To move Linux partition to other disk:
+    - Use [Clonezilla](https://clonezilla.org).
+        + Probably don't want to reinstall Grub, but this needs to be fact-checked.
+    - If UUID isn't changed, resulting in >= 2 drives/partitions with the same UUID:
+        + Change UUID of partition: `tune2fs -U $(uuidgen) /dev/sd{X}{Y}` (where X is disk and Y is partition).
+        + Update Grub with new UUID.
+            * Might need to change Grub mount partition via `File` --> `Change Environment` --> `Partition`.
+        + See:
+            * [SO answer: New UUID for partition with `tune2fs`](https://unix.stackexchange.com/questions/12858/how-to-change-filesystem-uuid-2-same-uuid/12859#12859)
+            * [SO answer: Alternative method with `sfdisk`](https://unix.stackexchange.com/questions/752848/how-can-you-give-a-disk-and-a-new-uuid)
+    - Helpful commands:
+        + List drive info: `sudo sfdisk --dump /dev/sda`
+        + List all drives, refreshing RAM/cache:
+            - `sudo df --all`
+            - `sudo mount -l | grep -Pi '/dev/sd'`
+            - `sudo blkid -p /dev/sda`
