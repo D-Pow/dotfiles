@@ -12,7 +12,7 @@ declare _linuxProfile="${_linuxDir}/custom.profile"
 # Silence "Please install `package`" errors that only exist for real Linux and not WSL
 source "$_linuxProfile" 2>/dev/null
 
-export wslOsBasename="$(cat /etc/os-release | grep -E '^NAME=' | sed -E 's/[^"]+"([^"]+)"$/\1/')"
+export wslOsBasename="$(cat /etc/os-release 2>/dev/null | grep -E '^NAME=' | sed -E 's/[^"]+"([^"]+)"$/\1/')"
 export wslWindowsPath="\\\\wsl.localhost/$wslOsBasename"
 export _wslRootDir="C:/Users/$(whoami)/AppData/Local/Packages/CanonicalGroupLimited.UbuntuonWindows_79rhkp1fndgsc/LocalState/rootfs"
 export hostsfile="/mnt/c/Windows/System32/drivers/etc/hosts"

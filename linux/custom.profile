@@ -1198,7 +1198,7 @@ _checkPythonVersion() {
 
     # Allow using anything newer than the oldest rather than restricting to only the newest
     if [[ "$currentPythonVersion" != "$latestVersion" ]]; then
-        echo 'Your python version is out of date. Please run this command:'
-        echo "    sudo rm /usr/bin/python3 && sudo ln -s $executableDir/$latestVersion /usr/bin/python3"
+        echo 'Your python version is out of date. Please run this command:' >&2
+        echo "    sudo rm /usr/bin/python3 && sudo ln -s $executableDir/$latestVersion /usr/bin/python3" >&2
     fi
 } && _checkPythonVersion
