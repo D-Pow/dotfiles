@@ -29,8 +29,15 @@ const users = {
     'b2btestperksstaguser209@mailinator.com': {
         password: 'Test1234',
         userId: '04201FA82A72E8F40U',
-        svocId: '04201FA82A6668F40S',
-        pids: [ 'P125216B44975E7F80' ],
+        svocIdAdmin: '04201FA82A6668F40S',
+        svocIdPurchaser: '0420509994FAB2280S',
+        get svocId() {
+            return this.svocIdAdmin;
+        },
+        pids: [
+            // 'P125216B44975E7F80',
+            'P124F7981FAF307A80', // 216's admin card
+        ],
     },
     'b2btestperksstaguser187@mailinator.com': {
         password: 'Test@1234',
