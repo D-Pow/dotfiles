@@ -458,7 +458,7 @@ findRegex() {
 
     shift
 
-    "$(which find)" "$_findDirToSearch" -regextype posix-extended "$@"
+    find "$_findDirToSearch" -regextype posix-extended "$@"
 }
 
 
