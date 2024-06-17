@@ -276,7 +276,7 @@ export async function generateVid({
     }
 
     const queryForShortVids = longVid ? '' : `?pattern=v2vid`; /* userId=${userId}&svocId=${svocId}& */
-    const res = await hdFetch(`/customer/auth/v1/vid${queryForShortVids}`, {
+    const genVid = async () => await hdFetch(`/customer/auth/v1/vid${queryForShortVids}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -291,6 +291,18 @@ export async function generateVid({
             svocId,
         }),
     });
+    let res = await genVid();
+    let genVidAttempts = 1;
+    const maxGenVidAttempts = 20;
+
+    while (
+        // res.body?.token?.match(/^(\d*_)?v?\d_[^_]+_[^_]+_.*-+.*$/i)
+        res?.body?.token?.split('_')?.slice(-1)?.[0]?.match(/-/g)
+        && genVidAttempts < maxGenVidAttempts
+    ) {
+        genVidAttempts++;
+        res = await genVid();
+    }
 
     let payments;
 
