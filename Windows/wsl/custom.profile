@@ -132,6 +132,9 @@ windows-which() {
         fi
     fi
 }
+if ! $(type which &>/dev/null); then
+    alias which='windows-which'
+fi
 
 
 winGetProcess() {
