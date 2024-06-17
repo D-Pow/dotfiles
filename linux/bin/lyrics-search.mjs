@@ -1,4 +1,4 @@
-#!/usr/bin/env -S node --no-warnings --experimental-top-level-await --experimental-json-modules --experimental-import-meta-resolve --experimental-specifier-resolution=node
+#!/usr/bin/env -S node --experimental-top-level-await --experimental-json-modules --experimental-import-meta-resolve
 
 import path from 'path';
 import { importGlobalModule } from './NodeUtils';
@@ -26,9 +26,9 @@ export async function getLyrics(artist, song) {
             .replace(/\r(?=\n)/g, '')  // CRLF => LF
             .replace(/[\u2018\u2019]/g, "'")  // Fancy apostrophe => normal
             .replace(/[\u201C\u201D]/g, '"')  // Fancy double-quote => normal
-            .replace(/[\u2013\u2014]/g, "-")  // Fancy dashes => hyphens
-            .replace(/\u2026/g, '...')
-            .replace(/\n\n/g, '\n');  // Collapsed/single-character ellipses => normal
+            .replace(/[\u2013\u2014]/g, '-')  // Fancy dashes => hyphens
+            .replace(/\u2026/g, '...')  // Collapsed/single-character ellipses => normal
+            .replace(/\n\n/g, '\n');  // Multi-newlines into one for readability
 
         return asciiLyrics;
     } catch (e) {
@@ -56,15 +56,6 @@ if (isMain) {
     single-char ellipses, dashes, CRLF, etc. with their Unix/ASCII counterparts.
 
     If the artist or song have spaces in them, surround them with quotes.
-
-    Requires npm-installing 'isomorphic-fetch' globally and setting \`NODE_PATH\` to that global
-    \`node_modules\` directory, or placing this file in the directory of a JavaScript project
-    that has installed it.
-
-    Call the script directly, not from \`node\`. For example, call via
-    \`./${thisFileName} Anberlin 'Feel Good Drag'\`
-    but not
-    \`node ./${thisFileName} Anberlin 'Feel Good Drag'\`
     `;
 
     const [
@@ -80,5 +71,7 @@ if (isMain) {
         process.exit(1);
     }
 
-    console.log(await getLyrics(artist, song));
+    const lyrics = await getLyrics(artist, song);
+
+    console.log(lyrics);
 }
