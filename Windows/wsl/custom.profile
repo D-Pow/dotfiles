@@ -120,7 +120,17 @@ windows-which() {
     # See: https://stackoverflow.com/questions/304319/is-there-an-equivalent-of-which-on-the-windows-command-line/304392#304392
     declare programToSearchFor="$1"
 
-    powershell.exe "(\$Env:Path).Split(';') | Get-ChildItem -filter *${programToSearchFor}*"
+    where "$programToSearchFor" 2>/dev/null
+
+    if (( $? )); then
+        powershell.exe "(\$Env:Path).Split(';') | Get-ChildItem -filter *${programToSearchFor}*" 2>/dev/null
+
+        if (( $? )); then
+            findRegex "$PROGRAMFILES" -iwholename "*${programToSearchFor}*" 2>/dev/null
+            findRegex "$PROGRAMFILES (x86)" -iwholename "*${programToSearchFor}*" 2>/dev/null
+            findRegex "$(realpath "$APPDATA/..")" -iwholename "*${programToSearchFor}*" 2>/dev/null
+        fi
+    fi
 }
 
 
