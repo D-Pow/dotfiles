@@ -69,6 +69,7 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         + Title: `Mount Google Drive`
         + Command: `gio mount google-drive://djp460@nyu.edu/`
         + Delay: `10s`
+        + Potentially, might need a second entry as well with this command: `rclone mount --vfs-cache-mode writes "google-drive:/" "/home/dpow/google-drive"`
     - Start Discord on boot
         + Title: `Discord - start on boot`
         + Command: `discord --start-minimized`
