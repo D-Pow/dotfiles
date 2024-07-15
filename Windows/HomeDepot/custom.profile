@@ -30,8 +30,17 @@ alias cf="cf.exe"
 # alias gcloud="/mnt/c/Program\ Files\ \(x86\)/Google/Cloud\ SDK/google-cloud-sdk/bin/gcloud"
 alias gcloud="cmd gcloud.cmd"
 alias gcloud-refresh='gcloud auth application-default login'
+alias k9s="/mnt/c/Users/f76w5no/AppData/Local/Microsoft/WinGet/Packages/Derailed.k9s_Microsoft.Winget.Source_8wekyb3d8bbwe/k9s.exe"
 alias kubectl="/mnt/c/Program\ Files\ \(x86\)/Google/Cloud\ SDK/google-cloud-sdk/bin/kubectl.exe"
+alias k='kubectl'
+export KUBE_EDITOR='subl.exe'
 
+
+hdreset() {
+    declare gitIgnoredFiles=$(gauf)
+    gnau $gitIgnoredFiles
+    gck -- $gitIgnoredFiles
+}
 
 loginToDockerRegistry() {
     # See:
@@ -214,7 +223,7 @@ watchJavaProcs() {
 hdmvn() {
     # Not sure why, but the CMS and Computer Vision sub-projects always give me trouble when installing, so ignore them all.
     # !:CMSDataIntegration
-    declare specificProjectsToBuildFilter="!:computer-vision-libs-parent,!:cv-client,!:cv-service,!:cv-pos-client,!:cv-contracts,!:computer-vision-mock-service,!:CMSWeb,!:CMSRecognitionIntegration,!:CMS_Data_Access,!:checkout-applications,!:register-components,!:OCBAdmin,!:store-account-management-orchestration,!:ItemService,!:store-config,!:check-endorsement,!:ocb-remediation"
+    declare specificProjectsToBuildFilter="!:cv-service,!:cv-pos-client,!:cv-contracts,!:computer-vision-mock-service,!:CMSWeb,!:CMSRecognitionIntegration,!:CMS_Data_Access,!:checkout-applications,!:register-components,!:OCBAdmin,!:store-account-management-orchestration,!:ItemService,!:store-config,!:check-endorsement,!:ocb-remediation"
 
     declare mvnArgs=("$@")
     declare mvnArgsHasProjectsFlag=
