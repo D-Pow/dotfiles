@@ -502,11 +502,17 @@ function parseArgs(args = process.argv, scriptName = import.meta.url.match(/(?<=
                 break;
             case '-p':
             case '--pids':
-                if (argMap.pids === defaultUser.pids) {
+                if (
+                    argMap.pids === defaultUser.pids
+                    || argMap.pids === users[argMap.email]?.pids
+                ) {
                     argMap.pids = [];
                 }
 
-                argMap.pids.push(nextArg);
+                if (nextArg) {
+                    argMap.pids.push(nextArg);
+                }
+
                 break;
             case '-S':
             case '--select':
