@@ -17,10 +17,8 @@ const users = {
         phoneNumber: '4346468756',
         pids: [
             // 'P1352A745A584B8780', // CC - 9702 - Local CLS, CustomerInfoV3ResponseTransformer.java line 352, spoof hdWalletAuthorized to always true
-            // "P1352A7DD71E5B8780", // CC
-
-            // 'P124F797A7AEE07A80', // Pro Allowance CC?
-            'P124F797AB98607A80',
+            // 'P1352B0EE700CB8780', // CC Pro Allowance - hdpass apr1
+            'P1352A7DD71E5B8780', // CC Primary - Em Cappai
 
             // 'P12529749F7A49CF60', // Coupon: $1 St9307 HD Wallet 1% Off
             // 'P1252974C39EB9CF60', // Coupon: $1 St9307 HD Wallet 1% Off
@@ -79,9 +77,10 @@ const users = {
         svocIdAdmin: '0527960EE66135BB0S',
         svocIdPurchaser: '0420509994FAB2280S',
         get svocId() {
-            return this.svocIdAdmin;
+            return this.svocIdPurchaser;
         },
         pids: [
+            'P1352A7DD71E5B8780', // b2b216's "Em Cappai" Pro Allowance (active) & HD Pass CC
             // 'P12522C5CB16DE7BC0', // CC
             // 'P125217B41470E7F80', // PXD
             // "P13528CF6B85F78E00", // PXD
@@ -96,8 +95,16 @@ const users = {
     'platformstagerunner@yopmail.com': {
         password: 'TestMe123!',
         userId: '052941539C1B2DE60U',
-        svocId: '052941539C102DE60S',
-        pids: [],
+        svocIdAdmin: '052941539C102DE60S',
+        svocIdPurchaser: '0420509994FAB2280S',
+        get svocId() {
+            return this.svocIdPurchaser;
+        },
+        pids: [
+            // 'P124F797A46F107A80', // b2b216's Pro Allowance only CC
+            'P1352A7DD71E5B8780', // b2b216's "Em Cappai" Pro Allowance (active) & HD Pass CC
+            'P13548149F7DD8C0A0', // HD Pass CC (not b2b216's) "Personal HD Pass"
+        ],
     },
     'platformstage3@yopmail.com': {
         password: 'TestMe123!',
@@ -320,9 +327,9 @@ export async function generateVid({
         });
 
         const pidPrompts = [
-            [ payments.creditCards, 'credit card', false ],
+            [ payments.creditCards, 'credit card', true ],
             [ payments.pxds, 'PXD', false ],
-            [ payments.coupons, 'coupons (comma-separated)', true ],
+            [ payments.coupons, 'coupon', true ],
         ]
             .filter(([ arr ]) => arr?.length);
 
@@ -337,7 +344,9 @@ export async function generateVid({
                 },
             ]));
             const pidsNames = [ ...pidsMap.values() ].map(({ cardNickName }) => cardNickName);
-            const chosenPidIndex = await cliPrompt(`Choose ${prompt}:\n${pidsNames.map((cardNickName, i) => `\t${i}: ${cardNickName}`).join('\n')}\n > `);
+            const chosenPidIndex = await cliPrompt(`Choose ${prompt}${multi ? '(s) (comma-separated)' : ''}:\n${
+                pidsNames.map((cardNickName, i) => `\t${i}: ${cardNickName}`).join('\n')
+            }\n > `);
 
             if (chosenPidIndex !== '-') {
                 if (multi) {
@@ -402,7 +411,7 @@ export async function getPayments({
                 || t2cPrimary
             )
         ))
-        ?.map(({ cardNickName, paymentId, paymentType, hdWalletAuthorized, t2cPrimary, isDefault }) => ({ cardNickName, paymentId, paymentType, hdWalletAuthorized, t2cPrimary, isDefault }));
+        ?.map(({ cardNickName, paymentId, paymentType, hdWalletAuthorized, t2cPrimary, isDefault, cardNumberLast4 }) => ({ cardNickName, paymentId, paymentType, hdWalletAuthorized, t2cPrimary, isDefault, cardNumberLast4 }));
     // Get primary CC and move it to first in the array
     const primaryCreditCardIndex = creditCards?.findIndex(({ isDefault }) => isDefault) || 0;
     const primaryCreditCard = creditCards?.splice(primaryCreditCardIndex, 1)?.[0];
