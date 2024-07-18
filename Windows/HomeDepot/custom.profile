@@ -485,3 +485,83 @@ hdParamsGitCleanShow() {
 hdParamsGitCleanForce() (
     hdParamsGitClean -f
 )
+
+
+
+################
+#  Kubernetes  #
+################
+
+kps() {
+    declare searchQuery="${1:-store-customer-orchestration}"
+
+    kubectl get pods --all-namespaces \
+        | egrep -i "$searchQuery" \
+        | awk '{
+            if ($3 ~ /[1-9]\/[1-9]/) {
+                print($1, $2);
+            }
+        }' \
+        | column -tc 2
+}
+
+kpl() {
+    declare namespace="${1:-checkout-test}"
+
+    kubectl get pods -n $namespace
+}
+
+kpd() {
+    declare namespaceAndPod="$(kps "$@" | head -n 1)"
+    declare namespace="$(echo "$namespaceAndPod" | awk '{ print($1) }')"
+    declare pod="$(echo "$namespaceAndPod" | awk '{ print($2) }')"
+
+    kubectl describe pod -n $namespace $pod
+}
+
+ks() {
+    declare namespace="${1:-checkout-test}"
+
+    kubectl get secrets -n $namespace
+}
+
+ksd() {
+    declare namespace="${1:-checkout-test}"
+    declare secretName="$2"
+
+    kubectl get secret -n $namespace $secretName -o jsonpath='{.data}'
+}
+
+kc() {
+    declare contextLocale="$1"
+
+    # Setup contexts for east/central/south
+    #   gcloud container clusters get-credentials checkout-np-us-east1-k8s --region us-east1
+
+    if [[ -n "$contextLocale" ]]; then
+        # Change context to east/central/south
+        kubectl config use-context "gke_np-store-checkout_us-${contextLocale}1_checkout-np-us-${contextLocale}1-k8s"
+    else
+        echo "Choose between: east, central, south"
+        kubectl config get-contexts
+    fi
+}
+
+ke() {
+    declare namespaceAndPod="$(kps "$@" | head -n 1)"
+    declare namespace="$(echo "$namespaceAndPod" | awk '{ print($1) }')"
+    declare pod="$(echo "$namespaceAndPod" | awk '{ print($2) }')"
+    declare container="$(echo "$pod" | sed -E 's/-\w+-\w+$//')"
+
+    # Optional flags:
+    #   -c store-customer-orchestration-test
+    kubectl exec -it -n $namespace -c $container "$pod" -- bash
+}
+
+kl() {
+    declare namespaceAndPod="$(kps "$@" | head -n 1)"
+    declare namespace="$(echo "$namespaceAndPod" | awk '{ print($1) }')"
+    declare pod="$(echo "$namespaceAndPod" | awk '{ print($2) }')"
+
+    kubectl logs -n $namespace $pod
+}
