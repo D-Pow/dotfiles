@@ -303,6 +303,26 @@ yarnRerunCommand() {
 
 
 ################
+####  Java  ####
+################
+
+mvnProjectVersion() {
+    # See: https://stackoverflow.com/questions/3545292/how-to-get-maven-project-version-to-the-bash-command-line/3545363#3545363
+    mvn --non-recursive help:evaluate -Dexpression=project.version -DforceStdout -q
+
+    # Alternatives:
+    # mvn \
+    #     --non-recursive \
+    #     -Dexec.executable=cmd \
+    #     -Dexec.args='/C echo ${project.version}' 'org.codehaus.mojo:exec-maven-plugin:1.3.1:exec' \
+    #     -q
+    #
+    # cat pom.xml | grep '<version>' | head -n 1 | grep -Eio --color=never '[0-9.]+'
+}
+
+
+
+################
 ###  Python  ###
 ################
 
