@@ -275,7 +275,7 @@ hdfixpoms() {
     # text or not, so we must do a post-processing extra-comment-removal series of substitutions.
     sed -Ei 's|<module>cms-data-integration</module>|<!-- <module>cms-data-integration</module> -->|; s/<!-- <!--/<!--/; s/--> -->/-->/' ./apps/pom.xml
     # `masker-service` is not versioned the same as everything else, and rarely changes, so choose current latest
-    sed -Ei 's|<dependency.masker.service.version>\$\{project.version\}</dependency.masker.service.version>|<dependency.masker.service.version>2024.7.81</dependency.masker.service.version>|' ./apps/customer-lookup-service/pom.xml
+    sed -Ei 's|<dependency.masker.service.version>\$\{project.version\}</dependency.masker.service.version>|<dependency.masker.service.version>2024.7.81</dependency.masker.service.version>|' ./apps/store-customer-orchestration/pom.xml
 
     git update-index --assume-unchanged ${pomXmlFiles[@]}
 
@@ -485,6 +485,69 @@ hdParamsGitCleanShow() {
 hdParamsGitCleanForce() (
     hdParamsGitClean -f
 )
+
+hdTransIds() {
+    cat $(
+        ls -FlAh /mnt/c/POSrewrite/data/logs/regApp.log.2024* \
+            | sort -Vr -k 9 \
+            | awk '{ print $9 }' \
+            | head -n 1 \
+            | sed -E 's/\*$//' \
+            | decolor
+    ) \
+        | egrep -i 'pos_trans_id'
+}
+
+hdReceiptBarcodeLatest() {
+    cat $(
+        ls -FlAh /mnt/c/POSrewrite/data/logs/regApp.log.2024* \
+            | sort -Vr -k 9 \
+            | awk '{ print $9 }' \
+            | head -n 1 \
+            | sed -E 's/\*$//' \
+            | decolor
+    ) \
+        | egrep -i 'receipt_raw .*</receipt_raw>' \
+        | tail -n 1 \
+        | egrep -io --color=never '>.*<' \
+        | sed -E 's/[><]//g' \
+        | decodeBase64 \
+        | gzip -d \
+        | egrep -io --color=never '(?<=barcode"><data>)\d+'
+}
+
+
+hdRefreshCache() {
+    declare flagRegexSearch="$1"
+    declare -A envIdMap=(
+        ['za']='da7d9a3e-2175-4d0b-a3ed-e2c87b674501'
+        ['zb']='e259e816-aac2-4a76-975c-3180b681d2f5'
+        ['eb']='15fe719b-9424-4df7-8637-4896e8eedf99'
+    )
+
+    declare env=
+    for env in "${!envIdMap[@]}"; do
+        declare id="${envIdMap["$env"]}"
+
+        cf login -a "https://api.run-${env}.homedepot.com"
+
+        declare i=
+        for i in {0,1}; do
+            curl -sS \
+                --header 'cache-control: no-cache' \
+                --header 'uuid: refresh' \
+                --header "X-CF-APP-INSTANCE: ${id}:${i}" \
+                "http://pos-service-parameter-2023-074-002.apps-${env}.homedepot.com/service/v1/parameters/refreshCache?lcp=PR" \
+                | egrep -io "${flagRegexSearch}[^\}]+\}"
+        done
+    done
+
+    # curl -sS \
+    #     --header 'cache-control: no-cache' \
+    #     --header 'uuid: ADD_YOUR_UUID' \
+    #     'http://pos-service-parameter-2023-074-002.apps-eb.homedepot.com/service/v1/parameters/US/st0130?lcp=PR' \
+    #     | jq --indent 4 ".parameters[] | select(.name == \"${flagRegexSearch}\")"
+}
 
 
 
