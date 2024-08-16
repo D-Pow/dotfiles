@@ -67,8 +67,9 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
 * Add the following to Settings --> Startup Applications
     - Mount Google Drive
         + Title: `Mount Google Drive`
-        + Command: `gio mount google-drive://djp460@nyu.edu/`
+        + Command: `gio mount google-drive://djp9373@gmail.com/`
         + Delay: `10s`
+        + Note: Do this after adding the account via Gnome "Online Accounts" setup
         + Potentially, might need a second entry as well with this command: `rclone mount --vfs-cache-mode writes "google-drive:/" "/home/dpow/google-drive"`
     - Start Discord on boot
         + Title: `Discord - start on boot`
