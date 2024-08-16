@@ -2,7 +2,7 @@
 
 [Desktop Entry]
 Name=WebStorm
-Exec=/bin/bash -l -i -c "/home/dpow/JetBrains/WebStorm/bin/webstorm.sh %F"
+Exec="/home/dpow/JetBrains/WebStorm/bin/webstorm" %F
 Icon=/home/dpow/JetBrains/WebStorm/bin/webstorm.png
 Comment=The smartest JavaScript IDE
 Type=Application

@@ -2,7 +2,7 @@
 
 [Desktop Entry]
 Name=IntelliJ
-Exec="/home/dpow/JetBrains/IntelliJ/bin/idea.sh" %f
+Exec="/home/dpow/JetBrains/IntelliJ/bin/idea" %F
 Icon=/home/dpow/JetBrains/IntelliJ/bin/idea.png
 Comment=The smartest Java IDE
 Type=Application
