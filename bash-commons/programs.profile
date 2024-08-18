@@ -697,6 +697,10 @@ dockerPurgeAllStoppedContainersImagesAndNetworks() {
     docker system prune -a --volumes
 }
 
+dockerCacheClear() {
+    docker builder prune --all
+}
+
 dockerGetVolumesForContainers() (
     declare IFS=$'\n'
     declare allDockerDriversAndVolumes=($(docker volume ls | grep -vi driver))
