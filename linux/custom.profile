@@ -785,7 +785,7 @@ brightness() {
     declare _resetValue=
     declare argsArray=
     declare -A optsConfig=(
-        ['d|display:,_display']='Display whose brightness to change (default = external monitor 1). 0 = internal display, 1-n = external monitors.'
+        ['d|display:,_display']='Display whose brightness to change (default = external monitor 1).'
         ['r|reset,_resetValue']='Resets brightness setting back to 100% (only for `xrandr`)'
         ['USAGE']="$USAGE"
         [':']=
