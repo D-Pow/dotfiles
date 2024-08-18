@@ -939,7 +939,7 @@ window.inchesMillimeters = function ({
  * @param {BacConfig} [options]
  * @returns {number} - Estimated BAC.
  *
- * @see [Wikipedia article supplying the formula]{@link https://en.wikipedia.org/wiki/Blood_alcohol_content#Estimation_by_intake}
+ * @see [Wikipedia article supplying the formula]{@link https://en.wikipedia.org/wiki/Blood_alcohol_content#By_intake}
  */
 window.bac = function bac(drinkVolume, drinkPercentage, bodyWeight, {
     hoursElapsed = 1,
