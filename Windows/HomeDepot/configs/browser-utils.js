@@ -25,8 +25,8 @@ window.mapConfigToObj = function mapConfigToObj(configAsArray) {
     }, {});
 };
 
-window.searchConfig = function searchConfig(configObj, keyRegex, valRegex) {
-    let config = configObj || getConfig();
+window.searchConfig = function searchConfig(keyRegex, valRegex, configObj = getConfig()) {
+    let config = configObj;
 
     if (keyRegex) {
         config = Object.entries(config)
@@ -52,17 +52,13 @@ window.getConfig = function getConfig(keyRegex, valRegex) {
     config = mapConfigToObj(config);
 
     if (keyRegex || valRegex) {
-        config = searchConfig(config, keyRegex, valRegex);
+        config = searchConfig(keyRegex, valRegex, config);
     }
 
     return config;
 };
 
-window.setConfig = function setConfig(key, val, configObj) {
-    if (!configObj) {
-        configObj = getConfig();
-    }
-
+window.setConfig = function setConfig(key, val, configObj = getConfig()) {
     if (key) {
         configObj[key] = val;
     }
@@ -89,7 +85,7 @@ window.fetchConfig = async function fetchConfig(keyRegex, valRegex) {
     let config = mapConfigToObj(json.parameters);
 
     if (keyRegex || valRegex) {
-        config = searchConfig(config, keyRegex, valRegex);
+        config = searchConfig(keyRegex, valRegex, config);
     }
 
     return config;
