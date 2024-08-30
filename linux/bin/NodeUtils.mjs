@@ -227,7 +227,7 @@ export function copyToClipboard(str) {
     if (!osInfo || osInfo.match(/not recognized as an internal or external command/i) || osInfo.match(/^MSYS_/i)) {
         // Windows Command Prompt or Powershell
         copyCommand = 'C:\\Windows\\System32\\cmd.exe /C clip';
-        pasteCommand = 'C:\\Windows\\System32\\cmd.exe /C powershell Get-Clipboard'
+        pasteCommand = 'C:\\Windows\\System32\\cmd.exe /C powershell Get-Clipboard';
         isWindows = true;
     } else if (osInfo.match(/microsoft/i)) {
         // Windows WSL
@@ -263,7 +263,7 @@ export function copyToClipboard(str) {
 
         if (isWindows) {
             // Remove quotes since CMD doesn't parse them in a user-friendly way
-            echoPipePrefix = `echo -n ${str} | `
+            echoPipePrefix = `echo -n ${str} | `;
         }
 
         const commandToExecute = `${echoPipePrefix} ${copyCommand}`;
