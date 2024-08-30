@@ -518,7 +518,13 @@ hdReceiptBarcodeLatest() {
 
 
 hdRefreshCache() {
-    declare flagRegexSearch="$1"
+    declare flagRegexSearch="${1:-enableHdWalletButtonPos}"
+    declare storeFourDigitNumber="$2"
+    # Get app name via:
+    #   cf apps | grep -i pos-service-parameter | cut -f 1 -d ' ' | grep -vi log4j | sort -Vr | head -n 1
+    # Get app GUID via:
+    #   cf app --guid ${appName}
+    declare appName='pos-service-parameter-2023-074-002'
     declare -A envIdMap=(
         ['za']='da7d9a3e-2175-4d0b-a3ed-e2c87b674501'
         ['zb']='e259e816-aac2-4a76-975c-3180b681d2f5'
@@ -531,22 +537,27 @@ hdRefreshCache() {
 
         cf login -a "https://api.run-${env}.homedepot.com"
 
+        # Get instance ID via:
+        #   cf app ${appName} | grep -Pio '^#\d' | sed -E 's/#//'
         declare i=
         for i in {0,1}; do
             curl -sS \
                 --header 'cache-control: no-cache' \
                 --header 'uuid: refresh' \
                 --header "X-CF-APP-INSTANCE: ${id}:${i}" \
-                "http://pos-service-parameter-2023-074-002.apps-${env}.homedepot.com/service/v1/parameters/refreshCache?lcp=PR" \
-                | egrep -io "${flagRegexSearch}[^\}]+\}"
+                "http://${appName}.apps-${env}.homedepot.com/service/v1/parameters/refreshCache?lcp=PR" \
+                | grep -Pio "${flagRegexSearch}[^\}]+\}"
+
+            if [[ -n "$storeFourDigitNumber" ]]; then
+                # Verify flag value for specific env and store:
+                curl -sS \
+                    --header 'cache-control: no-cache' \
+                    --header 'uuid: ADD_YOUR_UUID' \
+                    "http://${appName}.apps-${env}.homedepot.com/service/v1/parameters/US/st${storeFourDigitNumber}?lcp=PR" \
+                    | jq --indent 4 ".parameters[] | select(.name == \"${flagRegexSearch}\")"
+            fi
         done
     done
-
-    # curl -sS \
-    #     --header 'cache-control: no-cache' \
-    #     --header 'uuid: ADD_YOUR_UUID' \
-    #     'http://pos-service-parameter-2023-074-002.apps-eb.homedepot.com/service/v1/parameters/US/st0130?lcp=PR' \
-    #     | jq --indent 4 ".parameters[] | select(.name == \"${flagRegexSearch}\")"
 }
 
 
