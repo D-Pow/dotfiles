@@ -9,6 +9,33 @@ import {
 
 const hmacCreationTime = Date.now();
 
+const couponBarcodes = {
+    transactionLevel: {
+        barcode: '98153000003090752399641951',
+    },
+    itemLevel: [
+        {
+            barcode: '98153000003091157079816478',
+            sku: '172036',
+        },
+        {
+            sku: 148634,
+            barcode: 98153000003097051638900333,
+            promo: 30970,
+        },
+        {
+            sku: 148490,
+            barcode: 98153000003097115881451045,
+            promo: 30971,
+        },
+        {
+            sku: 148264,
+            barcode: 98153000003097806992645380 ,
+            promo: 30978,
+        },
+    ],
+}
+// Coke SKU: 751139
 const users = {
     'b2btestperksstaguser216@mailinator.com': {
         password: 'Test54321',
