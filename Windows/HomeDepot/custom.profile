@@ -247,14 +247,15 @@ hdmvn() {
         mvnArgs+=(--projects "$specificProjectsToBuildFilter")
     fi
 
-    mvn -Dmaven.test.skip=true -DskipTests -Djacoco.skip=true "${mvnArgs[@]}"
+    mvn -Dmaven.test.skip=true -DskipTests -Djacoco.skip=true --fail-at-end "${mvnArgs[@]}"
 }
 
-alias mvnt="mvn -Dmaven.test.skip=true -DskipTests -Djacoco.skip=true"
+alias mvnt="mvn -Dmaven.test.skip=true -DskipTests -Djacoco.skip=true --fail-at-end"
 
 hdmvnall() {
     hdfixpoms
     hdmvn clean install -rf ":${1:-token-provider-spi}"
+    gck -- *.js
 }
 
 hdfixpoms() {
