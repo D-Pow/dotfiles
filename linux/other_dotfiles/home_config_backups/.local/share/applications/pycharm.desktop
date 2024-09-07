@@ -2,7 +2,7 @@
 
 [Desktop Entry]
 Name=PyCharm
-Exec="/home/dpow/JetBrains/PyCharm/bin/pycharm.sh" %f
+Exec="/home/dpow/JetBrains/PyCharm/bin/pycharm" %f
 Icon=/home/dpow/JetBrains/PyCharm/bin/pycharm.png
 Comment=The smartest Python IDE
 Type=Application
