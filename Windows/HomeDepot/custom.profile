@@ -259,10 +259,11 @@ hdmvn() {
         mvnArgs+=(--projects "$specificProjectsToBuildFilter")
     fi
 
-    mvn -Dmaven.test.skip=true -DskipTests -Djacoco.skip=true --fail-at-end "${mvnArgs[@]}"
+    # --fail-at-end
+    mvn -Dmaven.test.skip=true -DskipTests -Djacoco.skip=true "${mvnArgs[@]}"
 }
 
-alias mvnt="mvn -Dmaven.test.skip=true -DskipTests -Djacoco.skip=true --fail-at-end"
+alias mvnt="mvn -Dmaven.test.skip=true -DskipTests -Djacoco.skip=true"
 
 hdmvnall() {
     hdfixpoms
