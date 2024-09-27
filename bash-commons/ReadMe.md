@@ -4,6 +4,18 @@
 
 * More details and examples at https://tldp.org/LDP/abs/html/index.html
 
+## `sed`
+
+* Multi-line matching: Add `!b;` after preceding line query and `n;` for each line to skip. Then add your substitution/action.
+    - e.g. To replace "line-orig" with "line-replacement" two lines after a line containing the text "preceding line", run:
+        ```bash
+        sed -E '/preceding line/!b; n; s/line-orig/line-replacement/'
+        ```
+    - See:
+        + [Baeldung explanation](https://www.baeldung.com/linux/find-matching-text-replace-next-line#1-twosed-one-liners)
+        + [SO example (non-regex)](https://stackoverflow.com/questions/18620153/find-matching-text-and-replace-next-line/18622953#18622953)
+        + [Baeldung more multi-line functionality](https://www.baeldung.com/linux/sed-editor#working-with-multiple-lines)
+
 ## [`complete`](https://www.gnu.org/software/bash/manual/html_node/Programmable-Completion-Builtins.html)
 
 * https://www.oreilly.com/library/view/bash-quick-reference/0596527764/re18.html
