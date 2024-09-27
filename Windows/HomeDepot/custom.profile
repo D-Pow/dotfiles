@@ -90,6 +90,18 @@ vpnIsActive() {
 }
 
 
+hdArtifactoryLatestJarVersion() {
+    declare jarName="$1"
+
+    curl -sS \
+        -u "$(whoami):$ARTIFACTORY_TOKEN" \
+        "https://maven.artifactory.homedepot.com/artifactory/libs-release-local/com/homedepot/sa/pt/${jarName}/" \
+        | grep -Pi '<a href' \
+        | grep -Poi '[0-9.]+(?=/)' \
+        | tail -n 1
+}
+
+
 # See:
 #   - Set properties, defaults, etc. in `<activation><property>` in settings.xml:
 #       - https://maven.apache.org/guides/introduction/introduction-to-profiles.html#property
@@ -486,6 +498,60 @@ hdParamsGitCleanShow() {
 hdParamsGitCleanForce() (
     hdParamsGitClean -f
 )
+
+hdLatestJarVersion() {
+    declare jarName="$1"
+
+    curl -sS \
+        -u "$(whoami):$ARTIFACTORY_TOKEN" \
+        "https://maven.artifactory.homedepot.com/artifactory/libs-release-local/com/homedepot/sa/pt/${jarName}/" \
+        | grep -Pi '<a href' \
+        | grep -Poi '[0-9.]+(?=/)' \
+        | tail -n 1
+}
+
+_hdUpdateRegisterVersion() {
+    declare CLIENT_INSTALLER_V=${1:-$(hdLatestJarVersion 'saptClientInstaller')}
+    declare REGISTER_JRE_V=${2:-$(hdLatestJarVersion 'RegisterJre')}
+    declare CLIENT_INSTALLER_PATH="saptClientInstaller/${CLIENT_INSTALLER_V}/saptClientInstaller-${CLIENT_INSTALLER_V}.jar"
+    declare REGISTER_JRE_PATH="RegisterJre/${REGISTER_JRE_V}/RegisterJre-${REGISTER_JRE_V}.zip"
+    declare root='/c'
+
+    if uname -a | grep -Piq 'MINGW64'; then
+        # Git Bash
+        root='/c'
+    elif uname -a | grep -Piq 'Linux.*Microsoft'; then
+        # WSL
+        root='/mnt/c'
+    fi
+
+    # Start the magic
+    if [[ -d /mnt/c/POSrewrite ]]; then
+        mv ${root}/POSrewrite ${root}/POSrewrite_$(date '+%m-%d-%Y-%H-%M-%S')
+    else
+        mkdir ${root}/POSrewrite
+    fi
+
+    mkdir -p ${root}/POSrewrite/{data/pos,JRE/RegisterJRE11.0.1,jars}
+
+    # get client installer
+    cd jars
+    curl -u "${LDAP}:${MAVEN_TOKEN}" -O "https://maven.artifactory.homedepot.com/artifactory/libs-release-local/com/homedepot/sa/pt/${CLIENT_INSTALLER_PATH}"
+    mv "saptClientInstaller-${CLIENT_INSTALLER_V}.jar" "clientinstaller.jar"
+
+    # get register jre
+    cd ../JRE/RegisterJRE11.0.1
+    curl -u "${LDAP}:${MAVEN_TOKEN}" -O "https://maven.artifactory.homedepot.com/artifactory/libs-release-local/com/homedepot/sa/pt/${REGISTER_JRE_PATH}"
+    unzip RegisterJre-${REGISTER_JRE_V}.zip
+    rm RegisterJre-${REGISTER_JRE_V}.zip
+
+    # move local store xml to pos folder
+    cd ${root}/POSrewrite
+    cp -r ~/.scripts/register/store.xml ${root}/POSrewrite/data/pos
+    ${root}/POSrewrite/JRE/RegisterJRE11.0.1/bin/java.exe -jar ${root}/POSrewrite/jars/clientinstaller.jar -t REGISTER
+    rm -rf data/pos/store.xml
+    ${root}/POSrewrite/runlocal.bat
+}
 
 hdTransIds() {
     cat $(
