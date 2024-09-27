@@ -364,7 +364,7 @@ modifyFileLinesInPlace() {
     Options:
         -n  |   Truncate all additional, sequential newlines into a single newline.
         -e  |   Erase all empty lines.
-        -b  |   Erase empty lines only at the beginning of the file (implies \`-e\`).
+        -b  |   Erase empty lines only at the beginning of the file.
     "
 
     declare _truncateNewlines=
