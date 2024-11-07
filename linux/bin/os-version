@@ -1,12 +1,12 @@
 #!/usr/bin/env -S bash
 
-USAGE="$(basename "${BASH_SOURCE[0]}") [-s] [-o]
+USAGE="$(basename "${BASH_SOURCE[0]}") [-s] [-o] [-a|v]
     Outputs a summary of your OS info.
 
     Options:
         -s      |   Simple - Output a shorter OS summary instead of the full one.
         -o      |   OS-only - Output only the generic version of your OS (Linux, Darwin, etc.).
-        -v      |   Verbose - Output all information from various sources (/etc/os-release, uname, etc.).
+        -a,-v   |   Verbose - Output all information from various sources (/etc/os-release, uname, etc.).
 "
 
 simplifiedOnly=
@@ -14,7 +14,7 @@ osOnly=
 verbose=
 OPTIND=1
 
-while getopts ':sov' opt; do
+while getopts ':soav' opt; do
     case "$opt" in
         s)
             simplifiedOnly=true
@@ -22,7 +22,7 @@ while getopts ':sov' opt; do
         o)
             osOnly=true
             ;;
-        v)
+        a|v)
             verbose=true
             ;;
         *)
