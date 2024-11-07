@@ -298,6 +298,10 @@ hdfixpoms() {
     fi
 }
 
+hdupdatebranch() {
+    gst && hdreset && gplo && gst pop && hdmvnall
+}
+
 hdStoreCheckoutComponentsTestCoverage() (
     declare projectsList="${1:-:SelfServiceWebApp}"
 
