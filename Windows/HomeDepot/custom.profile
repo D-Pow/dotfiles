@@ -12,7 +12,7 @@ export NPM_TOKEN="$(jq -r '.access_token' "${reposDir}/token-npm.json")"
 export DOCKER_TOKEN="$(jq -r '.access_token' "${reposDir}/token-docker.json")"
 
 export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock
-export DOCKER_HOST="unix://${HOME}/.rd/docker.sock"
+# export DOCKER_HOST="unix://${HOME}/.rd/docker.sock"
 
 echo "
 ARTIFACTORY_USER=${ARTIFACTORY_USER}
@@ -235,7 +235,7 @@ watchJavaProcs() {
 hdmvn() {
     # Not sure why, but the CMS and Computer Vision sub-projects always give me trouble when installing, so ignore them all.
     # !:CMSDataIntegration
-    declare specificProjectsToBuildFilter="!:cv-service,!:cv-pos-client,!:cv-contracts,!:computer-vision-mock-service,!:CMSWeb,!:CMSRecognitionIntegration,!:CMS_Data_Access,!:checkout-applications,!:register-components,!:OCBAdmin,!:store-account-management-orchestration,!:ItemService,!:store-config,!:check-endorsement,!:ocb-remediation"
+    declare specificProjectsToBuildFilter="!:RegisterJre,!:cv-service,!:cv-pos-client,!:cv-contracts,!:computer-vision-mock-service,!:CMSWeb,!:CMSRecognitionIntegration,!:CMS_Data_Access,!:checkout-applications,!:register-components,!:OCBAdmin,!:store-account-management-orchestration,!:ItemService,!:store-config,!:check-endorsement,!:ocb-remediation"
 
     declare mvnArgs=("$@")
     declare mvnArgsHasProjectsFlag=
@@ -246,7 +246,6 @@ hdmvn() {
         if echo "$mvnArg" | grep -Piq '(-pl)|(--projects)'; then
             mvnArgsHasProjectsFlag=true
 
-            # Don't increment since
             (( mvnArgIndex++ ))
 
             mvnArg="${mvnArgs["$mvnArgIndex"]}"
@@ -414,7 +413,7 @@ hdStoreCheckoutComponentsFixPomXmlDependenciesVersionRange() (
     #       <version>${dependency.quarkus.platform.version}</version>
 )
 
-hdUpdateJavaInstallationPolicyFiles() (
+_hdUpdateJavaInstallationPolicyFiles() (
     declare javaInstallationDir="${1:-"/mnt/c/java"}"
 
     cd "$javaInstallationDir"
