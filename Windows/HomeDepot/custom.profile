@@ -618,14 +618,60 @@ hdRefreshCache() {
 
             if [[ -n "$storeFourDigitNumber" ]]; then
                 # Verify flag value for specific env and store:
-                curl -sS \
-                    --header 'cache-control: no-cache' \
-                    --header 'uuid: ADD_YOUR_UUID' \
-                    "http://${appName}.apps-${env}.homedepot.com/service/v1/parameters/US/st${storeFourDigitNumber}?lcp=PR" \
-                    | jq --indent 4 ".parameters[] | select(.name == \"${flagRegexSearch}\")"
+                hdFlagCheck -p "$env" "$storeFourDigitNumber" "$flagRegexSearch"
             fi
         done
     done
+}
+
+hdFlagCheck() {
+    declare prodEnv=
+
+    declare OPTARG=
+    declare OPTIND=1
+    while getopts ":p:" opt; do
+        case "$opt" in
+            p)
+                prodEnv="$OPTARG"
+                ;;
+            *)
+                echo "
+${FUNCNAME[0]} [OPTIONS...] <store-number> <flag-name>
+
+Options:
+    -p <env>    |   Sets production env (za, zb, eb).
+"
+                return 1
+                ;;
+        esac
+    done
+    shift $(( OPTIND - 1 ))
+
+    declare storeFourDigitNumber="$1"
+    declare flagRegexSearch="${2:-.}"
+    declare appName='pos-service-parameter-uat'
+    declare env='np'
+    declare lcp='QA'
+
+    if [[ -n "$prodEnv" ]]; then
+        env="$prodEnv"
+        appName='pos-service-parameter-2023-074-002'
+        lcp='PR'
+    fi
+
+    declare allFlags="$(curl -sS \
+        --header 'cache-control: no-cache' \
+        --header 'uuid: ADD_YOUR_UUID' \
+        "http://${appName}.apps-${env}.homedepot.com/service/v1/parameters/US/st${storeFourDigitNumber}?lcp=${lcp}"
+    )"
+
+    # Format JSON and print out `parameters` array for nested objects.
+    # grep out the single entry via regex (Use Perl regex instead of `jq ".parameters[] | select(.name == \"${flagRegexSearch}\")"`)
+    # Filter out superfluous hyphen lines
+    echo "$allFlags" \
+        | jq --indent 4 '.parameters[]' \
+        | grep -Pi -B 1 -A 2 --color=never "$flagRegexSearch" \
+        | grep -Pv '^-+$'
 }
 
 
