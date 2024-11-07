@@ -163,7 +163,7 @@ timestamp() {
     #
     # Refs:
     #   https://stackoverflow.com/questions/17066250/create-timestamp-variable-in-bash-script/69400542#69400542
-    date '+%m/%d/%Y-%H:%M:%S_(%Z)'
+    date '+%m/%d/%Y-%H:%M:%S_%Z'
 }
 
 
