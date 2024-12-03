@@ -1456,6 +1456,111 @@ class SlackInBrowserService {
 
 window.SlackInBrowserService = SlackInBrowserService;
 
+/**
+ * @typedef ChatEntry
+ * @property {string} name - Should be other contact's name, not mine.
+ * @property {string} msg - Message text.
+ * @property {string} utc - UTC date (number).
+ * @property {boolean} fromMe - If the message was from me instead of other contact.
+ */
+/**
+ * Creates XML for SmsBackup from a chat.
+ *
+ * @param {Array<ChatEntry>} arr - Chat entries.
+ * @param {Object} options
+ * @param {Boolean} options.asString - Export XML as string instead of object.
+ */
+window.createXmlFromJsonChat = function createXmlFromJsonChat(arr, {
+    asString = false,
+} = {}) {
+    /* Alternative:
+     *  xml.createProcessingInstruction('xml', `version="1.0" encoding="UTF-8" standalone="yes"`)
+     *
+     * See:
+     *  - https://stackoverflow.com/questions/68801002/add-xml-declaration-to-xml-document-programmatically/68801446#68801446
+     */
+    const xml = new DOMParser().parseFromString(
+        `<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>`,
+        'application/xml',
+    );
+
+    xml.body.replaceChildren();  /* Remove <parseerror/> element if present */
+
+    function appendXmlChild(elem) {
+        xml.body.appendChild(elem);
+
+        return xml;
+    }
+
+    function createSmsElement({
+        name = '',
+        number = '',
+        msg = '',
+        utc = '',
+        fromMe = false,
+    } = {}) {
+        const dateSent = new Date(utc);
+        const dateParts = {
+            month: `${dateSent.getMonth() + 1}`.padStart(2, '0'),  /* Month range is [0,11]. Force 2 digits in numbers. */
+            day: `${dateSent.getDate()}`.padStart(2, '0'),
+            year: dateSent.getFullYear(),
+            hours: `${dateSent.getHours()}`.padStart(2, '0'),
+            minutes: `${dateSent.getMinutes()}`.padStart(2, '0'),
+            seconds: `${dateSent.getSeconds()}`.padStart(2, '0'),
+        };
+        const readableDate = `${dateParts.month}/${dateParts.day}/${dateParts.year} ${dateParts.hours}:${dateParts.minutes}:${dateParts.seconds}`;
+
+        const sms = xml.createElement('sms');
+
+        sms.setAttribute('contact_name', name);
+        sms.setAttribute('address', number || '15555555555');
+        sms.setAttribute('date', dateSent.valueOf());
+        sms.setAttribute('body', msg);
+        sms.setAttribute('type', fromMe ? '2' : '1');
+        sms.setAttribute('subject', 'null');
+        sms.setAttribute('date_sent', fromMe ? '0' : utc);
+        sms.setAttribute('readable_date', readableDate);
+        sms.setAttribute('read', '1');
+        sms.setAttribute('status', '-1');
+        sms.setAttribute('protocol', '0');
+        sms.setAttribute('toa', 'null');
+        sms.setAttribute('sc_toa', 'null');
+        sms.setAttribute('service_center', 'null');
+        sms.setAttribute('locked', '0');
+
+        return sms;
+    }
+
+    arr.forEach(message => appendXmlChild(createSmsElement(message)));
+
+    if (asString) {
+        return new XMLSerializer().serializeToString(xml)
+            .replace(/xmlns=""( )?/g, '')  /* Remove superfluous empty namespace attributes */
+            .replace(/<\/?(html|body)[^>]*>/g, '')  /* Remove HTML-specific tags since this is XML */
+            .replace(/(?<=[/?]>)(?=<\w+ )/g, '\n    ');  /* Add newlines and indentation between elements */
+    }
+
+    return xml;
+};
+
+window.booExportChat = function booExportChat(chats, otherPersonsName, otherPersonsNumber) {
+    /* Get chats from watching fetch network requests */
+    return createXmlFromJsonChat(chats.map(({ sender, createdAt, text }) => {
+        const fromMe = sender === 'PH9dC5XfceVgnQRRN4OfxOdRpoy1';
+        const name = otherPersonsName;
+        const number = otherPersonsNumber;
+        const msg = text;
+        const utc = createdAt.replace(/z$/i, '');
+
+        return {
+            name,
+            number,
+            msg,
+            utc,
+            fromMe,
+        };
+    }));
+};
 
 window.tinderExportChat = function tinderExportChat(convertToSmsXml = true) {
     const name = document.querySelector('nav span:not(.hidden):not(.Hidden)').innerText;
@@ -1489,79 +1594,6 @@ window.tinderExportChat = function tinderExportChat(convertToSmsXml = true) {
             }, new Map())
             .values()
     ];
-
-    function createXmlFromJsonChat(arr, {
-        asString = false,
-    } = {}) {
-        /* Alternative:
-         *  xml.createProcessingInstruction('xml', `version="1.0" encoding="UTF-8" standalone="yes"`)
-         *
-         * See:
-         *  - https://stackoverflow.com/questions/68801002/add-xml-declaration-to-xml-document-programmatically/68801446#68801446
-         */
-        const xml = new DOMParser().parseFromString(
-            `<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>`,
-            'application/xml',
-        );
-
-        xml.body.replaceChildren();  /* Remove <parseerror/> element if present */
-
-        function appendXmlChild(elem) {
-            xml.body.appendChild(elem);
-
-            return xml;
-        }
-
-        function createSmsElement({
-            name = '',
-            number = '',
-            msg = '',
-            utc = '',
-            fromMe = false,
-        } = {}) {
-            const dateSent = new Date(utc);
-            const dateParts = {
-                month: `${dateSent.getMonth() + 1}`.padStart(2, '0'),  /* Month range is [0,11]. Force 2 digits in numbers. */
-                day: `${dateSent.getDate()}`.padStart(2, '0'),
-                year: dateSent.getFullYear(),
-                hours: `${dateSent.getHours()}`.padStart(2, '0'),
-                minutes: `${dateSent.getMinutes()}`.padStart(2, '0'),
-                seconds: `${dateSent.getSeconds()}`.padStart(2, '0'),
-            };
-            const readableDate = `${dateParts.month}/${dateParts.day}/${dateParts.year} ${dateParts.hours}:${dateParts.minutes}:${dateParts.seconds}`;
-
-            const sms = xml.createElement('sms');
-
-            sms.setAttribute('contact_name', name);
-            sms.setAttribute('address', number || '15555555555');
-            sms.setAttribute('date', dateSent.valueOf());
-            sms.setAttribute('body', msg);
-            sms.setAttribute('type', fromMe ? '2' : '1');
-            sms.setAttribute('subject', 'null');
-            sms.setAttribute('date_sent', fromMe ? '0' : utc);
-            sms.setAttribute('readable_date', readableDate);
-            sms.setAttribute('read', '1');
-            sms.setAttribute('status', '-1');
-            sms.setAttribute('protocol', '0');
-            sms.setAttribute('toa', 'null');
-            sms.setAttribute('sc_toa', 'null');
-            sms.setAttribute('service_center', 'null');
-            sms.setAttribute('locked', '0');
-
-            return sms;
-        }
-
-        arr.forEach(message => appendXmlChild(createSmsElement(message)));
-
-        if (asString) {
-            return new XMLSerializer().serializeToString(xml)
-                .replace(/xmlns=""( )?/g, '')  /* Remove superfluous empty namespace attributes */
-                .replace(/<\/?(html|body)[^>]*>/g, '')  /* Remove HTML-specific tags since this is XML */
-                .replace(/(?<=[/?]>)(?=<\w+ )/g, '\n    ');  /* Add newlines and indentation between elements */
-        }
-
-        return xml;
-    }
 
     if (convertToSmsXml) {
         const xml = createXmlFromJsonChat(chat);
