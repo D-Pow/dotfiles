@@ -306,7 +306,7 @@ hdStoreCheckoutComponentsTestCoverage() (
 
     repos store-checkout-components
 
-    echo "Running \`mvn clean test jacoco:check --projects \"$projectsList\" > $(gitGetRootDir)/.jacoco.log\`..."
+    echo "Running \`mvn clean test jacoco:check --projects \"$projectsList\" > $(gitGetRootDir)/jacoco.log\`..."
 
     mvn \
         --projects "$projectsList" \
