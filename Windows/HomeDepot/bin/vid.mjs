@@ -34,7 +34,16 @@ const couponBarcodes = {
             promo: 30978,
         },
     ],
-}
+};
+/*
+Gift Cards
+98081550000366096830687 1014 - $5
+98081550000366103507013 3011 - $5
+98081550000366113262161 9943 - $10
+98081550000366126630735 6220 - $10
+98081550000366130322550 7605 - $25
+*/
+// Candy SKU: 198656
 // Coke SKU: 751139
 const users = {
     'b2btestperksstaguser216@mailinator.com': {
@@ -45,10 +54,42 @@ const users = {
         pids: [
             // 'P1352A745A584B8780', // CC - 9702 - Local CLS, CustomerInfoV3ResponseTransformer.java line 352, spoof hdWalletAuthorized to always true
             // 'P1352B0EE700CB8780', // CC Pro Allowance - hdpass apr1
-            'P1352A7DD71E5B8780', // CC Primary - Em Cappai
+            // 'P124F797AB98607A80', // CC - MASTERCARD card
+            // 'P1352A7DD71E5B8780', // CC Primary - Em Cappai
+
+            'P13565AE1297521E60', // CC Primary Prox card
+            // 'P13569AD8CAFF2EFE0', // Juan single card, HD Pass only
+            // 'P1256E1223C34F2700', // Amex HD Pass only
 
             // 'P12529749F7A49CF60', // Coupon: $1 St9307 HD Wallet 1% Off
             // 'P1252974C39EB9CF60', // Coupon: $1 St9307 HD Wallet 1% Off
+
+            // 'P1252974CF7AD9CF60', // All coupons
+            // 'P1252974A3BD09CF60',
+            // 'P1252974A69BF9CF60',
+            // 'P1252A6D8BD089CF60',
+            // 'P1252A6D793C49CF60',
+            // 'P1252A6CBC3A39CF60',
+            // 'P1252A6D58BE29CF60',
+            // 'P1252A6D9ACC19CF60',
+            // 'P1252A6E1FBD79CF60',
+            // 'P1252A6D680969CF60',
+        ],
+    },
+    'b2btestwithoutbenefits@yopmail.com': {  // Non-military
+        password: 'Test5544@',
+        userId: '052B7CCDDDFF9E5E0U',
+        svocId: '052B7CCDDDCD1E5E0S',
+        pids: [
+            'P135700EAAAC0E12A0',
+        ],
+    },
+    'b2btestadmin@yopmail.com': {
+        password: 'Test7878@',
+        userId: '042B5CD4AE804E240U',
+        svocId: '042B5CD4AE564E240S',
+        pids: [
+            'P1356EB719D53DD260',
         ],
     },
     'b2btestperksstaguser209@mailinator.com': {
@@ -131,12 +172,32 @@ const users = {
             // 'P124F797A46F107A80', // b2b216's Pro Allowance only CC
             'P1352A7DD71E5B8780', // b2b216's "Em Cappai" Pro Allowance (active) & HD Pass CC
             'P13548149F7DD8C0A0', // HD Pass CC (not b2b216's) "Personal HD Pass"
+            // "P12551C098FCACFE80", // $25 PXD
+            'P1255C773B180FC480', // $25 PXD
+            // 'P12529749F7A49CF60', // Coupon 1
+            // 'P1252974C39EB9CF60', // Coupon 2
+            // 'P1252974CF7AD9CF60',
+            // 'P1252974A3BD09CF60',
+            // 'P1252974A69BF9CF60',
+            // 'P1252A6D8BD089CF60',
+            // 'P1252A6D793C49CF60',
+            // 'P1252A6CBC3A39CF60',
+            // 'P1252A6D58BE29CF60',
+            // 'P1252A6D9ACC19CF60',
+            // 'P1252A6E1FBD79CF60',
+            // 'P1252A6D680969CF60',
         ],
     },
     'platformstage3@yopmail.com': {
         password: 'TestMe123!',
         userId: '05279610D85A35BB0U',
         svocId: '05279610D850B5BB0S',
+        pids: [],
+    },
+    '2851540_5@dummy.com': {
+        userId: '0513D4436F12E3980U',
+        svocId: '0300EF2B79F5E2D26S',
+        phoneNumber: '2851540100',
         pids: [],
     },
 };
@@ -178,7 +239,7 @@ export function headersToObj(headersEntriesArray) {
     }, {});
 }
 
-
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 export async function hdFetch(url, opts, {
     domain = 'https://hd-qa74.homedepotdev.com',
 } = {}) {
@@ -293,15 +354,18 @@ export async function generateVid({
         body,
         persistHeaders,
     } = await signIn(email, password);
-
+// let count = 0;
+// console.log(count++, { userId, svocId });
     if (!userId && !svocId) {
         ({ userID: userId, svocID: svocId } = body);
+// console.log(count++, { userId, svocId });
 
         if (!userId && !svocId && email in users) {
             ({ userID: userId, svocID: svocId } = users[email]);
+// console.log(count++, { userId, svocId });
         }
     }
-
+// console.log(count++, { userId, svocId });
     if (!headers?.cookie?.hasOwnProperty('THD_CUSTOMER')) {
         const defaultUserEmail = Object.keys(users)[0];
         const tmpRes = await signIn(defaultUserEmail, users[defaultUserEmail].password);
