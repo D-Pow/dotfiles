@@ -89,7 +89,7 @@ function main(args = process.argv) {
     const argsIndexOfJsFile = process.argv.findIndex(cliArg => cliArg?.match(/\.[mc]?[tj]s[x]?$/));
     const scriptArgs = args.slice(argsIndexOfJsFile + 1);
 
-    if (!scriptArgs?.length) {
+    if (!scriptArgs?.length || scriptArgs.includes('-h') || scriptArgs.includes('--help')) {
         console.log(`
 Usage: ${scriptName} [STORE_NUMBERS...]
 
