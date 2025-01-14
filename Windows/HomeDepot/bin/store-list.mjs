@@ -57,7 +57,7 @@ async function getAllStores({
 }
 
 
-async function lookupStore(store) {
+async function lookupStore(storeList) {
     const res = await fetch('https://config-repo-helper.apps-np.homedepot.com/getByoAndMkt', {
         method: 'POST',
         headers: {
@@ -66,13 +66,26 @@ async function lookupStore(store) {
         body: JSON.stringify({
             ENV: 'PR',
             CALLER: 'CV',
-            STORES: `${store}`,
+            STORES: `${storeList}`,
         }),
     });
     const body = await res.json();
 
     try {
-        const sortedStores = sortStores(body?.result);
+        let sortedStores = sortStores(body?.result);
+
+        if (sortedStores == null || sortedStores.length === 0) {
+            const storeSet = new Set(storeList.split(','));
+
+            sortedStores = (await getAllStores())
+                .filter(({ number }) => storeSet.has(number))
+                .map(({
+                    countryCode,
+                    buyingOfficeNumber,
+                    marketNumber,
+                    number,
+                }) => `${countryCode}.byo${buyingOfficeNumber}.mkt${marketNumber}.st${number}: Y`);
+        }
 
         return sortedStores;
     } catch (e) {
