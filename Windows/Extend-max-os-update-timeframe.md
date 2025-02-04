@@ -4,7 +4,7 @@ This will allow you to select any length of time for OS update delays, even beyo
 
 * In `RegEdit`, go to:
     - `Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings`
-    - Create new key `FlightSettingsMaxPauseDays`
+    - Create new DWORD (32-bit) value: `FlightSettingsMaxPauseDays`
     - Value:
         + `Decimal`
         + `365`
