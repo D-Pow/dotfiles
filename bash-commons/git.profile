@@ -704,6 +704,12 @@ gitChangeEmail() {
 }
 
 
+gitFetchFromOrigin() {
+    declare _branchToPull="${1:-$(gitGetBranch)}"
+
+    git fetch origin "$_branchToPull"
+}
+
 gitPullFromOrigin() {
     declare _branchToPull="${1:-$(gitGetBranch)}"
 
@@ -807,6 +813,8 @@ alias  grhH='git reset --hard HEAD'
 alias   gpl='git pull'
 alias  gplo='gitPullFromOrigin'
 alias gplom='gitPullFromOrigin $(gitGetPrimaryBranch)'
+alias   gfo='gitFetchFromOrigin'
+alias  gfom='gitFetchFromOrigin $(gitGetPrimaryBranch)'
 alias   gst='git stash'
 alias  gstl='git stash list'
 alias  gsta='git stash apply'
