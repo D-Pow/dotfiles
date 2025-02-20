@@ -586,6 +586,7 @@ listnetworkdevices() {
     declare _nmapOpts="${argsArray[@]}"
 
     declare _allDevicesStdout="$(
+        # sudo nmap -Pn --min-parallelism $(numCpuCores) $_nmapOpts "$_lanIpAddressRange"
         nmap -sL --min-parallelism 100 $_nmapOpts "$_lanIpAddressRange" \
             | egrep -iv '^(starting nmap)|(nmap scan report for (\d{1,3}\.){3}\d{1,3}$)'
     )"
@@ -1385,6 +1386,10 @@ zipExtract() {
 }
 
 
+
+# TODO: https://askubuntu.com/questions/442997/how-can-i-convert-audio-from-ogg-to-mp3
+# ( IFS=$'\n'; for file in $(find . -iname '*.ogg'); do fullPath="$file"; path=$(echo "$file" | awk '{ print $1 }' | sed -E 's|/[^/]+$||'); file=$(echo "$file" | sed -E 's|(^.*/)([^/]+)\.ogg$|\2|g'); echo "Path: ($path) File: ($file)"; done; )
+# Use --parents to make `mv` create nested dirs: https://stackoverflow.com/a/547927/5771107
 
 hashDir() {
     declare USAGE="[OPTIONS...] [path...] [-- \`findIgnore\` OPTIONS...]

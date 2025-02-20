@@ -261,7 +261,7 @@ parseArgs() {
         # For our usage, this makes the space between option keys and
         # descriptions evenly spaced so that all descriptions line up.
         # `-t` = Convert to table (i.e. make it evenly spaced)
-        # `-c N` = Make N columns; On WSL, N is max-width in characters;
+        # `-c N` = Make N columns; On WSL, it's is max-width in characters;
         #   Try both `-c numCols` and `-c maxWidth` to find which one you need to use.
         #   Could also use as max-width to make table less wide than the full terminal width.
         # `-s delim` = Use specified string as a delimiter rather than all whitespace.
