@@ -123,12 +123,15 @@ windows-which() {
     where "$programToSearchFor" 2>/dev/null
 
     if (( $? )); then
-        powershell.exe "(\$Env:Path).Split(';') | Get-ChildItem -filter *${programToSearchFor}*" 2>/dev/null
+        declare powershellEnvOutput="$(powershell.exe "(\$Env:Path).Split(';') | Get-ChildItem -filter *${programToSearchFor}*" 2>/dev/null)"
 
-        if (( $? )); then
-            findRegex "$PROGRAMFILES" -iwholename "*${programToSearchFor}*" 2>/dev/null
-            findRegex "$PROGRAMFILES (x86)" -iwholename "*${programToSearchFor}*" 2>/dev/null
-            findRegex "$(realpath "$APPDATA/..")" -iwholename "*${programToSearchFor}*" 2>/dev/null
+        echo "$powershellEnvOutput"
+
+        # PowerShell doesn't return 0/1 for success/failure like Bash, so check output length for success
+        if ! (( "${#powershellEnvOutput}" )); then
+            findRegex "$PROGRAMFILES" ! -ipath '*node_modules*' -iwholename "*${programToSearchFor}*" 2>/dev/null
+            findRegex "$PROGRAMFILES (x86)" ! -ipath '*node_modules*' -iwholename "*${programToSearchFor}*" 2>/dev/null
+            findRegex "$(realpath "$APPDATA/..")" ! -ipath '*node_modules*' -iwholename "*${programToSearchFor}*" 2>/dev/null
         fi
     fi
 }
