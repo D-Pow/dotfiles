@@ -597,11 +597,19 @@ hdRefreshCache() {
         ['eb']='15fe719b-9424-4df7-8637-4896e8eedf99'
     )
 
+    declare username=
+    declare password=
+
+    # Read login input from user once
+    read -p "LDAP: " username
+    read -p -s "Password: " password
+    echo
+
     declare env=
     for env in "${!envIdMap[@]}"; do
         declare id="${envIdMap["$env"]}"
 
-        cf login -a "https://api.run-${env}.homedepot.com"
+        cf login -a "https://api.run-${env}.homedepot.com" -u "$username" -p "$password"
 
         # Get instance ID via:
         #   cf app ${appName} | grep -Pio '^#\d' | sed -E 's/#//'
