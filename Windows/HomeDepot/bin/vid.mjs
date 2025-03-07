@@ -9,14 +9,23 @@ import {
 
 const hmacCreationTime = Date.now();
 
+const giftCards = {
+    '98081550000375908410349': {
+        pin: 3653,
+    },
+    '98081550000375915341008': {
+        pin: 2746,
+    },
+};
+
 const couponBarcodes = {
     transactionLevel: {
         barcode: '98153000003090752399641951',
     },
     itemLevel: [
         {
-            barcode: '98153000003091157079816478',
             sku: '172036',
+            barcode: '98153000003091157079816478',
         },
         {
             sku: 148634,
@@ -30,7 +39,7 @@ const couponBarcodes = {
         },
         {
             sku: 148264,
-            barcode: 98153000003097806992645380 ,
+            barcode: 98153000003097806992645380,
             promo: 30978,
         },
     ],
@@ -43,7 +52,7 @@ Gift Cards
 98081550000366126630735 6220 - $10
 98081550000366130322550 7605 - $25
 */
-// Candy SKU: 198656
+// Candy SKU: 198656, 199314
 // Coke SKU: 751139
 const users = {
     'b2btestperksstaguser216@mailinator.com': {
@@ -57,7 +66,8 @@ const users = {
             // 'P124F797AB98607A80', // CC - MASTERCARD card
             // 'P1352A7DD71E5B8780', // CC Primary - Em Cappai
 
-            'P13565AE1297521E60', // CC Primary Prox card
+            'P135892215F27E2C00', // CC Primary purchaser card
+            // 'P13565AE1297521E60', // CC Primary Prox card
             // 'P13569AD8CAFF2EFE0', // Juan single card, HD Pass only
             // 'P1256E1223C34F2700', // Amex HD Pass only
 
@@ -89,7 +99,8 @@ const users = {
         userId: '042B5CD4AE804E240U',
         svocId: '042B5CD4AE564E240S',
         pids: [
-            'P1356EB719D53DD260',
+            // 'P1356EB719D53DD260',
+            'P13587D45601A055A0', // PLCC
         ],
     },
     'b2btestperksstaguser209@mailinator.com': {
@@ -242,6 +253,9 @@ export function headersToObj(headersEntriesArray) {
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 export async function hdFetch(url, opts, {
     domain = 'https://hd-qa74.homedepotdev.com',
+    // domain = 'https://184.25.166.81',
+    // domain = 'https://23.47.178.14',
+    // domain = 'https://23.216.70.70',
 } = {}) {
     const cookies = opts?.headers?.Cookie;
 
@@ -419,7 +433,7 @@ export async function generateVid({
 
         const pidPrompts = [
             [ payments.creditCards, 'credit card', true ],
-            [ payments.pxds, 'PXD', false ],
+            [ payments.pxds, 'PXD', true ],
             [ payments.coupons, 'coupon', true ],
         ]
             .filter(([ arr ]) => arr?.length);
@@ -524,7 +538,7 @@ export async function getPayments({
             && new Date() < new Date(rewardExpDate)
             && perkTypeStatus?.match(/(?<!in)Active/i)
         ))
-        ?.map(({ cardNickName, paymentId, paymentType, gcBalance }) => ({ cardNickName, paymentId, paymentType, gcBalance }));
+        ?.map(({ cardNickName, paymentId, paymentType, gcBalance }) => ({ cardNickName: `${cardNickName} - ${gcBalance}`, paymentId, paymentType, gcBalance }));
 
     // TODO - Could remove query param to get both PXDs and coupons
     const resCoupons = await hdFetch(`/b2b/user/account/${userId}/customer/${svocId}/perks/info?offerType=offer`, {
