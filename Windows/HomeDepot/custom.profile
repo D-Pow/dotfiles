@@ -557,27 +557,22 @@ _hdUpdateRegisterVersion() {
     ${root}/POSrewrite/runlocal.bat
 }
 
+hdLogLatest() {
+    ls -FlAh /mnt/c/POSrewrite/data/logs/regApp.log.2025* \
+        | sort -Vr -k 9 \
+        | awk '{ print $9 }' \
+        | head -n 1 \
+        | sed -E 's/\*$//' \
+        | decolor
+}
+
 hdTransIds() {
-    cat $(
-        ls -FlAh /mnt/c/POSrewrite/data/logs/regApp.log.2024* \
-            | sort -Vr -k 9 \
-            | awk '{ print $9 }' \
-            | head -n 1 \
-            | sed -E 's/\*$//' \
-            | decolor
-    ) \
+    cat $(hdLogLatest) \
         | egrep -i 'pos_trans_id'
 }
 
 hdReceiptBarcodeLatest() {
-    cat $(
-        ls -FlAh /mnt/c/POSrewrite/data/logs/regApp.log.2024* \
-            | sort -Vr -k 9 \
-            | awk '{ print $9 }' \
-            | head -n 1 \
-            | sed -E 's/\*$//' \
-            | decolor
-    ) \
+    cat $(hdLogLatest) \
         | egrep -i 'receipt_raw .*</receipt_raw>' \
         | tail -n 1 \
         | egrep -io --color=never '>.*<' \
