@@ -589,6 +589,15 @@ tarremovepathprefix() {
     tar "${_tarOpts[@]}" -C "$_tarContainingDir" "$_tarToArchive"
 }
 
+isZipFile() {
+    # See: https://stackoverflow.com/questions/50220100/how-to-check-if-file-is-tar-file-in-bash-shell/50220269#50220269
+    file "$1" | egrep -io ': [^,]+(data,)?' | sed -E 's/(^: )|(,$)//g' | egrep -iq '\bzip\b'
+}
+
+isTarFile() {
+    ! isZipFile && file "$1" | egrep -io ': [^,]+(data,)?' | sed -E 's/(^: )|(,$)//g' | egrep -iq '\b(gzip|tar)\b'
+}
+
 
 if ! isDefined tree; then
     # `tree` isn't defined, so define it here
