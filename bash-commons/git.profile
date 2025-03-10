@@ -7,6 +7,7 @@
 
 
 openGitMergeConflictFilesWithSublime() {
+    # git log --stat --graph --first-parent $(gitGetBranch) --after='2022-06-03' --before='2022-06-06'
     subl -n $(gitGetBothModified)
 
     # If `subl` failed, attempt reading alias/overridden function
@@ -26,7 +27,9 @@ gitIgnorePathsArgs() {
     # For ignoring files:
     #   `:(top)` = git root (shorthand: `.` but only if in root dir)
     #   `:(exclude)myPath` = path to exclude (shorthand: `:!myPath`)
-    # Ref: https://stackoverflow.com/a/39937070/5771107
+    # See:
+    #   - https://css-tricks.com/git-pathspecs-and-how-to-use-them
+    #   - https://stackoverflow.com/a/39937070/5771107
     declare USAGE="[OPTIONS...] <paths...>
     Generates the args required to ignore certain paths in git commands, esp \`diff\`, \`status\`, etc.
 
@@ -802,7 +805,7 @@ alias  gldi='ignoreFilesInGitLog'
 alias   glo='gl --oneline'
 alias   gla='gl --oneline --all'
 alias   glb='gl --first-parent $(gitGetBranch)' # only show this branch's commits
-alias   gls='gl --grep'
+alias   gls='gl --grep'  # See: https://stackoverflow.com/questions/7124914/how-to-search-a-git-repository-by-commit-message/7124949#7124949
 alias  glsd='gld --grep'
 alias    gp='git push'
 alias   gpu='git push -u origin $(gitGetBranch)'
