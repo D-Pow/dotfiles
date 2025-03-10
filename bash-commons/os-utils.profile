@@ -569,6 +569,7 @@ listnetworkdevices() {
     declare _lanIpAddressRange="$(getip -l | sed -E 's/\.[0-9]+$/.0/')/24"
 
     declare _listWithoutParentheses=
+    declare _listOnlyIps=
     declare _listVerbose=
     declare argsArray=
     declare USAGE="[OPTIONS...] [nmap-options...]
@@ -576,6 +577,7 @@ listnetworkdevices() {
     "
     declare -A _listNetworkOpts=(
         ['q|quiet,_listWithoutParentheses']='List devices without parentheses and other info.'
+        ['i|ips,_listOnlyIps']='List only device IP addresses.'
         ['v|verbose,_listVerbose']='Show performance stats from `nmap`'
         ['USAGE']="$USAGE"
     )
@@ -605,7 +607,33 @@ listnetworkdevices() {
         _allDevicesStdout="$(echo "$_allDevicesStdout" | trim -b 1)"
     fi
 
-    echo "$_allDevicesStdout"
+    if [[ -n "$_listVerbose" ]]; then
+        echo "$_allDevicesStdout"
+        return
+    fi
+
+    declare _allDevicesStdoutSimplified="$(
+        echo "$_allDevicesStdout" \
+            | egrep -i '(mac address)|(nmap scan report)' \
+            | esed 's/^[a-zA-Z ]+(([a-zA-Z0-9]{2}:)|([0-9]{3}.))/\3/; s/^ //' \
+            | awk '{
+                if (NR % 2 != 0) {
+                    ipAddress = $0;
+                    getline;
+                    macAddress = $1;
+                    $1 = "";
+                    deviceName = $0;
+                    printf("%s\t%s\t%s\n", ipAddress, macAddress, deviceName)
+                }
+            }'
+    )"
+
+    if [[ -n "$_listOnlyIps" ]]; then
+        echo "$_allDevicesStdoutSimplified" | awk '{ print $1 }'
+        return
+    fi
+
+    echo "$_allDevicesStdoutSimplified"
 }
 
 getParentPid() {
