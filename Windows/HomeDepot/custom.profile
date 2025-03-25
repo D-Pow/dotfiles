@@ -616,7 +616,7 @@ hdRefreshCache() {
         declare i=
         for i in {0,1}; do
             # QA:
-            #  curl -sS --header 'cache-control: no-cache' --header 'uuid: refresh' --header "X-CF-APP-INSTANCE: 47123feb-fb32-4e9d-830e-c98cdcd5c545:0" "http://pos-service-parameter-uat.apps-np.homdedepot.com/service/v1/parameters/refreshCache?lcp=QA"
+            #  curl -sS --header 'cache-control: no-cache' --header 'uuid: refresh' --header "X-CF-APP-INSTANCE: 47123feb-fb32-4e9d-830e-c98cdcd5c545:0" "http://pos-service-parameter-uat.apps-np.homedepot.com/service/v1/parameters/refreshCache?lcp=QA"
             curl -sS \
                 --header 'cache-control: no-cache' \
                 --header 'uuid: refresh' \
