@@ -566,7 +566,7 @@ export async function getPayments({
 
 
 function parseArgs(args = process.argv, scriptName = import.meta.url.match(/(?<=[\/\\])[^\/]+$/)?.[0]) {
-    const argsIndexOfJsFile = process.argv.findIndex(cliArg => cliArg?.match(/\.[mc]?[tj]s[x]?$/));
+    const argsIndexOfJsFile = args.findIndex(cliArg => cliArg?.match(/\.[mc]?[tj]s[x]?$/));
     const scriptArgs = args.slice(argsIndexOfJsFile + 1);
     const defaultUserEmail = Object.entries(users)[0][0];
     const defaultUser = users[defaultUserEmail];
@@ -580,6 +580,7 @@ function parseArgs(args = process.argv, scriptName = import.meta.url.match(/(?<=
         longVid: false,
         copyToClipboard: false,
         help: false,
+        args: [],
     }
     const parsedScriptArgs = scriptArgs.reduce((argMap, arg, argIndex, arr) => {
         const nextArg = arr[argIndex + 1];
@@ -637,6 +638,7 @@ function parseArgs(args = process.argv, scriptName = import.meta.url.match(/(?<=
                 argMap.help = true;
                 break;
             default:
+                argMap.args.push(arg);
                 break;
         }
 
@@ -670,10 +672,10 @@ If using one of the following emails, then \`password\`, \`userId\`, and \`svocI
 
 async function main(argv = process.argv) {
     const thisFileName = import.meta.url.match(/(?<=[\/\\])[^\/]+$/)?.[0];
-    const argsIndexOfJsFile = process.argv.findIndex(cliArg => cliArg?.match(/\.[mc]?[tj]s[x]?$/));
+    const argsIndexOfJsFile = argv.findIndex(cliArg => cliArg?.match(/\.[mc]?[tj]s[x]?$/));
     const isMain = (
         argsIndexOfJsFile >= 0
-        && process.argv[argsIndexOfJsFile]?.includes(thisFileName)
+        && argv[argsIndexOfJsFile]?.includes(thisFileName)
     );
 
     if (!isMain) {

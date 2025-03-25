@@ -34,9 +34,10 @@ function sortStores(storeList) {
 
 
 async function getAllStores({
+    qa = false,
     asString = false,
 } = {}) {
-    const res = await fetch('https://thd-store-info-service.apps.homedepot.com/stores', {
+    const res = await fetch(`https://thd-store-info-service.apps${qa ? '-np' : ''}.homedepot.com/stores`, {
         headers: {
             Accept: 'application/json',
         },
@@ -57,7 +58,9 @@ async function getAllStores({
 }
 
 
-async function lookupStore(storeList) {
+async function lookupStore(storeList, {
+    qa = false,
+} = {}) {
     const res = await fetch('https://config-repo-helper.apps-np.homedepot.com/getByoAndMkt', {
         method: 'POST',
         headers: {
@@ -77,7 +80,7 @@ async function lookupStore(storeList) {
         if (sortedStores == null || sortedStores.length === 0) {
             const storeSet = new Set(storeList.split(','));
 
-            sortedStores = (await getAllStores())
+            sortedStores = (await getAllStores({ qa }))
                 .filter(({ number }) => storeSet.has(number))
                 .map(({
                     countryCode,
@@ -97,14 +100,39 @@ async function lookupStore(storeList) {
 
 
 
-function main(args = process.argv) {
-    const scriptName = import.meta.url.match(/(?<=[\/\\])[^\/]+$/)?.[0];
-    const argsIndexOfJsFile = process.argv.findIndex(cliArg => cliArg?.match(/\.[mc]?[tj]s[x]?$/));
+function parseArgs(args = process.argv, scriptName = import.meta.url.match(/(?<=[\/\\])[^\/]+$/)?.[0]) {
+    const argsIndexOfJsFile = args.findIndex(cliArg => cliArg?.match(/\.[mc]?[tj]s[x]?$/));
     const scriptArgs = args.slice(argsIndexOfJsFile + 1);
+    const defaultArgs = {
+        qa: false,
+        help: false,
+        args: [],
+    }
+    const parsedScriptArgs = scriptArgs.reduce((argMap, arg, argIndex, arr) => {
+        const nextArg = arr[argIndex + 1];
 
-    if (!scriptArgs?.length || scriptArgs.includes('-h') || scriptArgs.includes('--help')) {
+        switch(arg) {
+            case '-t':
+            case '--test':
+            case '-q':
+            case '--qa':
+                argMap.qa = true;
+                break;
+            case '-h':
+            case '--help':
+                argMap.help = true;
+                break;
+            default:
+                argMap.args.push(arg);
+                break;
+        }
+
+        return argMap;
+    }, defaultArgs);
+
+    if (parsedScriptArgs.help) {
         console.log(`
-Usage: ${scriptName} [STORE_NUMBERS...]
+Usage: ${scriptName} [OPTIONS...] STORE_NUMBERS...
 
     Outputs full store string matching the format "Country.byoXXXX.mktYYYY.stZZZZ" for adding to config-repo.
     STORE_NUMBERS is comprised of separate args and/or comma-separated list.
@@ -113,12 +141,23 @@ Usage: ${scriptName} [STORE_NUMBERS...]
         ${scriptName} 123 456 789
         ${scriptName} '123,456,789'
         ${scriptName} 123 '456,789'
+
+Options:
+    -q,-t, --qa,--test      QA/Test store instead of production store.
+    -h, --help              Print this message and exit.
         `);
 
+        process.exit();
         return;
     }
 
-    lookupStore(scriptArgs.join(','))
+    return parsedScriptArgs;
+}
+
+function main() {
+    const args = parseArgs();
+
+    lookupStore(args.args.join(','), args)
         .then(res => {
             if (Array.isArray(res)) {
                 res.forEach(entry => console.log(entry));
