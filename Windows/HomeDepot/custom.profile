@@ -26,6 +26,7 @@ DOCKER_TOKEN=${DOCKER_TOKEN}
 
 alias sqlite3="/mnt/c/sqlite/sqlite3.exe"
 alias docker="docker.exe"
+alias gh='/mnt/c/Program\ Files/GitHub\ CLI/gh.exe'
 alias cf="cf.exe"
 # alias gcloud="/mnt/c/Program\ Files\ \(x86\)/Google/Cloud\ SDK/google-cloud-sdk/bin/gcloud"
 alias gcloud="cmd gcloud.cmd"
