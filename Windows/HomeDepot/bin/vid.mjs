@@ -9,6 +9,16 @@ import {
 
 const hmacCreationTime = Date.now();
 
+/* Credit Cards
+4012000033330026
+12/29
+CVV: 123
+
+5405010100000016
+12/29
+CVV: 123
+*/
+
 const giftCards = {
     '98081550000375908410349': {
         pin: 3653,
@@ -91,7 +101,8 @@ const users = {
         userId: '052B7CCDDDFF9E5E0U',
         svocId: '052B7CCDDDCD1E5E0S',
         pids: [
-            'P135700EAAAC0E12A0',
+            'P13599EBC3202F9760', // CC
+            'P125997C0202C06260', // Coupon for 5@151557
         ],
     },
     'b2btestadmin@yopmail.com': {
