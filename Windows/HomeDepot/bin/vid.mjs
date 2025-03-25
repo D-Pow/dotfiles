@@ -256,6 +256,7 @@ export async function hdFetch(url, opts, {
     // domain = 'https://184.25.166.81',
     // domain = 'https://23.47.178.14',
     // domain = 'https://23.216.70.70',
+    fetchBodyTextFallback = false,
 } = {}) {
     const cookies = opts?.headers?.Cookie;
 
@@ -281,7 +282,17 @@ export async function hdFetch(url, opts, {
 
     const res = await fetch(url, opts);
     const headers = headersToObj([ ...res.clone().headers.entries() ]);
-    const body = await (res.clone()).json();
+    let body;
+
+    if (fetchBodyTextFallback) {
+        try {
+            body = await (res.clone()).json();
+        } catch (e) {
+            body = await (res.clone()).text();
+        }
+    } else {
+        body = await (res.clone()).json();
+    }
 
     return {
         res,
@@ -297,6 +308,8 @@ export async function getHmacToken() {
             timestamp: hmacCreationTime,
             clientId: 'clientId',
         },
+    }, {
+        fetchBodyTextFallback: true,
     });
 }
 
