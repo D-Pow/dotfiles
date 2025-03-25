@@ -88,6 +88,7 @@ async function lookupStore(storeList, {
                     marketNumber,
                     number,
                 }) => `${countryCode}.byo${buyingOfficeNumber}.mkt${marketNumber}.st${number}: Y`);
+            sortedStores = [ ...new Set(sortedStores) ];
         }
 
         return sortedStores;
