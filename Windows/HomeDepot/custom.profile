@@ -603,7 +603,7 @@ hdRefreshCache() {
 
     # Read login input from user once
     read -p "LDAP: " username
-    read -p -s "Password: " password
+    read -s -p "Password: " password
     echo
 
     declare env=
