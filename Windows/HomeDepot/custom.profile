@@ -260,10 +260,10 @@ hdmvn() {
     fi
 
     # --fail-at-end
-    mvn -Dmaven.test.skip=true -DskipTests -Djacoco.skip=true "${mvnArgs[@]}"
+    mvn -Dmaven.test.skip=true -DskipTests -Djacoco.skip=true -Denforcer.skip=true "${mvnArgs[@]}"
 }
 
-alias mvnt="mvn -Dmaven.test.skip=true -DskipTests -Djacoco.skip=true"
+alias mvnt="mvn -Dmaven.test.skip=true -DskipTests -Djacoco.skip=true -Denforcer.skip=true"
 
 hdmvnall() {
     hdfixpoms
