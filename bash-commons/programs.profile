@@ -28,10 +28,14 @@ resetJetbrains() {
             $HOME/Library/Application\ Support/JetBrains/*[0-9.]*/options/options.xml
     elif isLinux; then
         echo "Deleting trial evaluation files from '$HOME/.config/JetBrains/'..."
+
         rm -rf \
             $HOME/.config/JetBrains/*/options/other.xml \
             $HOME/.config/JetBrains/*/options/eval* \
             $HOME/.config/JetBrains/*/eval*
+
+        # See: https://gist.github.com/h3ssan/9510fbb2291d41b090cf52adb2edd1c4
+        sed -i 's/^.*evlsprt.*//' $HOME/.config/JetBrains/*/options/other.xml 2>/dev/null
     fi
 }
 
