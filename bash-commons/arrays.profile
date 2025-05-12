@@ -247,7 +247,7 @@ array.join() {
         # strings themselves, due to the required `${}` portion. So you can't nest other calls in it, e.g.
         # ${"`command`"/%stringToReplace}
         # `${str/%remove}` picks the shortest matching string from the end of the array (see String Manipulation docs).
-        _joinOutput="${_joinOutput/%$_joinDelim}"
+        _joinOutput="${_joinOutput/%"$_joinDelim"}"
     fi
 
     echo "$_joinOutput"
