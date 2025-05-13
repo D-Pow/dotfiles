@@ -885,7 +885,8 @@ _postgresPathSet() {
         # different location than the executables, so add the default, OS-wide
         # DB dir in `PGDATA` to ensure at least some DB cluster is selected
         # for `psql` and related commands.
-        export PGDATA="$(pg_lsclusters | tail -n +2 | sort -Vr | head -n 1 | awk '{ print $6 }')"
+        export POSTGRESQL_PATH="$(pg_lsclusters | tail -n +2 | sort -Vr | head -n 1 | awk '{ print $6 }')"
+        export PGDATA="/var/lib/pgsql/data"
 
         declare _postgresRunningProcessPath="/var/run/postgresql"
         declare _postgresGroupName="postgres"
@@ -895,6 +896,12 @@ _postgresPathSet() {
             # so they can do the same actions as `postgres` can.
             # Same as: `sudo adduser $(whoami) postgres`
             sudo usermod -a -G postgres $(whoami)
+        fi
+
+        if ! [[ -d "$PGDATA" ]]; then
+            sudo mkdir -p "$PGDATA"
+            sudo chmod -R 755 "$PGDATA"
+            sudo chown -R $(whoami):postgres "$(dirname "$PGDATA")"
         fi
 
         # Allow OS user to start/stop local (not top-level in OS-install dir)
@@ -986,7 +993,7 @@ postgresInitNewDbCluster() {
     declare USAGE="[OPTIONS...]
     Initializes a new PostgreSQL DB cluster with a DB and root user.
     "
-    declare _pgdataDir=
+    declare _pgdataDir="$PGDATA"
     declare _postgresConf=
     declare _dbName=
     declare _dbUserRoot=
@@ -1000,11 +1007,6 @@ postgresInitNewDbCluster() {
 
     parseArgs _postgresqlInitNewDbClusterOptions "$@"
     (( $? )) && return 1
-
-    if [[ -z "$_pgdataDir" ]]; then
-        echo "Please specify a PGDATA directory." >&2
-        return 1
-    fi
 
     if [[ -z "$_dbName" ]]; then
         _dbName="postgres"
@@ -1022,14 +1024,15 @@ postgresInitNewDbCluster() {
     #   +
     #   createuser [...] $(whoami)
     initdb \
-        --pgdata="${_pgdataDir}" \
+        ${_pgdataDir:+--pgdata="${_pgdataDir}"} \
         --encoding='UTF-8' \
         --allow-group-access \
-        --username=$(whoami)
+        --username="$_dbUserRoot"
 
     if [[ -f "$HOME/postgresql.conf" ]]; then
         # Set default PostgreSQL server options
         cp "$HOME/postgresql.conf" "${_pgdataDir}/postgresql.conf"
+        chmod a+r "${_pgdataDir}/postgresql.conf"
     fi
 
     if [[ -n "$_postgresConf" ]]; then
@@ -1122,11 +1125,7 @@ postgresStart() {
     _pgdataDir="${_pgdataDir:-"$PGDATA"}"
 
     if [[ -z "$_dbUserRoot" ]]; then
-        if [[ "$_pgdataDir" == "$PGDATA" ]]; then
-            _dbUserRoot="postgres"
-        else
-            _dbUserRoot="$(whoami)"
-        fi
+        _dbUserRoot="$(ls -FlAh $(dirname "$PGDATA") | tail -n 1 | awk '{ print($3) }')"
     fi
 
 
