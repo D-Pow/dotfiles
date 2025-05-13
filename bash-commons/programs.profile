@@ -926,7 +926,7 @@ _postgresPathSet() {
             ! [[ -d "$_postgresRunningProcessPath" ]] \
             || ! [[ -f "$postgresModScriptInitPath" ]] \
             || ! [[ -f "$postgresModScriptRunControlScriptPath" ]] \
-            || ! ls -FlAh /var/run/ | grep postgresql | egrep -iq 'drwxr.[sx]rwx'
+            || ! ls -FlAh /var/run/ | grep postgresql | egrep -iq 'drwxr.[sx]r.x'
         then
 
             # Since we don't have permission as a user to write to `/etc/`, spawn
