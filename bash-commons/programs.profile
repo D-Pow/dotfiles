@@ -1154,7 +1154,7 @@ postgresStop() {
     declare USAGE="[OPTIONS...]
     Stops a PostgreSQL DB cluster.
     "
-    declare _pgdataDir=
+    declare _pgdataDir="$PGDATA"
     declare _dbUserRoot=
     declare argsArray=
     declare -A _postgresqlInitNewDbClusterOptions=(
@@ -1168,21 +1168,13 @@ postgresStop() {
     parseArgs _postgresqlInitNewDbClusterOptions "$@"
     (( $? )) && return 1
 
-    if [[ -z "$_pgdataDir" ]]; then
-        _pgdataDir="$PGDATA"
-    fi
-
     if [[ -z "$_dbUserRoot" ]]; then
-        if [[ "$_pgdataDir" == "$PGDATA" ]]; then
-            _dbUserRoot="postgres"
-        else
-            _dbUserRoot="$(whoami)"
-        fi
+        _dbUserRoot="$(ls -FlAh $(dirname "$PGDATA") | tail -n 1 | awk '{ print($3) }')"
     fi
 
 
     if isLinux && [[ "$_pgdataDir" == "$PGDATA" ]]; then
-        sudo -u postgres "$(pg_config --bindir)/pg_ctl" --pgdata="$_pgdataDir" "${argsArray[@]}" stop
+        sudo -u "$_dbUserRoot" "$(pg_config --bindir)/pg_ctl" --pgdata="$_pgdataDir" "${argsArray[@]}" stop
     else
         "$(pg_config --bindir)/pg_ctl" --pgdata="$_pgdataDir" "${argsArray[@]}" stop
     fi
