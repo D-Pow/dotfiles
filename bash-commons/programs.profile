@@ -979,9 +979,9 @@ sudo chmod -R a+rwx \"$_postgresRunningProcessPath\"
         declare _postgresPackageName="$(brew list | grep -Ei --color=never postgres)"
 
         export PATH="$PATH:$(brew info "$_postgresPackageName" | grep 'export PATH' | grep -Eo '"[^"]*"' | sed -E 's/\$PATH|:|"//g')"
-        export PGDATA="$(dirname "$_postgresBinPath")"
+        export PGDATA="/var/lib/pgsql/data"
     else
-        echo "TODO: Setup PostgreSQL on OS" >&2
+        echo "TODO: Setup PostgreSQL on Windows" >&2
         return 1
     fi
 } && _postgresPathSet
