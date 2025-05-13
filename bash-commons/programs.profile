@@ -217,6 +217,9 @@ export NVM_SYMLINK_CURRENT=true # Makes a symlink at ~/.nvm/current/bin/node so 
 export NVM_CURRENT_HOME="$NVM_DIR/current"
 export PATH="$NVM_CURRENT_HOME/bin:$PATH"
 
+# Disable yarn from auto-adding `packageManager` entry to package.json
+export COREPACK_ENABLE_AUTO_PIN=0
+
 
 alias node="\"$(which node)\" --experimental-top-level-await --experimental-json-modules --experimental-import-meta-resolve"
 alias nodejs="node"
