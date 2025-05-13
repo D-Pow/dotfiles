@@ -751,6 +751,10 @@ dockerContainerInfo() {
     # Inspired by: https://stackoverflow.com/questions/38946683/how-to-test-dockerignore-file
     declare _dockerfilePath="${1:-"$(pwd)"}"
 
+    if ! [[ -d "$_dockerfilePath" ]]; then
+        _dockerfilePath="$(realpath -se "$(dirname "$_dockerfilePath")")"
+    fi
+
     declare _utilImageName='docker-show-context'
     declare _utilImageRepo='https://github.com/pwaller/docker-show-context.git'
     declare _utilImageExists="$(docker image ls -q "$_utilImageName")"
