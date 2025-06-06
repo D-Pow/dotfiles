@@ -246,8 +246,11 @@ watchJavaProcs() {
 
 hdmvn() {
     # Not sure why, but the CMS and Computer Vision sub-projects always give me trouble when installing, so ignore them all.
-    # !:CMSDataIntegration
-    declare specificProjectsToBuildFilter="!:store-payment-orchestration,!:RegisterJre,!:cv-service,!:cv-pos-client,!:cv-contracts,!:computer-vision-mock-service,!:CMSWeb,!:CMSRecognitionIntegration,!:CMS_Data_Access,!:checkout-applications,!:register-components,!:OCBAdmin,!:store-account-management-orchestration,!:ItemService,!:store-config,!:check-endorsement,!:ocb-remediation,!:monarchdatasync"
+    # !:store-payment-orchestration,!:CMSDataIntegration
+    # Old:
+    # declare specificProjectsToBuildFilter="!:RegisterJre,!:cv-service,!:cv-pos-client,!:cv-contracts,!:computer-vision-mock-service,!:CMSWeb,!:CMSRecognitionIntegration,!:CMS_Data_Access,!:checkout-applications,!:register-components,!:OCBAdmin,!:store-account-management-orchestration,!:ItemService,!:store-config,!:check-endorsement,!:ocb-remediation,!:monarchdatasync,:legacy-gateway"
+    declare specificProjectsToBuildFilter="!:jre-builder-docker,!:store-config,!:RegisterJre,!:RegisterJre17,!:checkout-applications,!:register-components,!:CMSWeb,!:CMSRecognitionIntegration,!:OCBAdmin,!:ocb-remediation,!:cv-service"
+    specificProjectsToBuildFilter="$specificProjectsToBuildFilter,!:release-support-service,!:check-endorsement,!:check-endorsement-ui,!:close-sls-batch,!:flashsales-generation,!:legacy-gateway,!:monarchdatasync,!:ocb-xml-cleanup,!:pluOfflineProcess,!:pos-data-load-checkendorsement,!:pos-data-load-receiptmessage,!:hd-str-pt-poslegacykeystore-jvlib,!:pregrand-datasync,!:pregrand-opening-menu,!:pregrand-opening,!:pspCatastorphicRecovery,!:psp-failover-switch,!:rcu-upload,!:receipt-message,!:receipt-message-ui,!:sapt-slslbrdrv,!:sapt-slslbrpostdrv"
 
     declare mvnArgs=("$@")
     declare mvnArgsHasProjectsFlag=
@@ -280,6 +283,7 @@ hdmvnall() {
     hdfixpoms
     hdmvn clean install -rf ":${1:-token-provider-spi}"
     gck -- *.js
+    rm -r apps/register/register-webap2/WebContent/
 }
 
 hdfixpoms() {
