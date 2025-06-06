@@ -2,6 +2,14 @@ declare _bashSubsystemDir="${dotfilesDir}/Windows/wsl"
 declare _bashSubsystemProfile="${_bashSubsystemDir}/custom.profile"
 
 source "$_bashSubsystemProfile"
+# sed -E '/>engage-client<.*/!b;n; s|(.*<version>)[^<]*|\1'$(hdLatestJarVersion engage-client)'|' apps/register/app-self-service/pom.xml
+
+export GRADLE_HOME="/mnt/c/gradle/8.10"
+export GRADLE_PATH="$GRADLE_HOME/bin"
+export SQLITE_HOME="$HOME/sqlite3"
+export POSTGRESQL_HOME="/mnt/c/Program Files/PostgreSQL/17/bin"
+export PATH_TO_FX="/mnt/c/java/javafx-sdk-17.0.15/lib"
+export PATH="$POSTGRESQL_HOME:$SQLITE_HOME:$PATH"
 
 
 export ARTIFACTORY_USER="$(jq -r '.user' "${reposDir}/token-maven.json")"
@@ -24,6 +32,7 @@ DOCKER_USER=${ARTIFACTORY_USER}
 DOCKER_TOKEN=${DOCKER_TOKEN}
 " > "${reposDir}/.env"
 
+alias gradle="cmd $GRADLE_PATH/gradle.bat"
 alias sqlite3="/mnt/c/sqlite/sqlite3.exe"
 alias docker="docker.exe"
 alias gh='/mnt/c/Program\ Files/GitHub\ CLI/gh.exe'
@@ -32,6 +41,8 @@ alias cf="cf.exe"
 alias gcloud="cmd gcloud.cmd"
 alias gcloud-refresh='gcloud auth application-default login && gcloud auth login'
 alias k9s="/mnt/c/Users/f76w5no/AppData/Local/Microsoft/WinGet/Packages/Derailed.k9s_Microsoft.Winget.Source_8wekyb3d8bbwe/k9s.exe"
+alias kubectx="/mnt/c/Users/f76w5no/AppData/Local/Microsoft/WinGet/Packages/ahmetb.kubectx_Microsoft.Winget.Source_8wekyb3d8bbwe/kubectx.exe"
+alias kubens="/mnt/c/Users/f76w5no/AppData/Local/Microsoft/WinGet/Packages/ahmetb.kubens_Microsoft.Winget.Source_8wekyb3d8bbwe/kubens.exe"
 alias kubectl="/mnt/c/Program\ Files\ \(x86\)/Google/Cloud\ SDK/google-cloud-sdk/bin/kubectl.exe"
 alias k='kubectl'
 export KUBE_EDITOR='subl.exe'
