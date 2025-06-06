@@ -600,8 +600,8 @@ hdReceiptBarcodeLatest() {
 
 
 hdRefreshCache() {
-    declare flagRegexSearch="${1:-enableHdWalletButtonPos}"
-    declare storeFourDigitNumber="$2"
+    declare storeFourDigitNumber="$1"
+    declare flagRegexSearch="${2:-enableHdWalletButtonPos}"
     # Get app name via:
     #   cf apps | grep -i pos-service-parameter | cut -f 1 -d ' ' | grep -vi log4j | sort -Vr | head -n 1
     # Get app GUID via:
