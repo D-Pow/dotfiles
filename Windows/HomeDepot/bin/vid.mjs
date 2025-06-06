@@ -34,6 +34,18 @@ const couponBarcodes = {
     },
     itemLevel: [
         {
+            sku: 668373,
+            barcode: 98153159503893089287850296,
+        },
+        {
+            sku: 151557, // or 489664
+            barcode: 98153194279194710382613715,
+        },
+        {
+            sku: 668373, // or 439260
+            barcode: 98153183138680995707944455,
+        },
+        {
             sku: '172036',
             barcode: '98153000003091157079816478',
         },
@@ -76,7 +88,8 @@ const users = {
             // 'P124F797AB98607A80', // CC - MASTERCARD card
             // 'P1352A7DD71E5B8780', // CC Primary - Em Cappai
 
-            'P135892215F27E2C00', // CC Primary purchaser card
+            'P135AE6AC7CDDA43E0', // CC
+            // 'P135892215F27E2C00', // CC Primary purchaser card
             // 'P13565AE1297521E60', // CC Primary Prox card
             // 'P13569AD8CAFF2EFE0', // Juan single card, HD Pass only
             // 'P1256E1223C34F2700', // Amex HD Pass only
@@ -101,8 +114,13 @@ const users = {
         userId: '052B7CCDDDFF9E5E0U',
         svocId: '052B7CCDDDCD1E5E0S',
         pids: [
-            'P13599EBC3202F9760', // CC
-            'P125997C0202C06260', // Coupon for 5@151557
+            // 'P1359B1E8CFBBFC6A0', // CC, or P1359B1E7EF9BFC6A0
+            // 'P125A415EA5C297260', // PXD
+            'P1359B1E7EF9BFC6A0',
+
+            // 'P125997C0202C06260', // Coupon for 5@151557
+            // 'P1259EA7FFDC236860',
+            // 'P1259FA8ADAEA36860',
         ],
     },
     'b2btestadmin@yopmail.com': {
@@ -113,6 +131,12 @@ const users = {
             // 'P1356EB719D53DD260',
             'P13587D45601A055A0', // PLCC
         ],
+    },
+    'b2btestpurchaser@yopmail.com': {
+        password: 'Test8787@',
+        userId: '042B5CD4AE564E240S',
+        svocId: '042B5CD590C9CE240U',
+        pids: [],
     },
     'b2btestperksstaguser209@mailinator.com': {
         password: 'Test1234',
@@ -540,7 +564,7 @@ export async function getPayments({
                 || t2cPrimary
             )
         ))
-        ?.map(({ cardNickName, paymentId, paymentType, hdWalletAuthorized, t2cPrimary, isDefault, cardNumberLast4 }) => ({ cardNickName, paymentId, paymentType, hdWalletAuthorized, t2cPrimary, isDefault, cardNumberLast4 }));
+        ?.map(({ cardNickName, cardHolderName, paymentId, paymentType, hdWalletAuthorized, t2cPrimary, isDefault, cardNumberLast4 }) => ({ cardNickName: cardNickName || cardHolderName, paymentId, paymentType, hdWalletAuthorized, t2cPrimary, isDefault, cardNumberLast4 }));
     // Get primary CC and move it to first in the array
     const primaryCreditCardIndex = creditCards?.findIndex(({ isDefault }) => isDefault) || 0;
     const primaryCreditCard = creditCards?.splice(primaryCreditCardIndex, 1)?.[0];
