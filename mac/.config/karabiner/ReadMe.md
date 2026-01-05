@@ -4,6 +4,9 @@ The best option out there for re-mapping keyboard/mouse buttons to custom functi
 
 * **Don't map keys in System Preferences**, only use Karabiner since it takes care of e.g. Ctrl --> Command remapping itself.
 * Simply copy this folder to the `~/.config/` directory after installing Karabiner.
+    - Note: Since Karabiner v15, we cannot nest many rules under one title using the `assets/` directory like we conveniently could before. Now, they use profiles instead and all the rules must be imported into the "Complex Modifications" tab.
+    - As such, the root-level `karabiner.json` file is of utmost importance.
+    - Make sure to only activate the external keyboard device either in the profile (currently unsupported) or in the "Devices" tab.
 * Make sure that `Terminal -> Preferences -> Profiles --> 'Use Option as Meta key'` is checked, otherwise the Option/Ctrl keys won't work for e.g. moving cursor by word.
 * **Disable `Spaces` in Mac keyboard shortcuts**
     - `System Preferences --> Keyboard --> Shortcuts --> Mission Control --> Move (left|right) a space`.
