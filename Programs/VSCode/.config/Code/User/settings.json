@@ -1,0 +1,11 @@
+{
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.wordWrap": "on",
+    "editor.codeActionsOnSave": {},
+    "editor.copyWithSyntaxHighlighting": false,
+    "editor.dragAndDrop": false,
+    "editor.indentSize": "tabSize",
+    "files.trimTrailingWhitespace": true,
+    "editor.tabCompletion": "on"
+}
