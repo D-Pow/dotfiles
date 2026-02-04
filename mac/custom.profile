@@ -41,7 +41,12 @@ _brewGnuUtils=(
     gnu-tar
     gnu-which
 )
-_brewGnuUtilsHomePrefix=/usr/local/opt
+
+_brewGnuUtilsHomePrefix=/usr/local/opt  # Apple Intel
+if uname -a | grep -iq 'arm64'; then
+    _brewGnuUtilsHomePrefix=/opt/homebrew/opt  # Apple Silicon Mx chips
+fi
+
 _brewGnuUtilsHomeSuffix=libexec/gnubin
 for (( i=0; i < "${#_brewGnuUtils[@]}"; i++ )); do
     _gnuApp="${_brewGnuUtils[i]}"
