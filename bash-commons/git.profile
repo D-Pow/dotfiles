@@ -675,6 +675,8 @@ gitChangeEmail() {
     #   Changing custom git fields, leaving the rest intact:
     #       Answer:
     #           https://stackoverflow.com/questions/41301627/how-to-update-git-commit-author-but-keep-original-date-when-amending/41303384#41303384
+    #       Same answer, different implementation:
+    #           https://stackoverflow.com/questions/750172/how-do-i-change-the-author-and-committer-name-email-for-multiple-commits/750182#750182
     #       Alternative:
     #           https://stackoverflow.com/questions/750172/how-to-change-the-author-and-committer-name-and-e-mail-of-multiple-commits-in-gi
     #       Rebase without changing date:
