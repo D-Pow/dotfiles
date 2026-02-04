@@ -337,8 +337,8 @@ _setPythonAliases() {
     # If not in a virtual environment nor Conda environment,
     # then make Python v3 the default for `python` command
     if [[ -z "$VIRTUAL_ENV" ]] && ! echo "$(which python)" | grep -iq conda; then
-        declare _origPython="$(which python)"
-        declare _origPython2="$(which python2)"
+        declare _origPython="$(which python 2>/dev/null)"
+        declare _origPython2="$(which python2 2>/dev/null)"
         declare _origPython3="$(which python3)"
 
         declare _newPython="$_origPython"

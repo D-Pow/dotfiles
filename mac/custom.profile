@@ -59,14 +59,14 @@ export PATH="$BREW_GNU_UTILS_HOMES:$PATH"
 
 export SUBLIME_HOME="/Applications/Sublime Text.app/Contents/SharedSupport/bin"
 export SUBLIME_DIR="$HOME/Library/Application Support/Sublime Text/Packages/User"
-export JAVA_HOME="$(abspath /Library/Java/JavaVirtualMachines/jdk*/Contents/Home)"
+export JAVA_HOME="$(abspath /Library/Java/JavaVirtualMachines/jdk*/Contents/Home 2>/dev/null)"
 export ANDROID_ADB_CLI_HOME="$HOME/android-skd-cli-platform-tools"
 # TeX root dir
 export TEXROOT=/usr/local/texlive
 # The main TeX directory
-export TEXDIR="$(abspath $TEXROOT/2*)"
+export TEXDIR="$(abspath $TEXROOT/2* 2>/dev/null)"
 # Executables for TeX
-export TEXBIN="$(abspath $TEXDIR/bin/*darwin*)"
+export TEXBIN="$(abspath $TEXDIR/bin/*darwin* 2>/dev/null)"
 # Directory for site-wide local files
 export TEXMFLOCAL="$TEXROOT/texmf-local"
 # Directory for variable and automatically generated data
