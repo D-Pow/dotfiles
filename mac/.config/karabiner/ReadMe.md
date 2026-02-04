@@ -10,6 +10,16 @@ The best option out there for re-mapping keyboard/mouse buttons to custom functi
     - `System Preferences --> Keyboard --> Shortcuts --> Mission Control --> Move (left|right) a space`.
         + Required to allow `Ctrl+(left|right)_arrow` work in JetBrains.
 * **Disable `Screenshots` in Mac keyboard shortcuts**
+* **Disable period on double space and smart quotes/dashes**
+    - System Settings -> Keyboard -> Input Sources (Edit)
+        + Uncheck "Add period with double-space" and "Use smart quotes and dashes"
+* Make hidden files always visible
+    - Run `defaults write com.apple.finder AppleShowAllFiles TRUE`
+        + Otherwise, you have to press `Command + Shift + .` to show them
+* Fix Screenshot showing draggable rectangle instead of drawable crosshairs
+    - Open Screenshot -> Options -> Uncheck "Remember last selection" option.
+    - Press `Command+Shift+4` shortcut to force crosshairs (`Command+Shift+5` opens Screenshot app).
+    - From now on, Screenshot will use that method.
 * **Other**
     - `JetBrains --> Keymap --> Activate Next Window --> Command+Tilde`
 * [Rules defined first take precedence over rules defined later](https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-evaluation-priority/)
