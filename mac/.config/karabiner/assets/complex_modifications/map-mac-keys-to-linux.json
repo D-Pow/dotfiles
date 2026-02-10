@@ -1608,6 +1608,40 @@
         },
 
         {
+            "description": "Super+Shift+Up to maximize window",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "up",
+                        "modifiers": {
+                            "mandatory": [
+                                "option",
+                                "shift"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "f",
+                            "modifiers": [
+                                "control",
+                                "fn"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "variable_if",
+                            "name": "native_super",
+                            "value": 1
+                        }
+                    ]
+                }
+            ]
+        },
+
+        {
             "description": "Super+Shift+Left/Right to move window",
             "manipulators": [
                 {
