@@ -45,3 +45,27 @@ The best option out there for re-mapping keyboard/mouse buttons to custom functi
 Use [USB Overdrive](https://www.usboverdrive.com/) to find/map special keys not found by Karabiner.
 
 Note: USB Overdrive can't find Web Home/Forward/Back on Mac OS Big Sur (11.4).
+
+
+## Other
+
+Move windows in Terminal via:
+
+```bash
+osascript -e 'tell application "System Events" to tell (first process whose frontmost is true)
+    tell first window
+        set {x, y} to position
+        set {w, h} to size
+        set position to {x - 1920, y}
+    end tell
+
+    -- Optional maximize afterwards
+    key down 63  -- fn key
+    keystroke "f" using {control down}
+    key up 63
+end tell'
+```
+
+where `x - 1920` to move left/plus to move right (assumes 1920px-wide monitor) and key 63 is the Fn key (Mac doesn't allow this in curly braces like it does for Ctrl, Command, etc.).
+
+In order to make this one-line, you can't add semicolons like you can in Bash. Insted, split each line into a new `-e` arg.

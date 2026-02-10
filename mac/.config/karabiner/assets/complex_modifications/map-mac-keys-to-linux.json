@@ -1575,6 +1575,93 @@
         },
 
         {
+            "description": "Super+C to center window",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "c",
+                        "modifiers": {
+                            "mandatory": [
+                                "option"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "c",
+                            "modifiers": [
+                                "control",
+                                "fn"
+                            ]
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "variable_if",
+                            "name": "native_super",
+                            "value": 1
+                        }
+                    ]
+                }
+            ]
+        },
+
+        {
+            "description": "Super+Shift+Left/Right to move window",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "left_arrow",
+                        "modifiers": {
+                            "mandatory": [
+                                "option",
+                                "shift"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "shell_command": "osascript -e 'tell application \"System Events\" to tell (first process whose frontmost is true)' -e 'tell first window' -e 'set {x, y} to position' -e 'set {w, h} to size' -e 'set position to {x - 1920, y}' -e 'end tell' -e 'end tell'"
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "variable_if",
+                            "name": "native_super",
+                            "value": 1
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "right_arrow",
+                        "modifiers": {
+                            "mandatory": [
+                                "option",
+                                "shift"
+                            ]
+                        }
+                    },
+                    "to": [
+                        {
+                            "shell_command": "osascript -e 'tell application \"System Events\" to tell (first process whose frontmost is true)' -e 'tell first window' -e 'set {x, y} to position' -e 'set {w, h} to size' -e 'set position to {x + 1920, y}' -e 'end tell' -e 'end tell'"
+                        }
+                    ],
+                    "conditions": [
+                        {
+                            "type": "variable_if",
+                            "name": "native_super",
+                            "value": 1
+                        }
+                    ]
+                }
+            ]
+        },
+
+        {
             "description": "Alt+Enter works like PC",
             "manipulators": [
                 {
