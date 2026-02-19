@@ -7,5 +7,8 @@
     "editor.dragAndDrop": false,
     "editor.indentSize": "tabSize",
     "files.trimTrailingWhitespace": true,
-    "editor.tabCompletion": "on"
+    "editor.tabCompletion": "on",
+    "search.searchEditor.reusePriorSearchConfiguration": true,
+    // See: https://stackoverflow.com/questions/72434168/how-can-i-share-vs-code-keybindings-between-windows-and-macos
+    // "settingsSync.keybindingsPerPlatform": false
 }
