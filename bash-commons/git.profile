@@ -712,13 +712,15 @@ gitChangeEmail() {
 gitFetchFromOrigin() {
     declare _branchToPull="${1:-$(gitGetBranch)}"
 
-    git fetch origin "$_branchToPull"
+    # Same as calling `shift` and then passing "$@"
+    git fetch origin "$_branchToPull" "${@:2}"
 }
 
 gitPullFromOrigin() {
     declare _branchToPull="${1:-$(gitGetBranch)}"
 
-    git pull origin "$_branchToPull"
+    # Same as calling `shift` and then passing "$@"
+    git pull origin "$_branchToPull" "${@:2}"
 }
 
 
