@@ -465,6 +465,9 @@ findRegex() {
 findIgnore() {
     declare USAGE="[OPTIONS...] [PATH] [\`find\` OPTIONS...]
     Calls \`find\`, ignoring the specified directories or files.
+
+    Automatically adds \`-regextype posix-extended\` to support regex searches.
+    If using \`-iregex\`, wrap in double quotes, e.g. \`-iregex \"'my-regex'\"\`
     "
     # Net result (where [] represents what's added by the user):
     #   `find . -type d \( -name 'node_modules' -o -name '*est*' \) -prune -false -o` [-name '*.js']
@@ -534,10 +537,11 @@ findIgnore() {
     #
     # Thus, remove all instances of duplicate quotes AFTER the array.join is called
     # so that any duplicates from either the parent's quotes or our internal quotes are removed.
-    _findIgnoreOption="$(echo "$_findIgnoreOption" | sed -E "s|(['\"])\1|\1|g")"
+    _findIgnoreOption="$(echo "$_findIgnoreOption" | sed -E "s|(['\"])['\"]|\1|g")"
 
     # Ignored dirs are already quoted, but still need to quote the search query
-    declare _findFinalCmd="find $_findToSearchIn $_findIgnoreOption ${_findOpts[@]}"
+    # Set regextype for good measure
+    declare _findFinalCmd="find $_findToSearchIn -regextype posix-extended $_findIgnoreOption ${_findOpts[@]}"
 
     # Silence the annoying warnings about '`-maxdepth` is a global option that needs to be before other options'
     # since it's not easily removed during arg-parsing without extra complex logic
