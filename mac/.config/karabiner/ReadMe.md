@@ -6,6 +6,9 @@ The best option out there for re-mapping keyboard/mouse buttons to custom functi
 * Simply copy this folder to the `~/.config/` directory after installing Karabiner.
     - Then, activate them by clicking "Add predefined rule" and "Enable all" at the end of the title of the rule-set(s) copied to the `assets/` directory.
 * Make sure that `Terminal -> Preferences -> Profiles --> 'Use Option as Meta key'` is checked, otherwise the Option/Ctrl keys won't work for e.g. moving cursor by word.
+* `Terminal -> Preferences -> General -> Shells open with:`
+    - `/opt/homebrew/bin/bash` (or whatever Brew's Bash's path is)
+    - Then do: `chsh -s /opt/homebrew/bin/bash`
 * **Disable `Spaces` in Mac keyboard shortcuts**
     - `System Preferences --> Keyboard --> Shortcuts --> Mission Control --> Move (left|right) a space`.
         + Required to allow `Ctrl+(left|right)_arrow` work in JetBrains.
@@ -13,6 +16,7 @@ The best option out there for re-mapping keyboard/mouse buttons to custom functi
 * **Disable period on double space and smart quotes/dashes**
     - System Settings -> Keyboard -> Input Sources (Edit)
         + Uncheck "Add period with double-space" and "Use smart quotes and dashes"
+        + Disable "Smart Quotes"
 * Make hidden files always visible
     - Run `defaults write com.apple.finder AppleShowAllFiles TRUE`
         + Otherwise, you have to press `Command + Shift + .` to show them
