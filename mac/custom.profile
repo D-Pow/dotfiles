@@ -45,6 +45,7 @@ _brewGnuUtils=(
 _brewGnuUtilsHomePrefix=/usr/local/opt  # Apple Intel
 if uname -a | grep -iq 'arm64'; then
     _brewGnuUtilsHomePrefix=/opt/homebrew/opt  # Apple Silicon Mx chips
+    export SHELL=/opt/homebrew/bin/bash
 fi
 
 _brewGnuUtilsHomeSuffix=libexec/gnubin
