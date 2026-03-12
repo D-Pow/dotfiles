@@ -31,8 +31,11 @@ export MOCK_CONTROLLERS=true
 
 
 
-commissionPull() {
-    npm run contract:pull -- --registry platform-schema-registry --region eu-central-1 "$@"
+devAwsAuth() {
+    # See:
+    #   - https://docs.aws.amazon.com/cdk/v2/guide/configure-access-sso-example-cli.html
+    # aws configure sso --profile payout --region eu-central-1 --output json
+    aws sso login --profile payout
 }
 
 devMySql() {
@@ -49,4 +52,53 @@ devNpmI() {
 
 devDockerLogin() {
     echo $DOCKER_TOKEN | docker login registry.gitlab.com -u @devon.powell --password-stdin
+}
+
+dcea() {
+    docker compose exec application "$@"
+}
+
+
+
+
+# Accessing DBs
+# Use platform_fulfillment_dev
+# Must use Sequel Ace because password must be in clear text and that isn't supportd in DBeaver:
+#   https://www.reddit.com/r/dbeaver/comments/11skvfh/is_it_possible_to_connect_db_without_ssl_and_at/
+
+devDbPassword() {
+    declare defaultDbToUse=ledger
+    declare dbToUse=
+
+    read -p "Which DB (ledger|commission|payout) (default=$defaultDbToUse)? " dbToUse
+    dbToUse="${dbToUse:-$defaultDbToUse}"
+
+    declare dbHostname=
+    declare dbUsername=
+
+    if [[ "$dbToUse" == 'commission' ]]; then
+        # Commission: Decides what discount customers get and provides commission to them
+        dbHostname=commission-service-app-p8uzvc2s.cluster-cp0eg84aenmr.eu-central-1.rds.amazonaws.com
+        dbUsername=rds-commission-service-app
+    elif [[ "$dbToUse" == "ledger" ]]; then
+        # Ledger: Transaction information, history, etc.
+        dbHostname=ssp-ledger-service-app-emosomsm-db1.cp0eg84aenmr.eu-central-1.rds.amazonaws.com
+        dbUsername=rds-ssp-ledger-service-app
+    elif [[ "$dbToUse" == 'payout' ]]; then
+        # Payout-processor: If a payout was requested and is in pending, success, or rejected status
+        dbHostname=payout-processor-service-d5iig93q.cluster-cp0eg84aenmr.eu-central-1.rds.amazonaws.com
+        dbUsername=rds-payout-processor-service
+    fi
+
+    declare dbPassword="$(
+        aws rds generate-db-auth-token \
+            --profile payout \
+            --port 3306 \
+            --region=eu-central-1 \
+            --hostname "$dbHostname" \
+            --username "$dbUsername"
+    )"
+
+    copy "$dbPassword"
+    echo "$dbPassword"
 }
