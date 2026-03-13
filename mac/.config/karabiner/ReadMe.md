@@ -17,6 +17,7 @@ The best option out there for re-mapping keyboard/mouse buttons to custom functi
     - System Settings -> Keyboard -> Input Sources (Edit)
         + Uncheck "Add period with double-space" and "Use smart quotes and dashes"
         + Disable "Smart Quotes"
+    - Toggle on: `Keyboard shortcuts --> Function Keys --> Use Fx as standard function keys`
 * Make hidden files always visible
     - Run `defaults write com.apple.finder AppleShowAllFiles TRUE`
         + Otherwise, you have to press `Command + Shift + .` to show them
