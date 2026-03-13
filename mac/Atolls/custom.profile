@@ -58,6 +58,32 @@ dcea() {
     docker compose exec application "$@"
 }
 
+devSendSqsMessageInLocalstack() {
+    declare sqsMessage="$1"
+
+    declare origIFS="$IFS"
+    declare IFS=$'\n'
+    # Get AWS SQS queue URLs
+    declare sqsUrls=($(
+        docker compose exec localstack awslocal sqs list-queues \
+        | jq -r '.QueueUrls[]'
+    ))
+    IFS="$origIFS"
+
+    echo -e 'Which SQS URL do you want to send to?\n'
+
+    declare PS3='Enter the SQS URL option number: '
+    declare sqsUrlSelected=
+    select sqsUrlSelected in "${sqsUrls[@]}"; do
+        # See: https://linuxize.com/post/bash-select/
+        break
+    done
+
+    # See: https://docs.localstack.cloud/aws/services/sqs/
+    docker compose exec localstack awslocal sqs send-message \
+        --queue-url "$sqsUrlSelected" \
+        --message-body "$sqsMessage"
+}
 
 
 
