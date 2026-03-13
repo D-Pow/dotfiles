@@ -334,6 +334,10 @@ mvnProjectVersion() {
 ################
 
 _setPythonAliases() {
+    if ! which python 2>/dev/null; then
+        return
+    fi
+
     # If not in a virtual environment nor Conda environment,
     # then make Python v3 the default for `python` command
     if [[ -z "$VIRTUAL_ENV" ]] && ! echo "$(which python)" | grep -iq conda; then
