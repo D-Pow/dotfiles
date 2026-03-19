@@ -31,34 +31,34 @@ export MOCK_CONTROLLERS=true
 
 
 
-devAwsAuth() {
+awsAuth() {
     # See:
     #   - https://docs.aws.amazon.com/cdk/v2/guide/configure-access-sso-example-cli.html
     # aws configure sso --profile payout --region eu-central-1 --output json
     aws sso login --profile payout
 }
 
-devMySql() {
-    docker-compose exec mysql mysql -u $AURORA_DB_USERNAME -p $AURORA_DB_PASSWORD "$@"
-}
-
-devTestApi() {
-    docker-compose exec application npm run test:api -- "$@"
-}
-
-devNpmI() {
-    npm i && docker-compose exec application npm i && git checkout -- package-lock.json
-}
-
-devDockerLogin() {
-    echo $DOCKER_TOKEN | docker login registry.gitlab.com -u @devon.powell --password-stdin
-}
-
 dcea() {
     docker compose exec application "$@"
 }
 
-devSendSqsMessageInLocalstack() {
+dceaSql() {
+    docker-compose exec mysql mysql -u $AURORA_DB_USERNAME -p $AURORA_DB_PASSWORD "$@"
+}
+
+dceaTestApi() {
+    docker-compose exec application npm run test:api -- "$@"
+}
+
+dceaNpmI() {
+    npm i && docker-compose exec application npm i && git checkout -- package-lock.json
+}
+
+dockerLogin() {
+    echo $DOCKER_TOKEN | docker login registry.gitlab.com -u @devon.powell --password-stdin
+}
+
+sendSqsMessageInLocalstack() {
     declare sqsMessage="$1"
 
     declare origIFS="$IFS"
@@ -92,7 +92,7 @@ devSendSqsMessageInLocalstack() {
 # Must use Sequel Ace because password must be in clear text and that isn't supportd in DBeaver:
 #   https://www.reddit.com/r/dbeaver/comments/11skvfh/is_it_possible_to_connect_db_without_ssl_and_at/
 
-devDbPassword() {
+dbPassword() {
     declare defaultDbToUse=ledger
     declare dbToUse=
 
