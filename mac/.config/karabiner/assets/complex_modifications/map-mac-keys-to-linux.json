@@ -1613,7 +1613,7 @@
                 {
                     "type": "basic",
                     "from": {
-                        "key_code": "up",
+                        "key_code": "up_arrow",
                         "modifiers": {
                             "mandatory": [
                                 "option",
