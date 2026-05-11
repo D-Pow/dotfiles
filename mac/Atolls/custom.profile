@@ -38,12 +38,16 @@ awsAuth() {
     aws sso login --profile payout
 }
 
+dcu() {
+    docker compose up "$@"
+}
+
 dcea() {
     docker compose exec application "$@"
 }
 
-dceaSql() {
-    docker-compose exec mysql mysql -u $AURORA_DB_USERNAME -p $AURORA_DB_PASSWORD "$@"
+dceSql() {
+    docker compose exec mysql mysql -u $AURORA_DB_USERNAME -p $AURORA_DB_PASSWORD "$@"
 }
 
 dceaTestApi() {
