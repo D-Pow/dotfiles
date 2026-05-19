@@ -299,8 +299,8 @@ getMacSleepTime() {
 
 # Make bash autocomplete when tabbing after "git commit" alias like gc or gac
 _autocompleteWithJiraTicket() {
-    # sed -rEgex 'substitute|pattern|\1 = show-only-match|'
-    branch=$(gitGetBranch | sed -E 's|.*/([A-Z]+-[0-9]+).*|\1|')
+    # sed -rEgex 'substitute|pattern|\1 = first-match-group|'
+    declare branch=$(gitGetBranch | sed -E 's|.*\b([A-Z]+-[0-9]+).*|\1:|')
     COMPREPLY=$branch
     return
 }
