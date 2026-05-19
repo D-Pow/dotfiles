@@ -39,6 +39,7 @@ awsAuth() {
 }
 
 dcu() {
+    rm -f tsconfig.build.tsbuildinfo
     docker compose up "$@"
 }
 
