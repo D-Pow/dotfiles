@@ -280,6 +280,11 @@ gitGetPrimaryBranch() {
 }
 
 
+gitGetRemote() {
+    git remote -v | awk '{ print($2) }' | uniq
+}
+
+
 gitGetFilesChangedFromRebase() {
     # Allow only showing certain files in diff output
     declare _diffFileFilter="${1:-.}"
