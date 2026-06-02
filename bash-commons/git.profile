@@ -728,6 +728,15 @@ gitPullFromOrigin() {
     git pull origin "$_branchToPull" "${@:2}"
 }
 
+gitResetFromOrigin() {
+    declare _branchToPull="${1:-$(gitGetBranch)}"
+
+    gitFetchFromOrigin "$_branchToPull" \
+        && git reset --hard "origin/$_branchToPull" \
+        && gitPullFromOrigin "$_branchToPull" \
+        && git status
+}
+
 
 gitGetMergeBaseForCurrentBranch() {
     # Gets the commit hash of the primary branch that the current branch would merge into
@@ -827,6 +836,8 @@ alias  gplo='gitPullFromOrigin'
 alias gplom='gitPullFromOrigin $(gitGetPrimaryBranch)'
 alias   gfo='gitFetchFromOrigin'
 alias  gfom='gitFetchFromOrigin $(gitGetPrimaryBranch)'
+alias   gro='gitResetFromOrigin'
+alias  grom='gitResetFromOrigin $(gitGetPrimaryBranch)'
 alias   gst='git stash'
 alias  gstl='git stash list'
 alias  gsta='git stash apply'
