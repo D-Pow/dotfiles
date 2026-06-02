@@ -121,6 +121,8 @@ dbPassword() {
         dbUsername=rds-payout-processor-service
     fi
 
+    source "$_atollsDir/.env.profile"
+
     declare dbPassword="$(
         aws rds generate-db-auth-token \
             --profile payout \
