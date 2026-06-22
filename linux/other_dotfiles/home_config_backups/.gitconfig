@@ -7,6 +7,9 @@
     autocrlf = false
     ignorecase = false
     symlinks = true
+    # Make tabs 4 spaces wide. See: https://stackoverflow.com/a/39352670/5771107
+    whitespace = tabwidth=4
+    pager = less -x1,5
 [init]
     defaultBranch = master
 [status]
