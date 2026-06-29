@@ -29,6 +29,12 @@ export LOG_LEVEL='debug'
 export LOG_FORMAT='json'
 export MOCK_CONTROLLERS=true
 
+# Enable mysql_clear_password for unencrypted AWS Aurora MySQL access
+export LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN=y
+
+
+alias mysql='mysqlsh'
+
 
 
 awsAuth() {
@@ -38,10 +44,17 @@ awsAuth() {
     aws sso login --profile payout
 }
 
+devNpmI() {
+    npm i && git checkout -- package-lock.json &
+    ( cd graphql; npm i; git checkout -- package-lock.json; )
+}
+
 dcu() {
     rm -f tsconfig.build.tsbuildinfo
     docker compose up "$@"
 }
+
+alias dcub='dcu --build'
 
 dcea() {
     docker compose exec application "$@"
