@@ -9,6 +9,7 @@ The best option out there for re-mapping keyboard/mouse buttons to custom functi
 * `Terminal -> Preferences -> General -> Shells open with:`
     - `/opt/homebrew/bin/bash` (or whatever Brew's Bash's path is)
     - Then do: `chsh -s /opt/homebrew/bin/bash`
+* Reduce tab width via `tabs -4` (see [SO post](https://superuser.com/a/110424)).
 * **Disable `Spaces` in Mac keyboard shortcuts**
     - `System Preferences --> Keyboard --> Shortcuts --> Mission Control --> Move (left|right) a space`.
         + Required to allow `Ctrl+(left|right)_arrow` work in JetBrains.
