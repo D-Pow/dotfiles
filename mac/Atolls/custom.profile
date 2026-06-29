@@ -61,7 +61,7 @@ dcea() {
 }
 
 dceSql() {
-    docker compose exec mysql mysql -u $AURORA_DB_USERNAME -p $AURORA_DB_PASSWORD "$@"
+    docker compose exec mysql mysql -u $AURORA_DB_USERNAME -p "$@"
 }
 
 dceaTestApi() {
