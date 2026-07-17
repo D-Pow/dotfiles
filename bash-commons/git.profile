@@ -460,7 +460,7 @@ gitUpdateRepos() {
 
     for gitDir in "${gitDirs[@]}"; do
         echo "Updating $gitDir..."
-        (cd "$gitDir" && git pull && [ "$getStatus" = true ] && git status)
+        (cd "$gitDir" && gitPullFromOrigin && [ "$getStatus" = true ] && git status)
         echo -e "\n\n---------------------\n\n"
     done
 }
