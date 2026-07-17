@@ -45,8 +45,8 @@ awsAuth() {
 }
 
 devNpmI() {
-    npm i && git checkout -- package-lock.json &
-    ( cd graphql; npm i; git checkout -- package-lock.json; )
+    ( cd graphql && npm i && git checkout -- package-lock.json; ) &
+    npm i && git checkout -- package-lock.json
 }
 
 dcu() {
@@ -111,6 +111,7 @@ sendSqsMessageInLocalstack() {
 #   https://www.reddit.com/r/dbeaver/comments/11skvfh/is_it_possible_to_connect_db_without_ssl_and_at/
 
 dbPassword() {
+    # Might require `awsAuth`
     declare defaultDbToUse=ledger
     declare dbToUse=
 
