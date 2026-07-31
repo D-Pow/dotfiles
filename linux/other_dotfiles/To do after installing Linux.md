@@ -354,6 +354,19 @@ Note: to change the environment PATH variable, go to `/etc/environment` and sepa
         cd [ID]
         hex [ID]
         ```
+    - If using newer Bluetooth 5.1 and/or the above doesn't exactly match:
+        + `cd /mnt/c/Windows/System32/config; chntpw -e SYSTEM; cd ...\Parameters\Keys` like before.
+        + `cd <onlyIdPresent>`. Idk what this is, I assume Windows' bluetooth adapter.
+        + Find the registry value that matches the MAC address of the bluetooth device you're trying to connect.
+        + Run `hex <macAddress>` to get the pairing key.
+        + In a separate terminal, run:
+            ```bash
+            sudo su
+            cd /var/lib/bluetooth/<sameMacAsOnlyIdPresent>/<macOfBlthDevice>
+            subl info
+            ```
+        + Swap the `LinkKey.Key` with the **space-removed** key returned from `hex <macAddress>`.
+    - If that still doesn't work or the directories are different from above, follow [this](https://github.com/spxak1/weywot/blob/main/guides/bt_dualboot.md) which was derived from the [Arch Linux wiki](https://wiki.archlinux.org/title/Bluetooth#Dual_boot_pairing).
 
 * To move Linux partition to other disk:
     - Use [Clonezilla](https://clonezilla.org).
